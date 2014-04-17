@@ -228,6 +228,7 @@ var tags = [
     }
   }
 ];
+
 replacements = replacements.concat(tags);
 
 
@@ -252,6 +253,8 @@ function convert(src, dest, options) {
     var name = file.name(fp.dest);
     var destination = path.join(dest, dir, name + '.hbs');
     log.inform('writing', destination);
+
+
     file.writeFileSync(destination, process(str));
   });
 
@@ -260,4 +263,4 @@ function convert(src, dest, options) {
 }
 
 
-refactor('**/*.html', 'templates', {cwd: 'vendor/bootstrap/docs'});
+convert('**/*.html', 'templates', {cwd: 'vendor/bootstrap/docs'});
