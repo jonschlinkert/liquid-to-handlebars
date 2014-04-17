@@ -47,7 +47,6 @@ bower_components
 vendor
 
 # General folders and files to ignore
-docs
 _gh_pages
 tmp
 temp

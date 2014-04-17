@@ -1,6 +1,6 @@
 # liquid-to-handlebars [![NPM version](https://badge.fury.io/js/liquid-to-handlebars.png)](http://badge.fury.io/js/liquid-to-handlebars)
 
-> Node.js utility for converting liquid templates to handlebars templates. Using this as a quick and dirty, preliminary step to extracting HTML components from Bootstrap's HTML.
+> Node.js lib for converting liquid templates to handlebars templates. Whipped this up as a quick and dirty, preliminary step to extracting HTML components from Bootstrap's docs, in a way that makes them actually reusable.
 
 ## Install
 Install with [npm](npmjs.org):
@@ -10,8 +10,28 @@ npm i liquid-to-handlebars --save-dev
 ```
 
 
+### Clone Bootstrap
+
+Don't use Bower, use `git clone` since we need to actual HTML docs:
+
+```bash
+git clone https://github.com/twbs/bootstrap.git "vendor/bootstrap"
+```
+
+Next, run
+
+```bash
+node index
+```
+
+Converted files will be written to the `./templates` directory.
+
 ## Author
- * Jon Schlinkert
+
+**Jon Schlinkert**
+
++ [github/jonschlinkert](https://github.com/jonschlinkert)
++ [twitter/jonschlinkert](http://twitter.com/jonschlinkert)
 
 ## License
 Copyright (c) 2014 Jon Schlinkert, contributors.  
