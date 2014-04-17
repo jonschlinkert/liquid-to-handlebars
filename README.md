@@ -2,6 +2,8 @@
 
 > Node.js lib for converting liquid templates to handlebars templates. Whipped this up as a quick and dirty, preliminary step to extracting HTML components from Bootstrap's docs, in a way that makes them actually reusable.
 
+Uses the [delims](https://github.com/jonschlinkert/delims) library to make it super easy to generate regex for replacement patterns.
+
 ## Install
 Install with [npm](npmjs.org):
 
@@ -10,7 +12,40 @@ npm i liquid-to-handlebars --save-dev
 ```
 
 
-### Clone Bootstrap
+## Usage
+
+Don't expect miracles. For now, coverage is limited to converting Bootstrap's docs templates to handlebars.
+
+```js
+var convert = require('liquid-to-handlebars');
+var liquid = require('fs').readFileSync('css.html', 'utf8');
+var handlebars = convert(liquid);
+console.log(handlebars);
+```
+
+So replacement patterns for number of tags and filters have not been implemented. Here is the replacement pattern for converting `{{content}}` liquid variables to `{{> body }}` handlebars partials:
+
+```js
+pattern: tag.makeVariable('content', {matter: ''}),
+replacement: function (match, str) {
+  return '{{> body }}';
+}
+```
+
+Feel free to do a PR to add replacement patterns.
+
+
+## Example project
+
+If you just want to see how this works, [download the project](https://github.com/jonschlinkert/liquid-to-handlebars/archive/master.zip) or git clone it:
+
+```bash
+git clone https://github.com/jonschlinkert/liquid-to-handlebars.git
+```
+
+Then `cd` into the project and run `npm install`.
+
+**Next, clone Bootstrap**
 
 Don't use Bower, use `git clone` since we need to actual HTML docs:
 
@@ -21,10 +56,10 @@ git clone https://github.com/twbs/bootstrap.git "vendor/bootstrap"
 Next, run
 
 ```bash
-node index
+node examples/example
 ```
-
 Converted files will be written to the `./templates` directory.
+
 
 ## Author
 
