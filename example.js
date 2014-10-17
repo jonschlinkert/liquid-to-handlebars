@@ -4,7 +4,7 @@ var fs = require('fs');
 var file = require('fs-utils');
 var path = require('path');
 var log = require('verbalize');
-var process = require('..');
+var process = require('./');
 
 
 function convert(src, dest, options) {
@@ -18,25 +18,20 @@ function convert(src, dest, options) {
   files.forEach(function(fp) {
     count++;
 
-
     fp = path.resolve(cwd, fp);
-    var dir = getRoot(cwd, fp);
+    var dir = path.dirname(getRoot(cwd, fp));
     var name = path.basename(fp, path.extname(fp));
 
     var str = file.readFileSync(fp);
-
     var d = path.join(dest, dir, name + '.hbs');
-  console.log(d)
 
-    // log.inform('writing', d);
-    // // file.writeFileSync(d, process(str));
-    // console.log(process(str))
+    log.inform('writing', d.replace(/\\/g, '/'));
+    file.writeFileSync(d, process(str));
   });
 
   log.writeln();
   log.done('done', count, 'files written.', log.green('OK'));
 }
-
 
 convert('**/*.html', 'result', {
   cwd: 'vendor/bootstrap/docs'
