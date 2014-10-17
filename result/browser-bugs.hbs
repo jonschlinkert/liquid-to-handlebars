@@ -24,16 +24,22 @@ lead: "A list of the browser bugs that Bootstrap is currently grappling with."
       </thead>
       <tbody>
         <tr>
-          <td>Firefox &lt;30</td>
-          <td>Allow use of line-height for <code>&lt;input&gt;</code>-based buttons</td>
-          <td><a href="https://bugzilla.mozilla.org/show_bug.cgi?id=697451">Mozilla bug #697451</a></td>
-          <td><a href="https://github.com/twbs/bootstrap/issues/2985">#2985</a></td>
+          <td>Internet Explorer 11</td>
+          <td>Hovered element still remains in <code>:hover</code> state after scrolling away</td>
+          <td><a href="https://connect.microsoft.com/IE/feedback/details/926665/ie-11-hovering-over-an-element-and-then-scrolling-without-moving-the-mouse-pointer-leaves-the-element-in-hover-state">IE bug #926665</a></td>
+          <td><a href="https://github.com/twbs/bootstrap/issues/14211">#14211</a></td>
+        </tr>
+        <tr>
+          <td>Internet Explorer 11</td>
+          <td>When hovering over a <code>&lt;select&gt;</code> menu item, the cursor for the element underneath the menu is displayed</td>
+          <td><a href="https://connect.microsoft.com/IE/feedbackdetail/view/963961">IE bug #963961</a></td>
+          <td><a href="https://github.com/twbs/bootstrap/issues/14528">#14528</a></td>
         </tr>
         <tr>
           <td>Firefox</td>
-          <td>Unusual default form control styles on Android</td>
-          <td><a href="https://bugzilla.mozilla.org/show_bug.cgi?id=900871">Closed Mozilla bug #900871</a>, <a href="https://bugzilla.mozilla.org/show_bug.cgi?id=763671">Open Mozilla bug #763671</a></td>
-          <td><a href="https://github.com/twbs/bootstrap/issues/8702">#8702</a></td>
+          <td><code>.table-bordered</code> with an empty <code>&lt;tbody&gt;</code> is missing borders</td>
+          <td><a href="https://bugzilla.mozilla.org/show_bug.cgi?id=1023761">Mozilla bug #1023761</a></td>
+          <td><a href="https://github.com/twbs/bootstrap/issues/13453">#13453</a></td>
         </tr>
         <tr>
           <td>Firefox</td>
@@ -42,40 +48,34 @@ lead: "A list of the browser bugs that Bootstrap is currently grappling with."
           <td><a href="https://github.com/twbs/bootstrap/issues/10690">#10690</a></td>
         </tr>
         <tr>
-          <td>Firefox <strong>&le;27</strong></td>
-          <td><code>position: relative;</code> doesn't work inside tables</td>
-          <td><a href="https://bugzilla.mozilla.org/show_bug.cgi?id=63895">Mozilla bug #63895</a></td>
-          <td><a href="https://github.com/twbs/bootstrap/issues/12467">#12467</a></td>
+          <td>Firefox</td>
+          <td>Java applets that are descendants of elements with forced hardware acceleration using <code>translate3d(0,0,0)</code> are invisible on Windows</td>
+          <td><a href="https://bugzilla.mozilla.org/show_bug.cgi?id=1048279">Mozilla bug #1048279</a></td>
+          <td><a href="https://github.com/twbs/bootstrap/issues/14124">#14124</a></td>
+        </tr>
+        <tr>
+          <td>Firefox</td>
+          <td>Button elements with <code>width: 100%</code> become cropped in long tables.</td>
+          <td><a href="https://bugzilla.mozilla.org/show_bug.cgi?id=1060131">Mozilla bug #1060131</a></td>
+          <td><a href="https://github.com/twbs/bootstrap/issues/14320">#14320</a></td>
+        </tr>
+        <tr>
+          <td>Firefox</td>
+          <td>If the disabled state of a form control is changed via JavaScript, the normal state doesn't return after refreshing the page.</td>
+          <td><a href="https://bugzilla.mozilla.org/show_bug.cgi?id=654072">Mozilla bug #654072</a></td>
+          <td><a href="https://github.com/twbs/bootstrap/issues/793">#793</a></td>
         </tr>
         <tr>
           <td>Chrome</td>
-          <td>Weird button behavior with some number inputs</td>
-          <td><a href="https://code.google.com/p/chromium/issues/detail?id=337668">Chromium issue #337668</a></td>
-          <td><a href="https://github.com/twbs/bootstrap/issues/8350">#8350</a>, <a href="https://github.com/necolas/normalize.css/issues/283">Normalize #283</a></td>
-        </tr>
-        <tr>
-          <td>Chrome</td>
-          <td>Navbar rendering problem on Windows after several clicks</td>
-          <td><a href="https://code.google.com/p/chromium/issues/detail?id=272750">Chromium issue #272750</a>, <a href="https://bugs.webkit.org/show_bug.cgi?id=119793">WebKit bug #119793</a></td>
-          <td><a href="https://github.com/twbs/bootstrap/issues/9226">#9226</a></td>
+          <td>Clicking above <code>&lt;input type="number"&gt;</code> increment button flashes the decrement button</td>
+          <td><a href="https://code.google.com/p/chromium/issues/detail?id=419108"></a></td>
+          <td>Offshoot of <a href="https://github.com/twbs/bootstrap/issues/8350">#8350</a> &amp; <a href="https://code.google.com/p/chromium/issues/detail?id=337668">Chromium issue #337668</a></td>
         </tr>
         <tr>
           <td>Chrome</td>
           <td><code>display: table;</code> within <code>display: block;</code> forces sibling content to new line</td>
           <td><a href="https://code.google.com/p/chromium/issues/detail?id=309483">Chromium issue #309483</a></td>
           <td><a href="https://github.com/twbs/bootstrap/issues/9950">#9950</a></td>
-        </tr>
-        <tr>
-          <td>Chrome</td>
-          <td>Unwanted vertical lines when printing styled <code>&lt;select&gt;s</code> on OS X</td>
-          <td><a href="https://code.google.com/p/chromium/issues/detail?id=282918">Chromium issue #282918</a></td>
-          <td><a href="https://github.com/twbs/bootstrap/issues/11245">#11245</a></td>
-        </tr>
-        <tr>
-          <td>Chrome</td>
-          <td>inline-block element collapses white-space on Windows</td>
-          <td><a href="https://code.google.com/p/chromium/issues/detail?id=329574">Chromium issue #329574</a></td>
-          <td><a href="https://github.com/twbs/bootstrap/issues/11885">#11885</a></td>
         </tr>
         <tr>
           <td>Chrome</td>
@@ -91,15 +91,21 @@ lead: "A list of the browser bugs that Bootstrap is currently grappling with."
         </tr>
         <tr>
           <td>Chrome</td>
-          <td><code>display: table-cell; width: 100%;</code> doesn't work correctly on date input</td>
+          <td><code>display: table-cell; width: 100%;</code> doesn't work correctly on date <code>&lt;input&gt;</code></td>
           <td><a href="https://code.google.com/p/chromium/issues/detail?id=346051">Chromium issue #346051</a></td>
           <td><a href="https://github.com/twbs/bootstrap/issues/12548">#12548</a></td>
         </tr>
         <tr>
+          <td>Chrome</td>
+          <td><code>&lt;input type="password"&gt;</code> sporadically causes bad widths on floated elements</td>
+          <td><a href="https://code.google.com/p/chromium/issues/detail?id=377346">Chrome issue #377346</a></td>
+          <td><a href="https://github.com/twbs/bootstrap/issues/13892">#13892</a></td>
+        </tr>
+        <tr>
           <td>Safari</td>
-          <td>Insufficient CSS percentage precision</td>
-          <td>(No public bug tracker)</td>
-          <td><a href="https://github.com/twbs/bootstrap/issues/9282">#9282</a></td>
+          <td>Weird button behavior with some number <code>&lt;input&gt;</code>s</td>
+          <td><a href="https://bugs.webkit.org/show_bug.cgi?id=137269">WebKit bug #137269</a></td>
+          <td><a href="https://github.com/twbs/bootstrap/issues/8350">#8350</a>, <a href="https://github.com/necolas/normalize.css/issues/283">Normalize #283</a>, <a href="https://code.google.com/p/chromium/issues/detail?id=337668">Chromium issue #337668</a></td>
         </tr>
         <tr>
           <td>Safari</td>

@@ -26,7 +26,7 @@
           {{> body }}
         </div>
         <div class="col-md-3">
-          <div class="bs-docs-sidebar hidden-print" role="complementary">
+          <div class="bs-docs-sidebar hidden-print hidden-xs hidden-sm" role="complementary">
             <ul class="nav bs-docs-sidenav">
               {{#is slug "getting-started"}}
                 {{> getting-started }}
@@ -47,10 +47,14 @@
             <a class="back-to-top" href="#top">
               Back to top
             </a>
+            {{#is slug "js"}}
+            <a href="#" class="bs-docs-theme-toggle">
+              Preview theme
+            </a>
+            {{/is}}
           </div>
         </div>
       </div>
-
     </div>
 
     {{> footer }}
