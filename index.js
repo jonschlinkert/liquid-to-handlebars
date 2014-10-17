@@ -4,12 +4,7 @@
  * Module dependencies
  */
 
-var path = require('path');
-var delims = require('delims');
-var file = require('fs-utils');
-var cheerio = require('cheerio');
 var frep = require('frep');
-var _ = require('lodash');
 var patterns = [];
 
 var re = require('./lib/replacements');

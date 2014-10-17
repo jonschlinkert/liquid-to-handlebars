@@ -1,7 +1,7 @@
 {
   "name": "liquid-to-handlebars",
   "description": "Node.js lib for converting liquid templates to handlebars templates. Whipped this up as a quick and dirty, preliminary step to extracting HTML components from Bootstrap's docs, in a way that makes them actually reusable.",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "homepage": "https://github.com/jonschlinkert/liquid-to-handlebars",
   "author": {
     "name": "Jon Schlinkert",
@@ -37,10 +37,9 @@
     "test": "mocha -R test"
   },
   "devDependencies": {
+    "mocha": "*",
     "should": "^4.0.4",
-    "verb": ">= 0.2.6",
-    "verb-tag-jscomments": ">= 0.2.0",
-    "mocha": "*"
+    "verb": "^0.2.15"
   },
   "dependencies": {
     "cheerio": "^0.17.0",
