@@ -1,19 +1,23 @@
-const path = require('path');
-const delims = require('delims');
-const file = require('fs-utils');
-const cheerio = require('cheerio');
-const frep = require('frep');
-const _ = require('lodash');
+'use strict';
 
-const rewrite = require('./lib/rewrite');
-const re = require('./lib/replacements');
+/**
+ * Module dependencies
+ */
 
-
+var path = require('path');
+var delims = require('delims');
+var file = require('fs-utils');
+var cheerio = require('cheerio');
+var frep = require('frep');
+var _ = require('lodash');
 var patterns = [];
+
+var re = require('./lib/replacements');
+var rewrite = require('./lib/rewrite');
+
 patterns = patterns.concat(re.blocks);
 patterns = patterns.concat(re.variables);
 patterns = patterns.concat(re.tags);
-
 
 module.exports = function(str) {
   str = rewrite.metaContent(str);

@@ -37,14 +37,17 @@
     "test": "mocha -R test"
   },
   "devDependencies": {
-    "verb": "~0.2.0"
+    "should": "^4.0.4",
+    "verb": ">= 0.2.6",
+    "verb-tag-jscomments": ">= 0.2.0",
+    "mocha": "*"
   },
   "dependencies": {
-    "frep": "~0.2.0",
-    "lodash": "~2.4.1",
-    "verbalize": "~0.1.2",
-    "fs-utils": "~0.4.0",
+    "cheerio": "^0.17.0",
     "delims": "~0.1.2",
-    "cheerio": "~0.15.0"
+    "frep": "~0.2.0",
+    "fs-utils": "^0.5.0",
+    "lodash": "~2.4.1",
+    "verbalize": "~0.1.2"
   }
 }

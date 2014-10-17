@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Meta, title, CSS, favicons, etc. -->
+    {{> header }}
+  </head>
+  <body>
+    <a class="sr-only sr-only-focusable" href="#content">Skip to main content</a>
+
+    <!-- Docs master nav -->
+    {{> main }}
+
+    <!-- Docs page layout -->
+    <div class="bs-docs-header" id="content">
+      <div class="container">
+        <h1>{{ title }}</h1>
+        <p>{{ lead }}</p>
+        {{> ads }}
+      </div>
+    </div>
+
+    <div class="container bs-docs-container">
+
+      <div class="row">
+        <div class="col-md-9" role="main">
+          {{> body }}
+        </div>
+        <div class="col-md-3">
+          <div class="bs-docs-sidebar hidden-print" role="complementary">
+            <ul class="nav bs-docs-sidenav">
+              {{#is slug "getting-started"}}
+                {{> getting-started }}
+              {{/is}} {{#is slug "css"}}
+                {{> css }}
+              {{/is}} {{#is slug "components"}}
+                {{> components }}
+              {{/is}} {{#is slug "js"}}
+                {{> javascript }}
+              {{/is}} {{#is slug "customize"}}
+                {{> customize }}
+              {{/is}} {{#is slug "about"}}
+                {{> about }}
+              {{/is}} {{#is slug "migration"}}
+                {{> migration }}
+              {{/is}}
+            </ul>
+            <a class="back-to-top" href="#top">
+              Back to top
+            </a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    {{> footer }}
+  </body>
+</html>
