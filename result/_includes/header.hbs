@@ -6,7 +6,7 @@
 <meta name="author" content="{{ site.author }}">
 
 <title>
-  {{#is url site.baseurl}}
+  {{#is layout "home"}}
     {{ title }}
   {{^}}
     {{ title }} &middot; Bootstrap
@@ -14,7 +14,9 @@
 </title>
 
 <!-- Bootstrap core CSS -->
-{{#is github }} <link href="{{assets}}/css/bootstrap.min.css" rel="stylesheet"> {{^}}
+{{#is github }}
+<link href="{{assets}}/css/bootstrap.min.css" rel="stylesheet">
+{{^}}
 <link href="{{assets}}/css/bootstrap.css" rel="stylesheet">
 {{/is}}
 {{#is slug "js"}}
@@ -36,14 +38,14 @@
 <!--[if lt IE 9]><script src="../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
 <script src="{{assets}}/js/ie-emulation-modes-warning.js"></script>
 
-<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
 <!--[if lt IE 9]>
   <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
   <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]-->
 
 <!-- Favicons -->
-<link rel="apple-touch-icon-precomposed" href="{{assets}}/ico/apple-touch-icon-precomposed.png">
+<link rel="apple-touch-icon" href="{{assets}}/ico/apple-touch-icon.png">
 <link rel="icon" href="{{assets}}/ico/favicon.ico">
 
 <script>

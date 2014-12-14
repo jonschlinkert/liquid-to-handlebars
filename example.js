@@ -34,7 +34,7 @@ function convert(src, dest, options) {
 }
 
 convert('**/*.html', 'result', {
-  cwd: 'vendor/bootstrap/docs'
+  cwd: '../bootstrap/docs'
 });
 
 function getRoot(a, b) {

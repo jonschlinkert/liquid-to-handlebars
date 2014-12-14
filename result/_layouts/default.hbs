@@ -22,11 +22,12 @@
     <div class="container bs-docs-container">
 
       <div class="row">
-        <div class="col-md-9" role="main">
+        <div class="col-md-{{#is fullwidth true}}12{{^}}9{{/is}}" role="main">
           {{> body }}
         </div>
-        <div class="col-md-3">
-          <div class="bs-docs-sidebar hidden-print hidden-xs hidden-sm" role="complementary">
+        {% unless page.fullwidth == true %}
+        <div class="col-md-3" role="complementary">
+          <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm">
             <ul class="nav bs-docs-sidenav">
               {{#is slug "getting-started"}}
                 {{> getting-started }}
@@ -48,12 +49,13 @@
               Back to top
             </a>
             {{#is slug "js"}}
-            <a href="#" class="bs-docs-theme-toggle">
+            <a href="#" class="bs-docs-theme-toggle" role="button">
               Preview theme
             </a>
             {{/is}}
-          </div>
+          </nav>
         </div>
+        {% endunless %}
       </div>
     </div>
 

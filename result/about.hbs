@@ -31,7 +31,7 @@ lead: "Learn about the project's history, meet the maintaining teams, and find o
       <div class="list-group-item">
         <iframe class="github-btn" src="http://ghbtns.com/github-btn.html?user={{ this.user }}&amp;type=follow"></iframe>
         <a class="team-this" href="https://github.com/{{ this.user }}">
-          <img src="http://www.gravatar.com/avatar/{{ this.gravatar }}" alt="@{{ this.user }}">
+          <img src="http://www.gravatar.com/avatar/{{ this.gravatar }}" alt="@{{ this.user }}" width="32" height="32">
           <strong>{{ this.name }}</strong> <small>@{{ this.user }}</small>
         </a>
       </div>
@@ -88,13 +88,13 @@ lead: "Learn about the project's history, meet the maintaining teams, and find o
   <p>Download the Bootstrap mark in one of three styles, each available as an SVG file. Right click, Save as.</p>
   <div class="bs-brand-logos">
     <div class="bs-brand-item">
-      <img class="svg" src="{{assets}}/img/bootstrap-solid.svg" alt="Bootstrap">
+      <img class="svg" src="{{assets}}/img/bootstrap-solid.svg" alt="Bootstrap" width="144" height="144">
     </div>
     <div class="bs-brand-item inverse">
-      <img class="svg" src="{{assets}}/img/bootstrap-outline.svg" alt="Bootstrap">
+      <img class="svg" src="{{assets}}/img/bootstrap-outline.svg" alt="Bootstrap" width="144" height="144">
     </div>
     <div class="bs-brand-item inverse">
-      <img class="svg" src="{{assets}}/img/bootstrap-punchout.svg" alt="Bootstrap">
+      <img class="svg" src="{{assets}}/img/bootstrap-punchout.svg" alt="Bootstrap" width="144" height="144">
     </div>
   </div>
 
@@ -103,15 +103,18 @@ lead: "Learn about the project's history, meet the maintaining teams, and find o
   <div class="bs-brand-logos">
     <div class="bs-brand-item">
       <h3>Bootstrap</h3>
-      <span class="glyphicon glyphicon-ok"></span>
+      <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+      <span class="sr-only">(correct)</span>
     </div>
     <div class="bs-brand-item">
       <h3 class="text-muted">BootStrap</h3>
-      <span class="glyphicon glyphicon-remove"></span>
+      <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+      <span class="sr-only">(incorrect)</span>
     </div>
     <div class="bs-brand-item">
       <h3 class="text-muted">Twitter Bootstrap</h3>
-      <span class="glyphicon glyphicon-remove"></span>
+      <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+      <span class="sr-only">(incorrect)</span>
     </div>
   </div>
 
@@ -125,5 +128,4 @@ lead: "Learn about the project's history, meet the maintaining teams, and find o
       <div class="color-swatch bs-gray"></div>
     </div>
   </div>
-
 </div>
