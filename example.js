@@ -5,7 +5,7 @@ var path = require('path');
 var App = require('template');
 var app = new App({loaderType: 'stream'});
 var write = require('write');
-var refactor = require('./');
+var convert = require('./');
 
 var opts = {loaderType: 'sync'};
 
@@ -45,8 +45,8 @@ app.posts.option('renameKey', function (fp) {
 
 app.posts('vendor/bootstrap/docs')
   .forOwn(function (view, key) {
-    console.log('refactoring', key);
-    view.content = refactor(view.content);
+    console.log('converting', key);
+    view.content = convert(view.content);
     var base = view.path.split('vendor/bootstrap/docs').join('');
     var name = path.basename(base, path.extname(base));
     var dir = path.dirname(base);
