@@ -45,7 +45,7 @@
   </div>
 {{#markdown}}
 ```scss
-@brand-primary: #428bca;
+@brand-primary: darken(#428bca, 6.5%); // #337ab7
 @brand-success: #5cb85c;
 @brand-info:    #5bc0de;
 @brand-warning: #f0ad4e;
@@ -99,7 +99,7 @@ a {
   <p>Note that the <code>@link-hover-color</code> uses a function, another awesome tool from Less, to automagically create the right hover color. You can use <code>darken</code>, <code>lighten</code>, <code>saturate</code>, and <code>desaturate</code>.</p>
 
   <h3 id="less-variables-typography">Typography</h3>
-  <p>Easily set your type face, text size, leading, and more with a few quick variables. Bootstrap makes use of these as well to provide easy typographic mixins.</p>
+  <p>Easily set your typeface, text size, leading, and more with a few quick variables. Bootstrap makes use of these as well to provide easy typographic mixins.</p>
 {{#markdown}}
 ```scss
 @font-family-sans-serif:  "Helvetica Neue", Helvetica, Arial, sans-serif;
@@ -164,7 +164,7 @@ a {
 
   <h3 id="less-mixins-box-sizing">Box-sizing</h3>
   <p>Reset your components' box model with a single mixin. For context, see this <a href="https://developer.mozilla.org/en-US/docs/CSS/box-sizing" target="_blank">helpful article from Mozilla</a>.</p>
-  <p>The mixin is <strong>deprecated</strong> as of v3.2.0, with the introduction of autoprefixer. To preserve backwards-compatibility, Bootstrap will continue to use the mixin internally until Bootstrap v4.</p>
+  <p>The mixin is <strong>deprecated</strong> as of v3.2.0, with the introduction of Autoprefixer. To preserve backwards-compatibility, Bootstrap will continue to use the mixin internally until Bootstrap v4.</p>
 {{#markdown}}
 ```scss
 .box-sizing(@box-model) {
@@ -213,7 +213,7 @@ a {
 
   <h3 id="less-mixins-transitions">Transitions</h3>
   <p>Multiple mixins for flexibility. Set all transition information with one, or specify a separate delay and duration as needed.</p>
-  <p>The mixins are <strong>deprecated</strong> as of v3.2.0, with the introduction of autoprefixer. To preserve backwards-compatibility, Bootstrap will continue to use the mixins internally until Bootstrap v4.</p>
+  <p>The mixins are <strong>deprecated</strong> as of v3.2.0, with the introduction of Autoprefixer. To preserve backwards-compatibility, Bootstrap will continue to use the mixins internally until Bootstrap v4.</p>
 {{#markdown}}
 ```scss
 .transition(@transition) {
@@ -247,7 +247,7 @@ a {
 
   <h3 id="less-mixins-transformations">Transformations</h3>
   <p>Rotate, scale, translate (move), or skew any object.</p>
-  <p>The mixins are <strong>deprecated</strong> as of v3.2.0, with the introduction of autoprefixer. To preserve backwards-compatibility, Bootstrap will continue to use the mixins internally until Bootstrap v4.</p>
+  <p>The mixins are <strong>deprecated</strong> as of v3.2.0, with the introduction of Autoprefixer. To preserve backwards-compatibility, Bootstrap will continue to use the mixins internally until Bootstrap v4.</p>
 {{#markdown}}
 ```scss
 .rotate(@degrees) {
@@ -305,7 +305,7 @@ a {
 
   <h3 id="less-mixins-animations">Animations</h3>
   <p>A single mixin for using all of CSS3's animation properties in one declaration and other mixins for individual properties.</p>
-  <p>The mixins are <strong>deprecated</strong> as of v3.2.0, with the introduction of autoprefixer. To preserve backwards-compatibility, Bootstrap will continue to use the mixins internally until Bootstrap v4.</p>
+  <p>The mixins are <strong>deprecated</strong> as of v3.2.0, with the introduction of Autoprefixer. To preserve backwards-compatibility, Bootstrap will continue to use the mixins internally until Bootstrap v4.</p>
 {{#markdown}}
 ```scss
 .animation(@animation) {

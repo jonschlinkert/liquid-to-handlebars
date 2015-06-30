@@ -5,13 +5,13 @@
     {{> header }}
   </head>
   <body>
-    <a class="sr-only sr-only-focusable" href="#content">Skip to main content</a>
+    <a id="skippy" class="sr-only sr-only-focusable" href="#content"><div class="container"><span class="skiplink-text">Skip to main content</span></div></a>
 
     <!-- Docs master nav -->
     {{> main }}
 
     <!-- Docs page layout -->
-    <div class="bs-docs-header" id="content">
+    <div class="bs-docs-header" id="content" tabindex="-1">
       <div class="container">
         <h1>{{ title }}</h1>
         <p>{{ lead }}</p>
@@ -23,7 +23,7 @@
 
       <div class="row">
         <div class="col-md-{{#is fullwidth true}}12{{^}}9{{/is}}" role="main">
-          {{> body }}
+          {% body %}
         </div>
         {% unless page.fullwidth == true %}
         <div class="col-md-3" role="complementary">
