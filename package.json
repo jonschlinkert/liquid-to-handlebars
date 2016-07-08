@@ -10,10 +10,11 @@
   },
   "license": "MIT",
   "files": [
-    "index.js",
-    "lib"
+    "assemblefile.js",
+    "lib",
+    "LICENSE",
+    "README.md"
   ],
-  "main": "index.js",
   "engines": {
     "node": ">=0.8"
   },
@@ -21,14 +22,16 @@
     "test": "mocha"
   },
   "dependencies": {
-    "cheerio": "^0.19.0",
-    "delims": "^0.1.2",
-    "lodash": "^3.9.3"
+    "assemble": "^0.15.0",
+    "gulp": "^3.9.1",
+    "gulp-extname": "^0.2.2",
+    "parser-front-matter": "^1.3.0",
+    "snapdragon": "^0.4.2",
+    "through2": "^2.0.1"
   },
   "devDependencies": {
-    "should": "^4.0.4",
-    "template": "jonschlinkert/template#complete-refactor",
-    "write": "^0.2.0"
+    "gulp-format-md": "^0.1.9",
+    "should": "^4.0.4"
   },
   "keywords": [
     "assemble",
@@ -38,6 +41,20 @@
     "jekyll",
     "liquid",
     "refactor",
+    "to",
     "transform"
-  ]
+  ],
+  "verb": {
+    "toc": false,
+    "layout": "default",
+    "tasks": [
+      "readme"
+    ],
+    "plugins": [
+      "gulp-format-md"
+    ],
+    "lint": {
+      "reflinks": true
+    }
+  }
 }
