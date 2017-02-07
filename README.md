@@ -154,6 +154,8 @@ To this handlebars:
 {{join (reverse (split "Ground control to Major Tom." "")) ""}}
 ```
 
+**Many more examples** in the [docs folder](docs) and [unit tests](test).
+
 ## Pitfalls
 
 Handlebars is not capable of doing some of the things that liquid docs. For example, since [capture](http://shopify.github.io/liquid/tags/variable/#capture) and [assign](http://shopify.github.io/liquid/tags/variable/#assign) both add a new variable to the context, this wouldn't work in handlebars without doing two passes over the templates, one to build up the variables and one to render.
