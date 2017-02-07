@@ -5,23 +5,22 @@ var path = require('path');
 var gulp = require('gulp');
 var clone = require('gh-clone');
 var extname = require('gulp-extname');
-var vfs = require('vinyl-fs');
 var pipeline = require('./lib/pipeline');
 
 var fixtures = path.resolve.bind(path, __dirname, 'test/fixtures');
 var liquid = path.resolve.bind(path, __dirname, 'vendor/liquid');
 
 gulp.task('markdown', function() {
-  return vfs.src('**/*.md', {cwd: liquid()})
+  return gulp.src('**/*.md', {cwd: liquid()})
     .pipe(pipeline.converter())
-    .pipe(vfs.dest(fixtures()));
+    .pipe(gulp.dest(fixtures()));
 });
 
 gulp.task('html', function() {
-  return vfs.src('**/*.html', {cwd: liquid()})
+  return gulp.src('**/*.html', {cwd: liquid()})
     .pipe(pipeline.converter())
     .pipe(extname('.hbs'))
-    .pipe(vfs.dest(fixtures()));
+    .pipe(gulp.dest(fixtures()));
 });
 
 gulp.task('liquid', function(cb) {
