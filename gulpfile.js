@@ -1,27 +1,37 @@
 'use strict';
 
-var highlight = require('./lib/highlight');
-var converter = require('./lib/converter');
-var extname = require('gulp-extname');
+var del = require('delete');
+var path = require('path');
 var gulp = require('gulp');
+var clone = require('gh-clone');
+var extname = require('gulp-extname');
+var vfs = require('vinyl-fs');
+var pipeline = require('./lib/pipeline');
 
-gulp.task('html', function () {
-  return gulp.src('vendor/bootstrap-blog/**/*.html')
-    .pipe(converter())
+var fixtures = path.resolve.bind(path, __dirname, 'test/fixtures');
+var liquid = path.resolve.bind(path, __dirname, 'vendor/liquid');
+
+gulp.task('markdown', function() {
+  return vfs.src('**/*.md', {cwd: liquid()})
+    .pipe(pipeline.converter())
+    .pipe(vfs.dest(fixtures()));
+});
+
+gulp.task('html', function() {
+  return vfs.src('**/*.html', {cwd: liquid()})
+    .pipe(pipeline.converter())
     .pipe(extname('.hbs'))
-    .pipe(gulp.dest('src/'));
+    .pipe(vfs.dest(fixtures()));
 });
 
-gulp.task('md', function () {
-  return gulp.src('vendor/bootstrap-blog/**/*.md')
-    .pipe(highlight())
-    .pipe(gulp.dest('src/'));
+gulp.task('liquid', function(cb) {
+  clone({repo: 'Shopify/liquid', branch: 'gh-pages', dest: liquid()}, cb);
 });
 
-gulp.task('copy', function () {
-  return gulp.src(['vendor/bootstrap-blog/**', '!vendor/bootstrap-blog/**/*.html'])
-    .pipe(gulp.dest('src/'))
+gulp.task('delete', function(cb) {
+  del.sync(fixtures());
+  cb();
 });
 
-gulp.task('default', ['html', 'md']);
+gulp.task('default', ['delete', 'markdown', 'html']);
 

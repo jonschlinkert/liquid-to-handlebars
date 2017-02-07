@@ -1,3 +1,1 @@
-'use strict';
-
-module.exports = require('./assemblefile');
+module.exports = require('./lib/convert');
