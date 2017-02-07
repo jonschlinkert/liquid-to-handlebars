@@ -12,7 +12,8 @@ You can now use any liquid resource with very little time spent on converting te
 
 ```js
 var convert = require('liquid-to-handlebars');
-console.log('{% foo %}')
+console.log('{{ product_price | default: 2.99 }}');
+//=> '{{default product_price 2.99}}'
 ```
 
 ## Examples
