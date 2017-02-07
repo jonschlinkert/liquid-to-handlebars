@@ -7,14 +7,14 @@ description: Liquid filter that truncates a string to a given number of characte
 
 <p class="code-label">Input</p>
 ```liquid
-{{#raw}}
-{{truncate {{"Ground control to Major Tom."}} 20}}
-{{/raw}}
+{% raw %}
+{{ "Ground control to Major Tom." | truncate: 20 }}
+{% endraw %}
 ```
 
 <p class="code-label">Output</p>
 ```text
-{{truncate {{"Ground control to Major Tom."}} 20}}
+{{ "Ground control to Major Tom." | truncate: 20 }}
 ```
 
 ### Custom ellipsis
@@ -24,15 +24,15 @@ description: Liquid filter that truncates a string to a given number of characte
 The length of the second parameter counts against the number of characters specified by the first parameter. For example, if you want to truncate a string to exactly 10 characters, and use a 3-character ellipsis, use **13** for the first parameter of `truncate`, since the ellipsis counts as 3 characters.
 
 <p class="code-label">Input</p>
-{{#raw}}
+{% raw %}
 ``` liquid
-{{truncate {{"Ground control to Major Tom."}} 25 ", and so on"}}
+{{ "Ground control to Major Tom." | truncate: 25, ", and so on" }}
 ```
-{{/raw}}
+{% endraw %}
 
 <p class="code-label">Output</p>
 ``` text
-{{truncate {{"Ground control to Major Tom."}} 25 ", and so on"}}
+{{ "Ground control to Major Tom." | truncate: 25, ", and so on" }}
 ```
 
 ### No ellipsis
@@ -40,13 +40,13 @@ The length of the second parameter counts against the number of characters speci
 You can truncate to the exact number of characters specified by the first parameter and show no trailing characters by passing a blank string as the second parameter:
 
 <p class="code-label">Input</p>
-{{#raw}}
+{% raw %}
 ``` liquid
-{{truncate {{"Ground control to Major Tom."}} 20 ""}}
+{{ "Ground control to Major Tom." | truncate: 20, "" }}
 ```
-{{/raw}}
+{% endraw %}
 
 <p class="code-label">Output</p>
 ``` text
-{{truncate {{"Ground control to Major Tom."}} 20 ""}}
+{{ "Ground control to Major Tom." | truncate: 20, "" }}
 ```

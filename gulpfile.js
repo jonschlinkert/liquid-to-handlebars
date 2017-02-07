@@ -27,6 +27,11 @@ gulp.task('liquid', function(cb) {
   clone({repo: 'Shopify/liquid', branch: 'gh-pages', dest: liquid()}, cb);
 });
 
+gulp.task('copy', function(cb) {
+  return gulp.src('**/*.{html,md}', {cwd: liquid()})
+    .pipe(gulp.dest(fixtures()));
+});
+
 gulp.task('delete', function(cb) {
   del.sync(fixtures());
   cb();

@@ -16,24 +16,24 @@ All values in Liquid are truthy except `nil` and `false`.
 In the example below, the string "Tobi" is not a boolean, but it is truthy in a conditional:
 
 ```liquid
-{{#raw}}
-{{assign "tobi" "Tobi"}}
+{% raw %}
+{% assign tobi = "Tobi" %}
 
-{{#if tobi}}
+{% if tobi %}
   This condition will always be true.
-{{/if}}
-{{/raw}}
+{% endif %}
+{% endraw %}
 ```
 
-[Strings]({{prepend {{"/basics/types/#string"}} site.baseurl}}), even when empty, are truthy. The example below will result in empty HTML tags if `settings.fp_heading` is empty:
+[Strings]({{ "/basics/types/#string" | prepend: site.baseurl }}), even when empty, are truthy. The example below will result in empty HTML tags if `settings.fp_heading` is empty:
 
 <p class="code-label">Input</p>
 ```liquid
-{{#raw}}
-{{#if settings.fp_heading}}
+{% raw %}
+{% if settings.fp_heading %}
   <h1>{{ settings.fp_heading }}</h1>
-{{/if}}
-{{/raw}}
+{% endif %}
+{% endraw %}
 ```
 
 <p class="code-label">Output</p>
@@ -43,7 +43,7 @@ In the example below, the string "Tobi" is not a boolean, but it is truthy in a 
 
 ## Falsy
 
-The falsy values in Liquid are [`nil`]({{prepend {{"/basics/types/#nil"}} site.baseurl}}) and [`false`]({{prepend {{"/basics/types/#boolean"}} site.baseurl}}).
+The falsy values in Liquid are [`nil`]({{ "/basics/types/#nil" | prepend: site.baseurl }}) and [`false`]({{ "/basics/types/#boolean" | prepend: site.baseurl }}).
 
 ## Summary
 

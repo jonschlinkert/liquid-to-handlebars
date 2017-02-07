@@ -9,15 +9,15 @@ For this example, assume `site.pages` is an array of content pages for a website
 
 
 <p class="code-label">Input</p>
-{{#raw}}
+{% raw %}
 ```liquid
-{{map (assign "site_categories" site.pages) 'category'}}
+{% assign site_categories = site.pages | map: 'category' %}
 
-{{#each site_categories as |category|}}
+{% for category in site_categories %}
   {{ category }}
-{{/each}}
+{% endfor %}
 ```
-{{/raw}}
+{% endraw %}
 
 <p class="code-label">Output</p>
 ```text
@@ -33,15 +33,15 @@ For this example, assume `site.pages` is an array of content pages for a website
 By using `compact` when we create our `site_categories` array, we can remove all the `nil` values in the array.
 
 <p class="code-label">Input</p>
-{{#raw}}
+{% raw %}
 ```liquid
-{{compact (map (assign "site_categories" site.pages) 'category')}}
+{% assign site_categories = site.pages | map: 'category' | compact %}
 
-{{#each site_categories as |category|}}
+{% for category in site_categories %}
   {{ category }}
-{{/each}}
+{% endfor %}
 ```
-{{/raw}}
+{% endraw %}
 
 <p class="code-label">Output</p>
 ```text

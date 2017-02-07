@@ -7,12 +7,12 @@ Replaces every occurrence of an argument in a string with the second argument.
 
 <p class="code-label">Input</p>
 ```liquid
-{{#raw}}
-{{replace {{"Take my protein pills and put my helmet on"}} "my" "your"}}
-{{/raw}}
+{% raw %}
+{{ "Take my protein pills and put my helmet on" | replace: "my", "your" }}
+{% endraw %}
 ```
 
 <p class="code-label">Output</p>
 ```text
-{{replace {{"Take my protein pills and put my helmet on"}} "my" "your"}}
+{{ "Take my protein pills and put my helmet on" | replace: "my", "your" }}
 ```

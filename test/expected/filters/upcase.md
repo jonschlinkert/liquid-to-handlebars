@@ -7,24 +7,24 @@ Makes each character in a string uppercase. It has no effect on strings which ar
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
-{{ "Parker Moore" | upcase }}
-{% endraw %}
+{{#raw}}
+{{upcase "Parker Moore"}}
+{{/raw}}
 ```
 
 <p class="code-label">Output</p>
 ```text
-{{ "Parker Moore" | upcase }}
+{{upcase "Parker Moore"}}
 ```
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
-{{ "APPLE" | upcase }}
-{% endraw %}
+{{#raw}}
+{{upcase "APPLE"}}
+{{/raw}}
 ```
 
 <p class="code-label">Output</p>
 ```text
-{{ "APPLE" | upcase }}
+{{upcase "APPLE"}}
 ```

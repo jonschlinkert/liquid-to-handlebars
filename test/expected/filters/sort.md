@@ -7,16 +7,16 @@ Sorts items in an array by a property of an item in the array. The order of the 
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
-{% assign my_array = "zebra, octopus, giraffe, Sally Snake" | split: ", " %}
+{{#raw}}
+{{split (assign "my_array" "zebra, octopus, giraffe, Sally Snake") ", "}}
 
-{{ my_array | sort | join: ", " }}
-{% endraw %}
+{{join (sort my_array) ", "}}
+{{/raw}}
 ```
 
 <p class="code-label">Output</p>
 ```text
-{% assign my_array = "zebra, octopus, giraffe, Sally Snake" | split: ", " %}
+{{split (assign "my_array" "zebra, octopus, giraffe, Sally Snake") ", "}}
 
-{{ my_array | sort | join: ", " }}
+{{join (sort my_array) ", "}}
 ```

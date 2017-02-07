@@ -7,50 +7,50 @@ Rounds a number down to the nearest whole number. Liquid tries to convert the in
 
 <p class="code-label">Input</p>
 ```liquid
-{{#raw}}
-{{floor 1.2}}
-{{/raw}}
+{% raw %}
+{{ 1.2 | floor }}
+{% endraw %}
 ```
 
 <p class="code-label">Output</p>
 ```text
-{{floor 1.2}}
+{{ 1.2 | floor }}
 ```
 
 <p class="code-label">Input</p>
 ```liquid
-{{#raw}}
-{{floor 2.0}}
-{{/raw}}
+{% raw %}
+{{ 2.0 | floor }}
+{% endraw %}
 ```
 
 <p class="code-label">Output</p>
 ```text
-{{floor 2.0}}
+{{ 2.0 | floor }}
 ```
 
 <p class="code-label">Input</p>
 ```liquid
-{{#raw}}
-{{floor 183.357}}
-{{/raw}}
+{% raw %}
+{{ 183.357 | floor }}
+{% endraw %}
 ```
 
 <p class="code-label">Output</p>
 ```text
-{{floor 183.357}}
+{{ 183.357 | floor }}
 ```
 
 Here the input value is a string:
 
 <p class="code-label">Input</p>
 ```liquid
-{{#raw}}
-{{floor "3.5"}}
-{{/raw}}
+{% raw %}
+{{ "3.5" | floor }}
+{% endraw %}
 ```
 
 <p class="code-label">Output</p>
 ```text
-{{floor "3.5"}}
+{{ "3.5" | floor }}
 ```

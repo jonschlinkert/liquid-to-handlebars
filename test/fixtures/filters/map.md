@@ -9,13 +9,13 @@ In this example, assume the object `site.pages` contains all the metadata for a 
 
 <p class="code-label">Input</p>
 ```liquid
-{{#raw}}
-{{map (assign "all_categories" site.pages) "category"}}
+{% raw %}
+{% assign all_categories = site.pages | map: "category" %}
 
-{{#each all_categories as |item|}}
+{% for item in all_categories %}
 {{ item }}
-{{/each}}
-{{/raw}}
+{% endfor %}
+{% endraw %}
 ```
 
 <p class="code-label">Output</p>

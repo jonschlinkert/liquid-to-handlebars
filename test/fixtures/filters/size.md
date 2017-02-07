@@ -3,42 +3,42 @@ title: size
 description: Liquid filter that returns the number of characters in a string or the number of items in an array.
 ---
 
-Returns the number of characters in a string or the number of items in an array. `size` can also be used with dot notation (for example, `{{#raw}}{{ my_string.size }}{{/raw}}`). This allows you to use `size` inside  tags such as conditionals.
+Returns the number of characters in a string or the number of items in an array. `size` can also be used with dot notation (for example, `{% raw %}{{ my_string.size }}{% endraw %}`). This allows you to use `size` inside  tags such as conditionals.
 
 <p class="code-label">Input</p>
 ```liquid
-{{#raw}}
-{{size "Ground control to Major Tom."}}
-{{/raw}}
+{% raw %}
+{{ "Ground control to Major Tom." | size }}
+{% endraw %}
 ```
 
 <p class="code-label">Output</p>
 ```text
-{{size "Ground control to Major Tom."}}
+{{ "Ground control to Major Tom." | size }}
 ```
 
 <p class="code-label">Input</p>
 ```liquid
-{{#raw}}
-{{split (assign "my_array" "apples, oranges, peaches, plums") ", "}}
+{% raw %}
+{% assign my_array = "apples, oranges, peaches, plums" | split: ", " %}
 
-{{size my_array}}
-{{/raw}}
+{{ my_array | size }}
+{% endraw %}
 ```
 
 <p class="code-label">Output</p>
 ```text
-{{split (assign "my_array" "apples, oranges, peaches, plums") ", "}}
+{% assign my_array = "apples, oranges, peaches, plums" | split: ", " %}
 
-{{size my_array}}
+{{ my_array | size }}
 ```
 
 Using dot notation:
 
 ```liquid
-{{#raw}}
-{{#if (gt site.pages.size 10)}}
+{% raw %}
+{% if site.pages.size > 10 %}
   This is a big website!
-{{/if}}
-{{/raw}}
+{% endif %}
+{% endraw %}
 ```

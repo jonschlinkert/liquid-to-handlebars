@@ -7,9 +7,9 @@ Returns the absolute value of a number.
 
 <p class="code-label">Input</p>
 ```liquid
-{{#raw}}
-{{abs -17}}
-{{/raw}}
+{% raw %}
+{{ -17 | abs }}
+{% endraw %}
 ```
 
 <p class="code-label">Output</p>
@@ -19,9 +19,9 @@ Returns the absolute value of a number.
 
 <p class="code-label">Input</p>
 ```liquid
-{{#raw}}
-{{abs 4}}
-{{/raw}}
+{% raw %}
+{{ 4 | abs }}
+{% endraw %}
 ```
 
 <p class="code-label">Output</p>
@@ -33,9 +33,9 @@ Returns the absolute value of a number.
 
 <p class="code-label">Input</p>
 ```liquid
-{{#raw}}
-{{abs "-19.86"}}
-{{/raw}}
+{% raw %}
+{{ "-19.86" | abs }}
+{% endraw %}
 ```
 
 <p class="code-label">Output</p>

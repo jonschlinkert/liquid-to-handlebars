@@ -7,16 +7,16 @@ Combines the items in an array into a single string using the argument as a sepa
 
 <p class="code-label">Input</p>
 ```liquid
-{{#raw}}
-{{split (assign "beatles" "John, Paul, George, Ringo") ", "}}
+{% raw %}
+{% assign beatles = "John, Paul, George, Ringo" | split: ", " %}
 
-{{join {{beatles}} " and "}}
-{{/raw}}
+{{ beatles | join: " and " }}
+{% endraw %}
 ```
 
 <p class="code-label">Output</p>
 ```text
-{{split (assign "beatles" "John, Paul, George, Ringo") ", "}}
+{% assign beatles = "John, Paul, George, Ringo" | split: ", " %}
 
-{{join {{beatles}} " and "}}
+{{ beatles | join: " and " }}
 ```

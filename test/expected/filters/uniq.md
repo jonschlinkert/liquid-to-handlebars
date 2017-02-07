@@ -7,16 +7,16 @@ Removes any duplicate elements in an array.
 
 <p class="code-label">Input</p>
 ```liquid
-{% raw %}
-{% assign my_array = "ants, bugs, bees, bugs, ants" | split: ", " %}
+{{#raw}}
+{{split (assign "my_array" "ants, bugs, bees, bugs, ants") ", "}}
 
-{{ my_array | uniq | join: ", " }}
-{% endraw %}
+{{join (uniq my_array) ", "}}
+{{/raw}}
 ```
 
 <p class="code-label">Output</p>
 ```text
-{% assign my_array = "ants, bugs, bees, bugs, ants" | split: ", " %}
+{{split (assign "my_array" "ants, bugs, bees, bugs, ants") ", "}}
 
-{{ my_array | uniq | join: ", " }}
+{{join (uniq my_array) ", "}}
 ```

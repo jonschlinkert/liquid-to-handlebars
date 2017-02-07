@@ -7,30 +7,30 @@ Reverses the order of the items in an array. `reverse` cannot reverse a string.
 
 <p class="code-label">Input</p>
 ```liquid
-{{#raw}}
-{{split (assign "my_array" "apples, oranges, peaches, plums") ", "}}
+{% raw %}
+{% assign my_array = "apples, oranges, peaches, plums" | split: ", " %}
 
-{{join (reverse {{my_array}}) ", "}}
-{{/raw}}
+{{ my_array | reverse | join: ", " }}
+{% endraw %}
 ```
 
 <p class="code-label">Output</p>
 ```text
-{{split (assign "my_array" "apples, oranges, peaches, plums") ", "}}
+{% assign my_array = "apples, oranges, peaches, plums" | split: ", " %}
 
-{{join (reverse {{my_array}}) ", "}}
+{{ my_array | reverse | join: ", " }}
 ```
 
 `reverse` cannot be used directly on a string, but you can split a string into an array, reverse the array, and rejoin it by chaining together filters:
 
 <p class="code-label">Input</p>
 ```liquid
-{{#raw}}
-{{join (reverse (split {{"Ground control to Major Tom."}} "")) ""}}
-{{/raw}}
+{% raw %}
+{{ "Ground control to Major Tom." | split: "" | reverse | join: "" }}
+{% endraw %}
 ```
 
 <p class="code-label">Output</p>
 ```text
-{{join (reverse (split {{"Ground control to Major Tom."}} "")) ""}}
+{{ "Ground control to Major Tom." | split: "" | reverse | join: "" }}
 ```

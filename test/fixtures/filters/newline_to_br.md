@@ -7,22 +7,22 @@ Replaces every newline (`\n`) with an HTML line break (`<br>`).
 
 <p class="code-label">Input</p>
 ```liquid
-{{#raw}}
-{{#capture "string_with_newlines"}}
+{% raw %}
+{% capture string_with_newlines %}
 Hello
 there
-{{/capture}}
+{% endcapture %}
 
-{{newline_to_br string_with_newlines}}
-{{/raw}}
+{{ string_with_newlines | newline_to_br }}
+{% endraw %}
 ```
 
 <p class="code-label">Output</p>
 ```html
-{{#capture "string_with_newlines"}}
+{% capture string_with_newlines %}
 Hello
 there
-{{/capture}}
+{% endcapture %}
 
-{{newline_to_br string_with_newlines}}
+{{ string_with_newlines | newline_to_br }}
 ```

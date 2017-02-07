@@ -7,12 +7,12 @@ Removes only the first occurrence of the specified substring from a string.
 
 <p class="code-label">Input</p>
 ```liquid
-{{#raw}}
-{{remove_first {{"I strained to see the train through the rain"}} "rain"}}
-{{/raw}}
+{% raw %}
+{{ "I strained to see the train through the rain" | remove_first: "rain" }}
+{% endraw %}
 ```
 
 <p class="code-label">Output</p>
 ```text
-{{remove_first {{"I strained to see the train through the rain"}} "rain"}}
+{{ "I strained to see the train through the rain" | remove_first: "rain" }}
 ```

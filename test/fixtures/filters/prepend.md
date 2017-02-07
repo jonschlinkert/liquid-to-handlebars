@@ -7,30 +7,30 @@ Adds the specified string to the beginning of another string.
 
 <p class="code-label">Input</p>
 ```liquid
-{{#raw}}
-{{prepend {{"apples, oranges, and bananas"}} "Some fruit: "}}
-{{/raw}}
+{% raw %}
+{{ "apples, oranges, and bananas" | prepend: "Some fruit: " }}
+{% endraw %}
 ```
 
 <p class="code-label">Output</p>
 ```text
-{{prepend {{"apples, oranges, and bananas"}} "Some fruit: "}}
+{{ "apples, oranges, and bananas" | prepend: "Some fruit: " }}
 ```
 
 You can also `prepend` variables:
 
 <p class="code-label">Input</p>
 ```liquid
-{{#raw}}
-{{assign "url" "liquidmarkup.com"}}
+{% raw %}
+{% assign url = "liquidmarkup.com" %}
 
-{{prepend {{"/index.html"}} url}}
-{{/raw}}
+{{ "/index.html" | prepend: url }}
+{% endraw %}
 ```
 
 <p class="code-label">Output</p>
 ```text
-{{assign "url" "liquidmarkup.com"}}
+{% assign url = "liquidmarkup.com" %}
 
-{{prepend {{"/index.html"}} url}}
+{{ "/index.html" | prepend: url }}
 ```

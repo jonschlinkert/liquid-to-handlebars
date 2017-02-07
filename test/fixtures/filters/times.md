@@ -7,36 +7,36 @@ Multiplies a number by another number.
 
 <p class="code-label">Input</p>
 ```liquid
-{{#raw}}
-{{times {{3}} 2}}
-{{/raw}}
+{% raw %}
+{{ 3 | times: 2 }}
+{% endraw %}
 ```
 
 <p class="code-label">Output</p>
 ```text
-{{times {{3}} 2}}
+{{ 3 | times: 2 }}
 ```
 
 <p class="code-label">Input</p>
 ```liquid
-{{#raw}}
-{{times {{24}} 7}}
-{{/raw}}
+{% raw %}
+{{ 24 | times: 7 }}
+{% endraw %}
 ```
 
 <p class="code-label">Output</p>
 ```text
-{{times {{24}} 7}}
+{{ 24 | times: 7 }}
 ```
 
 <p class="code-label">Input</p>
 ```liquid
-{{#raw}}
-{{times {{183.357}} 12}}
-{{/raw}}
+{% raw %}
+{{ 183.357 | times: 12 }}
+{% endraw %}
 ```
 
 <p class="code-label">Output</p>
 ```text
-{{times {{183.357}} 12}}
+{{ 183.357 | times: 12 }}
 ```

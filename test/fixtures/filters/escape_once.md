@@ -7,24 +7,24 @@ Escapes a string without changing existing escaped entities. It doesn't change s
 
 <p class="code-label">Input</p>
 ```liquid
-{{#raw}}
-{{escape_once "1 < 2 & 3"}}
-{{/raw}}
+{% raw %}
+{{ "1 < 2 & 3" | escape_once }}
+{% endraw %}
 ```
 
 <p class="code-label">Output</p>
 ```text
-{{escape_once "1 < 2 & 3"}}
+{{ "1 < 2 & 3" | escape_once }}
 ```
 
 <p class="code-label">Input</p>
 ```liquid
-{{#raw}}
-{{escape_once "1 &lt; 2 &amp; 3"}}
-{{/raw}}
+{% raw %}
+{{ "1 &lt; 2 &amp; 3" | escape_once }}
+{% endraw %}
 ```
 
 <p class="code-label">Output</p>
 ```text
-{{escape_once "1 &lt; 2 &amp; 3"}}
+{{ "1 &lt; 2 &amp; 3" | escape_once }}
 ```

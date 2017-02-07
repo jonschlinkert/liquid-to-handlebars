@@ -7,24 +7,24 @@ Converts any URL-unsafe characters in a string into percent-encoded characters.
 
 <p class="code-label">Input</p>
 ```liquid
-{{#raw}}
-{{url_encode "john@liquid.com"}}
-{{/raw}}
+{% raw %}
+{{ "john@liquid.com" | url_encode }}
+{% endraw %}
 ```
 
 <p class="code-label">Output</p>
 ```text
-{{url_encode "john@liquid.com"}}
+{{ "john@liquid.com" | url_encode }}
 ```
 
 <p class="code-label">Input</p>
 ```liquid
-{{#raw}}
-{{url_encode "Tetsuro Takara"}}
-{{/raw}}
+{% raw %}
+{{ "Tetsuro Takara" | url_encode }}
+{% endraw %}
 ```
 
 <p class="code-label">Output</p>
 ```text
-{{url_encode "Tetsuro Takara"}}
+{{ "Tetsuro Takara" | url_encode }}
 ```

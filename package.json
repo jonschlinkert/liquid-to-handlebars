@@ -34,9 +34,7 @@
     "gulp": "^3.9.1",
     "gulp-extname": "^0.2.2",
     "gulp-format-md": "^0.1.11",
-    "handlebars": "^4.0.6",
-    "mocha": "^3.2.0",
-    "vinyl-fs": "^2.4.4"
+    "mocha": "^3.2.0"
   },
   "keywords": [
     "assemble",

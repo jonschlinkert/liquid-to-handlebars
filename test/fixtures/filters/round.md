@@ -7,36 +7,36 @@ Rounds an input number to the nearest integer or, if a number is specified as an
 
 <p class="code-label">Input</p>
 ```liquid
-{{#raw}}
-{{round 1.2}}
-{{/raw}}
+{% raw %}
+{{ 1.2 | round }}
+{% endraw %}
 ```
 
 <p class="code-label">Output</p>
 ```text
-{{round 1.2}}
+{{ 1.2 | round }}
 ```
 
 <p class="code-label">Input</p>
 ```liquid
-{{#raw}}
-{{round 2.7}}
-{{/raw}}
+{% raw %}
+{{ 2.7 | round }}
+{% endraw %}
 ```
 
 <p class="code-label">Output</p>
 ```text
-{{round 2.7}}
+{{ 2.7 | round }}
 ```
 
 <p class="code-label">Input</p>
 ```liquid
-{{#raw}}
-{{round {{183.357}} 2}}
-{{/raw}}
+{% raw %}
+{{ 183.357 | round: 2 }}
+{% endraw %}
 ```
 
 <p class="code-label">Output</p>
 ```text
-{{round {{183.357}} 2}}
+{{ 183.357 | round: 2 }}
 ```

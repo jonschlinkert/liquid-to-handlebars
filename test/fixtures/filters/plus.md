@@ -7,36 +7,36 @@ Adds a number to another number.
 
 <p class="code-label">Input</p>
 ```liquid
-{{#raw}}
-{{plus {{4}} 2}}
-{{/raw}}
+{% raw %}
+{{ 4 | plus: 2 }}
+{% endraw %}
 ```
 
 <p class="code-label">Output</p>
 ```text
-{{plus {{4}} 2}}
+{{ 4 | plus: 2 }}
 ```
 
 <p class="code-label">Input</p>
 ```liquid
-{{#raw}}
-{{plus {{16}} 4}}
-{{/raw}}
+{% raw %}
+{{ 16 | plus: 4 }}
+{% endraw %}
 ```
 
 <p class="code-label">Output</p>
 ```text
-{{plus {{16}} 4}}
+{{ 16 | plus: 4 }}
 ```
 
 <p class="code-label">Input</p>
 ```liquid
-{{#raw}}
-{{plus {{183.357}} 12}}
-{{/raw}}
+{% raw %}
+{{ 183.357 | plus: 12 }}
+{% endraw %}
 ```
 
 <p class="code-label">Output</p>
 ```text
-{{plus {{183.357}} 12}}
+{{ 183.357 | plus: 12 }}
 ```

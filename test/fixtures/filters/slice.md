@@ -9,50 +9,50 @@ String indices are numbered starting from 0.
 
 <p class="code-label">Input</p>
 ```liquid
-{{#raw}}
-{{slice {{"Liquid"}} 0}}
-{{/raw}}
+{% raw %}
+{{ "Liquid" | slice: 0 }}
+{% endraw %}
 ```
 
 <p class="code-label">Output</p>
 ```text
-{{slice {{"Liquid"}} 0}}
+{{ "Liquid" | slice: 0 }}
 ```
 
 <p class="code-label">Input</p>
 ```liquid
-{{#raw}}
-{{slice {{"Liquid"}} 2}}
-{{/raw}}
+{% raw %}
+{{ "Liquid" | slice: 2 }}
+{% endraw %}
 ```
 
 <p class="code-label">Output</p>
 ```text
-{{slice {{"Liquid"}} 2}}
+{{ "Liquid" | slice: 2 }}
 ```
 
 <p class="code-label">Input</p>
 ```liquid
-{{#raw}}
-{{slice {{"Liquid"}} 2 5}}
-{{/raw}}
+{% raw %}
+{{ "Liquid" | slice: 2, 5 }}
+{% endraw %}
 ```
 
 <p class="code-label">Output</p>
 ```text
-{{slice {{"Liquid"}} 2 5}}
+{{ "Liquid" | slice: 2, 5 }}
 ```
 
 If the first parameter is a negative number, the indices are counted from the end of the string:
 
 <p class="code-label">Input</p>
 ```liquid
-{{#raw}}
-{{slice {{"Liquid"}} -3 2}}
-{{/raw}}
+{% raw %}
+{{ "Liquid" | slice: -3, 2 }}
+{% endraw %}
 ```
 
 <p class="code-label">Output</p>
 ```text
-{{slice {{"Liquid"}} -3 2}}
+{{ "Liquid" | slice: -3, 2 }}
 ```

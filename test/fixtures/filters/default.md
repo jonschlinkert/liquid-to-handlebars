@@ -9,9 +9,9 @@ In this example, `product_price` is not defined, so the default value is used.
 
 <p class="code-label">Input</p>
 ```liquid
-{{#raw}}
-{{default {{product_price}} 2.99}}
-{{/raw}}
+{% raw %}
+{{ product_price | default: 2.99 }}
+{% endraw %}
 ```
 
 <p class="code-label">Output</p>
@@ -23,10 +23,10 @@ In this example, `product_price` is defined, so the default value is not used.
 
 <p class="code-label">Input</p>
 ```liquid
-{{#raw}}
-{{assign "product_price" 4.99}}
-{{default {{product_price}} 2.99}}
-{{/raw}}
+{% raw %}
+{% assign product_price = 4.99 %}
+{{ product_price | default: 2.99 }}
+{% endraw %}
 ```
 
 <p class="code-label">Output</p>
@@ -38,10 +38,10 @@ In this example, `product_price` is empty, so the default value is used.
 
 <p class="code-label">Input</p>
 ```liquid
-{{#raw}}
-{{assign "product_price" ""}}
-{{default {{product_price}} 2.99}}
-{{/raw}}
+{% raw %}
+{% assign product_price = "" %}
+{{ product_price | default: 2.99 }}
+{% endraw %}
 ```
 
 <p class="code-label">Output</p>

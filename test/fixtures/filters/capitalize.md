@@ -7,9 +7,9 @@ Makes the first character of a string capitalized.
 
 <p class="code-label">Input</p>
 ```liquid
-{{#raw}}
-{{capitalize "title"}}
-{{/raw}}
+{% raw %}
+{{ "title" | capitalize }}
+{% endraw %}
 ```
 
 <p class="code-label">Output</p>
@@ -21,9 +21,9 @@ Title
 
  <p class="code-label">Input</p>
 ```liquid
-{{#raw}}
-{{capitalize "my great title"}}
-{{/raw}}
+{% raw %}
+{{ "my great title" | capitalize }}
+{% endraw %}
 ```
 
 <p class="code-label">Output</p>

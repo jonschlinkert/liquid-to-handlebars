@@ -7,32 +7,32 @@ Returns the first item of an array.
 
 <p class="code-label">Input</p>
 ```liquid
-{{#raw}}
-{{split (assign "my_array" "apples, oranges, peaches, plums") ", "}}
+{% raw %}
+{% assign my_array = "apples, oranges, peaches, plums" | split: ", " %}
 
 {{ my_array.first }}
-{{/raw}}
+{% endraw %}
 ```
 
 <p class="code-label">Output</p>
 ```text
-{{split (assign "my_array" "apples, oranges, peaches, plums") ", "}}
+{% assign my_array = "apples, oranges, peaches, plums" | split: ", " %}
 
 {{ my_array.first }}
 ```
 
 <p class="code-label">Input</p>
 ```liquid
-{{#raw}}
-{{split (assign "my_array" "zebra, octopus, giraffe, tiger") ", "}}
+{% raw %}
+{% assign my_array = "zebra, octopus, giraffe, tiger" | split: ", " %}
 
 {{ my_array.first }}
-{{/raw}}
+{% endraw %}
 ```
 
 <p class="code-label">Output</p>
 ```text
-{{split (assign "my_array" "zebra, octopus, giraffe, tiger") ", "}}
+{% assign my_array = "zebra, octopus, giraffe, tiger" | split: ", " %}
 
 {{ my_array.first }}
 ```

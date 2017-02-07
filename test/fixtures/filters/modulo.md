@@ -7,36 +7,36 @@ Returns the remainder of a division operation.
 
 <p class="code-label">Input</p>
 ```liquid
-{{#raw}}
-{{modulo {{3}} 2}}
-{{/raw}}
+{% raw %}
+{{ 3 | modulo: 2 }}
+{% endraw %}
 ```
 
 <p class="code-label">Output</p>
 ```text
-{{modulo {{3}} 2}}
+{{ 3 | modulo: 2 }}
 ```
 
 <p class="code-label">Input</p>
 ```liquid
-{{#raw}}
-{{modulo {{24}} 7}}
-{{/raw}}
+{% raw %}
+{{ 24 | modulo: 7 }}
+{% endraw %}
 ```
 
 <p class="code-label">Output</p>
 ```text
-{{modulo {{24}} 7}}
+{{ 24 | modulo: 7 }}
 ```
 
 <p class="code-label">Input</p>
 ```liquid
-{{#raw}}
-{{modulo {{183.357}} 12}}
-{{/raw}}
+{% raw %}
+{{ 183.357 | modulo: 12 }}
+{% endraw %}
 ```
 
 <p class="code-label">Output</p>
 ```text
-{{modulo {{183.357}} 12}}
+{{ 183.357 | modulo: 12 }}
 ```

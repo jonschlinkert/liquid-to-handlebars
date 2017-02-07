@@ -47,21 +47,21 @@ Liquid includes many logical and comparison operators.
 For example:
 
 ```liquid
-{{#raw}}
-{{#if (is product.title "Awesome Shoes")}}
+{% raw %}
+{% if product.title == "Awesome Shoes" %}
   These shoes are awesome!
-{{/if}}
-{{/raw}}
+{% endif %}
+{% endraw %}
 ```
 
 You can use multiple operators in a tag:
 
 ```liquid
-{{#raw}}
-{{#if (or (is product.type "Shirt") (is product.type "Shoes"))}}
+{% raw %}
+{% if product.type == "Shirt" or product.type == "Shoes" %}
   This is a shirt or a pair of shoes.
-{{/if}}
-{{/raw}}
+{% endif %}
+{% endraw %}
 ```
 
 ## contains
@@ -69,21 +69,21 @@ You can use multiple operators in a tag:
 `contains` checks for the presence of a substring inside a string.
 
 ```liquid
-{{#raw}}
-{{#if (contains product.title "Pack")}}
+{% raw %}
+{% if product.title contains 'Pack' %}
   This product's title contains the word Pack.
-{{/if}}
-{{/raw}}
+{% endif %}
+{% endraw %}
 ```
 
 `contains` can also check for the presence of a string in an array of strings.
 
 ```liquid
-{{#raw}}
-{{#if (contains product.tags "Hello")}}
+{% raw %}
+{% if product.tags contains 'Hello' %}
   This product has been tagged with 'Hello'.
-{{/if}}
-{{/raw}}
+{% endif %}
+{% endraw %}
 ```
 
 `contains` can only search strings. You cannot use it to check for an object in an array of objects.

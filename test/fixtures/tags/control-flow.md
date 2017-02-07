@@ -11,11 +11,11 @@ Executes a block of code only if a certain condition is `true`.
 
 <p class="code-label">Input</p>
 ```liquid
-{{#raw}}
-{{#if (is product.title "Awesome Shoes")}}
+{% raw %}
+{% if product.title == 'Awesome Shoes' %}
   These shoes are awesome!
-{{/if}}
-{{/raw}}
+{% endif %}
+{% endraw %}
 ```
 
 <p class="code-label">Output</p>
@@ -29,11 +29,11 @@ The opposite of `if` – executes a block of code only if a certain condition is
 
 <p class="code-label">Input</p>
 ```liquid
-{{#raw}}
-{{#unless (is product.title "Awesome Shoes")}}
+{% raw %}
+{% unless product.title == 'Awesome Shoes' %}
   These shoes are not awesome.
-{{/unless}}
-{{/raw}}
+{% endunless %}
+{% endraw %}
 ```
 
 <p class="code-label">Output</p>
@@ -44,11 +44,11 @@ These shoes are not awesome.
 This would be the equivalent of doing the following:
 
 ```liquid
-{{#raw}}
-{{#if (isnt product.title "Awesome Shoes")}}
+{% raw %}
+{% if product.title != 'Awesome Shoes' %}
   These shoes are not awesome.
-{{/if}}
-{{/raw}}
+{% endif %}
+{% endraw %}
 ```
 
 ## elsif / else
@@ -57,16 +57,16 @@ Adds more conditions within an `if` or `unless` block.
 
 <p class="code-label">Input</p>
 ```liquid
-{{#raw}}
+{% raw %}
 <!-- If customer.name = 'anonymous' -->
-{{#if (is customer.name "kevin")}}
+{% if customer.name == 'kevin' %}
   Hey Kevin!
-{{else if (is customer.name "anonymous")}}
+{% elsif customer.name == 'anonymous' %}
   Hey Anonymous!
-{{else}}
+{% else %}
   Hi Stranger!
-{{/if}}
-{{/raw}}
+{% endif %}
+{% endraw %}
 ```
 
 <p class="code-label">Output</p>
@@ -80,17 +80,17 @@ Creates a switch statement to compare a variable with different values. `case` i
 
 <p class="code-label">Input</p>
 ```liquid
-{{#raw}}
-{{assign "handle" "cake"}}
-{{#case handle}}
-  {{when "cake"}}
+{% raw %}
+{% assign handle = 'cake' %}
+{% case handle %}
+  {% when 'cake' %}
      This is a cake
-  {{when "cookie"}}
+  {% when 'cookie' %}
      This is a cookie
-  {{else}}
+  {% else %}
      This is not a cake nor a cookie
-{{/case}}
-{{/raw}}
+{% endcase %}
+{% endraw %}
 ```
 
 <p class="code-label">Output</p>

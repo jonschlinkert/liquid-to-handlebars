@@ -7,28 +7,28 @@ Concatenates two strings and returns the concatenated value.
 
 <p class="code-label">Input</p>
 ```liquid
-{{#raw}}
-{{append {{"/my/fancy/url"}} ".html"}}
-{{/raw}}
+{% raw %}
+{{ "/my/fancy/url" | append: ".html" }}
+{% endraw %}
 ```
 
 <p class="code-label">Output</p>
 ```text
-{{append {{"/my/fancy/url"}} ".html"}}
+{{ "/my/fancy/url" | append: ".html" }}
 ```
 
 `append` can also be used with variables:
 
 <p class="code-label">Input</p>
 ```liquid
-{{#raw}}
-{{assign "filename" "/index.html"}}
-{{append {{"website.com"}} filename}}
-{{/raw}}
+{% raw %}
+{% assign filename = "/index.html" %}
+{{ "website.com" | append: filename }}
+{% endraw %}
 ```
 
 <p class="code-label">Output</p>
 ```text
-{{assign "filename" "/index.html"}}
-{{append {{"website.com"}} filename}}
+{% assign filename = "/index.html" %}
+{{ "website.com" | append: filename }}
 ```
