@@ -11,7 +11,7 @@ Liquid objects can have one of six types:
 - [Nil](#nil)
 - [Array](#array)
 
-You can initialize Liquid variables with the [assign]({{prepend {{"/tags/variable/#assign"}} site.baseurl}}) or [capture]({{prepend {{"/tags/variable/#capture"}} site.baseurl}}) tags.
+You can initialize Liquid variables with the [assign]({{prepend "/tags/variable/#assign" site.baseurl}}) or [capture]({{prepend "/tags/variable/#capture" site.baseurl}}) tags.
 
 ## String
 
@@ -49,7 +49,7 @@ Booleans are either `true` or `false`. No quotations are necessary when declarin
 
 Nil is a special empty value that is returned when Liquid code has no results. It is **not** a string with the characters "nil".
 
-Nil is [treated as false]({{prepend {{"/basics/truthy-and-falsy"}} site.baseurl}}) in the conditions of `if` blocks and other Liquid tags that check the truthfulness of a statement.
+Nil is [treated as false]({{prepend "/basics/truthy-and-falsy" site.baseurl}}) in the conditions of `if` blocks and other Liquid tags that check the truthfulness of a statement.
 
 In the following example, if the user does not exist (that is, `user` returns `nil`), Liquid will not print the greeting:
 
@@ -81,7 +81,7 @@ Arrays hold lists of variables of any type.
 
 ### Accessing items in arrays
 
-To access all the items in an array, you can loop through each item in the array using an [iteration tag]({{prepend {{"/tags/iteration"}} site.baseurl}}).
+To access all the items in an array, you can loop through each item in the array using an [iteration tag]({{prepend "/tags/iteration" site.baseurl}}).
 
 <p class="code-label">Input</p>
 ```liquid
@@ -125,4 +125,4 @@ Adam
 
 You cannot initialize arrays using only Liquid.
 
-You can, however, use the [split]({{prepend {{"/filters/split"}} site.baseurl}}) filter to break a string into an array of substrings.
+You can, however, use the [split]({{prepend "/filters/split" site.baseurl}}) filter to break a string into an array of substrings.

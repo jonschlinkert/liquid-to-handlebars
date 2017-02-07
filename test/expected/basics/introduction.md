@@ -46,9 +46,9 @@ Hello Adam!
 
 Tags can be categorized into three types:
 
-- [Control flow]({{prepend {{"/tags/control-flow"}} site.baseurl}})
-- [Iteration]({{prepend {{"/tags/iteration"}} site.baseurl}})
-- [Variable assignments]({{prepend {{"/tags/variable"}} site.baseurl}})
+- [Control flow]({{prepend "/tags/control-flow" site.baseurl}})
+- [Iteration]({{prepend "/tags/iteration" site.baseurl}})
+- [Variable assignments]({{prepend "/tags/variable" site.baseurl}})
 
 You can read more about each type of tag in their respective sections.
 
@@ -60,11 +60,11 @@ You can read more about each type of tag in their respective sections.
 <p class="code-label">Input</p>
 ```liquid
 {{#raw}}
-{{append {{"/my/fancy/url"}} ".html"}}
+{{append "/my/fancy/url" ".html"}}
 {{/raw}}
 ```
 
 <p class="code-label">Output</p>
 ```text
-{{append {{"/my/fancy/url"}} ".html"}}
+{{append "/my/fancy/url" ".html"}}
 ```
