@@ -25,23 +25,23 @@
     "extend-shallow": "^2.0.1",
     "get-value": "^2.0.6",
     "is-number": "^3.0.0",
-    "moment-strftime": "^0.2.0",
+    "moment-strftime": "^0.2.1",
     "regex-not": "^1.0.0",
-    "snapdragon": "^0.10.0",
-    "split-string": "^1.0.0",
-    "strip-bom-string": "^0.1.2",
-    "to-double-quotes": "^2.0.0"
+    "snapdragon": "^0.11.0",
+    "split-string": "^2.1.1",
+    "strip-bom-string": "^1.0.0",
+    "to-double-quotes": "^3.0.0"
   },
   "devDependencies": {
-    "delete": "^0.3.2",
+    "delete": "^1.0.1",
     "extract-gfm": "^0.1.0",
     "gh-clone": "^0.5.0",
     "gulp": "^3.9.1",
-    "gulp-format-md": "^0.1.11",
-    "handlebars": "^4.0.6",
-    "mocha": "^3.2.0",
+    "gulp-format-md": "^0.1.12",
+    "handlebars": "^4.0.10",
+    "mocha": "^3.4.2",
     "through2": "^2.0.3",
-    "yargs-parser": "^4.2.1"
+    "yargs-parser": "^7.0.0"
   },
   "keywords": [
     "assemble",
