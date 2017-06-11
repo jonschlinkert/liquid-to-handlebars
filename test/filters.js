@@ -14,7 +14,7 @@ describe('filters', function() {
       var expected = fs.readFileSync(cwd('expected/filters', name), 'utf8');
       var fixture = fs.readFileSync(path.join(fixtures, name), 'utf8');
       var actual = convert(fixture);
-      assert.equal(actual, expected);
+      assert.equal(actual, expected, name);
     });
   });
 });

@@ -23,9 +23,6 @@
   "dependencies": {
     "export-files": "^2.1.1",
     "extend-shallow": "^2.0.1",
-    "get-value": "^2.0.6",
-    "is-number": "^3.0.0",
-    "moment-strftime": "^0.2.1",
     "regex-not": "^1.0.0",
     "snapdragon": "^0.11.0",
     "split-string": "^2.1.1",
@@ -34,14 +31,11 @@
   },
   "devDependencies": {
     "delete": "^1.0.1",
-    "extract-gfm": "^0.1.0",
     "gh-clone": "^0.5.0",
     "gulp": "^3.9.1",
     "gulp-format-md": "^0.1.12",
-    "handlebars": "^4.0.10",
     "mocha": "^3.4.2",
-    "through2": "^2.0.3",
-    "yargs-parser": "^7.0.0"
+    "through2": "^2.0.3"
   },
   "keywords": [
     "assemble",

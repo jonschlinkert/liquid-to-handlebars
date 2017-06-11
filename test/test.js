@@ -21,7 +21,10 @@ describe('tags', function() {
   });
 
   it('should convert random unknown blocks', function() {
-    convert('{% foo %} bar {% endfoo %}')
     assert.equal(convert('{% foo %} bar {% endfoo %}'), '{{#foo}} bar {{/foo}}');
+  });
+
+  it('should convert complex filters', function() {
+    assert.equal(convert('{{ paginator.next_page_path | prepend: site.baseurl | replace: \'//\', \'/\' }}'), '{{replace (prepend paginator.next_page_path site.baseurl) \'//\' \'/\'}}');
   });
 });

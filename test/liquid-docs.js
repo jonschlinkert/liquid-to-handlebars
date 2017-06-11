@@ -20,12 +20,25 @@ describe('all tags in the liquid docs', function() {
   describe('basics', function() {
     var fixtures = cwd('fixtures/basics');
     fs.readdirSync(fixtures).forEach(function(name) {
+      if (/prefixed/.test(name)) return;
       it(`should convert ${name} basics`, function() {
         var expected = fs.readFileSync(cwd('expected/basics', name), 'utf8');
         var fixture = fs.readFileSync(path.join(fixtures, name), 'utf8');
         var actual = convert(fixture);
         assert.equal(actual, expected);
       });
+    });
+  });
+
+  describe('basics with prefix', function() {
+    it(`should prefix variables with options.prefix`, function() {
+      var name = 'types-prefixed.md';
+      var fixtures = cwd('fixtures/basics');
+      var fixture = path.join(fixtures, name);
+      var expected = fs.readFileSync(cwd('expected/basics', name), 'utf8');
+      var fixture = fs.readFileSync(fixture, 'utf8');
+      var actual = convert(fixture, {prefix: '@'});
+      assert.equal(actual, expected);
     });
   });
 
@@ -48,6 +61,9 @@ describe('all tags in the liquid docs', function() {
         var expected = fs.readFileSync(cwd('expected/_includes', name), 'utf8');
         var fixture = fs.readFileSync(path.join(fixtures, name), 'utf8');
         var actual = convert(fixture);
+        if (expected !== actual) {
+          console.log(actual)
+        }
         assert.equal(actual, expected);
       });
     });

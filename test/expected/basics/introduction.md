@@ -13,7 +13,7 @@ Liquid code can be categorized into [**objects**](#objects), [**tags**](#tags), 
 <p class="code-label">Input</p>
 ```liquid
 {{#raw}}
-{{ page.title }}
+{{{ page.title }}}
 {{/raw}}
 ```
 
