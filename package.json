@@ -21,6 +21,7 @@
     "test": "mocha"
   },
   "dependencies": {
+    "arr-swap": "^1.0.1",
     "export-files": "^2.1.1",
     "extend-shallow": "^2.0.1",
     "regex-not": "^1.0.0",

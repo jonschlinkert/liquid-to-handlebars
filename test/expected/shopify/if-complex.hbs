@@ -1,0 +1,3 @@
+{{#if (and (isnt collection-listing "") (is (get linklists "collection-listing" prop="handle") collection-listing) (gt linklists "collection-listing" prop=links.size 0))}}
+  {{assign "using_link_list" true}}
+{{/if}}

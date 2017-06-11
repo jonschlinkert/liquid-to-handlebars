@@ -1,0 +1,72 @@
+{{#comment}}
+The search.liquid template is not a required template.
+That search.liquid template is included in the current theme to make it easier for you
+to customize your /search page.
+Whether you are using your own template for the search page or not,
+the {{ content_for_header }} tag in theme.liquid will always output the following on the /search page:
+<link rel="stylesheet" href="//cdn.shopify.com/s/global/search.css" type="text/css" />
+So the /search page is always styled by a globally-hosted stylesheet called search.css.
+You may override and complement that CSS in your theme's stylesheet.
+We are using a div#searchresults below so that the styles defined in search.css get
+applied to the elements on this page; the 'searchresults' id is used in the CSS
+selectors inside search.css.
+{{/comment}}
+
+<div id="searchresults">
+
+  <div class="centered">
+    <form action="/search" method="get" class="search-form" role="search">
+      <input name="q" type="search" id="search-field" placeholder="Search store..." value="{{escape search.terms}}" />
+      <input type="submit" id="search-submit" value="Search" />
+    </form>
+  </div>
+
+  {{#comment}}
+  search.performed is false when accessing the /search page without a 'q' parameter set
+  in the URL. A shop-owner can link to the /search page from one of his link lists.
+  It is important to show a search form on that page if search.performed is false.
+  {{/comment}}
+
+  {{#if search.performed}}
+
+    {{#paginate search.results by=10}}
+
+    {{#comment}}
+    Common pitfall to avoid: search.results should never be accessed before the opening
+    paginate tag. Move the opening and closing paginate tags to the very top and bottom of your
+    search.liquid template if you need to.
+    If you fail to do the above, the pagination of search results will be broken.
+    search.results_count is fine to access in or out of the paginate block.
+    {{/comment}}
+
+    {{#if (is search.results_count 0)}}
+    <p class="centered">Your search for "{{ search.terms }}" did not yield any results.</p>
+    {{else}}
+    <ol>
+      {{#each search.results as |item|}}
+      <li class="clearfix">
+        <h3>{{link_to item.title item.url}}</h3>
+        {{#if item.vendor}}
+        <div class="result-image">
+          <a href="{{ item.url }}" title="{{escape item.title}}">
+            {{img_tag (img_url item 'small') item.featured_image.alt}}
+          </a>
+        </div>
+        {{/if}}
+        <span>{{highlight (truncatewords (strip_html item.content) 40) search.terms}}</span>
+      </li>
+      {{/each}}
+    </ol>
+    {{/if}}
+
+    {{#if (gt paginate.pages 1)}}
+    <div id="pagination">
+      {{default_pagination paginate}}
+    </div>
+    {{/if}}
+
+    {{/paginate}}
+
+  {{/if}}
+
+</div>

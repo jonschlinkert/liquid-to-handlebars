@@ -1,0 +1,46 @@
+{{#comment}}
+  Be prepared to use this snippet to showcase collections specified in a link list as per this solution here:
+  "Featuring collections using a Link List" http://docs.shopify.com/support/your-store/collections/featuring-collections-using-link-lists
+  If this snippet is called with an argument, we'll assume it is the handle of a link list, and we will use that list.
+  If this snippet is not called with an argument, we'll assume we are on the /collections page and will list all collections in the shop, all except the 'frontpage' and 'all' collections.
+  Merchants often create an 'all' collection to control their Catalog page at /collections/all as per these instructions:
+  "Taking Control of your Catalog Page" http://docs.shopify.com/support/your-store/collections/taking-control-of-your-catalog-page
+  and don't want that collection to appear on their /collections page.
+{{/comment}}
+
+{{times (assign "products_per_page" settings.products_per_row) settings.number_of_rows}}
+{{split (assign "numbers" "one, two, three, four, five, six") ','}}
+{{minus (assign "products_per_row" settings.products_per_row) 1}}
+{{append (strip (assign "products_per_row" (get numbers "products_per_row"))) '-per-row'}}
+
+{{assign "using_link_list" false}}
+
+{{#if (and (isnt collection-listing "") (is (get linklists "collection-listing" prop="handle") collection-listing) (gt (get linklists "collection-listing" prop="links.size") 0)}}
+  {{assign "using_link_list" true}}
+{{/if}}
+
+<h1>{{#if using_link_list}}{{get linklists "collection-listing" prop="title"}}{{else}}Collections{{/if}}</h1>
+
+{{#if using_link_list}}
+<ul class="grid clearfix">
+{{#each (get as |link|}}
+  {{#if (is link.type "collection_link")}}
+  {{assign "collection" link.object}}
+  {{include "collection-grid-item" products_per_row}}
+  {{/if}}
+{{/each}}
+</ul>
+{{else}}
+{{#paginate collections by=products_per_page}}
+<ul class="grid clearfix">
+{{#each collections as |collection|}}
+  {{include "collection-grid-item" products_per_row}}
+{{/each}}
+</ul>
+{{#if (gt paginate.pages 1)}}
+<div id="pagination">
+  {{default_pagination paginate}}
+</div>
+{{/if}}
+{{/paginate}}
+{{/if}}
