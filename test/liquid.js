@@ -40,6 +40,13 @@ describe('all tags in the liquid docs', function() {
       assert.equal(actual, expected);
     });
 
+    it('should prefix the `site` variable in expressions', function() {
+      assert.equal(convert('{{site.foo}}', {prefix: '@'}), '{{{ @site.foo }}}');
+      assert.equal(convert('{{ site.foo }}', {prefix: '@'}), '{{{ @site.foo }}}');
+      assert.equal(convert('{{page.foo}}', {prefix: '@'}), '{{{ @page.foo }}}');
+      assert.equal(convert('{{ page.foo }}', {prefix: '@'}), '{{{ @page.foo }}}');
+    });
+
     it(`should prefix variables with options.prefix`, function() {
       var name = 'types-prefixed.md';
       var fixtures = cwd('fixtures/basics');

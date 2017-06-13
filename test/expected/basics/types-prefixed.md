@@ -87,7 +87,7 @@ To access all the items in an array, you can loop through each item in the array
 ```liquid
 {{#raw}}
 <!-- if site.users = "Tobi", "Laura", "Tetsuro", "Adam" -->
-{{#each site.users as |user|}}
+{{#each @site.users as |user|}}
   {{ user }}
 {{/each}}
 {{/raw}}
@@ -108,9 +108,9 @@ You can use square bracket `[` `]` notation to access a specific item in an arra
 ```liquid
 {{#raw}}
 <!-- if site.users = "Tobi", "Laura", "Tetsuro", "Adam" -->
-{{get site.users 0}}
-{{get site.users 1}}
-{{get site.users 3}}
+{{get @site.users 0}}
+{{get @site.users 1}}
+{{get @site.users 3}}
 {{/raw}}
 ```
 
