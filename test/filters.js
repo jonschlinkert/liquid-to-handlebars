@@ -17,4 +17,10 @@ describe('filters', function() {
       assert.equal(actual, expected, name);
     });
   });
+
+  it('should convert shopify filters', function() {
+    assert.equal(convert('{{ product.title | remove: "Awesome" }}'), '{{remove product.title "Awesome"}}');
+    assert.equal(convert('{{ product.title | upcase }}'), '{{upcase product.title}}');
+    assert.equal(convert('{{ product.title | upcase | remove: "AWESOME"  }}'), '{{remove (upcase product.title) "AWESOME"}}');
+  });
 });

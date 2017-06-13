@@ -108,9 +108,9 @@ You can use square bracket `[` `]` notation to access a specific item in an arra
 ```liquid
 {{#raw}}
 <!-- if site.users = "Tobi", "Laura", "Tetsuro", "Adam" -->
-{{nth @site.users 0}}
-{{nth @site.users 1}}
-{{nth @site.users 3}}
+{{get @site.users 0}}
+{{get @site.users 1}}
+{{get @site.users 3}}
 {{/raw}}
 ```
 

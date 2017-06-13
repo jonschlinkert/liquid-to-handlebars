@@ -20,7 +20,6 @@ describe('all tags in the liquid docs', function() {
   describe('basics', function() {
     var fixtures = cwd('fixtures/basics');
     fs.readdirSync(fixtures).forEach(function(name) {
-      if (/prefixed/.test(name)) return;
       it(`should convert ${name} basics`, function() {
         var expected = fs.readFileSync(cwd('expected/basics', name), 'utf8');
         var fixture = fs.readFileSync(path.join(fixtures, name), 'utf8');
