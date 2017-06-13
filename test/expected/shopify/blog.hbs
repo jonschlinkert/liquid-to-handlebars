@@ -16,14 +16,14 @@
     We will remove the image suffix to grab as big an image as we can.
   {{/comment}}
 
-  {{assign "article_has_image" false}}
-  {{append (assign "img_tag" "<") 'img'}}
+  {{assign 'article_has_image' false}}
+  {{assign 'img_tag' (append '<' 'img')}}
   {{#if (contains article.excerpt_or_content img_tag)}}
-    {{split (assign "src" article.excerpt_or_content) 'src="'}}
-    {{assign "src" (nth src 1)}}
+    {{assign 'src' (split article.excerpt_or_content 'src="')}}
+    {{assign 'src' (first (split (get src 1) '"'))}}
     {{#if src}}
-      {{assign "article_has_image" true}}
-      {{replace (replace (replace (replace (replace (assign "image_src" src) '_small' '') '_compact' '') '_medium' '') '_large' '') '_grande' ''}}
+      {{assign 'article_has_image' true}}
+      {{assign 'image_src' (replace (replace (replace (replace (replace src '_small' '') '_compact' '') '_medium' '') '_large' '') '_grande' '')}}
     {{/if}}
   {{/if}}
 

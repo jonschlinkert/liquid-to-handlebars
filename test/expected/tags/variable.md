@@ -12,7 +12,7 @@ Creates a new variable.
 <p class="code-label">Input</p>
 ```liquid
 {{#raw}}
-{{assign "my_variable" false}}
+{{assign 'my_variable' false}}
 {{#if (isnt my_variable true)}}
   This statement is valid.
 {{/if}}
@@ -29,7 +29,7 @@ Wrap a variable in quotations `"` to save it as a string.
 <p class="code-label">Input</p>
 ```liquid
 {{#raw}}
-{{assign "foo" "bar"}}
+{{assign 'foo' 'bar'}}
 {{ foo }}
 {{/raw}}
 ```
@@ -41,12 +41,12 @@ bar
 
 ## capture
 
-Captures the string inside of the opening and closing tags and assigns it to a variable. Variables created through `{{#raw}}{{#capture ""}}{{/raw}}` are strings.
+Captures the string inside of the opening and closing tags and assigns it to a variable. Variables created through `{{#raw}}{{#capture}}{{/capture}}` are strings.
 
 <p class="code-label">Input</p>
 ```liquid
 {{#raw}}
-{{#capture "my_variable"}}I am being captured.{{/capture}}
+{{#capture 'my_variable'}}I am being captured.{{/capture}}
 {{ my_variable }}
 {{/raw}}
 ```
@@ -59,10 +59,10 @@ Using `capture`, you can create complex strings using other variables created wi
 
 <p class="code-label">Input</p>
 ```text
-{{assign "favorite_food" "pizza"}}
-{{assign "age" 35}}
+{{assign 'favorite_food' 'pizza'}}
+{{assign 'age' 35}}
 
-{{#capture "about_me"}}
+{{#capture 'about_me'}}
 I am {{ age }} and my favorite food is {{ favorite_food }}.
 {{/capture}}
 
@@ -101,7 +101,7 @@ In the example below, a variable named "var" is created through `assign`. The `i
 <p class="code-label">Input</p>
 ```liquid
 {{#raw}}
-{{assign "var" 10}}
+{{assign 'var' 10}}
 {{increment var}}
 {{increment var}}
 {{increment var}}

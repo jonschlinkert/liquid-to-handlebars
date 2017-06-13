@@ -21,7 +21,6 @@
     "test": "mocha"
   },
   "dependencies": {
-    "arr-swap": "^1.0.1",
     "export-files": "^2.1.1",
     "extend-shallow": "^2.0.1",
     "regex-not": "^1.0.0",
@@ -33,10 +32,12 @@
   "devDependencies": {
     "delete": "^1.0.1",
     "gh-clone": "^0.5.0",
+    "glob": "^7.1.2",
     "gulp": "^3.9.1",
     "gulp-format-md": "^0.1.12",
     "mocha": "^3.4.2",
-    "through2": "^2.0.3"
+    "through2": "^2.0.3",
+    "write": "^0.3.3"
   },
   "keywords": [
     "assemble",

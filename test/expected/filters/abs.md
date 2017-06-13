@@ -34,7 +34,7 @@ Returns the absolute value of a number.
 <p class="code-label">Input</p>
 ```liquid
 {{#raw}}
-{{abs "-19.86"}}
+{{abs '-19.86'}}
 {{/raw}}
 ```
 

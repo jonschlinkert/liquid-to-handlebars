@@ -4,7 +4,7 @@ require('mocha');
 var fs = require('fs');
 var path = require('path');
 var assert = require('assert');
-var convert = require('../lib/operators');
+var convert = require('../lib/convert').conditional;
 
 describe('operators', function() {
   describe('comparison operators', function() {
@@ -76,27 +76,27 @@ describe('operators', function() {
 
   describe('object notation', function() {
     it('should convert object notation', function() {
-      assert.equal(convert('foo["bar"]'), 'get foo "bar"');
+      assert.equal(convert('foo["bar"]'), 'get foo \'bar\'');
       assert.equal(convert('foo[\'bar\']'), 'get foo \'bar\'');
       assert.equal(convert('foo[bar]'), 'get foo bar');
       assert.equal(convert('foo[bar_baz]'), 'get foo bar_baz');
-      assert.equal(convert('foo[bar-baz]'), 'get foo (get this "bar-baz")');
+      assert.equal(convert('foo[bar-baz]'), 'get foo (get this \'bar-baz\')');
     });
 
     it('should convert object notation with sub-property', function() {
-      assert.equal(convert('foo[bar][baz].qux'), 'get foo (toPath bar baz "qux")');
-      assert.equal(convert('foo[bar].baz'), 'get foo (toPath bar "baz")');
+      assert.equal(convert('foo[bar][baz].qux'), 'get foo (toPath bar baz \'qux\')');
+      assert.equal(convert('foo[bar].baz'), 'get foo (toPath bar \'baz\')');
       assert.equal(convert('foo[bar][baz]'), 'get foo (toPath bar baz)');
     });
 
     it('should convert add quotes when key has non-word chars', function() {
-      assert.equal(convert('foo[bar baz]'), 'get foo "bar baz"');
-      assert.equal(convert('foo[bar*baz]'), 'get foo "bar*baz"');
+      assert.equal(convert('foo[bar baz]'), 'get foo \'bar baz\'');
+      assert.equal(convert('foo[bar*baz]'), 'get foo \'bar*baz\'');
     });
 
     it('should convert object notation with quotes', function() {
       assert.equal(convert('foo[\'bar\']'), 'get foo \'bar\'');
-      assert.equal(convert('foo["bar"]'), 'get foo "bar"');
+      assert.equal(convert('foo["bar"]'), 'get foo \'bar\'');
     });
   });
 
@@ -109,13 +109,13 @@ describe('operators', function() {
 
     it('should convert array notation with dot-notation', function() {
       assert.equal(convert('site.users[0]'), 'get site.users 0');
-      assert.equal(convert('foo[0].bar'), 'get foo "0.bar"');
-      assert.equal(convert('foo[20].bar'), 'get foo "20.bar"');
+      assert.equal(convert('foo[0].bar'), 'get foo \'0.bar\'');
+      assert.equal(convert('foo[20].bar'), 'get foo \'20.bar\'');
     });
 
     it('should convert nested array notation', function() {
-      assert.equal(convert('foo[20][1]'), 'get foo "20.1"');
-      assert.equal(convert('foo[20][1][2]'), 'get foo "20.1.2"');
+      assert.equal(convert('foo[20][1]'), 'get foo \'20.1\'');
+      assert.equal(convert('foo[20][1][2]'), 'get foo \'20.1.2\'');
     });
   });
 });

@@ -8,13 +8,13 @@ description: Liquid filter that truncates a string to a given number of characte
 <p class="code-label">Input</p>
 ```liquid
 {{#raw}}
-{{truncate "Ground control to Major Tom." 20}}
+{{truncate 'Ground control to Major Tom.' 20}}
 {{/raw}}
 ```
 
 <p class="code-label">Output</p>
 ```text
-{{truncate "Ground control to Major Tom." 20}}
+{{truncate 'Ground control to Major Tom.' 20}}
 ```
 
 ### Custom ellipsis
@@ -26,13 +26,13 @@ The length of the second parameter counts against the number of characters speci
 <p class="code-label">Input</p>
 {{#raw}}
 ``` liquid
-{{truncate "Ground control to Major Tom." 25 ", and so on"}}
+{{truncate 'Ground control to Major Tom.' 25 ', and so on'}}
 ```
 {{/raw}}
 
 <p class="code-label">Output</p>
 ``` text
-{{truncate "Ground control to Major Tom." 25 ", and so on"}}
+{{truncate 'Ground control to Major Tom.' 25 ', and so on'}}
 ```
 
 ### No ellipsis
@@ -42,11 +42,11 @@ You can truncate to the exact number of characters specified by the first parame
 <p class="code-label">Input</p>
 {{#raw}}
 ``` liquid
-{{truncate "Ground control to Major Tom." 20 ""}}
+{{truncate 'Ground control to Major Tom.' 20 ''}}
 ```
 {{/raw}}
 
 <p class="code-label">Output</p>
 ``` text
-{{truncate "Ground control to Major Tom." 20 ""}}
+{{truncate 'Ground control to Major Tom.' 20 ''}}
 ```

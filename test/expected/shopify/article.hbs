@@ -16,11 +16,11 @@ Note that comment.created_at will only be defined if the comment did not have an
 — was posted without error.
 {{/comment}}
 
-{{assign "number_of_comments" article.comments_count}}
+{{assign 'number_of_comments' article.comments_count}}
 
 {{#comment}}If a comment was just submitted, and it has no blank fields.{{/comment}}
 {{#if (and comment comment.created_at)}}
-  {{plus (assign "number_of_comments" article.comments_count) 1}}
+  {{assign 'number_of_comments' (plus article.comments_count 1)}}
 {{/if}}
 
 <h2 class="delta"><a href="{{ blog.url }}">{{ blog.title }}</a></h2>
@@ -75,7 +75,7 @@ Note that comment.created_at will only be defined if the comment did not have an
         {{ comment.content }}
       </div>
       <p class="comment-date">
-        On {{date comment.created_at "%B %d, %Y"}}
+        On {{date comment.created_at '%B %d, %Y'}}
       </p>
     </li>
     {{/if}}
@@ -87,7 +87,7 @@ Note that comment.created_at will only be defined if the comment did not have an
         {{ comment.content }}
       </div>
       <p class="comment-date">
-        On {{date comment.created_at "%B %d, %Y"}}
+        On {{date comment.created_at '%B %d, %Y'}}
       </p>
     </li>
     {{/each}}
@@ -149,10 +149,10 @@ Note that comment.created_at will only be defined if the comment did not have an
 {{#if (or blog.next_article blog.previous_article)}}
 <p class="clearfix">
   {{#if blog.next_article}}
-  <span class="left">{{link_to "&larr; Next Post" blog.next_article}}</span>
+  <span class="left">{{link_to '&larr; Next Post' blog.next_article}}</span>
   {{/if}}
   {{#if blog.previous_article}}
-  <span class="right">{{link_to "Previous Post &rarr;" blog.previous_article}}</span>
+  <span class="right">{{link_to 'Previous Post &rarr;' blog.previous_article}}</span>
   {{/if}}
 </p>
 {{/if}}

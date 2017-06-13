@@ -8,15 +8,15 @@ Sorts items in an array by a property of an item in the array. The order of the 
 <p class="code-label">Input</p>
 ```liquid
 {{#raw}}
-{{split (assign "my_array" "zebra, octopus, giraffe, Sally Snake") ", "}}
+{{assign 'my_array' (split 'zebra, octopus, giraffe, Sally Snake' ', ')}}
 
-{{join (sort my_array) ", "}}
+{{join (sort my_array) ', '}}
 {{/raw}}
 ```
 
 <p class="code-label">Output</p>
 ```text
-{{split (assign "my_array" "zebra, octopus, giraffe, Sally Snake") ", "}}
+{{assign 'my_array' (split 'zebra, octopus, giraffe, Sally Snake' ', ')}}
 
-{{join (sort my_array) ", "}}
+{{join (sort my_array) ', '}}
 ```

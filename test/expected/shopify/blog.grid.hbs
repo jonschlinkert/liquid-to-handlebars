@@ -1,7 +1,7 @@
-{{times (assign "products_per_page" settings.products_per_row) settings.number_of_rows}}
-{{split (assign "numbers" "one, two, three, four, five, six") ','}}
-{{minus (assign "products_per_row" settings.products_per_row) 1}}
-{{append (strip (assign "products_per_row" (get numbers "products_per_row"))) '-per-row'}}
+{{assign 'products_per_page' (times settings.products_per_row settings.number_of_rows)}}
+{{assign 'numbers' (split 'one, two, three, four, five, six' ',')}}
+{{assign 'products_per_row' (minus settings.products_per_row 1)}}
+{{assign 'products_per_row' (append (strip (get numbers products_per_row)) '-per-row')}}
 
 {{#paginate blog.articles by=products_per_page}}
 
@@ -13,7 +13,7 @@
 
 <ul class="grid clearfix">
   {{#each blog.articles as |article|}}
-    {{include "article-grid-item" products_per_row}}
+    {{include 'article-grid-item' products_per_row}}
   {{/each}}
 </ul>
 

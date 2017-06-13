@@ -8,11 +8,11 @@ Removes all whitespace (tabs, spaces, and newlines) from the right side of a str
 <p class="code-label">Input</p>
 ```liquid
 {{#raw}}
-{{rstrip "          So much room for activities!          "}}
+{{rstrip '          So much room for activities!          '}}
 {{/raw}}
 ```
 
 <p class="code-label">Output</p>
 ```text
-{{rstrip "          So much room for activities!          "}}
+{{rstrip '          So much room for activities!          '}}
 ```

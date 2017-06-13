@@ -3,14 +3,14 @@ title: Whitespace control
 description: An overview of controlling whitespace between code in the Liquid template language.
 ---
 
-In Liquid, you can include a hyphen in your tag syntax `{{#raw}}{{-{{/raw}}`, `{{#raw}}-}}{{/raw}}`, `{{#raw}}{%-{{/raw}}`, and `{{#raw}}-%}{{/raw}}` to strip whitespace from the left or right side of a rendered tag.
+In Liquid, you can include a hyphen in your tag syntax `{{#raw}}{{ -{% }}{{/raw}}`, `{{#raw}}{% endraw`, and `{{#raw}}-%}{{/raw}}` to strip whitespace from the left or right side of a rendered tag.
 
 Normally, even if it doesn't output text, any line of Liquid in your template will still output a blank line in your rendered HTML:
 
 <p class="code-label">Input</p>
 {{#raw}}
 ``` liquid
-{{assign "my_variable" "tomato"}}
+{{assign 'my_variable' 'tomato'}}
 {{ my_variable }}
 ```
 {{/raw}}
@@ -19,7 +19,7 @@ Notice the blank line before "tomato" in the rendered template:
 
 <p class="code-label">Output</p>
 ``` text
-{{assign "my_variable" "tomato"}}
+{{assign 'my_variable' 'tomato'}}
 {{ my_variable }}
 ```
 
@@ -28,7 +28,7 @@ By including hyphens in your `assign` tag, you can strip the generated whitespac
 <p class="code-label">Input</p>
 {{#raw}}
 ``` liquid
-{{assign "my_variable" "tomato"}}
+{{assign 'my_variable' 'tomato'}}
 {{ my_variable }}
 ```
 {{/raw}}
@@ -38,12 +38,12 @@ By including hyphens in your `assign` tag, you can strip the generated whitespac
 tomato
 ```
 
-If you don't want any of your tags to output whitespace, as a general rule you can add hyphens to both sides of all your tags (`{{#raw}}{%-{{/raw}}` and `{{#raw}}-%}{{/raw}}`):
+If you don't want any of your tags to output whitespace, as a general rule you can add hyphens to both sides of all your tags (`{{#raw}}{% endraw` and `{{#raw}}-%}{{/raw}}`):
 
 <p class="code-label">Input</p>
 {{#raw}}
 ``` liquid
-{{assign "username" "John G. Chalmers-Smith"}}
+{{assign 'username' 'John G. Chalmers-Smith'}}
 {{#if (and username (gt username.size 10))}}
   Wow, {{ username }}, you have a long name!
 {{else}}
@@ -54,7 +54,7 @@ If you don't want any of your tags to output whitespace, as a general rule you c
 
 <p class="code-label">Output without whitespace control</p>
 ``` text
-{{assign "username" "John G. Chalmers-Smith"}}
+{{assign 'username' 'John G. Chalmers-Smith'}}
 {{#if (and username (gt username.size 10))}}
   Wow, {{ username }}, you have a long name!
 {{else}}
@@ -65,7 +65,7 @@ If you don't want any of your tags to output whitespace, as a general rule you c
 <p class="code-label">Input</p>
 {{#raw}}
 ``` liquid
-{{assign "username" "John G. Chalmers-Smith"}}
+{{assign 'username' 'John G. Chalmers-Smith'}}
 {{#if (and username (gt username.size 10))}}
   Wow, {{ username }}, you have a long name!
 {{else}}

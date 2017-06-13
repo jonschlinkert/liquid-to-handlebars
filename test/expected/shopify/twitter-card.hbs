@@ -1,0 +1,41 @@
+{{#comment}}
+
+  This snippet renders meta data needed to create a Twitter card
+  for products and articles.
+
+  Your cards must be approved by Twitter to be activated
+   - https://dev.twitter.com/docs/cards/validation/validator
+
+  More information:
+   - https://dev.twitter.com/docs/cards/types/product-card
+   - https://dev.twitter.com/docs/cards/types/summary-card
+
+{{/comment}}
+ 
+{{#if (contains template 'product')}}
+  <meta name="twitter:card" content="product" />
+  <meta name="twitter:title" content="{{escape product.title}}" />
+  <meta name="twitter:description" content="{{escape (truncatewords (strip_newlines (strip_html product.description)) 60 '')}}" />
+  <meta name="twitter:image" content="http:{{img_url product 'large'}}" />
+  <meta name="twitter:label1" content="Price" />
+  <meta name="twitter:data1" content="{{#if product.price_varies}}From {{/if}}{{strip_html (money_with_currency product.price)}}" />
+  {{#if (is product.vendor blank)}}
+  <meta name="twitter:label2" content="Availability" />
+  <meta name="twitter:data2" content="In stock" />  
+  {{else}}
+  <meta name="twitter:label2" content="Brand" />
+  <meta name="twitter:data2" content="{{escape product.vendor}}" />
+  {{/if}}
+{{else if (contains template 'article')}}
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="{{escape article.title}}" />
+  <meta name="twitter:description" content="{{escape (truncatewords (strip_html article.excerpt_or_content) 60 '')}}" />
+  {{assign 'img_tag' (append '<' 'img')}}
+  {{#if (contains article.content img_tag)}}
+    {{assign 'src' (split article.content 'src="')}}
+    {{assign 'src' (remove (remove (first (split (get src 1) '"')) 'https:') 'http:')}}
+    {{#if src}}
+    <meta property="twitter:image" content="http:{{ src }}" />
+    {{/if}}
+ {{/if}}
+{{/if}}

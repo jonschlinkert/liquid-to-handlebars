@@ -4,10 +4,10 @@
   - Never paginate by more than 50.
 {{/comment}}
 
-{{times (assign "products_per_page" settings.products_per_row) settings.number_of_rows}}
-{{split (assign "numbers" "zero, one, two, three, four, five, six") ','}}
-{{times (assign "products_per_row" settings.products_per_row) 1}}
-{{append (strip (assign "products_per_row" (get numbers "products_per_row"))) '-per-row'}}
+{{assign 'products_per_page' (times settings.products_per_row settings.number_of_rows)}}
+{{assign 'numbers' (split 'zero, one, two, three, four, five, six' ',')}}
+{{assign 'products_per_row' (times settings.products_per_row 1)}}
+{{assign 'products_per_row' (append (strip (get numbers products_per_row)) '-per-row')}}
 
 {{#paginate collection.products by=products_per_page}}
 
@@ -51,7 +51,7 @@
 {{#if (gt collection.all_tags.size 0)}}
 <ul class="subcategories clearfix clear">
   <li class="{{#unless current_tags}} active{{/unless}}">
-    {{link_to_remove_tag "All" current_tags.first}}
+    {{link_to_remove_tag 'All' current_tags.first}}
   </li>
   {{#each collection.all_tags as |tag|}}
   {{#if (contains current_tags tag)}}
@@ -75,7 +75,7 @@
 
 <ul class="grid clearfix">
 {{#each collection.products as |product|}}
-  {{include "product-grid-item" products_per_row}}
+  {{include 'product-grid-item' products_per_row}}
 {{else}}
   <p>There are no products in this view.</p>
 {{/each}}

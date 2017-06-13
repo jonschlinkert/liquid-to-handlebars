@@ -17,7 +17,7 @@ In the example below, the string "Tobi" is not a boolean, but it is truthy in a 
 
 ```liquid
 {{#raw}}
-{{assign "tobi" "Tobi"}}
+{{assign 'tobi' 'Tobi'}}
 
 {{#if tobi}}
   This condition will always be true.
@@ -25,7 +25,7 @@ In the example below, the string "Tobi" is not a boolean, but it is truthy in a 
 {{/raw}}
 ```
 
-[Strings]({{prepend "/basics/types/#string" site.baseurl}}), even when empty, are truthy. The example below will result in empty HTML tags if `settings.fp_heading` is empty:
+[Strings]({{prepend '/basics/types/#string' site.baseurl}}), even when empty, are truthy. The example below will result in empty HTML tags if `settings.fp_heading` is empty:
 
 <p class="code-label">Input</p>
 ```liquid
@@ -43,7 +43,7 @@ In the example below, the string "Tobi" is not a boolean, but it is truthy in a 
 
 ## Falsy
 
-The falsy values in Liquid are [`nil`]({{prepend "/basics/types/#nil" site.baseurl}}) and [`false`]({{prepend "/basics/types/#boolean" site.baseurl}}).
+The falsy values in Liquid are [`nil`]({{prepend '/basics/types/#nil' site.baseurl}}) and [`false`]({{prepend '/basics/types/#boolean' site.baseurl}}).
 
 ## Summary
 

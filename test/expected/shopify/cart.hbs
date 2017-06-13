@@ -25,13 +25,13 @@
       Determining the handle of the collection that was last seen for the 'continue shopping' link.
       {{/comment}}
 
-      {{assign "collection_url" item.product.collections.last.url}}
-      {{#if (or (is collection_url "/collections/frontpage") (is collection_url blank))}}
-        {{assign "collection_url" "/collections/all"}}
+      {{assign 'collection_url' item.product.collections.last.url}}
+      {{#if (or (is collection_url ) '/collections/frontpage' (is collection_url blank))}}
+        {{assign 'collection_url' '/collections/all'}}
       {{/if}}
 
       {{#if forloop.first}}
-        {{assign "continue_shopping_url" collection_url}}
+        {{assign 'continue_shopping_url' collection_url}}
       {{/if}}
 
       <tr>
@@ -49,14 +49,14 @@
           {{#comment}}
           Line Item Properties
           {{/comment}}
-          {{size assign properties_amount = item.properties}}
+          {{assign 'properties_amount' (size item.properties)}}
           {{#if (gt properties_amount 0)}}
           <p>
             {{#each item.properties as |p|}}
               {{#unless (is p.last blank)}}
                 {{ p.first }}:
-                {{#if (contains p.last "/uploads/")}}
-                  <a href="{{ p.last }}">{{last ("split: '/'" p.last)}}</a>
+                {{#if (contains p.last '/uploads/')}}
+                  <a href="{{ p.last }}">{{last (split p.last '/')}}</a>
                 {{else}}
                   {{ p.last }}
                 {{/if}}

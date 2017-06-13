@@ -24,7 +24,7 @@ In this example, `product_price` is defined, so the default value is not used.
 <p class="code-label">Input</p>
 ```liquid
 {{#raw}}
-{{assign "product_price" 4.99}}
+{{assign 'product_price' 4.99}}
 {{default product_price 2.99}}
 {{/raw}}
 ```
@@ -39,7 +39,7 @@ In this example, `product_price` is empty, so the default value is used.
 <p class="code-label">Input</p>
 ```liquid
 {{#raw}}
-{{assign "product_price" ""}}
+{{assign 'product_price' ''}}
 {{default product_price 2.99}}
 {{/raw}}
 ```

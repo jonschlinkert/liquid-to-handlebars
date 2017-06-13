@@ -40,11 +40,10 @@ describe('shopify templates', function() {
     assert.equal(convert(fixture('cart')), expected('cart'));
   });
 
-  it.skip('should convert collection templates', function() {
-    // console.log(convert(fixture('collection-listing')))
-    // assert.equal(convert(fixture('collection')), expected('collection'));
+  it('should convert collection templates', function() {
+    assert.equal(convert(fixture('collection')), expected('collection'));
     assert.equal(convert(fixture('collection-listing')), expected('collection-listing'));
-    // assert.equal(convert(fixture('list-collections')), expected('list-collections'));
+    assert.equal(convert(fixture('list-collections')), expected('list-collections'));
   });
 
   it('should convert index.liquid', function() {

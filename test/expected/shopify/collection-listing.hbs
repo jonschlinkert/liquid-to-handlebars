@@ -8,25 +8,25 @@
   and don't want that collection to appear on their /collections page.
 {{/comment}}
 
-{{times (assign "products_per_page" settings.products_per_row) settings.number_of_rows}}
-{{split (assign "numbers" "one, two, three, four, five, six") ','}}
-{{minus (assign "products_per_row" settings.products_per_row) 1}}
-{{append (strip (assign "products_per_row" (get numbers "products_per_row"))) '-per-row'}}
+{{assign 'products_per_page' (times settings.products_per_row settings.number_of_rows)}}
+{{assign 'numbers' (split 'one, two, three, four, five, six' ',')}}
+{{assign 'products_per_row' (minus settings.products_per_row 1)}}
+{{assign 'products_per_row' (append (strip (get numbers products_per_row)) '-per-row')}}
 
-{{assign "using_link_list" false}}
+{{assign 'using_link_list' false}}
 
-{{#if (and (isnt collection-listing "") (is (get linklists "collection-listing" prop="handle") collection-listing) (gt (get linklists "collection-listing" prop="links.size") 0)}}
-  {{assign "using_link_list" true}}
+{{#if (and (isnt collection-listing ) '' (is (get linklists (toPath collection-listing 'handle')) collection-listing) (gt (get linklists (toPath collection-listing 'links.size')) 0))}}
+  {{assign 'using_link_list' true}}
 {{/if}}
 
-<h1>{{#if using_link_list}}{{get linklists "collection-listing" prop="title"}}{{else}}Collections{{/if}}</h1>
+<h1>{{#if using_link_list}}{{get linklists (toPath collection-listing "title")}}{{else}}Collections{{/if}}</h1>
 
 {{#if using_link_list}}
 <ul class="grid clearfix">
-{{#each (get as |link|}}
-  {{#if (is link.type "collection_link")}}
-  {{assign "collection" link.object}}
-  {{include "collection-grid-item" products_per_row}}
+{{#each (get linklists (toPath collection-listing 'links')) as |link|}}
+  {{#if (is link.type 'collection_link')}}
+  {{assign 'collection' link.object}}
+  {{include 'collection-grid-item' products_per_row}}
   {{/if}}
 {{/each}}
 </ul>
@@ -34,7 +34,7 @@
 {{#paginate collections by=products_per_page}}
 <ul class="grid clearfix">
 {{#each collections as |collection|}}
-  {{include "collection-grid-item" products_per_row}}
+  {{include 'collection-grid-item' products_per_row}}
 {{/each}}
 </ul>
 {{#if (gt paginate.pages 1)}}

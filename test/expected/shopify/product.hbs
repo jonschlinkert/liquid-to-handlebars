@@ -1,6 +1,6 @@
-{{assign "add_to_cart" "Add to cart"}}
-{{assign "sold_out" "Sold Out"}}
-{{assign "unavailable" "Unavailable"}}
+{{assign 'add_to_cart' 'Add to cart'}}
+{{assign 'sold_out' 'Sold Out'}}
+{{assign 'unavailable' 'Unavailable'}}
 
 <div class="product" itemscope itemtype="http://schema.org/Product">
 
@@ -14,12 +14,12 @@
     {{#if (is product.images.size 0)}}
 
       <div class="product-photo-container">
-        <img src="{{img_url "" 'grande'}}" alt="" />
+        <img src="{{img_url '' 'grande'}}" alt="" />
       </div>
 
     {{else}}
 
-      {{default (assign "featured_image" product.selected_or_first_available_variant.featured_image) product.featured_image}}
+      {{assign 'featured_image' (default product.selected_or_first_available_variant.featured_image product.featured_image)}}
       <div class="product-photo-container">
         <a href="{{img_url featured_image '1024x1024'}}">
           <img src="{{img_url featured_image 'grande'}}" alt="{{escape product.title}}" />
@@ -46,16 +46,16 @@
 
       <h1 itemprop="name">{{ product.title }}</h1>
 
-      {{handle assign product_vendor_handle = product.vendor}}
+      {{assign 'product_vendor_handle' (handle product.vendor)}}
       {{#comment}}
       Do we have a collection that has the same name as our product vendor name?
       If we do, let's have the vendor link point to it.
       If not, we will point to the automatic vendor collection.
       {{/comment}}
-      {{#if (get collections "product_vendor_handle" prop="handle") == product_vendor_handle)}}
-        {{assign "vendor_url" (get collections "product_vendor_handle" prop "url")}}
+      {{#if (is (get collections (toPath product_vendor_handle 'handle')) product_vendor_handle)}}
+        {{assign 'vendor_url' (get collections (toPath product_vendor_handle 'url'))}}
       {{else}}
-        {{url_for_vendor assign vendor_url = product.vendor}}
+        {{assign 'vendor_url' (url_for_vendor product.vendor)}}
       {{/if}}
       <h2 itemprop="brand" class="delta">{{link_to product.vendor vendor_url}}</h2>
 
@@ -77,7 +77,7 @@
         <link itemprop="availability" href="http://schema.org/OutOfStock" />
         {{/if}}
         <p>
-          {{assign "variant" product.selected_or_first_available_variant}}
+          {{assign 'variant' product.selected_or_first_available_variant}}
           {{#if (gt product.compare_at_price product.price)}}
           <span class="product-price on-sale" itemprop="price">{{money variant.price}}</span>
           <s class="product-compare-price">{{money variant.compare_at_price}}</s>
@@ -87,9 +87,9 @@
         </p>
       </div>
 
-      {{assign "hide_default_title" false}}
-      {{#if (and (is product.variants.size 1) (contains product.variants.first.title "Default"))}}
-        {{assign "hide_default_title" true}}
+      {{assign 'hide_default_title' false}}
+      {{#if (and (is product.variants.size 1) (contains product.variants.first.title ) 'Default')}}
+        {{assign 'hide_default_title' true}}
       {{/if}}
 
       <div id="product-variants" class="{{#if hide_default_title}} hidden{{/if}}">
@@ -103,7 +103,7 @@
       </div>
 
       <div id="backorder" class="hidden">
-        <p>{{"replace: '%s', '<span id="selected-variant"></span>'" '%s is back-ordered. We will ship it separately in 10 to 15 days.'}}</p>
+        <p>{{replace '%s is back-ordered. We will ship it separately in 10 to 15 days.' '%s' '<span id="selected-variant"></span>'}}</p>
       </div>
 
       <div id="product-add">
@@ -114,12 +114,12 @@
         {{#if (or collection.previous_product collection.next_product)}}
         <div>
         {{#if collection.previous_product}}
-          {{#capture "prev_url"}}{{ collection.previous_product }}#content{{/capture}}
-          <span class="left">{{link_to "&larr; Previous Product" prev_url}}</span>
+          {{#capture 'prev_url'}}{{ collection.previous_product }}#content{{/capture}}
+          <span class="left">{{link_to '&larr; Previous Product' prev_url}}</span>
         {{/if}}
         {{#if collection.next_product}}
-          {{#capture "next_url"}}{{ collection.next_product }}#content{{/capture}}
-          <span class="right">{{link_to "Next Product &rarr;" next_url}}</span>
+          {{#capture 'next_url'}}{{ collection.next_product }}#content{{/capture}}
+          <span class="right">{{link_to 'Next Product &rarr;' next_url}}</span>
         {{/if}}
         </div>
         {{/if}}
@@ -190,7 +190,7 @@ jQuery(function($) {
   new Shopify.OptionSelectors('product-select', { product: {{json product}}, onVariantSelected: selectCallback, enableHistoryState: true });
 
   // Add label if only one product option and it isn't 'Title'.
-  {{#if (and (is product.options.size 1) (isnt product.options.first "Title"))}}
+  {{#if (and (is product.options.size 1) (isnt product.options.first ) 'Title')}}
     $('.selector-wrapper:eq(0)').prepend('<label>{{ product.options.first }}</label>');
   {{/if}}
 

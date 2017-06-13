@@ -1,15 +1,15 @@
 <div class="sidebar">
   <header class="sidebar__logo" role="banner">
-    <a href="{{prepend "/" site.baseurl}}">Liquid</a>
+    <a href="{{prepend '/' site.baseurl}}">Liquid</a>
   </header>
-  <nav class="sidebar__nav"> {{split (assign "sections" "basics, tags, filters") ", "}}
+  <nav class="sidebar__nav"> {{assign 'sections' (split 'basics, tags, filters' ', ')}}
 
     {{#each sections as |section|}}
     <h3 class="section__header">{{capitalize section}}</h3>
 
     <ul class="section__links">
-    {{#each site.pages as |item|}}{{#if (contains item.url "section/")}}{{#unless (contains item.path "index")}}
-      <li><a href="{{prepend item.url site.baseurl}}" class="section__link{{#if (and (and (contains item.url page.url) (isnt page.url "/")) (isnt page.type "index"))}} section__link--is-active{{/if}}">{{ item.title }}</a></li>
+    {{#each site.pages as |item|}}{{#if (contains item.url section/)}}{{#unless (contains item.path "index")}}
+      <li><a href="{{prepend item.url site.baseurl}}" class="section__link{{#if (and (contains item.url page.url) (isnt page.url ) '/" and page.type != ' index')}} section__link--is-active{{/if}}">{{ item.title }}</a></li>
     {{/unless}}{{/if}}{{/each}}
     </ul>
     {{/each}}

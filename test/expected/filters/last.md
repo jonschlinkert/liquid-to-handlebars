@@ -8,7 +8,7 @@ Returns the last item of an array.
 <p class="code-label">Input</p>
 ```liquid
 {{#raw}}
-{{split (assign "my_array" "apples, oranges, peaches, plums") ", "}}
+{{assign 'my_array' (split 'apples, oranges, peaches, plums' ', ')}}
 
 {{ my_array.last }}
 {{/raw}}
@@ -16,7 +16,7 @@ Returns the last item of an array.
 
 <p class="code-label">Output</p>
 ```text
-{{split (assign "my_array" "apples, oranges, peaches, plums") ", "}}
+{{assign 'my_array' (split 'apples, oranges, peaches, plums' ', ')}}
 
 {{ my_array.last }}
 ```
@@ -24,7 +24,7 @@ Returns the last item of an array.
 <p class="code-label">Input</p>
 ```liquid
 {{#raw}}
-{{split (assign "my_array" "zebra, octopus, giraffe, tiger") ", "}}
+{{assign 'my_array' (split 'zebra, octopus, giraffe, tiger' ', ')}}
 
 {{ my_array.last }}
 {{/raw}}
@@ -32,7 +32,7 @@ Returns the last item of an array.
 
 <p class="code-label">Output</p>
 ```text
-{{split (assign "my_array" "zebra, octopus, giraffe, tiger") ", "}}
+{{assign 'my_array' (split 'zebra, octopus, giraffe, tiger' ', ')}}
 
 {{ my_array.last }}
 ```
