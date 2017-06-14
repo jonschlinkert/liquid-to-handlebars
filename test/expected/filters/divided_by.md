@@ -72,14 +72,14 @@ In this example, we're dividing by a variable that contains an integer, so we ge
 <p class="code-label">Input</p>
 {{#raw}}
 ``` liquid
-{{assign "my_integer" 7}}
+{{assign 'my_integer' 7}}
 {{divided_by 20 my_integer}}
 ```
 {{/raw}}
 
 <p class="code-label">Output</p>
 ``` text
-{{assign "my_integer" 7}}
+{{assign 'my_integer' 7}}
 {{divided_by 20 my_integer}}
 ```
 
@@ -88,15 +88,15 @@ Here, we [multiply]({{{ site.baseurl }}}/filters/times) the variable by `1.0` to
 <p class="code-label">Input</p>
 {{#raw}}
 ``` liquid
-{{assign "my_integer" 7}}
-{{times (assign "my_float" my_integer) 1.0}}
+{{assign 'my_integer' 7}}
+{{assign 'my_float' (times my_integer 1.0)}}
 {{divided_by 20 my_float}}
 ```
 {{/raw}}
 
 <p class="code-label">Output</p>
 ``` text
-{{assign "my_integer" 7}}
-{{times (assign "my_float" my_integer) 1.0}}
+{{assign 'my_integer' 7}}
+{{assign 'my_float' (times my_integer 1.0)}}
 {{divided_by 20 my_float}}
 ```

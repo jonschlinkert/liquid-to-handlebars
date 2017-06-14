@@ -15,11 +15,11 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
 
-    <link rel="stylesheet" href="{{prepend "/css/main.css" site.baseurl}}">
-    <link rel="icon" type="image/png" href="{{prepend "/images/icons/water-drop-32x.png" site.baseurl}}" sizes="32x32">
-    <link rel="icon" type="image/png" href="{{prepend "/images/icons/water-drop-64x.png" site.baseurl}}" sizes="64x64">
+    <link rel="stylesheet" href="{{prepend '/css/main.css' site.baseurl}}">
+    <link rel="icon" type="image/png" href="{{prepend '/images/icons/water-drop-32x.png' site.baseurl}}" sizes="32x32">
+    <link rel="icon" type="image/png" href="{{prepend '/images/icons/water-drop-64x.png' site.baseurl}}" sizes="64x64">
     <link rel="canonical" href="{{prepend (prepend (replace page.url 'index.html' '') site.baseurl) site.url}}">
-    <link rel="alternate" type="application/rss+xml" title="{{{ site.title }}}" href="{{prepend (prepend "/feed.xml" site.baseurl) site.url}}" />
+    <link rel="alternate" type="application/rss+xml" title="{{{ site.title }}}" href="{{prepend (prepend '/feed.xml' site.baseurl) site.url}}" />
 
     <meta property="og:site_name" content="{{{ site.title }}}">
     <meta property="og:type" content="website">
@@ -36,19 +36,19 @@
 
   <body>
 
-    {{include "sidebar"}}
+    {{include 'sidebar'}}
 
     <div class="content__overlay"></div>
     <main class="content__area" role="main">
       <div class="content">
         <button class="menu-button">
-          <span aria-hidden="true">{{include "icons/three-bars.svg"}}</span>
+          <span aria-hidden="true">{{include 'icons/three-bars.svg'}}</span>
           <span>Menu</span>
         </button>
         {{#if page.title}}<h1>{{{ page.title }}}</h1>{{/if}}
         {% body %}
       </div>
     </main>
-    <script src="{{prepend "/js/script.js" site.baseurl}}"></script>
+    <script src="{{prepend '/js/script.js' site.baseurl}}"></script>
   </body>
 </html>

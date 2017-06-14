@@ -1,0 +1,92 @@
+{{#paginate blog.articles by=5}}
+
+{{#if current_tags}}
+<h1 class="delta">{{link_to blog.title blog.url}} <span class="quiet">&raquo;</span> {{ current_tags.first }}</h1>
+{{else}}
+<h1 class="delta">{{ blog.title }}</h1>
+{{/if}}
+
+<div class="articles">
+
+  {{#each blog.articles as |article|}}
+
+  {{#comment}}
+    Let's extract a blog image.
+    We will look for an image in the excerpt first, and in the blog post itself second.
+    We will remove the image suffix to grab as big an image as we can.
+  {{/comment}}
+
+  {{assign 'article_has_image' false}}
+  {{assign 'img_tag' (append '<' 'img')}}
+  {{#if (contains article.excerpt_or_content img_tag)}}
+    {{assign 'src' (split article.excerpt_or_content 'src="')}}
+    {{assign 'src' (first (split (get src 1) '"'))}}
+    {{#if src}}
+      {{assign 'article_has_image' true}}
+      {{assign 'image_src' (replace (replace (replace (replace (replace src '_small' '') '_compact' '') '_medium' '') '_large' '') '_grande' '')}}
+    {{/if}}
+  {{/if}}
+
+  <div class="article{{#if forloop.first}} first{{/if}}{{#if forloop.last}} last{{/if}} clear">
+    <h2 class="title">
+      <a href="{{ article.url }}">{{ article.title }}</a>
+    </h2>
+    <h3 class="date">
+      <time pubdate datetime="{{date article.published_at '%Y-%m-%d'}}">{{date article.published_at '%b %d, %Y'}}</time>
+    </h3>
+    <div class="row">
+      {{#if article_has_image}}
+      <div class="third column">
+        <a href="{{ article.url }}">
+          <span class="square-holder" style="background-image: url({{ image_src }})">
+          </span>
+        </a>
+      </div>
+      <div class="two-thirds column">
+        <div class="rte fadeout-overflow-bottom grid-margins">
+      {{else}}
+      <div class="full column">
+        <div class="rte">
+      {{/if}}
+          {{#if (gt article.excerpt.size 0)}}
+          <div class="no-images">{{ article.excerpt }}</div>
+          {{else}}
+          <p>{{truncatewords (strip_html article.content) 120}}</p>
+          {{/if}}
+        </div>
+        <p>
+          <a class="blog-read-more" href="{{ article.url }}">Read more →</a>
+        </p>
+      </div>
+    </div>
+    <div class="meta">
+      {{#if (and blog.comments_enabled (gt article.comments_count 0))}}
+      <span class="meta-comments">
+        <a href="{{ article.url }}#comments"><i class="fa fa-comment"></i> {{ article.comments_count }} {{pluralize article.comments_count 'comment' 'comments'}}</a>
+      </span>
+      {{/if}}
+      {{#if (gt article.tags.size 0)}}
+      <span class="tags">
+        {{#each article.tags as |tag|}}
+        <a href="{{ blog.url }}/tagged/{{handle tag}}">{{#if forloop.first}}<i class="fa fa-tag"></i> {{/if}}{{ tag }}</a>{{#unless forloop.last}}, {{/unless}}
+        {{/each}}
+      </span>
+      {{/if}}
+  </div>
+</div>
+
+{{/each}}
+
+</div>
+
+{{#if (gt paginate.pages 1)}}
+<div class="pagination">
+{{#comment}}
+  When paginating blog articles, a previous article is actually a newer article, not an older one,
+  because blog articles are shown and paginated in a reversed chronological order.
+  The word 'previous' can be confusing, hence we'll change it.
+{{/comment}}
+{{replace (replace (default_pagination paginate) 'Previous' 'Newer articles') 'Next' 'Older articles'}}
+{{/if}}
+
+{{/paginate}}

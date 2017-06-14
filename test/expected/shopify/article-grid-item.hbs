@@ -1,0 +1,73 @@
+{{#comment}}If no value is passed to the snippet, we will set the snippet variable to a sensible default.{{/comment}}
+{{#if (is article-grid-item '')}}{{assign 'article-grid-item' 'three-per-row'}}{{/if}}
+
+{{assign 'article_has_image' false}}
+{{assign 'img_tag' (append '<' 'img')}}
+{{#if (contains article.excerpt_or_content img_tag)}}
+  {{assign 'src' (split article.excerpt_or_content 'src="')}}
+  {{assign 'src' (first (split (get src 1) '"'))}}
+  {{#if src}}
+    {{assign 'article_has_image' true}}
+    {{assign 'image_src' (replace (replace (replace (replace (replace src '_small' '') '_compact' '') '_medium' '') '_large' '') '_grande' '')}}
+  {{/if}}
+{{/if}}
+
+<li class="{{ article-grid-item }}">
+
+  {{#if (gt article.tags.size 0)}}
+  <h4><a href="/blogs/{{ blog.handle }}/tagged/{{handle tag}}">{{ article.tags.first }}</a></h4>
+  {{/if}}
+
+  {{#if article_has_image}}
+  <div class="article-image-wrap">
+    <a href="{{ article.url }}">
+      <img src="{{ image_src }}" alt="{{escape article.title}}" />
+    </a>
+  </div><!-- .prod-image-wrap -->
+  {{/if}}
+
+  <div class="article-caption">
+      <h3>
+        <a href="{{ article.url }}">
+        {{ article.title }}
+        </a>
+      </h3>
+      <p class="article-summary">
+        {{#if (gt article.excerpt.size 0)}}
+        {{strip_html article.excerpt}}
+        {{else}}
+        {{truncatewords (strip_html article.content) 50}}
+        {{/if}}
+      </p>
+  </div><!-- .prod-caption -->
+
+  <p class="date left left-aligned">
+    <time pubdate datetime="{{date article.published_at '%Y-%m-%d'}}">{{date article.published_at '%b %d, %Y'}}</time>
+  </p>
+
+  <p class="right right-aligned">
+    <a href="{{ article.url }}">Read more &#8594;</a>
+  </p>
+
+</li>
+
+{{#comment}}
+You don't need to use a clearing div. Use whatever it is you use to clear
+floated elements. The code that follows just just shows you how to use a cycle element.
+Notice that we named it ( 'clear' ). We need to name it because there's another cycle
+element in this file ( we called that other one 'last' ). If you have more than one
+cycle element in a rendered view, you'll need to name all of them.
+The cycle element is documented here: http://docs.shopify.com/themes/liquid-basics/logic#cycle
+{{/comment}}
+
+{{#if (is article-grid-item 'six-per-row')}}
+{{cycle name='clear' args='\'\', \'\', \'\', \'\', \'\', \'<div style=\"clear:both\"></div>\''}}
+{{else if (is article-grid-item 'five-per-row')}}
+{{cycle name='clear' args='\'\', \'\', \'\', \'\', \'<div style=\"clear:both\"></div>\''}}
+{{else if (is article-grid-item 'four-per-row')}}
+{{cycle name='clear' args='\'\', \'\', \'\', \'<div style=\"clear:both\"></div>\''}}
+{{else if (is article-grid-item 'three-per-row')}}
+{{cycle name='clear' args='\'\', \'\', \'<div style=\"clear:both\"></div>\''}}
+{{else if (is article-grid-item 'two-per-row')}}
+{{cycle name='clear' args='\'\', \'<div style=\"clear:both\"></div>\''}}
+{{/if}}

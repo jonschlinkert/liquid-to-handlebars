@@ -118,7 +118,7 @@ Defines a range of numbers to loop through. The range can be defined by both lit
   {{ i }}
 {{/each}}
 
-{{assign "num" 4}}
+{{assign 'num' 4}}
 {{#each (range 1 num) as |i|}}
   {{ i }}
 {{/each}}
@@ -159,10 +159,10 @@ Loops through a group of strings and outputs them in the order that they were pa
 <p class="code-label">Input</p>
 ```liquid
 {{#raw}}
-{{cycle "one", "two", "three"}}
-{{cycle "one", "two", "three"}}
-{{cycle "one", "two", "three"}}
-{{cycle "one", "two", "three"}}
+{{cycle 'one', 'two', 'three'}}
+{{cycle 'one', 'two', 'three'}}
+{{cycle 'one', 'two', 'three'}}
+{{cycle 'one', 'two', 'three'}}
 {{/raw}}
 ```
 
@@ -301,7 +301,7 @@ Defines a range of numbers to loop through. The range can be defined by both lit
 {{#raw}}
 <!--variable number example-->
 
-{{assign "num" 4}}
+{{assign 'num' 4}}
 <table>
 {{#tablerow (range 1 num) as |i|}}
   {{ i }}

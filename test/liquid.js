@@ -25,12 +25,28 @@ describe('all tags in the liquid docs', function() {
         var expected = fs.readFileSync(cwd('expected/basics', name), 'utf8');
         var fixture = fs.readFileSync(path.join(fixtures, name), 'utf8');
         var actual = convert(fixture);
+        if (expected !== actual) {
+          // console.log(actual)
+        }
         assert.equal(actual, expected);
       });
     });
   });
 
   describe('basics with prefix', function() {
+    it('should prefix the `site` variable in filter args', function() {
+      var actual = convert('{{ "/tags/variable/#assign" | prepend: site.baseurl }}', {prefix: '@'});
+      var expected = '{{prepend \'/tags/variable/#assign\' @site.baseurl}}';
+      assert.equal(actual, expected);
+    });
+
+    it('should prefix the `site` variable in expressions', function() {
+      assert.equal(convert('{{site.foo}}', {prefix: '@'}), '{{{ @site.foo }}}');
+      assert.equal(convert('{{ site.foo }}', {prefix: '@'}), '{{{ @site.foo }}}');
+      assert.equal(convert('{{page.foo}}', {prefix: '@'}), '{{{ @page.foo }}}');
+      assert.equal(convert('{{ page.foo }}', {prefix: '@'}), '{{{ @page.foo }}}');
+    });
+
     it(`should prefix variables with options.prefix`, function() {
       var name = 'types-prefixed.md';
       var fixtures = cwd('fixtures/basics');
@@ -49,6 +65,9 @@ describe('all tags in the liquid docs', function() {
         var expected = fs.readFileSync(cwd('expected/_layouts', name), 'utf8');
         var fixture = fs.readFileSync(path.join(fixtures, name), 'utf8');
         var actual = convert(fixture);
+        if (expected !== actual) {
+          console.log(actual);
+        }
         assert.equal(actual, expected);
       });
     });

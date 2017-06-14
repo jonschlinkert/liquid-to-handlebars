@@ -46,11 +46,11 @@ Here the input value is a string:
 <p class="code-label">Input</p>
 ```liquid
 {{#raw}}
-{{ceil "3.5"}}
+{{ceil '3.5'}}
 {{/raw}}
 ```
 
 <p class="code-label">Output</p>
 ```text
-{{ceil "3.5"}}
+{{ceil '3.5'}}
 ```

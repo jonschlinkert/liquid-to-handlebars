@@ -8,7 +8,7 @@ Removes any newline characters (line breaks) from a string.
 <p class="code-label">Input</p>
 ```liquid
 {{#raw}}
-{{#capture "string_with_newlines"}}
+{{#capture 'string_with_newlines'}}
 Hello
 there
 {{/capture}}
@@ -19,7 +19,7 @@ there
 
 <p class="code-label">Output</p>
 ```html
-{{#capture "string_with_newlines"}}
+{{#capture 'string_with_newlines'}}
 Hello
 there
 {{/capture}}

@@ -8,7 +8,7 @@ Makes the first character of a string capitalized.
 <p class="code-label">Input</p>
 ```liquid
 {{#raw}}
-{{capitalize "title"}}
+{{capitalize 'title'}}
 {{/raw}}
 ```
 
@@ -22,7 +22,7 @@ Title
  <p class="code-label">Input</p>
 ```liquid
 {{#raw}}
-{{capitalize "my great title"}}
+{{capitalize 'my great title'}}
 {{/raw}}
 ```
 

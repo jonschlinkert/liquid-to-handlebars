@@ -8,19 +8,19 @@ Returns the number of characters in a string or the number of items in an array.
 <p class="code-label">Input</p>
 ```liquid
 {{#raw}}
-{{size "Ground control to Major Tom."}}
+{{size 'Ground control to Major Tom.'}}
 {{/raw}}
 ```
 
 <p class="code-label">Output</p>
 ```text
-{{size "Ground control to Major Tom."}}
+{{size 'Ground control to Major Tom.'}}
 ```
 
 <p class="code-label">Input</p>
 ```liquid
 {{#raw}}
-{{split (assign "my_array" "apples, oranges, peaches, plums") ", "}}
+{{assign 'my_array' (split 'apples, oranges, peaches, plums' ', ')}}
 
 {{size my_array}}
 {{/raw}}
@@ -28,7 +28,7 @@ Returns the number of characters in a string or the number of items in an array.
 
 <p class="code-label">Output</p>
 ```text
-{{split (assign "my_array" "apples, oranges, peaches, plums") ", "}}
+{{assign 'my_array' (split 'apples, oranges, peaches, plums' ', ')}}
 
 {{size my_array}}
 ```

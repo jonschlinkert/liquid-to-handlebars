@@ -1,0 +1,19 @@
+{{include 'collection-listing'}}
+
+{{#comment}}
+<!-- Alternatively, if not using a snippet, use the code below.
+To use the code below, get rid of the above 'include', and get rid of the comment tags, and you're in business. -->
+{{#paginate collections by=6}}
+  <h1>Collections</h1>
+  <ul class="grid clearfix">
+  {{#each collections as |collection|}}
+    {{include 'collection-grid-item' 'three-per-row'}}
+  {{/each}}
+  </ul>
+  {{#if (gt paginate.pages 1)}}
+  <div id="pagination">
+    {{default_pagination paginate}}
+  </div>
+  {{/if}}
+{{/paginate}}
+{{/comment}}

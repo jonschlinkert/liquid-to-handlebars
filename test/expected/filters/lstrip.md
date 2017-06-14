@@ -8,11 +8,11 @@ Removes all whitespaces (tabs, spaces, and newlines) from the beginning of a str
 <p class="code-label">Input</p>
 ```liquid
 {{#raw}}
-{{lstrip "          So much room for activities!          "}}
+{{lstrip '          So much room for activities!          '}}
 {{/raw}}
 ```
 
 <p class="code-label">Output</p>
 ```text
-{{lstrip "          So much room for activities!          "}}
+{{lstrip '          So much room for activities!          '}}
 ```

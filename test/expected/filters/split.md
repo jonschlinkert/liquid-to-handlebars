@@ -8,7 +8,7 @@ Divides an input string into an array using the argument as a separator. `split`
 <p class="code-label">Input</p>
 ```liquid
 {{#raw}}
-{{split (assign "beatles" "John, Paul, George, Ringo") ", "}}
+{{assign 'beatles' (split 'John, Paul, George, Ringo' ', ')}}
 
 {{#each beatles as |member|}}
   {{ member }}
@@ -18,7 +18,7 @@ Divides an input string into an array using the argument as a separator. `split`
 
 <p class="code-label">Output</p>
 ```text
-{{split (assign "beatles" "John, Paul, George, Ringo") ", "}}
+{{assign 'beatles' (split 'John, Paul, George, Ringo' ', ')}}
 
 {{#each beatles as |member|}}
   {{ member }}

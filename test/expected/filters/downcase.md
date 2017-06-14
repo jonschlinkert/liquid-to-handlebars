@@ -8,23 +8,23 @@ Makes each character in a string lowercase. It has no effect on strings which ar
 <p class="code-label">Input</p>
 ```liquid
 {{#raw}}
-{{downcase "Parker Moore"}}
+{{downcase 'Parker Moore'}}
 {{/raw}}
 ```
 
 <p class="code-label">Output</p>
 ```text
-{{downcase "Parker Moore"}}
+{{downcase 'Parker Moore'}}
 ```
 
 <p class="code-label">Input</p>
 ```liquid
 {{#raw}}
-{{downcase "apple"}}
+{{downcase 'apple'}}
 {{/raw}}
 ```
 
 <p class="code-label">Output</p>
 ```text
-{{downcase "apple"}}
+{{downcase 'apple'}}
 ```

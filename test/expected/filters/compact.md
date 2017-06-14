@@ -11,7 +11,7 @@ For this example, assume `site.pages` is an array of content pages for a website
 <p class="code-label">Input</p>
 {{#raw}}
 ```liquid
-{{map (assign "site_categories" site.pages) 'category'}}
+{{assign 'site_categories' (map site.pages 'category')}}
 
 {{#each site_categories as |category|}}
   {{ category }}
@@ -35,7 +35,7 @@ By using `compact` when we create our `site_categories` array, we can remove all
 <p class="code-label">Input</p>
 {{#raw}}
 ```liquid
-{{compact (map (assign "site_categories" site.pages) 'category')}}
+{{assign 'site_categories' (compact (map site.pages 'category'))}}
 
 {{#each site_categories as |category|}}
   {{ category }}

@@ -12,7 +12,7 @@ Executes a block of code only if a certain condition is `true`.
 <p class="code-label">Input</p>
 ```liquid
 {{#raw}}
-{{#if (is product.title "Awesome Shoes")}}
+{{#if (is product.title 'Awesome Shoes')}}
   These shoes are awesome!
 {{/if}}
 {{/raw}}
@@ -30,7 +30,7 @@ The opposite of `if` – executes a block of code only if a certain condition is
 <p class="code-label">Input</p>
 ```liquid
 {{#raw}}
-{{#unless (is product.title "Awesome Shoes")}}
+{{#unless (is product.title 'Awesome Shoes')}}
   These shoes are not awesome.
 {{/unless}}
 {{/raw}}
@@ -45,7 +45,7 @@ This would be the equivalent of doing the following:
 
 ```liquid
 {{#raw}}
-{{#if (isnt product.title "Awesome Shoes")}}
+{{#if (isnt product.title 'Awesome Shoes')}}
   These shoes are not awesome.
 {{/if}}
 {{/raw}}
@@ -59,9 +59,9 @@ Adds more conditions within an `if` or `unless` block.
 ```liquid
 {{#raw}}
 <!-- If customer.name = 'anonymous' -->
-{{#if (is customer.name "kevin")}}
+{{#if (is customer.name 'kevin')}}
   Hey Kevin!
-{{else if (is customer.name "anonymous")}}
+{{else if (is customer.name 'anonymous')}}
   Hey Anonymous!
 {{else}}
   Hi Stranger!
@@ -81,11 +81,11 @@ Creates a switch statement to compare a variable with different values. `case` i
 <p class="code-label">Input</p>
 ```liquid
 {{#raw}}
-{{assign "handle" "cake"}}
+{{assign 'handle' 'cake'}}
 {{#case handle}}
-  {{when "cake"}}
+  {{when 'cake'}}
      This is a cake
-  {{when "cookie"}}
+  {{when 'cookie'}}
      This is a cookie
   {{else}}
      This is not a cake nor a cookie

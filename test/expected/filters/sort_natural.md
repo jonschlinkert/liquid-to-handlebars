@@ -8,9 +8,9 @@ Sorts items in an array by a property of an item in the array.
 <p class="code-label">Input</p>
 ```liquid
 {{#raw}}
-{{split (assign "my_array" "zebra, octopus, giraffe, Sally Snake") ", "}}
+{{assign 'my_array' (split 'zebra, octopus, giraffe, Sally Snake' ', ')}}
 
-{{join (sort_natural my_array) ", "}}
+{{join (sort_natural my_array) ', '}}
 {{/raw}}
 ```
 
