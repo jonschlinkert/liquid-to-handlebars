@@ -66,7 +66,7 @@ describe('all tags in the liquid docs', function() {
         var fixture = fs.readFileSync(path.join(fixtures, name), 'utf8');
         var actual = convert(fixture);
         if (expected !== actual) {
-          console.log(actual)
+          console.log(actual);
         }
         assert.equal(actual, expected);
       });
