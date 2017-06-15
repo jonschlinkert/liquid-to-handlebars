@@ -22,7 +22,7 @@ console.log(convert('Price: ${{ product_price | default: 2.99 }}'));
 //=> 'Price: ${{default product_price 2.99}}'
 ```
 
-You will also need to [include handlebars helpers](#optionsshimHelpers) that are functionally equivalent to the liquid filters that are being replaced. For example:
+You will also need to include any missing handlebars helpers that provide similar functionality to the liquid filters that are being replaced. For example:
 
 ```js
 var hbs = require('handlebars');
@@ -67,7 +67,7 @@ Now, when you run handlebars, if you see a message like this:
 missing helper {{foo}}
 ```
 
-You can either create the helper from scratch, or use a helper library that already includes the helpers you need.
+You can either create the `foo` helper from scratch, or use a helper library that already includes the helpers you need.
 
 Any of the following libraries may be used, but the [liquid-filters][] library might be most useful (during migration, at least).
 
@@ -82,62 +82,8 @@ var hbs = require('handlebars');
 var filters = require('liquid-filters');
 var helpers = require('template-helpers');
 
-hbs.register(filters());
-hbs.register(helpers());
-```
-
-## Options
-
-### options.shimHelpers
-
-**Type**: `string` (the name of the file to generate)
-
-**Default**: `undefined`
-
-**Description**:
-
-Generate placeholder (_noop_) handlebars helpers to the specified `filename` to shim any liquid filters found during the conversion.
-
-If you enable `options.shimHelpers`, liquid-to-handlebars will attempt to generate a `helpers.js` file with all of the necessary helpers (and block helpers) to
-
-In other words, since liquid filters are converted to handlebars helper syntax, and liquid ships with a number of built-in [filters](https://github.com/Shopify/liquid/wiki/Liquid-for-Designers) that are not included in handlebars, you'll need to either create the helpers yourself, or use a library like [liquid-filters][], or [template-helpers](https://github.com/jonschlinkert/template-helpers).
-
-**Example**
-
-The following liquid templates:
-
-```liquid
-{% for i in (1..item.quantity) %}
-  {{ i }}
-{% endfor %}
-```
-
-Converts to a handlebars `each` loop, and since handlebars does not have an equivalent syntax for liquid ranges (`i..item.quantity`), the range syntax is converted to use a `range` helper.
-
-```handlebars
-{{#each (range 1 item.quantity) as |i|}}
-  {{ i }}
-{{/each}}
-```
-
-Thus, given the following config:
-
-```js
-convert('example.liquid', {shimHelpers: 'foo.js'});
-```
-
-A `foo.js` file will also be generated with a **noop** `range` helper (and a `toString` utility function that is used with all generated helpers).
-
-```js
-var helpers = module.exports;
-
-function toString(val) {
-  return typeof val === 'string' ? val : '';
-}
-
-helpers.range = function(val) {
-  return toString(val);
-};
+hbs.registerHelper(filters());
+hbs.registerHelper(helpers());
 ```
 
 ## Examples
@@ -181,6 +127,35 @@ To this handlebars:
   <h1>{{ settings.fp_heading }}</h1>
 {{/if}}
 ```
+
+**case**
+
+From this liquid:
+
+```liquid
+{% case handle %}
+{% when 'cake' %}
+  This is a cake
+{% when 'cookie' %}
+  This is a cookie
+{% else %}
+  This is not a cookie/cake
+{% endcase %}
+```
+
+To this handlebars:
+
+```handlebars
+{{#is handle 'cake'}}
+  This is a cake
+{{else is handle 'cookie'}}
+  This is a cookie
+{{ else }}
+  This is not a cookie/cake
+{{/is}}
+```
+
+Requires the ["is" helper](https://github.com/nimojs/handlebars-helper-is).
 
 **else**
 
