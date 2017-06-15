@@ -1,17 +1,12 @@
 {{#comment}}
-
   This snippet renders meta data needed to create a Twitter card
   for products and articles.
-
   Your cards must be approved by Twitter to be activated
    - https://dev.twitter.com/docs/cards/validation/validator
-
   More information:
    - https://dev.twitter.com/docs/cards/types/product-card
    - https://dev.twitter.com/docs/cards/types/summary-card
-
 {{/comment}}
- 
 {{#if (contains template 'product')}}
   <meta name="twitter:card" content="product" />
   <meta name="twitter:title" content="{{escape product.title}}" />
@@ -21,8 +16,8 @@
   <meta name="twitter:data1" content="{{#if product.price_varies}}From {{/if}}{{strip_html (money_with_currency product.price)}}" />
   {{#if (is product.vendor blank)}}
   <meta name="twitter:label2" content="Availability" />
-  <meta name="twitter:data2" content="In stock" />  
-  {{ else }}
+  <meta name="twitter:data2" content="In stock" />
+  {{else}}
   <meta name="twitter:label2" content="Brand" />
   <meta name="twitter:data2" content="{{escape product.vendor}}" />
   {{/if}}

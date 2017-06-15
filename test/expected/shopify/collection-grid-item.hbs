@@ -1,18 +1,15 @@
 {{#comment}}If no value is passed to the snippet, we will set the snippet variable to a sensible default.{{/comment}}
 {{#if (is collection-grid-item '')}}{{assign 'collection-grid-item' 'three-per-row'}}{{/if}}
-
 <li class="{{ collection-grid-item }} centered">
-
   <div class="coll-image-wrap">
     <a href="{{ collection.url }}">
       {{#if collection.image}}
       <img src="{{img_url collection 'grande'}}" alt="{{escape collection.image.alt}}" />
-      {{ else }}
+      {{else}}
       <img src="{{img_url collection.products.first 'grande'}}" alt="{{escape collection.title}}" />
       {{/if}}
     </a>
   </div><!-- .coll-image-wrap -->
-  
   <div class="coll-caption">
       <a class="coll-title" href="{{ collection.url }}">
         {{ collection.title }}
@@ -21,9 +18,7 @@
         {{ collection.all_products_count }} {{pluralize collection.all_products_count 'item' 'items'}}
       </span>
   </div><!-- .coll-caption -->
-  
 </li>
-
 {{#comment}}
 You don't need to use a clearing div. Use whatever it is you use to clear
 floated elements. The code that follows just just shows you how to use a cycle element.
@@ -32,7 +27,6 @@ element in this file ( we called that other one 'last' ). If you have more than 
 cycle element in a rendered view, you'll need to name all of them.
 The cycle element is documented here: http://docs.shopify.com/themes/liquid-basics/logic#cycle
 {{/comment}}
-
 {{#if (is collection-grid-item 'six-per-row')}}
 {{cycle '' '' '' '' '' '<div style="clear:both"></div>' name='clear'}}
 {{else if (is collection-grid-item 'five-per-row')}}

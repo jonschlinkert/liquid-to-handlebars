@@ -9,7 +9,7 @@
   <meta property="og:price:currency" content="{{ shop.currency }}" />
 {% elsif template contains 'article' %}
   <meta property="og:type" content="article" />
-  <meta property="og:title" content="{{ article.title | strip_html | escape }}" />  
+  <meta property="og:title" content="{{ article.title | strip_html | escape }}" />
   {% assign img_tag = '<' | append: 'img' %}
   {% if article.content contains img_tag %}
     {% assign src = article.content | split: 'src="' %}
@@ -23,11 +23,10 @@
   {% if settings.use_logo %}
     <meta property="og:image" content="http:{{ 'logo.png' | asset_url }}" />
     <meta property="og:image:secure_url" content="https:{{ 'logo.png' | asset_url }}" />
-  {% endif %}  
+  {% endif %}
   <meta property="og:title" content="{{ page_title | escape }}" />
   <meta property="og:type" content="website" />
 {% endif %}
-
 {% if page_description %}
 <meta property="og:description" content="{{ page_description }}" />
 {% endif %}

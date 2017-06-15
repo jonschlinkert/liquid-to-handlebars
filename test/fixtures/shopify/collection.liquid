@@ -3,14 +3,11 @@
   - Never access collection.products before the opening paginate tag.
   - Never paginate by more than 50.
 {% endcomment %}
-
 {% assign products_per_page = settings.products_per_row | times: settings.number_of_rows %}
 {% assign numbers = 'zero, one, two, three, four, five, six' | split: ',' %}
 {% assign products_per_row = settings.products_per_row | times: 1 %}
 {% assign products_per_row = numbers[products_per_row] | strip | append: '-per-row' %}
-
 {% paginate collection.products by products_per_page %}
-
 {% comment %}
   Re-use the .rte class wherever you output content that was added by a merchant using
   the Rich Text Editor ( 'rte' stands for rich text editor ).
@@ -22,9 +19,7 @@
   - page content
   - blog post
 {% endcomment %}
-
 <h1 class="left">{{ collection.title }}</h1>
-
 {% comment %}
   Collection sorting. Needs the JavaScript that is at the bottom of this file.
 {% endcomment %}
@@ -40,14 +35,12 @@
   <option value="best-selling">Best Selling</option>
  </select>
 {% endif %}
-
 {% comment %}
   Listing all tags within the current collection.
   Shopify uses product tags to manage subcategories inside collections.
   See 'How do I create subcategories of products?' at
   http://bit.ly/1j1Dti4 for details.
 {% endcomment %}
-
 {% if collection.all_tags.size > 0 %}
 <ul class="subcategories clearfix clear">
   <li class="{% unless current_tags %} active{% endunless %}">
@@ -66,13 +59,11 @@
   {% endfor %}
 </ul>
 {% endif %}
-
 {% if collection.description.size > 0 %}
 <div class="rte clearfix">
   {{ collection.description }}
 </div>
 {% endif %}
-
 <ul class="grid clearfix">
 {% for product in collection.products %}
   {% include 'product-grid-item' with products_per_row %}
@@ -80,15 +71,12 @@
   <p>There are no products in this view.</p>
 {% endfor %}
 </ul>
-
 {% if paginate.pages > 1 %}
 <div class="pagination centered">
   {{ paginate | default_pagination }}
 </div>
 {% endif %}
-
 {% endpaginate %}
-
 {% comment %}
   JavaScript for collection sorting.
 {% endcomment %}

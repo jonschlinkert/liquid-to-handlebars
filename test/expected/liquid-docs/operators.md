@@ -2,11 +2,8 @@
 title: Operators
 description: Using operators to perform calculations in the Liquid template language.
 ---
-
 Liquid includes many logical and comparison operators.
-
 ## Basic operators
-
 <table>
   <tbody>
     <tr>
@@ -43,9 +40,7 @@ Liquid includes many logical and comparison operators.
     </tr>
   </tbody>
 </table>
-
 For example:
-
 ```liquid
 {{#raw}}
 {{#if (is product.title 'Awesome Shoes')}}
@@ -53,9 +48,7 @@ For example:
 {{/if}}
 {{/raw}}
 ```
-
 You can use multiple operators in a tag:
-
 ```liquid
 {{#raw}}
 {{#if (or (is product.type 'Shirt') (is product.type 'Shoes'))}}
@@ -63,11 +56,8 @@ You can use multiple operators in a tag:
 {{/if}}
 {{/raw}}
 ```
-
 ## contains
-
 `contains` checks for the presence of a substring inside a string.
-
 ```liquid
 {{#raw}}
 {{#if (contains product.title 'Pack')}}
@@ -75,9 +65,7 @@ You can use multiple operators in a tag:
 {{/if}}
 {{/raw}}
 ```
-
 `contains` can also check for the presence of a string in an array of strings.
-
 ```liquid
 {{#raw}}
 {{#if (contains product.tags 'Hello')}}
@@ -85,5 +73,4 @@ You can use multiple operators in a tag:
 {{/if}}
 {{/raw}}
 ```
-
 `contains` can only search strings. You cannot use it to check for an object in an array of objects.

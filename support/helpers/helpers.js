@@ -1,5 +1,5 @@
 function toString(val) {
-  return typeof val === 'string' ? val : '';
+  return val != null ? val : '';
 }
 
 exports.abs = function(val) {
@@ -15,6 +15,10 @@ exports.asset_url = function(val) {
 };
 
 exports.assign = function(val) {
+  return toString(val);
+};
+
+exports.camelize = function(val) {
   return toString(val);
 };
 
@@ -102,6 +106,10 @@ exports.get = function(val) {
   return toString(val);
 };
 
+exports.global_asset_url = function(val) {
+  return toString(val);
+};
+
 exports.handle = function(val) {
   return toString(val);
 };
@@ -146,6 +154,10 @@ exports.link_to = function(val) {
   return toString(val);
 };
 
+exports.link_to_add_tag = function(val) {
+  return toString(val);
+};
+
 exports.link_to_remove_tag = function(val) {
   return toString(val);
 };
@@ -166,6 +178,10 @@ exports.map = function(val) {
   return toString(val);
 };
 
+exports.matched = function(val) {
+  return toString(val);
+};
+
 exports.minus = function(val) {
   return toString(val);
 };
@@ -178,11 +194,19 @@ exports.money = function(val) {
   return toString(val);
 };
 
+exports.money_with_currency = function(val) {
+  return toString(val);
+};
+
 exports.money_without_currency = function(val) {
   return toString(val);
 };
 
 exports.newline_to_br = function(val) {
+  return toString(val);
+};
+
+exports.output = function(val) {
   return toString(val);
 };
 
@@ -199,6 +223,10 @@ exports.plus = function(val) {
 };
 
 exports.prepend = function(val) {
+  return toString(val);
+};
+
+exports.product_img_url = function(val) {
   return toString(val);
 };
 
@@ -274,6 +302,10 @@ exports.times = function(val) {
   return toString(val);
 };
 
+exports.to_img = function(val) {
+  return toString(val);
+};
+
 exports.truncate = function(val) {
   return toString(val);
 };
@@ -298,7 +330,15 @@ exports.url_encode = function(val) {
   return toString(val);
 };
 
-exports.when = function(val) {
+exports.url_for_type = function(val) {
+  return toString(val);
+};
+
+exports.url_for_vendor = function(val) {
+  return toString(val);
+};
+
+exports.weight_with_unit = function(val) {
   return toString(val);
 };
 

@@ -4,12 +4,6 @@ exports.capture = function() {
   return opts.fn(this);
 };
 
-exports.case = function() {
-  var args = [].slice.call(arguments);
-  var opts = args.pop();
-  return opts.fn(this);
-};
-
 exports.each = function() {
   var args = [].slice.call(arguments);
   var opts = args.pop();
@@ -23,6 +17,12 @@ exports.form = function() {
 };
 
 exports.if = function() {
+  var args = [].slice.call(arguments);
+  var opts = args.pop();
+  return opts.fn(this);
+};
+
+exports.is = function() {
   var args = [].slice.call(arguments);
   var opts = args.pop();
   return opts.fn(this);

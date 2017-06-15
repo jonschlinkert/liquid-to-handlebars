@@ -15,6 +15,10 @@ function expected(name) {
 }
 
 describe('shopify templates', function() {
+  it('should convert the shopify cheatsheet', function() {
+    assert.equal(convert(fixture('cheatsheet')), expected('cheatsheet'));
+  });
+
   it('should convert article*', function() {
     assert.equal(convert(fixture('article')), expected('article'));
     assert.equal(convert(fixture('article-grid-item')), expected('article-grid-item'));

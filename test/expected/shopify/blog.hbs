@@ -1,21 +1,16 @@
 {{#paginate blog.articles by=5}}
-
 {{#if current_tags}}
 <h1 class="delta">{{link_to blog.title blog.url}} <span class="quiet">&raquo;</span> {{ current_tags.first }}</h1>
-{{ else }}
+{{else}}
 <h1 class="delta">{{ blog.title }}</h1>
 {{/if}}
-
 <div class="articles">
-
   {{#each blog.articles as |article|}}
-
   {{#comment}}
     Let's extract a blog image.
     We will look for an image in the excerpt first, and in the blog post itself second.
     We will remove the image suffix to grab as big an image as we can.
   {{/comment}}
-
   {{assign 'article_has_image' false}}
   {{assign 'img_tag' (append '<' 'img')}}
   {{#if (contains article.excerpt_or_content img_tag)}}
@@ -26,7 +21,6 @@
       {{assign 'image_src' (replace (replace (replace (replace (replace src '_small' '') '_compact' '') '_medium' '') '_large' '') '_grande' '')}}
     {{/if}}
   {{/if}}
-
   <div class="article{{#if forloop.first}} first{{/if}}{{#if forloop.last}} last{{/if}} clear">
     <h2 class="title">
       <a href="{{ article.url }}">{{ article.title }}</a>
@@ -44,13 +38,13 @@
       </div>
       <div class="two-thirds column">
         <div class="rte fadeout-overflow-bottom grid-margins">
-      {{ else }}
+      {{else}}
       <div class="full column">
         <div class="rte">
       {{/if}}
           {{#if (gt article.excerpt.size 0)}}
           <div class="no-images">{{ article.excerpt }}</div>
-          {{ else }}
+          {{else}}
           <p>{{truncatewords (strip_html article.content) 120}}</p>
           {{/if}}
         </div>
@@ -74,11 +68,8 @@
       {{/if}}
   </div>
 </div>
-
 {{/each}}
-
 </div>
-
 {{#if (gt paginate.pages 1)}}
 <div class="pagination">
 {{#comment}}
@@ -88,5 +79,4 @@
 {{/comment}}
 {{replace (replace (default_pagination paginate) 'Previous' 'Newer articles') 'Next' 'Older articles'}}
 {{/if}}
-
 {{/paginate}}

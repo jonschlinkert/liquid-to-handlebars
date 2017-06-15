@@ -9,7 +9,7 @@
   <meta property="og:price:currency" content="{{ shop.currency }}" />
 {{else if (contains template 'article')}}
   <meta property="og:type" content="article" />
-  <meta property="og:title" content="{{escape (strip_html article.title)}}" />  
+  <meta property="og:title" content="{{escape (strip_html article.title)}}" />
   {{assign 'img_tag' (append '<' 'img')}}
   {{#if (contains article.content img_tag)}}
     {{assign 'src' (split article.content 'src="')}}
@@ -19,15 +19,14 @@
       <meta property="og:image:secure_url" content="https:{{ src }}" />
     {{/if}}
   {{/if}}
-{{ else }}
+{{else}}
   {{#if settings.use_logo}}
     <meta property="og:image" content="http:{{asset_url 'logo.png'}}" />
     <meta property="og:image:secure_url" content="https:{{asset_url 'logo.png'}}" />
-  {{/if}}  
+  {{/if}}
   <meta property="og:title" content="{{escape page_title}}" />
   <meta property="og:type" content="website" />
 {{/if}}
-
 {{#if page_description}}
 <meta property="og:description" content="{{{ page_description }}}" />
 {{/if}}

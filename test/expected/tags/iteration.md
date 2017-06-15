@@ -2,13 +2,9 @@
 title: Iteration
 description: An overview of iteration or 'loop' tags in the Liquid template language.
 ---
-
 Iteration tags run blocks of code repeatedly.
-
 ## for
-
 Repeatedly executes a block of code. For a full list of attributes available within a `for` loop, see [forloop (object)](https://docs.shopify.com/themes/liquid/objects/for-loops).
-
 <p class="code-label">Input</p>
 ```liquid
 {{#raw}}
@@ -17,62 +13,49 @@ Repeatedly executes a block of code. For a full list of attributes available wit
   {{/each}}
 {{/raw}}
 ```
-
 <p class="code-label">Output</p>
 ```text
 hat shirt pants
 ```
-
 ### break
-
 Causes the loop to stop iterating when it encounters the `break` tag.
-
 <p class="code-label">Input</p>
 ```liquid
 {{#raw}}
 {{#each (range 1 5) as |i|}}
   {{#if (is i 4)}}
-    {{ break }}
-  {{ else }}
+    {{break}}
+  {{else}}
     {{ i }}
   {{/if}}
 {{/each}}
 {{/raw}}
 ```
-
 <p class="code-label">Output</p>
 ```text
 1 2 3
 ```
-
 ### continue
-
 Causes the loop to skip the current iteration when it encounters the `continue` tag.
-
 <p class="code-label">Input</p>
 ```liquid
 {{#raw}}
 {{#each (range 1 5) as |i|}}
   {{#if (is i 4)}}
-    {{ continue }}
-  {{ else }}
+    {{continue}}
+  {{else}}
     {{ i }}
   {{/if}}
 {{/each}}
 {{/raw}}
 ```
-
 <p class="code-label">Output</p>
 ```text
 1 2 3   5
 ```
-
 ## for (parameters)
-
 ### limit
-
 Limits the loop to the specified number of iterations.
-
 <p class="code-label">Input</p>
 ```liquid
 {{#raw}}
@@ -82,16 +65,12 @@ Limits the loop to the specified number of iterations.
 {{/each}}
 {{/raw}}
 ```
-
 <p class="code-label">Output</p>
 ```text
 1 2
 ```
-
 ### offset
-
 Begins the loop at the specified index.
-
 <p class="code-label">Input</p>
 ```liquid
 {{#raw}}
@@ -101,44 +80,34 @@ Begins the loop at the specified index.
 {{/each}}
 {{/raw}}
 ```
-
 <p class="code-label">Output</p>
 ```text
 3 4 5 6
 ```
-
 ### range
-
 Defines a range of numbers to loop through. The range can be defined by both literal and variable numbers.
-
 <p class="code-label">Input</p>
 ```liquid
 {{#raw}}
 {{#each (range 3 5) as |i|}}
   {{ i }}
 {{/each}}
-
 {{assign 'num' 4}}
 {{#each (range 1 num) as |i|}}
   {{ i }}
 {{/each}}
 {{/raw}}
-
 {{#each (range 1 item.quantity) as |i|}}
   {{ i }}
 {{/each}}
 ```
-
 <p class="code-label">Output</p>
 ```text
 3 4 5
 1 2 3 4
 ```
-
 ### reversed
-
 Reverses the order of the loop.
-
 <p class="code-label">Input</p>
 ```liquid
 {{#raw}}
@@ -148,18 +117,13 @@ Reverses the order of the loop.
 {{/each}}
 {{/raw}}
 ```
-
 <p class="code-label">Output</p>
 ```text
 6 5 4 3 2 1
 ```
-
 ## cycle
-
 Loops through a group of strings and outputs them in the order that they were passed as parameters. Each time `cycle` is called, the next string that was passed as a parameter is output.
-
 `cycle` must be used within a [for](#for) loop block.
-
 <p class="code-label">Input</p>
 ```liquid
 {{#raw}}
@@ -169,7 +133,6 @@ Loops through a group of strings and outputs them in the order that they were pa
 {{cycle 'one' 'two' 'three'}}
 {{/raw}}
 ```
-
 <p class="code-label">Output</p>
 ```text
 one
@@ -177,20 +140,13 @@ two
 three
 one
 ```
-
 Uses for `cycle` include:
-
 -   applying odd/even classes to rows in a table
 -   applying a unique class to the last product thumbnail in a row
-
 ## cycle (parameters)
-
 `cycle` accepts a parameter called `cycle group` in cases where you need multiple `cycle` blocks in one template. If no name is supplied for the cycle group, then it is assumed that multiple calls with the same parameters are one group.
-
 ## tablerow
-
 Generates an HTML table. Must be wrapped in opening `<table>` and closing `</table>` HTML tags.
-
 <p class="code-label">Input</p>
 ```liquid
 {{#raw}}
@@ -201,7 +157,6 @@ Generates an HTML table. Must be wrapped in opening `<table>` and closing `</tab
 </table>
 {{/raw}}
 ```
-
 <p class="code-label">Output</p>
 ```html
 <table>
@@ -227,13 +182,9 @@ Generates an HTML table. Must be wrapped in opening `<table>` and closing `</tab
   </tr>
 </table>
 ```
-
 ## tablerow (parameters)
-
 ### cols
-
 Defines how many columns the tables should have.
-
 <p class="code-label">Input</p>
 ```liquid
 {{#raw}}
@@ -242,7 +193,6 @@ Defines how many columns the tables should have.
 {{/tablerow}}
 {{/raw}}
 ```
-
 <p class="code-label">Output</p>
 ```html
 <table>
@@ -272,11 +222,8 @@ Defines how many columns the tables should have.
   </tr>
 </table>
 ```
-
 #### limit
-
 Exits the tablerow after a specific index.
-
 ```liquid
 {{#raw}}
 {{#tablerow (limit (cols collection.products 2) 3) as |product|}}
@@ -284,11 +231,8 @@ Exits the tablerow after a specific index.
 {{/tablerow}}
 {{/raw}}
 ```
-
 ### offset
-
 Starts the tablerow after a specific index.
-
 ```liquid
 {{#raw}}
 {{#tablerow (offset (cols collection.products 2) 3) as |product|}}
@@ -296,24 +240,18 @@ Starts the tablerow after a specific index.
 {{/tablerow}}
 {{/raw}}
 ```
-
 ### range
-
 Defines a range of numbers to loop through. The range can be defined by both literal and variable numbers.
-
 ```liquid
 {{#raw}}
 <!--variable number example-->
-
 {{assign 'num' 4}}
 <table>
 {{#tablerow (range 1 num) as |i|}}
   {{ i }}
 {{/tablerow}}
 </table>
-
 <!--literal number example-->
-
 <table>
 {{#tablerow (range 3 5) as |i|}}
   {{ i }}

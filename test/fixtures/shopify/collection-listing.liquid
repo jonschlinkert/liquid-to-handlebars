@@ -7,20 +7,15 @@
   "Taking Control of your Catalog Page" http://docs.shopify.com/support/your-store/collections/taking-control-of-your-catalog-page
   and don't want that collection to appear on their /collections page.
 {% endcomment %}
-
 {% assign products_per_page = settings.products_per_row | times: settings.number_of_rows %}
 {% assign numbers = 'one, two, three, four, five, six' | split: ',' %}
 {% assign products_per_row = settings.products_per_row | minus: 1 %}
 {% assign products_per_row = numbers[products_per_row] | strip | append: '-per-row' %}
-
 {% assign using_link_list = false %}
-
 {% if collection-listing != '' and linklists[collection-listing].handle == collection-listing and linklists[collection-listing].links.size > 0 %}
   {% assign using_link_list = true %}
 {% endif %}
-
 <h1>{% if using_link_list %}{{ linklists[collection-listing].title }}{% else %}Collections{% endif %}</h1>
-
 {% if using_link_list %}
 <ul class="grid clearfix">
 {% for link in linklists[collection-listing].links %}

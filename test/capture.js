@@ -20,7 +20,7 @@ describe('capture', function() {
     },
     {
       fixture: '{% capture "foo" %}{{ bar }}{% endcapture %}{{upper foo}}',
-      expected: '{{#capture \'foo\'}}{{ bar }}{{/capture}}{{ upper foo }}'
+      expected: '{{#capture \'foo\'}}{{ bar }}{{/capture}}{{upper foo}}'
     },
   ];
 

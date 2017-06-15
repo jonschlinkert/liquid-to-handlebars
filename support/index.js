@@ -91,7 +91,7 @@ function createExamples(patterns, options) {
     }
   }
 
-  // $ node support/index.js > helpers.js -h
+  // $ node support/index.js
   write.sync('support/helpers/helpers.json', JSON.stringify(vals, null, 2));
   write.sync('support/helpers/helpers.js', helpers.join('\n\n'));
   write.sync('support/helpers/blocks.js', blocks.join('\n\n'));

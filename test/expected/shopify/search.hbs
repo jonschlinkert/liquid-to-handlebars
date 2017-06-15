@@ -11,26 +11,20 @@ We are using a div#searchresults below so that the styles defined in search.css 
 applied to the elements on this page; the 'searchresults' id is used in the CSS
 selectors inside search.css.
 {{/comment}}
-
 <div id="searchresults">
-
   <div class="centered">
     <form action="/search" method="get" class="search-form" role="search">
       <input name="q" type="search" id="search-field" placeholder="Search store..." value="{{escape search.terms}}" />
       <input type="submit" id="search-submit" value="Search" />
     </form>
   </div>
-
   {{#comment}}
   search.performed is false when accessing the /search page without a 'q' parameter set
   in the URL. A shop-owner can link to the /search page from one of his link lists.
   It is important to show a search form on that page if search.performed is false.
   {{/comment}}
-
   {{#if search.performed}}
-
     {{#paginate search.results by=10}}
-
     {{#comment}}
     Common pitfall to avoid: search.results should never be accessed before the opening
     paginate tag. Move the opening and closing paginate tags to the very top and bottom of your
@@ -38,10 +32,9 @@ selectors inside search.css.
     If you fail to do the above, the pagination of search results will be broken.
     search.results_count is fine to access in or out of the paginate block.
     {{/comment}}
-
     {{#if (is search.results_count 0)}}
     <p class="centered">Your search for "{{ search.terms }}" did not yield any results.</p>
-    {{ else }}
+    {{else}}
     <ol>
       {{#each search.results as |item|}}
       <li class="clearfix">
@@ -58,15 +51,11 @@ selectors inside search.css.
       {{/each}}
     </ol>
     {{/if}}
-
     {{#if (gt paginate.pages 1)}}
     <div id="pagination">
       {{default_pagination paginate}}
     </div>
     {{/if}}
-
     {{/paginate}}
-
   {{/if}}
-
 </div>

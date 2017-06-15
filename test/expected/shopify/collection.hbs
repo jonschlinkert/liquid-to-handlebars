@@ -3,14 +3,11 @@
   - Never access collection.products before the opening paginate tag.
   - Never paginate by more than 50.
 {{/comment}}
-
 {{assign 'products_per_page' (times settings.products_per_row settings.number_of_rows)}}
 {{assign 'numbers' (split 'zero, one, two, three, four, five, six' ',')}}
 {{assign 'products_per_row' (times settings.products_per_row 1)}}
 {{assign 'products_per_row' (append (strip (get numbers products_per_row)) '-per-row')}}
-
 {{#paginate collection.products by=products_per_page}}
-
 {{#comment}}
   Re-use the .rte class wherever you output content that was added by a merchant using
   the Rich Text Editor ( 'rte' stands for rich text editor ).
@@ -22,9 +19,7 @@
   - page content
   - blog post
 {{/comment}}
-
 <h1 class="left">{{ collection.title }}</h1>
-
 {{#comment}}
   Collection sorting. Needs the JavaScript that is at the bottom of this file.
 {{/comment}}
@@ -40,14 +35,12 @@
   <option value="best-selling">Best Selling</option>
  </select>
 {{/if}}
-
 {{#comment}}
   Listing all tags within the current collection.
   Shopify uses product tags to manage subcategories inside collections.
   See 'How do I create subcategories of products?' at
   http://bit.ly/1j1Dti4 for details.
 {{/comment}}
-
 {{#if (gt collection.all_tags.size 0)}}
 <ul class="subcategories clearfix clear">
   <li class="{{#unless current_tags}} active{{/unless}}">
@@ -58,7 +51,7 @@
   <li class="active">
     {{link_to_remove_tag tag tag}}
   </li>
-  {{ else }}
+  {{else}}
   <li>
     {{link_to_tag tag tag}}
   </li>
@@ -66,29 +59,24 @@
   {{/each}}
 </ul>
 {{/if}}
-
 {{#if (gt collection.description.size 0)}}
 <div class="rte clearfix">
   {{ collection.description }}
 </div>
 {{/if}}
-
 <ul class="grid clearfix">
 {{#each collection.products as |product|}}
   {{include 'product-grid-item' products_per_row}}
-{{ else }}
+{{else}}
   <p>There are no products in this view.</p>
 {{/each}}
 </ul>
-
 {{#if (gt paginate.pages 1)}}
 <div class="pagination centered">
   {{default_pagination paginate}}
 </div>
 {{/if}}
-
 {{/paginate}}
-
 {{#comment}}
   JavaScript for collection sorting.
 {{/comment}}

@@ -1,0 +1,342 @@
+[
+  {
+    "name": "abs"
+  },
+  {
+    "name": "append"
+  },
+  {
+    "name": "asset_url",
+    "val": "{{asset_url 'shop.css'}}"
+  },
+  {
+    "name": "assign",
+    "val": "{{assign 'tobi' 'Tobi'}}"
+  },
+  {
+    "name": "camelize",
+    "val": "{{camelize 'camel case'}}"
+  },
+  {
+    "name": "capitalize"
+  },
+  {
+    "name": "capture",
+    "val": "{{#capture 'attribute_name'}}",
+    "isBlock": true
+  },
+  {
+    "name": "ceil"
+  },
+  {
+    "name": "compact"
+  },
+  {
+    "name": "customer_login_link",
+    "val": "{{customer_login_link 'Log in'}}"
+  },
+  {
+    "name": "customer_logout_link",
+    "val": "{{customer_logout_link 'Log out'}}"
+  },
+  {
+    "name": "customer_register_link",
+    "val": "{{customer_register_link 'Create an account'}}"
+  },
+  {
+    "name": "cycle",
+    "val": "{{cycle 'one' 'two' 'three'}}"
+  },
+  {
+    "name": "date"
+  },
+  {
+    "name": "decrement",
+    "val": "{{decrement variable}}"
+  },
+  {
+    "name": "default"
+  },
+  {
+    "name": "default_errors",
+    "val": "{{default_errors form.errors}}"
+  },
+  {
+    "name": "default_pagination",
+    "val": "{{default_pagination paginate}}"
+  },
+  {
+    "name": "divided_by"
+  },
+  {
+    "name": "downcase"
+  },
+  {
+    "name": "each",
+    "val": "{{#each @site.users as |user|}}",
+    "isBlock": true
+  },
+  {
+    "name": "else",
+    "val": "{{else if <CONDITION>}}"
+  },
+  {
+    "name": "endraw",
+    "val": "{{{% endraw %}` and `{% raw %}}"
+  },
+  {
+    "name": "escape"
+  },
+  {
+    "name": "escape_once"
+  },
+  {
+    "name": "first"
+  },
+  {
+    "name": "floor"
+  },
+  {
+    "name": "form",
+    "val": "{{#form \"new_comment\" article}}",
+    "isBlock": true
+  },
+  {
+    "name": "get",
+    "val": "{{get @site.users 0}}"
+  },
+  {
+    "name": "global_asset_url",
+    "val": "{{global_asset_url 'image.png'}}"
+  },
+  {
+    "name": "handle",
+    "val": "{{handle tag}}"
+  },
+  {
+    "name": "handleize",
+    "val": "{{handleize item.title}}"
+  },
+  {
+    "name": "highlight",
+    "val": "{{highlight (truncatewords (strip_html item.content) 40) search.terms}}"
+  },
+  {
+    "name": "if",
+    "val": "{{#if user}}",
+    "isBlock": true
+  },
+  {
+    "name": "img_tag",
+    "val": "{{img_tag (asset_url 'image-name.gif')}}"
+  },
+  {
+    "name": "img_url",
+    "val": "{{img_url item 'compact'}}"
+  },
+  {
+    "name": "include",
+    "val": "{{include 'icons/desktop-download.svg'}}"
+  },
+  {
+    "name": "increment",
+    "val": "{{increment my_counter}}"
+  },
+  {
+    "name": "is",
+    "val": "{{#is condition 1}}",
+    "isBlock": true
+  },
+  {
+    "name": "join"
+  },
+  {
+    "name": "json",
+    "val": "{{json add_to_cart}}"
+  },
+  {
+    "name": "last"
+  },
+  {
+    "name": "link_to",
+    "val": "{{link_to '&larr; Next Post' blog.next_article}}"
+  },
+  {
+    "name": "link_to_add_tag",
+    "val": "{{link_to_add_tag '+' tag}}"
+  },
+  {
+    "name": "link_to_remove_tag",
+    "val": "{{link_to_remove_tag 'All' current_tags.first}}"
+  },
+  {
+    "name": "link_to_tag",
+    "val": "{{link_to_tag tag tag}}"
+  },
+  {
+    "name": "link_to_vendor",
+    "val": "{{link_to_vendor product.vendor}}"
+  },
+  {
+    "name": "lstrip"
+  },
+  {
+    "name": "map"
+  },
+  {
+    "name": "matched",
+    "val": "{{{{ matched pairs of curly brackets and percent signs }}"
+  },
+  {
+    "name": "minus"
+  },
+  {
+    "name": "modulo"
+  },
+  {
+    "name": "money",
+    "val": "{{money item.price}}"
+  },
+  {
+    "name": "money_with_currency",
+    "val": "{{money_with_currency product.price}}"
+  },
+  {
+    "name": "money_without_currency",
+    "val": "{{money_without_currency product.price}}"
+  },
+  {
+    "name": "newline_to_br"
+  },
+  {
+    "name": "output",
+    "val": "{{ 'output me' }}"
+  },
+  {
+    "name": "paginate",
+    "val": "{{#paginate article.comments by=50}}",
+    "isBlock": true
+  },
+  {
+    "name": "payment_type_img_url",
+    "val": "{{payment_type_img_url type}}"
+  },
+  {
+    "name": "pluralize",
+    "val": "{{pluralize article.comments_count 'comment' 'comments'}}"
+  },
+  {
+    "name": "plus"
+  },
+  {
+    "name": "prepend"
+  },
+  {
+    "name": "product_img_url",
+    "val": "{{product_img_url product.featured_image}}"
+  },
+  {
+    "name": "remove"
+  },
+  {
+    "name": "remove_first"
+  },
+  {
+    "name": "replace"
+  },
+  {
+    "name": "replace_first"
+  },
+  {
+    "name": "reverse"
+  },
+  {
+    "name": "round"
+  },
+  {
+    "name": "rstrip"
+  },
+  {
+    "name": "script_tag",
+    "val": "{{script_tag (asset_url 'shop.js')}}"
+  },
+  {
+    "name": "size"
+  },
+  {
+    "name": "slice"
+  },
+  {
+    "name": "sort"
+  },
+  {
+    "name": "sort_natural"
+  },
+  {
+    "name": "split"
+  },
+  {
+    "name": "strip"
+  },
+  {
+    "name": "strip_html"
+  },
+  {
+    "name": "strip_newlines"
+  },
+  {
+    "name": "stylesheet_tag",
+    "val": "{{stylesheet_tag (asset_url 'shop.css')}}"
+  },
+  {
+    "name": "tablerow",
+    "val": "{{#tablerow collection.products as |product|}}",
+    "isBlock": true
+  },
+  {
+    "name": "times"
+  },
+  {
+    "name": "to_img",
+    "val": "{{to_img (first product.images)}}"
+  },
+  {
+    "name": "truncate"
+  },
+  {
+    "name": "truncatewords"
+  },
+  {
+    "name": "uniq"
+  },
+  {
+    "name": "unless",
+    "val": "{{#unless <CONDITION>}}",
+    "isBlock": true
+  },
+  {
+    "name": "upcase"
+  },
+  {
+    "name": "url_decode"
+  },
+  {
+    "name": "url_encode"
+  },
+  {
+    "name": "url_for_type",
+    "val": "{{url_for_type 'Used car'}}"
+  },
+  {
+    "name": "url_for_vendor",
+    "val": "{{url_for_vendor 'Armani'}}"
+  },
+  {
+    "name": "weight_with_unit",
+    "val": "{{weight_with_unit product.variants.first.weight}}"
+  },
+  {
+    "name": "within",
+    "val": "{{within product.url collection}}"
+  }
+]

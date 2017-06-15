@@ -21,6 +21,7 @@
     "test": "mocha"
   },
   "dependencies": {
+    "arr-union": "^3.1.0",
     "export-files": "^2.1.1",
     "regex-not": "^1.0.0",
     "snapdragon": "^0.11.0",
@@ -28,19 +29,19 @@
     "strip-bom-string": "^1.0.0"
   },
   "devDependencies": {
-    "delete": "^1.0.1",
-    "extract-gfm": "^0.1.0",
-    "get-value": "^2.0.6",
-    "gh-clone": "^0.5.0",
     "glob": "^7.1.2",
-    "gulp": "^3.9.1",
-    "gulp-format-md": "^0.1.12",
+    "write": "^0.3.3",
     "handlebars": "^4.0.10",
+    "get-value": "^2.0.6",
     "matched": "^0.4.4",
     "minimist": "^1.2.0",
+    "extract-gfm": "^0.1.0",
     "mocha": "^3.4.2",
+    "delete": "^1.0.1",
+    "gulp": "^3.9.1",
+    "gh-clone": "^0.5.0",
     "through2": "^2.0.3",
-    "write": "^0.3.3"
+    "gulp-format-md": "^0.1.12"
   },
   "keywords": [
     "assemble",

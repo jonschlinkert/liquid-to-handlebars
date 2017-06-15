@@ -1,5 +1,4 @@
 {% paginate article.comments by 50 %}
-
 {% comment %}
 When a comment has just been submitted, it's not shown right away.
 Shopify needs to wait until it knows for sure that it is not spam to publish it.
@@ -15,16 +14,12 @@ http://docs.shopify.com/themes/liquid-variables/comment.
 Note that comment.created_at will only be defined if the comment did not have any blank field
 — was posted without error.
 {% endcomment %}
-
 {% assign number_of_comments = article.comments_count %}
-
 {% comment %}If a comment was just submitted, and it has no blank fields.{% endcomment %}
 {% if comment and comment.created_at %}
   {% assign number_of_comments = article.comments_count | plus: 1 %}
 {% endif %}
-
 <h2 class="delta"><a href="{{ blog.url }}">{{ blog.title }}</a></h2>
-
 <div class="article">
   <h1 class="title">
     {{ article.title }}
@@ -50,10 +45,8 @@ Note that comment.created_at will only be defined if the comment did not have an
     {% endif %}
   </div>
 </div>
-
 {% if blog.comments_enabled? %}
 <div id="comments">
-
   {% comment %}If a comment was just submitted with no blank field.{% endcomment %}
   {% if comment and comment.created_at %}
   <p class="success feedback">
@@ -64,7 +57,6 @@ Note that comment.created_at will only be defined if the comment did not have an
     {% endif %}
   </p>
   {% endif %}
-
   {% if number_of_comments > 0 %}
   <ul>
     {% comment %}If a comment was just submitted with no blank field, let's show it.{% endcomment %}
@@ -93,59 +85,46 @@ Note that comment.created_at will only be defined if the comment did not have an
     {% endfor %}
   </ul>
   {% endif %}
-
   {% comment %}Comments are paginated.{% endcomment %}
   {% if paginate.pages > 1 %}
   <div id="pagination">
     {{ paginate | default_pagination }}
   </div>
   {% endif %}
-
   {% comment %}Comment submission form.{% endcomment %}
   {% form "new_comment", article %}
-
   <h3 id="add-comment-title">Leave a comment</h3>
-
   {% if form.errors %}
   <div class="feedback error">
   {{ form.errors | default_errors }}
   </div>
   {% endif %}
-
   <p>
     <label for="comment-author">Name</label>
     <input required{% if form.errors contains "author" %} class="error"{% endif %} type="text" name="comment[author]" placeholder="Your name" id="comment-author" value="{{ form.author }}" />
   </p>
-
   <p>
     <label for="comment-email">Email</label>
     <input required{% if form.errors contains "email" %} class="error"{% endif %} type="email" name="comment[email]" placeholder="your@email.com" id="comment-email" value="{{ form.email }}" />
   </p>
-
   <p>
     <label for="comment-body">Message</label>
     <textarea required{% if form.errors contains "body" %} class="error"{% endif %} name="comment[body]" id="comment-body">{{ form.body }}</textarea>
   </p>
-
   <input type="submit" value="Post Comment" />
-
   {% if form.errors %}
     <script>
       window.location.hash = '#add-comment-title';
     </script>
   {% endif %}
-
   {% if form.posted_successfully? %}
     <script>
       window.location.hash = '#comments';
     </script>
   {% endif %}
-
   {% endform %}
-
 </div>
 {% endif %}
-
 {% if blog.next_article or blog.previous_article %}
 <p class="clearfix">
   {% if blog.next_article %}
@@ -156,5 +135,4 @@ Note that comment.created_at will only be defined if the comment did not have an
   {% endif %}
 </p>
 {% endif %}
-
 {% endpaginate %}

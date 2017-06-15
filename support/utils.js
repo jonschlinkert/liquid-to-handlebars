@@ -31,7 +31,7 @@ utils.read = function(cwd, base, name) {
 
 utils.helperUtils = function() {
   return `function toString(val) {
-  return typeof val === 'string' ? val : '';
+  return val != null ? val : '';
 }`;
 };
 

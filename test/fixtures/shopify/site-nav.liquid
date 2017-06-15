@@ -7,7 +7,6 @@
   The naming convention hack won't work well if a shop's navigation uses non-English characters. There's a much more verbose coding solution that handles non-English characters here: http://docs.shopify.com/manual/configuration/store-customization/currencies-and-translations/translations/can-i-have-drop-down-menus-that-use-non-english-characters.
   A word on sub-categories: Shopify manages sub-categories using product tags: http://docs.shopify.com/manual/configuration/store-customization/page-specific/collections/subcategories
 {% endcomment %}
-
 <nav role="navigation" class="left">
   <ul class="nav">
     {% for link in linklists.main-menu.links %}
@@ -28,7 +27,7 @@
       {% assign has_sub_categories = true %}
     {% endif %}
     <li class="{% if link.active or parent_link_active %} active{% endif %}{% if has_sub_menu or has_sub_categories %} has-dropdown{% endif %}{% if forloop.first %} first{% elsif forloop.last %} last{% endif %}">
-      <a href="{{ link.url }}">{{ link.title }}{% if has_sub_menu or has_sub_categories %} <i class="fa fa-angle-down"></i>{% endif %}</a> 
+      <a href="{{ link.url }}">{{ link.title }}{% if has_sub_menu or has_sub_categories %} <i class="fa fa-angle-down"></i>{% endif %}</a>
       {% if has_sub_menu or has_sub_categories %}
       <ul class="sub-nav">
         {% if has_sub_menu %}
