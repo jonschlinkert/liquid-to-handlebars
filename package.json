@@ -64,15 +64,27 @@
   },
   "verb": {
     "toc": false,
-    "layout": false,
+    "layout": "common-minimal",
     "tasks": [
       "readme"
     ],
     "plugins": [
       "gulp-format-md"
     ],
+    "related": {
+      "list": [
+        "assemble",
+        "handlebars"
+      ]
+    },
     "lint": {
       "reflinks": true
-    }
+    },
+    "reflinks": [
+      "handlebars",
+      "handlebars-helpers",
+      "liquid-filters",
+      "template-helpers"
+    ]
   }
 }
