@@ -3,7 +3,7 @@ title: Whitespace control
 description: An overview of controlling whitespace between code in the Liquid template language.
 ---
 
-In Liquid, you can include a hyphen in your tag syntax `{{#raw}}{{ -{% }}{{/raw}}`, `{{#raw}}{% endraw`, and `{{#raw}}-%}{{/raw}}` to strip whitespace from the left or right side of a rendered tag.
+In Liquid, you can include a hyphen in your tag syntax `{{#raw}}{{ -{% endraw %}`, `{% raw %}- }}{{/raw}}`, `{{#raw}}{% endraw`, and `{{#raw}}-%}{{/raw}}` to strip whitespace from the left or right side of a rendered tag.
 
 Normally, even if it doesn't output text, any line of Liquid in your template will still output a blank line in your rendered HTML:
 
@@ -46,7 +46,7 @@ If you don't want any of your tags to output whitespace, as a general rule you c
 {{assign 'username' 'John G. Chalmers-Smith'}}
 {{#if (and username (gt username.size 10))}}
   Wow, {{ username }}, you have a long name!
-{{else}}
+{{ else }}
   Hello there!
 {{/if}}
 ```
@@ -57,7 +57,7 @@ If you don't want any of your tags to output whitespace, as a general rule you c
 {{assign 'username' 'John G. Chalmers-Smith'}}
 {{#if (and username (gt username.size 10))}}
   Wow, {{ username }}, you have a long name!
-{{else}}
+{{ else }}
   Hello there!
 {{/if}}
 ```
@@ -68,7 +68,7 @@ If you don't want any of your tags to output whitespace, as a general rule you c
 {{assign 'username' 'John G. Chalmers-Smith'}}
 {{#if (and username (gt username.size 10))}}
   Wow, {{ username }}, you have a long name!
-{{else}}
+{{ else }}
   Hello there!
 {{/if}}
 ```

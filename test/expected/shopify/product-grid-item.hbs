@@ -20,7 +20,7 @@ Here, for the sake of teaching, we will use 2 presentation options:
   {{assign 'on_sale' true}}
 {{/if}}
 
-<li class="{{ product-grid-item }}{{#unless product.available}} sold-out{{/unless}}{{#if on_sale}} on-sale{{/if}}{{#if (is product-grid-item 'four-per-row')}}{{cycle name='last' args='\'\', \'\', \'\', \' last-in-row\''}}{{else if (is product-grid-item 'three-per-row')}}{{cycle name='last' args='\'\', \'\', \' last-in-row\''}}{{/if}} centered">
+<li class="{{ product-grid-item }}{{#unless product.available}} sold-out{{/unless}}{{#if on_sale}} on-sale{{/if}}{{#if (is product-grid-item 'four-per-row')}}{{cycle '' '' '' ' last-in-row' name='last'}}{{else if (is product-grid-item 'three-per-row')}}{{cycle '' '' ' last-in-row' name='last'}}{{/if}} centered">
 
   <div class="prod-image-wrap">  
     <a href="{{within product.url collection}}">
@@ -58,13 +58,13 @@ The cycle element is documented here: http://docs.shopify.com/themes/liquid-basi
 {{/comment}}
 
 {{#if (is product-grid-item 'six-per-row')}}
-{{cycle name='clear' args='\'\', \'\', \'\', \'\', \'\', \'<div style=\"clear:both\"></div>\''}}
+{{cycle '' '' '' '' '' '<div style="clear:both"></div>' name='clear'}}
 {{else if (is product-grid-item 'five-per-row')}}
-{{cycle name='clear' args='\'\', \'\', \'\', \'\', \'<div style=\"clear:both\"></div>\''}}
+{{cycle '' '' '' '' '<div style="clear:both"></div>' name='clear'}}
 {{else if (is product-grid-item 'four-per-row')}}
-{{cycle name='clear' args='\'\', \'\', \'\', \'<div style=\"clear:both\"></div>\''}}
+{{cycle '' '' '' '<div style="clear:both"></div>' name='clear'}}
 {{else if (is product-grid-item 'three-per-row')}}
-{{cycle name='clear' args='\'\', \'\', \'<div style=\"clear:both\"></div>\''}}
+{{cycle '' '' '<div style="clear:both"></div>' name='clear'}}
 {{else if (is product-grid-item 'two-per-row')}}
-{{cycle name='clear' args='\'\', \'<div style=\"clear:both\"></div>\''}}
+{{cycle '' '<div style="clear:both"></div>' name='clear'}}
 {{/if}}

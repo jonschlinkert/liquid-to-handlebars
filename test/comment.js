@@ -7,16 +7,12 @@ var support = require('./support');
 var assert = require('assert');
 var convert = require('..');
 
-describe('variables', function() {
+describe('comments', function() {
   var units = [
     {
-      fixture: '{{ product_price | default: 2.99 }}',
-      expected: '{{default product_price 2.99}}'
+      fixture: '{{!matched pairs of curly brackets and percent signs}}',
+      expected: '{{! matched pairs of curly brackets and percent signs }}'
     },
-    {
-      fixture: '{{ article-grid-item }}',
-      expected: '{{ article-grid-item }}'
-    }
   ];
 
   var hasOnly = support.hasOnly(units);

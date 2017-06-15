@@ -1,7 +1,12 @@
 exports.hasOnly = function(units) {
   for (var i = 0; i < units.length; i++) {
-    if (units[i].only === true) {
+    var unit = units[i];
+    if (unit.only === true) {
       return true;
+    }
+
+    if (Array.isArray(unit.units)) {
+      exports.hasOnly(unit.units);
     }
   }
 };

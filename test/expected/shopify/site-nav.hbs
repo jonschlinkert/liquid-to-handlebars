@@ -24,7 +24,7 @@
           {{assign 'parent_link_active' true}}
         {{/if}}
       {{/each}}
-    {{else if (and (is link.type ) 'collection_link' (gt link.object.all_tags.size 0))}}
+    {{else if (and (is link.type 'collection_link') (gt link.object.all_tags.size 0))}}
       {{assign 'has_sub_categories' true}}
     {{/if}}
     <li class="{{#if (or link.active parent_link_active)}} active{{/if}}{{#if (or has_sub_menu has_sub_categories)}} has-dropdown{{/if}}{{#if forloop.first}} first{{else if forloop.last}} last{{/if}}">

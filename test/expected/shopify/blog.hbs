@@ -2,7 +2,7 @@
 
 {{#if current_tags}}
 <h1 class="delta">{{link_to blog.title blog.url}} <span class="quiet">&raquo;</span> {{ current_tags.first }}</h1>
-{{else}}
+{{ else }}
 <h1 class="delta">{{ blog.title }}</h1>
 {{/if}}
 
@@ -44,13 +44,13 @@
       </div>
       <div class="two-thirds column">
         <div class="rte fadeout-overflow-bottom grid-margins">
-      {{else}}
+      {{ else }}
       <div class="full column">
         <div class="rte">
       {{/if}}
           {{#if (gt article.excerpt.size 0)}}
           <div class="no-images">{{ article.excerpt }}</div>
-          {{else}}
+          {{ else }}
           <p>{{truncatewords (strip_html article.content) 120}}</p>
           {{/if}}
         </div>

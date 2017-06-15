@@ -7,7 +7,7 @@ var assert = require('assert');
 var convert = require('..');
 var cwd = path.join.bind(path, __dirname);
 
-describe('all tags in the liquid docs', function() {
+describe('all liquid docs', function() {
   describe('home', function() {
     it(`should convert index.html`, function() {
       var expected = fs.readFileSync(cwd('expected/index.md'), 'utf8');
@@ -17,12 +17,12 @@ describe('all tags in the liquid docs', function() {
     });
   });
 
-  describe('basics', function() {
-    var fixtures = cwd('fixtures/basics');
+  describe('liquid-docs', function() {
+    var fixtures = cwd('fixtures/liquid-docs');
     fs.readdirSync(fixtures).forEach(function(name) {
       if (/prefixed/.test(name)) return;
-      it(`should convert ${name} basics`, function() {
-        var expected = fs.readFileSync(cwd('expected/basics', name), 'utf8');
+      it(`should convert ${name} liquid-docs`, function() {
+        var expected = fs.readFileSync(cwd('expected/liquid-docs', name), 'utf8');
         var fixture = fs.readFileSync(path.join(fixtures, name), 'utf8');
         var actual = convert(fixture);
         if (expected !== actual) {
@@ -33,7 +33,7 @@ describe('all tags in the liquid docs', function() {
     });
   });
 
-  describe('basics with prefix', function() {
+  describe('liquid-docs with prefix', function() {
     it('should prefix the `site` variable in filter args', function() {
       var actual = convert('{{ "/tags/variable/#assign" | prepend: site.baseurl }}', {prefix: '@'});
       var expected = '{{prepend \'/tags/variable/#assign\' @site.baseurl}}';
@@ -49,9 +49,9 @@ describe('all tags in the liquid docs', function() {
 
     it(`should prefix variables with options.prefix`, function() {
       var name = 'types-prefixed.md';
-      var fixtures = cwd('fixtures/basics');
+      var fixtures = cwd('fixtures/liquid-docs');
       var fixture = path.join(fixtures, name);
-      var expected = fs.readFileSync(cwd('expected/basics', name), 'utf8');
+      var expected = fs.readFileSync(cwd('expected/liquid-docs', name), 'utf8');
       var fixture = fs.readFileSync(fixture, 'utf8');
       var actual = convert(fixture, {prefix: '@'});
       assert.equal(actual, expected);

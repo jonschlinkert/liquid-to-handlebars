@@ -32,8 +32,8 @@ Causes the loop to stop iterating when it encounters the `break` tag.
 {{#raw}}
 {{#each (range 1 5) as |i|}}
   {{#if (is i 4)}}
-    {{break}}
-  {{else}}
+    {{ break }}
+  {{ else }}
     {{ i }}
   {{/if}}
 {{/each}}
@@ -54,8 +54,8 @@ Causes the loop to skip the current iteration when it encounters the `continue` 
 {{#raw}}
 {{#each (range 1 5) as |i|}}
   {{#if (is i 4)}}
-    {{continue}}
-  {{else}}
+    {{ continue }}
+  {{ else }}
     {{ i }}
   {{/if}}
 {{/each}}
@@ -123,6 +123,10 @@ Defines a range of numbers to loop through. The range can be defined by both lit
   {{ i }}
 {{/each}}
 {{/raw}}
+
+{{#each (range 1 item.quantity) as |i|}}
+  {{ i }}
+{{/each}}
 ```
 
 <p class="code-label">Output</p>
@@ -159,10 +163,10 @@ Loops through a group of strings and outputs them in the order that they were pa
 <p class="code-label">Input</p>
 ```liquid
 {{#raw}}
-{{cycle 'one', 'two', 'three'}}
-{{cycle 'one', 'two', 'three'}}
-{{cycle 'one', 'two', 'three'}}
-{{cycle 'one', 'two', 'three'}}
+{{cycle 'one' 'two' 'three'}}
+{{cycle 'one' 'two' 'three'}}
+{{cycle 'one' 'two' 'three'}}
+{{cycle 'one' 'two' 'three'}}
 {{/raw}}
 ```
 

@@ -26,7 +26,7 @@
       {{/comment}}
 
       {{assign 'collection_url' item.product.collections.last.url}}
-      {{#if (or (is collection_url ) '/collections/frontpage' (is collection_url blank))}}
+      {{#if (or (is collection_url '/collections/frontpage') (is collection_url blank))}}
         {{assign 'collection_url' '/collections/all'}}
       {{/if}}
 
@@ -57,7 +57,7 @@
                 {{ p.first }}:
                 {{#if (contains p.last '/uploads/')}}
                   <a href="{{ p.last }}">{{last (split p.last '/')}}</a>
-                {{else}}
+                {{ else }}
                   {{ p.last }}
                 {{/if}}
                 <br />
@@ -113,7 +113,7 @@
 
 </form>
 
-{{else}}
+{{ else }}
 
 <div>
   <h2 class="gamma">It appears that your cart is currently empty!</h2>

@@ -15,6 +15,10 @@ function convert() {
 describe('assign', function() {
   var units = [
     {
+      fixture: '{% assign my_string = "Take my protein pills and put my helmet on" %}',
+      expected: '{{assign \'my_string\' \'Take my protein pills and put my helmet on\'}}'
+    },
+    {
       fixture: '{% assign src = article.excerpt_or_content | split: \'src="\' %}',
       expected: '{{assign \'src\' (split article.excerpt_or_content \'src="\')}}'
     },

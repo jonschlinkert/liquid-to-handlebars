@@ -35,7 +35,7 @@
       <p class="article-summary">
         {{#if (gt article.excerpt.size 0)}}
         {{strip_html article.excerpt}}
-        {{else}}
+        {{ else }}
         {{truncatewords (strip_html article.content) 50}}
         {{/if}}
       </p>
@@ -61,13 +61,13 @@ The cycle element is documented here: http://docs.shopify.com/themes/liquid-basi
 {{/comment}}
 
 {{#if (is article-grid-item 'six-per-row')}}
-{{cycle name='clear' args='\'\', \'\', \'\', \'\', \'\', \'<div style=\"clear:both\"></div>\''}}
+{{cycle '' '' '' '' '' '<div style="clear:both"></div>' name='clear'}}
 {{else if (is article-grid-item 'five-per-row')}}
-{{cycle name='clear' args='\'\', \'\', \'\', \'\', \'<div style=\"clear:both\"></div>\''}}
+{{cycle '' '' '' '' '<div style="clear:both"></div>' name='clear'}}
 {{else if (is article-grid-item 'four-per-row')}}
-{{cycle name='clear' args='\'\', \'\', \'\', \'<div style=\"clear:both\"></div>\''}}
+{{cycle '' '' '' '<div style="clear:both"></div>' name='clear'}}
 {{else if (is article-grid-item 'three-per-row')}}
-{{cycle name='clear' args='\'\', \'\', \'<div style=\"clear:both\"></div>\''}}
+{{cycle '' '' '<div style="clear:both"></div>' name='clear'}}
 {{else if (is article-grid-item 'two-per-row')}}
-{{cycle name='clear' args='\'\', \'<div style=\"clear:both\"></div>\''}}
+{{cycle '' '<div style="clear:both"></div>' name='clear'}}
 {{/if}}

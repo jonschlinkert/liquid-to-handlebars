@@ -7,7 +7,7 @@ Liquid code can be categorized into [**objects**](#objects), [**tags**](#tags), 
 
 ## Objects
 
-**Objects** tell Liquid where to show content on a page. Objects and variable names are denoted by double curly braces: `{{#raw}}{{ {% }}}{{/raw}}`.
+**Objects** tell Liquid where to show content on a page. Objects and variable names are denoted by double curly braces: `{{#raw}}{{{ % endraw %}` and `{% raw % }}}{{/raw}}`.
 
 
 <p class="code-label">Input</p>

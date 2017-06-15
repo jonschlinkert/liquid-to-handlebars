@@ -77,7 +77,7 @@
         <div class="customer-links">
           {{#if customer}}
             Logged in as <a href="/account">{{ customer.first_name }}</a> · {{customer_logout_link 'Log out'}}
-          {{else}}
+          {{ else }}
             {{customer_login_link 'Log in'}}
             {{#if shop.customer_accounts_optional}}
             or {{customer_register_link 'Create an account'}}
@@ -102,7 +102,7 @@
         <a id="logo" href="/">
           {{img_tag (asset_url 'logo.png') shop.name}}
         </a>
-        {{else}}
+        {{ else }}
         <a id="site-title" href="/">
           {{ shop.name }}
         </a>

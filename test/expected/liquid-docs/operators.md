@@ -48,7 +48,7 @@ For example:
 
 ```liquid
 {{#raw}}
-{{#if (is product.title "Awesome Shoes")}}
+{{#if (is product.title 'Awesome Shoes')}}
   These shoes are awesome!
 {{/if}}
 {{/raw}}
@@ -58,7 +58,7 @@ You can use multiple operators in a tag:
 
 ```liquid
 {{#raw}}
-{{#if (or (is product.type ) 'Shirt' (is product.type ) 'Shoes')}}
+{{#if (or (is product.type 'Shirt') (is product.type 'Shoes'))}}
   This is a shirt or a pair of shoes.
 {{/if}}
 {{/raw}}

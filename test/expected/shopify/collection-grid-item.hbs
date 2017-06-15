@@ -7,7 +7,7 @@
     <a href="{{ collection.url }}">
       {{#if collection.image}}
       <img src="{{img_url collection 'grande'}}" alt="{{escape collection.image.alt}}" />
-      {{else}}
+      {{ else }}
       <img src="{{img_url collection.products.first 'grande'}}" alt="{{escape collection.title}}" />
       {{/if}}
     </a>
@@ -34,13 +34,13 @@ The cycle element is documented here: http://docs.shopify.com/themes/liquid-basi
 {{/comment}}
 
 {{#if (is collection-grid-item 'six-per-row')}}
-{{cycle name='clear' args='\'\', \'\', \'\', \'\', \'\', \'<div style=\"clear:both\"></div>\''}}
+{{cycle '' '' '' '' '' '<div style="clear:both"></div>' name='clear'}}
 {{else if (is collection-grid-item 'five-per-row')}}
-{{cycle name='clear' args='\'\', \'\', \'\', \'\', \'<div style=\"clear:both\"></div>\''}}
+{{cycle '' '' '' '' '<div style="clear:both"></div>' name='clear'}}
 {{else if (is collection-grid-item 'four-per-row')}}
-{{cycle name='clear' args='\'\', \'\', \'\', \'<div style=\"clear:both\"></div>\''}}
+{{cycle '' '' '' '<div style="clear:both"></div>' name='clear'}}
 {{else if (is collection-grid-item 'three-per-row')}}
-{{cycle name='clear' args='\'\', \'\', \'<div style=\"clear:both\"></div>\''}}
+{{cycle '' '' '<div style="clear:both"></div>' name='clear'}}
 {{else if (is collection-grid-item 'two-per-row')}}
-{{cycle name='clear' args='\'\', \'<div style=\"clear:both\"></div>\''}}
+{{cycle '' '<div style="clear:both"></div>' name='clear'}}
 {{/if}}

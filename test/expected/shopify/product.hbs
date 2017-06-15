@@ -17,7 +17,7 @@
         <img src="{{img_url '' 'grande'}}" alt="" />
       </div>
 
-    {{else}}
+    {{ else }}
 
       {{assign 'featured_image' (default product.selected_or_first_available_variant.featured_image product.featured_image)}}
       <div class="product-photo-container">
@@ -54,7 +54,7 @@
       {{/comment}}
       {{#if (is (get collections (toPath product_vendor_handle 'handle')) product_vendor_handle)}}
         {{assign 'vendor_url' (get collections (toPath product_vendor_handle 'url'))}}
-      {{else}}
+      {{ else }}
         {{assign 'vendor_url' (url_for_vendor product.vendor)}}
       {{/if}}
       <h2 itemprop="brand" class="delta">{{link_to product.vendor vendor_url}}</h2>
@@ -73,7 +73,7 @@
         <meta itemprop="priceCurrency" content="{{ shop.currency }}" />
         {{#if product.available}}
         <link itemprop="availability" href="http://schema.org/InStock" />
-        {{else}}
+        {{ else }}
         <link itemprop="availability" href="http://schema.org/OutOfStock" />
         {{/if}}
         <p>
@@ -81,14 +81,14 @@
           {{#if (gt product.compare_at_price product.price)}}
           <span class="product-price on-sale" itemprop="price">{{money variant.price}}</span>
           <s class="product-compare-price">{{money variant.compare_at_price}}</s>
-          {{else}}
+          {{ else }}
           <span class="product-price" itemprop="price">{{money variant.price}}</span>
           {{/if}}
         </p>
       </div>
 
       {{assign 'hide_default_title' false}}
-      {{#if (and (is product.variants.size 1) (contains product.variants.first.title ) 'Default')}}
+      {{#if (and (is product.variants.size 1) (contains product.variants.first.title 'Default'))}}
         {{assign 'hide_default_title' true}}
       {{/if}}
 
@@ -190,7 +190,7 @@ jQuery(function($) {
   new Shopify.OptionSelectors('product-select', { product: {{json product}}, onVariantSelected: selectCallback, enableHistoryState: true });
 
   // Add label if only one product option and it isn't 'Title'.
-  {{#if (and (is product.options.size 1) (isnt product.options.first ) 'Title')}}
+  {{#if (and (is product.options.size 1) (isnt product.options.first 'Title'))}}
     $('.selector-wrapper:eq(0)').prepend('<label>{{ product.options.first }}</label>');
   {{/if}}
 

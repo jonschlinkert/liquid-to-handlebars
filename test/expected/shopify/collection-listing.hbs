@@ -15,11 +15,11 @@
 
 {{assign 'using_link_list' false}}
 
-{{#if (and (isnt collection-listing ) '' (is (get linklists (toPath collection-listing 'handle')) collection-listing) (gt (get linklists (toPath collection-listing 'links.size')) 0))}}
+{{#if (and (isnt collection-listing '') (is (get linklists (toPath collection-listing 'handle')) collection-listing) (gt (get linklists (toPath collection-listing 'links.size')) 0))}}
   {{assign 'using_link_list' true}}
 {{/if}}
 
-<h1>{{#if using_link_list}}{{get linklists (toPath collection-listing "title")}}{{else}}Collections{{/if}}</h1>
+<h1>{{#if using_link_list}}{{get linklists (toPath collection-listing "title")}}{{ else }}Collections{{/if}}</h1>
 
 {{#if using_link_list}}
 <ul class="grid clearfix">
@@ -30,7 +30,7 @@
   {{/if}}
 {{/each}}
 </ul>
-{{else}}
+{{ else }}
 {{#paginate collections by=products_per_page}}
 <ul class="grid clearfix">
 {{#each collections as |collection|}}

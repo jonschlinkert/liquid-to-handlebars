@@ -41,7 +41,7 @@ selectors inside search.css.
 
     {{#if (is search.results_count 0)}}
     <p class="centered">Your search for "{{ search.terms }}" did not yield any results.</p>
-    {{else}}
+    {{ else }}
     <ol>
       {{#each search.results as |item|}}
       <li class="clearfix">

@@ -63,7 +63,7 @@ Adds more conditions within an `if` or `unless` block.
   Hey Kevin!
 {{else if (is customer.name 'anonymous')}}
   Hey Anonymous!
-{{else}}
+{{ else }}
   Hi Stranger!
 {{/if}}
 {{/raw}}
@@ -87,7 +87,7 @@ Creates a switch statement to compare a variable with different values. `case` i
      This is a cake
   {{when 'cookie'}}
      This is a cookie
-  {{else}}
+  {{ else }}
      This is not a cake nor a cookie
 {{/case}}
 {{/raw}}

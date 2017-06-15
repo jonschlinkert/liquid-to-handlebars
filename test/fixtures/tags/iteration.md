@@ -123,6 +123,10 @@ Defines a range of numbers to loop through. The range can be defined by both lit
   {{ i }}
 {% endfor %}
 {% endraw %}
+
+{% for i in (1..item.quantity) %}
+  {{ i }}
+{% endfor %}
 ```
 
 <p class="code-label">Output</p>

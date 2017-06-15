@@ -1,6 +1,7 @@
 'use strict';
 
 var fs = require('fs');
+var path = require('path');
 var extract = require('extract-gfm');
 var utils = module.exports;
 
@@ -20,23 +21,31 @@ utils.filterExamples = function(str, lang) {
   return examples;
 };
 
-utils.md = function(name) {
-  return name.slice(-3) === '.md';
+utils.isValidExt = function(name) {
+  return name.slice(-3) === '.md' || name.slice(-4) === '.hbs';
 };
 
 utils.read = function(cwd, base, name) {
-  return fs.readFileSync(cwd(base, name), 'utf8');
+  return fs.readFileSync(path.join(cwd, base, name), 'utf8');
+};
+
+utils.helperUtils = function() {
+  return `function toString(val) {
+  return typeof val === 'string' ? val : '';
+}`;
 };
 
 utils.toBlockHelper = function(name) {
-  return `exports.${name} = function(val, options) {
-  return options.fn(this);
+  return `exports.${name} = function() {
+  var args = [].slice.call(arguments);
+  var opts = args.pop();
+  return opts.fn(this);
 };`;
 };
 
 utils.toHelper = function(name) {
   return `exports.${name} = function(val) {
-  return val;
+  return toString(val);
 };`;
 };
 
