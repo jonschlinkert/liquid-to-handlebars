@@ -18,10 +18,7 @@ describe('operators', function() {
     });
 
     it('should convert object notation with sub-property', function() {
-      assert.equal(
-        convert('foo[bar][baz].qux'),
-        "get foo (toPath bar baz 'qux')"
-     );
+      assert.equal(convert('foo[bar][baz].qux'), "get foo (toPath bar baz 'qux')");
       assert.equal(convert('foo[bar].baz'), "get foo (toPath bar 'baz')");
       assert.equal(convert('foo[bar][baz]'), 'get foo (toPath bar baz)');
     });
