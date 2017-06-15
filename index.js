@@ -19,14 +19,13 @@ function Converter(options) {
   this.options = options || {};
   this.stash = this.options.stash || [];
   this.stack = this.options.stack || [];
+  this.variables = [];
 }
 
 Converter.prototype.parse = function(str, options) {
   var opts = Object.assign({}, this.options, options);
-  opts.stack = this.stack;
-  opts.stash = this.stash;
   var parser = new snapdragon.Parser(opts);
-  parser.use(tags.parsers(opts));
+  parser.use(tags.parsers(opts, this));
   return parser.parse(stripBom(str), opts);
 };
 
@@ -35,51 +34,35 @@ Converter.prototype.compile = function(ast, options) {
   opts.stack = this.stack;
   opts.stash = this.stash;
   var compiler = new snapdragon.Compiler(opts);
-  compiler.use(tags.compilers(opts));
+  compiler.use(tags.compilers(opts, this));
   var res = compiler.compile(ast, opts);
   return res.output;
 };
 
 Converter.prototype.convert = function(str, options) {
   var opts = Object.assign({}, this.options, options);
-  opts.stack = this.stack;
-  opts.stash = this.stash;
   var ast = this.parse(str, opts);
+  this.variables = [];
   return this.compile(ast, opts);
-};
-
-Converter.prototype.parseTag = function(str, options) {
-  var opts = Object.assign({}, this.options, options);
-  opts.stack = this.stack;
-  opts.stash = this.stash;
-  var parser = new snapdragon.Parser(opts);
-  parser.use(args.parsers(opts));
-  return parser.parse(str, opts);
 };
 
 Converter.prototype.parseArgs = function(str, options) {
   var opts = Object.assign({}, this.options, options);
-  opts.stack = this.stack;
-  opts.stash = this.stash;
   var parser = new snapdragon.Parser(opts);
-  parser.use(args.parsers(opts));
+  parser.use(args.parsers(opts, this));
   return parser.parse(str, opts);
 };
 
 Converter.prototype.compileArgs = function(ast, options) {
   var opts = Object.assign({}, this.options, options);
-  opts.stack = this.stack;
-  opts.stash = this.stash;
   var compiler = new snapdragon.Compiler(opts);
-  compiler.use(args.compilers(opts));
+  compiler.use(args.compilers(opts, this));
   var res = compiler.compile(ast, opts);
   return res.output;
 };
 
 Converter.prototype.convertArgs = function(str, options) {
   var opts = Object.assign({}, this.options, options);
-  opts.stack = this.stack;
-  opts.stash = this.stash;
   var ast = this.parseArgs(str, opts);
   return this.compileArgs(ast, opts);
 };
