@@ -1,7 +1,7 @@
 {
   "name": "liquid-to-handlebars",
   "description": "Convert liquid templates to handlebars templates.",
-  "version": "2.0.4",
+  "version": "2.0.5",
   "homepage": "https://github.com/jonschlinkert/liquid-to-handlebars",
   "author": "Jon Schlinkert (https://github.com/jonschlinkert)",
   "repository": "jonschlinkert/liquid-to-handlebars",
@@ -10,19 +10,20 @@
   },
   "license": "MIT",
   "files": [
+    "bin",
     "index.js",
     "lib"
   ],
   "main": "index.js",
+  "bin": {
+    "lth": "bin/cli.js",
+    "liquid-to-handlebars": "bin/cli.js"
+  },
   "engines": {
     "node": ">=0.8"
   },
   "scripts": {
     "test": "mocha"
-  },
-  "bin": {
-    "lth": "bin/cli.js",
-    "liquid-to-handlebars": "bin/cli.js"
   },
   "dependencies": {
     "arr-union": "^3.1.0",
