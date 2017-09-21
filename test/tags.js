@@ -65,6 +65,10 @@ describe('tags', function() {
         fixture: '{% if collections[product_vendor_handle].handle == product_vendor_handle %}{% endif %}',
         expected: '{{#if (is (get collections (toPath product_vendor_handle \'handle\')) product_vendor_handle)}}{{/if}}'
       },
+      {
+        fixture: '<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox" {% if page.title =="Home" %}checked{% endif %}>',
+        expected: '<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox" {{#if (is page.title \'Home\')}}checked{{/if}}>'
+      },
     ];
 
     var hasOnly = support.hasOnly(units);
