@@ -1,0 +1,26 @@
+<div class="page-width text-center">
+  <div class="grid">
+    <div class="grid__item medium-up--one-half medium-up--push-one-quarter">
+      <div class="section-header">
+        <h1>{{t 'customer.activate_account.title'}}</h1>
+        <p>{{t 'customer.activate_account.subtext'}}</p>
+      </div>
+
+      <div class="form-vertical">
+        {{#form 'activate_customer_password'}}
+
+          {{default_errors form.errors}}
+
+          <label for="CustomerPassword" class="label--hidden">{{t 'customer.activate_account.password'}}</label>
+          <input type="password" value="" name="customer[password]" id="CustomerPassword" placeholder="{{t 'customer.activate_account.password'}}">
+
+          <label for="CustomerPasswordConfirmation" class="label--hidden">{{t 'customer.activate_account.password_confirm'}}</label>
+          <input type="password" value="" name="customer[password_confirmation]" id="CustomerPasswordConfirmation" placeholder="{{t 'customer.activate_account.password_confirm'}}">
+
+          <input type="submit" class="btn" value="{{t 'customer.activate_account.submit'}}">
+          <div><input type="submit" name="decline" value="{{t 'customer.activate_account.cancel'}}"></div>
+        {{/form}}
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,44 @@
+<!-- snippet/product-price.liquid -->
+{{#if product.title}}
+  {{assign 'compare_at_price' product.compare_at_price}}
+  {{assign 'price' product.price}}
+  {{assign 'price_varies' product.price_varies}}
+  {{assign 'available' product.available}}
+{{else}}
+  {{assign 'compare_at_price' 1999}}
+  {{assign 'price' 1999}}
+  {{assign 'price_varies' false}}
+  {{assign 'available' true}}
+{{/if}}
+
+{{assign 'money_price' (money price)}}
+
+{{#if (gt compare_at_price price)}}
+  {{#if price_varies}}
+    <span class="visually-hidden">{{t 'products.product.regular_price'}}</span>
+    <s class="product-price__price">{{money compare_at_price}}</s>
+    <span class="product-price__price product-price__sale">
+      {{ money_price }}
+      <span class="product-price__sale-label">{{t 'products.product.on_sale'}}</span>
+    </span>
+  {{else}}
+    <span class="visually-hidden">{{t 'products.product.regular_price'}}</span>
+    <s class="product-price__price">{{money compare_at_price}}</s>
+    <span class="product-price__price product-price__sale">
+      {{ money_price }}
+      <span class="product-price__sale-label">{{t 'products.product.on_sale'}}</span>
+    </span>
+  {{/if}}
+{{else}}
+
+  {{#if price_varies}}
+    <span class="product-price__price">{{ money_price }}</span>
+  {{else}}
+    <span class="visually-hidden">{{t 'products.product.regular_price'}}</span>
+    <span class="product-price__price">{{ money_price }}</span>
+  {{/if}}
+{{/if}}
+
+{{#unless available}}
+  <span class="product-price__sold-out">{{t 'products.product.sold_out'}}</span>
+{{/unless}}

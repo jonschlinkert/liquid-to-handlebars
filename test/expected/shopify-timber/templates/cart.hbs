@@ -1,0 +1,130 @@
+<!-- /templates/cart.liquid -->
+{{#comment}}
+
+  For info on test orders:
+    - General http://docs.shopify.com/manual/your-store/orders/test-orders
+    - Shopify Payments - http://docs.shopify.com/manual/more/shopify-payments/testing-shopify-payments
+
+{{/comment}}
+
+{{#if (gt cart.item_count 0)}}
+
+  <h1>{{t 'cart.general.title'}}</h1>
+  <form action="/cart" method="post" novalidate class="cart table-wrap">
+    <table class="cart-table full table--responsive">
+      <thead class="cart__row cart__header-labels">
+        <th colspan="2" class="text-center">{{t 'cart.label.product'}}</th>
+        <th class="text-center">{{t 'cart.label.price'}}</th>
+        <th class="text-center">{{t 'cart.label.quantity'}}</th>
+        <th class="text-right">{{t 'cart.label.total'}}</th>
+      </thead>
+      <tbody>
+        {{#each cart.items as |item|}}
+          <tr class="cart__row table__section">
+            <td data-label="{{t 'customer.order.product'}}">
+              <a href="{{within item.url collections.all}}" class="cart__image">
+                {{#comment}}
+                  More image size options at:
+                    - http://docs.shopify.com/themes/filters/product-img-url
+                {{/comment}}
+                <img src="{{img_url item 'medium'}}" alt="{{escape item.title}}">
+              </a>
+            </td>
+            <td>
+              <a href="{{ item.url }}" class="h4">
+                {{ item.product.title }}
+              </a>
+              {{#unless (contains item.variant.title 'Default')}}
+                <br>
+                <small>{{ item.variant.title }}</small>
+              {{/unless}}
+
+              {{#if settings.cart_vendor_enable}}
+                <p>{{ item.vendor }}</p>
+              {{/if}}
+
+              {{#comment}}
+                Optional, loop through custom product line items if available
+
+                For more info on line item properties, visit:
+                  - http://docs.shopify.com/support/your-store/products/how-do-I-collect-additional-information-on-the-product-page-Like-for-a-monogram-engraving-or-customization
+              {{/comment}}
+              {{assign 'property_size' (size item.properties)}}
+              {{#if (gt property_size 0)}}
+                {{#each item.properties as |p|}}
+                  {{#unless (is p.last blank)}}
+                    {{ p.first }}:
+
+                    {{#comment}}
+                      Check if there was an uploaded file associated
+                    {{/comment}}
+                    {{#if (contains p.last '/uploads/')}}
+                      <a href="{{ p.last }}">{{last (split p.last '/')}}</a>
+                    {{else}}
+                      {{ p.last }}
+                    {{/if}}
+
+                    <br>
+                  {{/unless}}
+                {{/each}}
+              {{/if}}
+
+              <a href="/cart/change?line={{ forloop.index }}&amp;quantity=0" class="cart__remove">
+                <small>{{t 'cart.general.remove'}}</small>
+              </a>
+            </td>
+            <td data-label="{{t 'cart.label.price'}}">
+              <span class="h3">
+                {{money item.price}}
+              </span>
+            </td>
+            <td data-label="{{t 'cart.label.quantity'}}">
+              <input type="number" name="updates[]" id="updates_{{ item.key }}" data-id="{{ item.key }}" value="{{ item.quantity }}" min="0">
+            </td>
+            <td data-label="{{t 'cart.label.total'}}" class="text-right">
+              {{#if (isnt item.original_line_price item.line_price)}}
+                <span class="cart-item__original-price"><s>{{money item.original_line_price}}</s></span>
+              {{/if}}
+              <span class="h3">
+                {{money item.line_price}}
+              </span>
+              {{#each item.discounts as |discount|}}
+                <span class="cart-item__discount">{{ discount.title }}</span>
+              {{/each}}
+            </td>
+          </tr>
+        {{/each}}
+      </tbody>
+    </table>
+    <div class="grid cart__row">
+      {{#if settings.cart_notes_enable}}
+        <div class="grid__item two-thirds small--one-whole">
+          <label for="CartSpecialInstructions">{{t 'cart.general.note'}}</label>
+          <textarea name="note" class="input-full" id="CartSpecialInstructions">{{ cart.note }}</textarea>
+        </div>
+      {{/if}}
+      <div class="grid__item text-right{{#if settings.cart_notes_enable}} one-third small--one-whole{{/if}}">
+        <p>
+          <span class="cart__subtotal-title">{{t 'cart.general.subtotal'}}</span>
+          <span class="h3 cart__subtotal">{{money cart.total_price}}</span>
+        </p>
+        {{#if (gt cart.total_discounts 0)}}
+          {{assign 'savings' (money cart.total_discounts)}}
+          <p>
+            <span class="cart-subtotal__savings"><em>{{t 'cart.general.savings_html' price savings}}</em></span>
+          </p>
+        {{/if}}
+        <p><em>{{t 'cart.general.shipping_at_checkout'}}</em></p>
+        <button type="submit" name="update" class="btn--secondary update-cart">{{t 'cart.general.update'}}</button>
+        <button type="submit" name="checkout" class="btn">{{t 'cart.general.checkout'}}</button>
+      </div>
+    </div>
+  </form>
+{{else}}
+  {{#comment}}
+    The cart is empty
+  {{/comment}}
+  <h2>{{t 'cart.general.title'}}</h2>
+  <p>{{t 'cart.general.empty'}}</p>
+  <p>{{t 'cart.general.continue_browsing_html'}}</p>
+{{/if}}

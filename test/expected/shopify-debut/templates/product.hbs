@@ -1,0 +1,16 @@
+{{#comment}}
+  The contents of the product.liquid template can be found in /sections/product-template.liquid
+{{/comment}}
+
+{{section 'product-template'}}
+
+<script>
+  // Override default values of shop.strings for each template.
+  // Alternate product templates can change values of
+  // add to cart button, sold out, and unavailable states here.
+  theme.productStrings = {
+    addToCart: {{json (t 'products.product.add_to_cart')}},
+    soldOut: {{json (t 'products.product.sold_out')}},
+    unavailable: {{json (t 'products.product.unavailable')}}
+  }
+</script>

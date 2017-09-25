@@ -20,4 +20,4 @@ function fixtures(pattern, destBase, options) {
   }
 };
 
-fixtures('**/*.{md,html,liquid}', 'test/expected', {cwd: 'test/fixtures/'});
+fixtures('shopify-*/**/*.{*liquid*,json}', 'test/expected', {cwd: path.join(__dirname, '../fixtures')});

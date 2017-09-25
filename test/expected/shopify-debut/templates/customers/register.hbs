@@ -1,0 +1,32 @@
+<div class="page-width">
+  <div class="grid">
+    <div class="grid__item medium-up--one-half medium-up--push-one-quarter">
+
+      <div class="form-vertical">
+        {{#form 'create_customer'}}
+
+          <h1 class="text-center">{{t 'customer.register.title'}}</h1>
+
+          {{default_errors form.errors}}
+
+          <label for="FirstName">{{t 'customer.register.first_name'}}</label>
+          <input type="text" name="customer[first_name]" id="FirstName" {{#if form.first_name}}value="{{ form.first_name }}"{{/if}} autofocus>
+
+          <label for="LastName">{{t 'customer.register.last_name'}}</label>
+          <input type="text" name="customer[last_name]" id="LastName" {{#if form.last_name}}value="{{ form.last_name }}"{{/if}}>
+
+          <label for="Email">{{t 'customer.register.email'}}</label>
+          <input type="email" name="customer[email]" id="Email" class="{{#if (contains form.errors 'email')}} input--error{{/if}}" {{#if form.email}} value="{{ form.email }}"{{/if}} autocorrect="off" autocapitalize="off">
+
+          <label for="CreatePassword">{{t 'customer.register.password'}}</label>
+          <input type="password" name="customer[password]" id="CreatePassword" class="{{#if (contains form.errors 'password')}} input--error{{/if}}">
+
+          <p class="text-center">
+            <input type="submit" value="{{t 'customer.register.submit'}}" class="btn">
+          </p>
+
+        {{/form}}
+      </div>
+    </div>
+  </div>
+</div>

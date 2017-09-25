@@ -1,0 +1,165 @@
+<div class="page-width">
+  {{#if (isnt section.settings.title blank)}}
+    <div class="section-header text-center">
+      <h2>{{escape section.settings.title}}</h2>
+    </div>
+  {{/if}}
+
+  <div class="grid {{#unless (is section.blocks.size 5)}}grid--uniform{{/unless}} grid--flush-bottom">
+    {{assign 'grid_item_width' 'medium-up--one-third'}}
+    {{assign 'max_height' 345}}
+    {{#is section.blocks.size 1}}
+        {{assign 'grid_item_width' 'medium-up--one-half'}}
+        {{assign 'max_height' 530}}
+      {{else is section.blocks.size 2}}
+        {{assign 'grid_item_width' 'medium-up--one-half'}}
+        {{assign 'max_height' 530}}
+      {{else is section.blocks.size 4}}
+        {{assign 'grid_item_width' 'medium-up--one-half'}}
+        {{assign 'max_height' 530}}
+{{/is}}
+    {{#each section.blocks as |block|}}
+      {{#if (and (is section.blocks.size 5) (lt forloop.index 3))}}
+        {{assign 'column_width' 'medium-up--one-half'}}
+        {{assign 'max_height' 530}}
+      {{else}}
+        {{assign 'column_width' grid_item_width}}
+      {{/if}}
+      <div class="grid__item {{ column_width }} text-{{ section.settings.align_text }}" {{ block.shopify_attributes }}>
+        {{#if block.settings.enable_image}}
+          {{#if (isnt block.settings.image blank)}}
+            {{#capture 'img_id'}}TextColumnImage-{{ block.id }}{{/capture}}
+            {{#capture 'wrapper_id'}}TextColumnImageWrapper-{{ block.id }}{{/capture}}
+            {{assign 'img_url' (replace (img_url block.settings.image '1x1') '_1x1.' '_{width}x.')}}
+            {{include 'image-style' image: block.settings.image, width: max_height, height: max_height, small_style: true, wrapper_id: wrapper_id, img_id: img_id}}
+            <div id="{{ wrapper_id }}" class="feature-row__image-wrapper js">
+              <div style="padding-top:{{times (divided_by 1 block.settings.image.aspect_ratio) 100}}%;">
+                <img id="{{ img_id }}"
+                     class="feature-row__image lazyload"
+                     src="{{img_url block.settings.image '300x300'}}"
+                     data-src="{{ img_url }}"
+                     data-widths="[180, 360, 540, 720, 900, 1080, 1296, 1512, 1728, 2048]"
+                     data-aspectratio="{{ block.settings.image.aspect_ratio }}"
+                     data-sizes="auto"
+                     alt="{{escape block.settings.image.alt}}">
+              </div>
+            </div>
+            <noscript>
+              <p>
+                {{img_tag (img_url block.settings.image '480x480' scale 2) block.settings.image.alt 'feature-row__image'}}
+              </p>
+            </noscript>
+          {{else}}
+            <p>
+              {{placeholder_svg_tag 'image' 'placeholder-svg'}}
+            </p>
+          {{/if}}
+        {{/if}}
+        {{#if (isnt block.settings.title blank)}}
+          <h3 class="h4">{{escape block.settings.title}}</h3>
+        {{/if}}
+        {{#if (isnt block.settings.text blank)}}
+          <div class="rte-setting">{{ block.settings.text }}</div>
+        {{/if}}
+        {{#if (and (isnt block.settings.button_label blank) (isnt block.settings.button_link blank))}}
+          <a href="{{ block.settings.button_link }}" class="btn btn--secondary btn--small">
+            {{escape block.settings.button_label}}
+          </a>
+        {{/if}}
+      </div>
+    {{/each}}
+  </div>
+
+  {{#if (is section.blocks.size 0)}}
+    {{include 'no-blocks'}}
+  {{/if}}
+</div>
+
+{{#schema}}
+  {
+    "name": "Text columns with images",
+    "class": "index-section",
+    "settings": [
+      {
+        "type": "text",
+        "id": "title",
+        "label": "Heading",
+        "default": "Text columns with images"
+      },
+      {
+        "type": "select",
+        "id": "align_text",
+        "label": "Text alignment",
+        "default": "left",
+        "options": [
+          {
+            "value": "left",
+            "label": "Left"
+          },
+          {
+            "value": "center",
+            "label": "Centered"
+          }
+        ]
+      }
+    ],
+    "blocks": [
+      {
+        "type": "text_block",
+        "name": "Column",
+        "settings": [
+          {
+            "type": "checkbox",
+            "id": "enable_image",
+            "label": "Show image",
+            "default": true
+          },
+          {
+            "type": "image_picker",
+            "id": "image",
+            "label": "Image"
+          },
+          {
+            "type": "text",
+            "id": "title",
+            "label": "Heading",
+            "default": "Add a title or tagline"
+          },
+          {
+            "type": "richtext",
+            "id": "text",
+            "label": "Text",
+            "default": "<p>Share blog posts, products, or promotions with your customers. Use this text to describe products, share details on availability and style, or as a space to display recent reviews or FAQs.</p>"
+          },
+          {
+            "type": "text",
+            "id": "button_label",
+            "label": "Button label"
+          },
+          {
+            "type": "url",
+            "id": "button_link",
+            "label": "Button link"
+          }
+        ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "Text columns with images",
+        "category": "Text",
+        "blocks": [
+          {
+            "type": "text_block"
+          },
+          {
+            "type": "text_block"
+          },
+          {
+            "type": "text_block"
+          }
+        ]
+      }
+    ]
+  }
+{{/schema}}

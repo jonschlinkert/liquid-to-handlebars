@@ -1,0 +1,81 @@
+{{#comment}}
+  Important notes about pagination:
+  - Never access collection.products before the opening paginate tag.
+  - Never paginate by more than 50.
+{{/comment}}
+
+{{#paginate collection.products by=10}}
+
+  <h1>{{ collection.title }}</h1>
+
+  {{#comment}}
+    Collection sorting. Needs the JavaScript that is at the bottom of this file.
+  {{/comment}}
+  {{#if (gt collection.products_count 1)}}
+    <select class="sort-by right">
+      <option value="manual">Featured</option>
+      <option value="price-ascending">Price: Low to High</option>
+      <option value="price-descending">Price: Hight to Low</option>
+      <option value="title-ascending">A-Z</option>
+      <option value="title-descending">Z-A</option>
+      <option value="created-ascending">Oldest to Newest</option>
+      <option value="created-descending">Newest to Oldest</option>
+      <option value="best-selling">Best Selling</option>
+    </select>
+  {{/if}}
+
+  {{#comment}}
+    Listing all tags within the current collection.
+    Shopify uses product tags to manage subcategories inside collections.
+    See 'How do I create subcategories of products?' at 
+    http://bit.ly/1j1Dti4 for details.
+  {{/comment}}
+
+  {{#if (gt collection.all_tags.size 0)}}
+    <ul>
+      <li class="{{#unless current_tags}} active{{/unless}}">
+        {{link_to_remove_tag 'All' current_tags.first}}
+      </li>
+      {{#each collection.all_tags as |tag|}}
+        {{#if (contains current_tags tag)}}
+          <li class="active">
+            {{link_to_remove_tag tag tag}}
+          </li>
+        {{else}}
+          <li>
+            {{link_to_tag tag tag}}
+          </li>
+        {{/if}}
+      {{/each}}  
+    </ul>
+  {{/if}}
+
+  {{#if (gt collection.description.size 0)}}
+    {{ collection.description }}
+  {{/if}}
+
+  {{#each collection.products as |product|}}
+    <ul>
+      {{include 'product-item'}}
+    </ul>
+  {{else}}
+    <p>There are no products in this view.</p>
+  {{/each}}
+
+  {{#if (gt paginate.pages 1)}}
+    {{default_pagination paginate}}
+  {{/if}}
+
+{{/paginate}}
+
+{{#comment}}
+  JavaScript for collection sorting.
+{{/comment}}
+<script>
+jQuery('.sort-by')
+  .val('{{default collection.sort_by collection.default_sort_by}}')
+  .on('change', function() {
+    Shopify.queryParams.sort_by = jQuery(this).val();
+    location.search = jQuery.param(Shopify.queryParams).replace(/\+/g, '%20');
+  });
+</script>

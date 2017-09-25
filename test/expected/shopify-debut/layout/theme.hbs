@@ -1,0 +1,112 @@
+<!doctype html>
+<!--[if IE 9]> <html class="ie9 no-js" lang="{{ shop.locale }}"> <![endif]-->
+<!--[if (gt IE 9)|!(IE)]><!--> <html class="no-js" lang="{{ shop.locale }}"> <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="{{ settings.color_button }}">
+  <link rel="canonical" href="{{ canonical_url }}">
+
+  {{#if (isnt settings.favicon blank)}}
+    <link rel="shortcut icon" href="{{img_url settings.favicon '32x32'}}" type="image/png">
+  {{/if}}
+
+  {{#capture 'seo_title'}}
+    {{{ page_title }}}
+    {{#if current_tags}}
+      {{assign 'meta_tags' (join current_tags ', ')}} &ndash; {{t 'general.meta.tags' tags meta_tags}}
+    {{/if}}
+    {{#if (isnt current_page 1)}}
+      &ndash; {{t 'general.meta.page' page current_page}}
+    {{/if}}
+    {{#unless (contains page_title shop.name)}}
+      &ndash; {{ shop.name }}
+    {{/unless}}
+  {{/capture}}
+  <title>{{ seo_title }}</title>
+
+  {{#if page_description}}
+    <meta name="description" content="{{escape page_description}}">
+  {{/if}}
+
+  {{include 'social-meta-tags'}}
+
+  {{stylesheet_tag (asset_url 'theme.scss.css')}}
+  {{include 'google-fonts'}}
+
+  <script>
+    var theme = {
+      strings: {
+        addToCart: {{json (t 'products.product.add_to_cart')}},
+        soldOut: {{json (t 'products.product.sold_out')}},
+        unavailable: {{json (t 'products.product.unavailable')}},
+        showMore: {{json (t 'general.filters.show_more')}},
+        showLess: {{json (t 'general.filters.show_less')}},
+        addressError: {{json (t 'sections.map.address_error')}},
+        addressNoResults: {{json (t 'sections.map.address_no_results')}},
+        addressQueryLimit: {{json (t 'sections.map.address_query_limit_html')}},
+        authError: {{json (t 'sections.map.auth_error_html')}}
+      },
+      moneyFormat: {{json shop.money_format}}
+    }
+
+    document.documentElement.className = document.documentElement.className.replace('no-js', 'js');
+  </script>
+
+  <!--[if (lte IE 9) ]>{{script_tag (asset_url 'match-media.min.js')}}<![endif]-->
+
+  {{#if (is template.directory 'customers')}}
+    <!--[if (gt IE 9)|!(IE)]><!--><script src="{{shopify_asset_url 'shopify_common.js'}}" defer="defer"></script><!--<![endif]-->
+    <!--[if lte IE 9]><script src="{{shopify_asset_url 'shopify_common.js'}}"></script><![endif]-->
+  {{/if}}
+
+  <!--[if (gt IE 9)|!(IE)]><!--><script src="{{asset_url 'lazysizes.js'}}" async="async"></script><!--<![endif]-->
+  <!--[if lte IE 9]><script src="{{asset_url 'lazysizes.min.js'}}"></script><![endif]-->
+
+  <!--[if (gt IE 9)|!(IE)]><!--><script src="{{asset_url 'vendor.js'}}" defer="defer"></script><!--<![endif]-->
+  <!--[if lte IE 9]><script src="{{asset_url 'vendor.js'}}"></script><![endif]-->
+
+  <!--[if (gt IE 9)|!(IE)]><!--><script src="{{asset_url 'theme.js'}}" defer="defer"></script><!--<![endif]-->
+  <!--[if lte IE 9]><script src="{{asset_url 'theme.js'}}"></script><![endif]-->
+
+  {{ content_for_header }}
+</head>
+
+<body class="template-{{first (split template '.')}}">
+
+  <a class="in-page-link visually-hidden skip-link" href="#MainContent">{{t 'general.accessibility.skip_to_content'}}</a>
+
+  <div id="SearchDrawer" class="search-bar drawer drawer--top">
+    <div class="search-bar__table">
+      <div class="search-bar__table-cell search-bar__form-wrapper">
+        <form class="search search-bar__form" action="/search" method="get" role="search">
+          <button class="search-bar__submit search__submit btn--link" type="submit">
+            {{include 'icon-search'}}
+            <span class="icon__fallback-text">{{t 'general.search.submit'}}</span>
+          </button>
+          <input class="search__input search-bar__input" type="search" name="q" value="{{escape search.terms}}" placeholder="{{t 'general.search.placeholder'}}" aria-label="{{t 'general.search.placeholder'}}">
+        </form>
+      </div>
+      <div class="search-bar__table-cell text-right">
+        <button type="button" class="btn--link search-bar__close js-drawer-close">
+          {{include 'icon-close'}}
+          <span class="icon__fallback-text">{{t 'general.search.close'}}</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  {{section 'header'}}
+
+  <div class="page-container" id="PageContainer">
+
+    <main class="main-content" id="MainContent" role="main">
+      {{ content_for_layout }}
+    </main>
+
+    {{section 'footer'}}
+
+  </div>
+</body>
+</html>

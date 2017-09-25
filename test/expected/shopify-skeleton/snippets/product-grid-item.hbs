@@ -1,0 +1,70 @@
+{{#comment}}
+It may be a good idea to provide a theme setting that lets a merchant decide how many products to show per row
+on collection pages. Or, it may be a good idea to provide a control on the store front which lets a shopper decide 
+whether items be presented in a grid or in a list.
+That information about the presentation can be passed on to the product-grid-item.liquid snippet via the 'with' argument.
+Use of the 'with' argument is explained here: http://docs.shopify.com/themes/theme-templates/snippets.
+The information can then be referred to by accessing the variable which goes by the same name as the snippet,
+in this case product-grid-item. If the 'with' argument is not used, the snippet variable is set to an empty string.
+Here, for the sake of teaching, we will use 2 presentation options:
+- 3 products per row, when passing the value 'three-per-row' to the snippet
+- 4 products per row, when passing the value 'four-per-row' to the snippet
+{{/comment}}
+
+{{#comment}}If no value is passed to the snippet, we will set the snippet variable to a sensible default.{{/comment}}
+{{#if (is product-grid-item '')}}{{assign 'product-grid-item' 'three-per-row'}}{{/if}}
+
+{{#comment}}Is this product on sale?{{/comment}}
+{{assign 'on_sale' false}}
+{{#if (gt product.compare_at_price product.price)}}
+  {{assign 'on_sale' true}}
+{{/if}}
+
+<li class="{{ product-grid-item }}{{#unless product.available}} sold-out{{/unless}}{{#if on_sale}} on-sale{{/if}}{{#if (is product-grid-item 'four-per-row')}}{{cycle '' '' '' ' last-in-row' name='last'}}{{else if (is product-grid-item 'three-per-row')}}{{cycle '' '' ' last-in-row' name='last'}}{{/if}} centered">
+
+  <div class="prod-image-wrap">  
+    <a href="{{within product.url collection}}">
+      <img src="{{img_url product 'grande'}}" alt="{{escape product.featured_image.alt}}" />
+    </a>
+  </div><!-- .prod-image-wrap -->
+  
+  <div class="prod-caption">
+      <a href="{{within product.url collection}}">
+        {{ product.title }}
+      </a>
+      <span class="prod-price">
+        {{#if product.price_varies}}From{{/if}}
+        {{money product.price}}
+        {{#if on_sale}}
+        <s class="compare-at-price">{{money product.compare_at_price}}</s>
+        {{/if}}
+      </span>
+      {{#comment}}
+        All themes by Shopify should support the Product Reviews app out of the box.
+        https://apps.shopify.com/product-reviews
+      {{/comment}}
+      <span class="shopify-product-reviews-badge" data-id="{{ product.id }}"></span>
+  </div><!-- .prod-caption -->
+  
+</li>
+
+{{#comment}}
+You don't need to use a clearing div. Use whatever it is you use to clear
+floated elements. The code that follows just just shows you how to use a cycle element.
+Notice that we named it ( 'clear' ). We need to name it because there's another cycle
+element in this file ( we called that other one 'last' ). If you have more than one
+cycle element in a rendered view, you'll need to name all of them.
+The cycle element is documented here: http://docs.shopify.com/themes/liquid-basics/logic#cycle
+{{/comment}}
+
+{{#if (is product-grid-item 'six-per-row')}}
+{{cycle '' '' '' '' '' '<div style="clear:both"></div>' name='clear'}}
+{{else if (is product-grid-item 'five-per-row')}}
+{{cycle '' '' '' '' '<div style="clear:both"></div>' name='clear'}}
+{{else if (is product-grid-item 'four-per-row')}}
+{{cycle '' '' '' '<div style="clear:both"></div>' name='clear'}}
+{{else if (is product-grid-item 'three-per-row')}}
+{{cycle '' '' '<div style="clear:both"></div>' name='clear'}}
+{{else if (is product-grid-item 'two-per-row')}}
+{{cycle '' '<div style="clear:both"></div>' name='clear'}}
+{{/if}}

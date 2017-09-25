@@ -1,0 +1,35 @@
+{{#if (contains template 'product')}}
+  <meta property="og:type" content="product" />
+  <meta property="og:title" content="{{escape (strip_html product.title)}}" />
+  {{#each product.images as |image|}}
+  <meta property="og:image" content="http:{{img_url image 'grande'}}" />
+  <meta property="og:image:secure_url" content="https:{{img_url image 'grande'}}" />
+  {{/each}}
+  <meta property="og:price:amount" content="{{money_without_currency product.price}}" />
+  <meta property="og:price:currency" content="{{ shop.currency }}" />
+{{else if (contains template 'article')}}
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="{{escape (strip_html article.title)}}" />  
+  {{assign 'img_tag' (append '<' 'img')}}
+  {{#if (contains article.content img_tag)}}
+    {{assign 'src' (split article.content 'src="')}}
+    {{assign 'src' (remove (remove (first (split (get src 1) '"')) 'https:') 'http:')}}
+    {{#if src}}
+      <meta property="og:image" content="http:{{ src }}" />
+      <meta property="og:image:secure_url" content="https:{{ src }}" />
+    {{/if}}
+  {{/if}}
+{{else}}
+  {{#if settings.use_logo}}
+    <meta property="og:image" content="http:{{asset_url 'logo.png'}}" />
+    <meta property="og:image:secure_url" content="https:{{asset_url 'logo.png'}}" />
+  {{/if}}  
+  <meta property="og:title" content="{{escape page_title}}" />
+  <meta property="og:type" content="website" />
+{{/if}}
+
+{{#if page_description}}
+<meta property="og:description" content="{{{ page_description }}}" />
+{{/if}}
+<meta property="og:url" content="{{ canonical_url }}" />
+<meta property="og:site_name" content="{{ shop.name }}" />

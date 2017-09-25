@@ -1,0 +1,31 @@
+<!-- snippets/onboarding-empty-collection.liquid -->
+<div class="grid__item">
+  <div class="helper-section">
+    <div class="helper-note">
+      <span class="helper-icon"></span>
+      <h3>{{t 'collections.onboarding.modal_title'}}</h3>
+      <p>{{t 'collections.onboarding.no_products_html'}}</p>
+      <p><a href="/admin/products/new" class="admin-btn-primary">{{t 'collections.onboarding.add_product'}}</a></p>
+    </div>
+
+    <div class="grid-uniform helper-content">
+      {{assign 'index' 1}}
+      {{#each (range 1 8) as |i|}}
+        {{#is i 7}}
+            {{assign 'index' 1}}
+          {{else is i 8}}
+            {{assign 'index' 2}}
+{{/is}}
+        <div class="grid__item one-half large--one-quarter">
+          <a href="/admin/products" class="grid__image">
+            {{#capture 'imageUrl'}}//cdn.shopify.com/s/images/themes/product-{{ index }}.png{{/capture}}
+            {{img_tag imageUrl}}
+          </a>
+          <p class="h6"><a href="/admin/products">{{t 'homepage.onboarding.product_title'}}</a></p>
+          <p>$19.99</p>
+        </div>
+        {{assign 'index' (plus index 1)}}
+      {{/each}}
+    </div>
+  </div>
+</div>

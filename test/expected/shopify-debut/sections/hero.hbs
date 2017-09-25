@@ -1,0 +1,138 @@
+<div class="hero hero--{{ section.settings.hero_size }}{{#if (or (isnt section.settings.title blank) (isnt section.settings.text blank) (isnt section.settings.button_label blank))}} hero__overlay{{/if}} box ratio-container lazyload js"
+     {{#if section.settings.image}}
+     data-bgset="{{include 'bgset",' image: section.settings.image}}"
+     data-sizes="auto"
+     data-parent-fit="cover"
+     style="background-position: {{ section.settings.alignment }}; background-image: url('{{img_url section.settings.image '300x300'}});"
+     {{/if}}>
+  {{#if (is section.settings.image blank)}}
+    <div class="placeholder-background">
+      {{placeholder_svg_tag 'lifestyle-1' 'placeholder-svg'}}
+    </div>
+  {{/if}}
+  <div class="hero__inner">
+    <div class="page-width text-center">
+      {{#if (isnt section.settings.title blank)}}
+        <h2 class="h1 mega-title{{#if (is section.settings.text_size 'large')}} mega-title--large{{/if}}">{{escape section.settings.title}}</h2>
+      {{/if}}
+      {{#if (isnt section.settings.text blank)}}
+        <div class="rte-setting mega-subtitle{{#if (is section.settings.text_size 'large')}} mega-subtitle--large{{/if}}">{{ section.settings.text }}</div>
+      {{/if}}
+      {{#if (and (isnt section.settings.button_label blank) (isnt section.settings.button_link blank))}}
+        <a href="{{ section.settings.button_link }}" class="btn hero__btn">
+          {{escape section.settings.button_label}}
+        </a>
+      {{/if}}
+    </div>
+  </div>
+</div>
+
+<noscript>
+  <div class="hero hero--{{ section.settings.hero_size }}{{#if (or (isnt section.settings.title blank) (isnt section.settings.text blank) (isnt section.settings.button_label blank))}} hero__overlay{{/if}}"{{#if section.settings.image}} style="background-image: url('{{img_url section.settings.image '2048x'}}'); background-position: center {{ section.settings.alignment }};"{{/if}}></div>
+</noscript>
+
+{{#schema}}
+  {
+    "name": "Image with text overlay",
+    "class": "index-section index-section--flush",
+    "settings": [
+      {
+        "type": "image_picker",
+        "id": "image",
+        "label": "Image"
+      },
+      {
+        "type": "select",
+        "id": "alignment",
+        "label": "Image alignment",
+        "default": "center",
+        "options": [
+          {
+            "value": "top",
+            "label": "Top"
+          },
+          {
+            "value": "center",
+            "label": "Middle"
+          },
+          {
+            "value": "bottom",
+            "label": "Bottom"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "id": "title",
+        "label": "Heading",
+        "default": "Image with text overlay"
+      },
+      {
+        "type": "richtext",
+        "id": "text",
+        "label": "Text",
+        "default": "<p>Use overlay text to give your customers insight into your brand. Select imagery and text that relates to your style and story.</p>"
+      },
+      {
+        "type": "select",
+        "id": "hero_size",
+        "label": "Section height",
+        "default": "medium",
+        "options": [
+          {
+            "label": "Extra Small",
+            "value": "x-small"
+          },
+          {
+            "label": "Small",
+            "value": "small"
+          },
+          {
+            "label": "Medium",
+            "value": "medium"
+          },
+          {
+            "label": "Large",
+            "value": "large"
+          },
+          {
+            "label": "Extra Large",
+            "value": "x-large"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "text_size",
+        "label": "Text size",
+        "default": "medium",
+        "options": [
+          {
+            "label": "Medium",
+            "value": "medium"
+          },
+          {
+            "label": "Large",
+            "value": "large"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "id": "button_label",
+        "label": "Button label"
+      },
+      {
+        "type": "url",
+        "id": "button_link",
+        "label": "Button link"
+      }
+    ],
+    "presets": [
+      {
+        "name": "Image with text overlay",
+        "category": "Image"
+      }
+    ]
+  }
+{{/schema}}

@@ -1,0 +1,28 @@
+<div class="list-view-item__image-column">
+  <div class="list-view-item__image-wrapper">
+    <img class="list-view-item__image" src="{{img_url product.featured_image.src '95x95' scale 2}}" alt="{{escape product.featured_image.alt}}">
+  </div>
+</div>
+
+<div class="list-view-item__title-column">
+  <div class="list-view-item__title">{{ product.title }}</div>
+  {{#if (gt product.compare_at_price product.price)}}
+    <div class="list-view-item__on-sale">{{t 'products.product.on_sale'}}</div>
+  {{/if}}
+  {{#if section.settings.show_vendor}}
+    <div class="list-view-item__vendor medium-up--hide">{{ product.vendor }}</div>
+  {{/if}}
+  {{#unless product.available}}
+    <div class="list-view-item__sold-out">{{t 'products.product.sold_out'}}</div>
+  {{/unless}}
+</div>
+
+{{#if section.settings.show_vendor}}
+  <div class="list-view-item__vendor-column small--hide">
+    <div class="list-view-item__vendor">{{ product.vendor }}</div>
+  </div>
+{{/if}}
+
+<div class="list-view-item__price-column">
+  {{include 'product-price'}}
+</div>

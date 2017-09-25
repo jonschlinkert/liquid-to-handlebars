@@ -1,0 +1,64 @@
+<!-- /snippets/social-meta-tags.liquid -->
+{{#comment}}
+  Open graph tags
+{{/comment}}
+{{#if (is template 'index')}}
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="{{{ page_title }}}">
+  <meta property="og:description" content="{{{ page_description }}}">
+{{else if (contains template 'product')}}
+  <meta property="og:type" content="product">
+  <meta property="og:title" content="{{escape (strip_html product.title)}}">
+  {{#each (limit product.images 3) as |image|}}
+    <meta property="og:image" content="http:{{img_url image '600x600'}}">
+    <meta property="og:image:secure_url" content="https:{{img_url image '600x600'}}">
+  {{/each}}
+  <meta property="og:description" content="{{escape (strip_html product.description)}}">
+  <meta property="og:price:amount" content="{{escape (strip_html (money_without_currency product.price))}}">
+  <meta property="og:price:currency" content="{{ shop.currency }}">
+{{else if (contains template 'article')}}
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="{{escape (strip_html article.title)}}">
+  {{#if article.image}}
+    <meta property="og:image" content="http:{{img_url article '1024x1024'}}">
+    <meta property="og:image:secure_url" content="https:{{img_url article '1024x1024'}}">
+  {{/if}}
+  <meta property="og:description" content="{{escape (strip_html article.excerpt_or_content)}}">
+{{else}}
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="{{escape page_title}}">
+  {{#if settings.logo_use_image}}
+    <meta property="og:image" content="http:{{asset_url 'logo.png'}}">
+    <meta property="og:image:secure_url" content="https:{{asset_url 'logo.png'}}">
+  {{/if}}
+{{/if}}
+<meta property="og:url" content="{{ canonical_url }}">
+<meta property="og:site_name" content="{{ shop.name }}">
+
+{{#comment}}
+  Twitter card
+{{/comment}}
+{{#unless (is settings.social_twitter_link blank)}}
+  <meta name="twitter:site" content="@{{last (split settings.social_twitter_link 'twitter.com/')}}">
+{{/unless}}
+{{#if (and (contains template 'article') article.image)}}
+  <meta name="twitter:card" content="summary_large_image">
+{{else}}
+  <meta name="twitter:card" content="summary">
+{{/if}}
+{{#if (is template 'index')}}
+  <meta name="twitter:title" content="{{{ page_title }}}">
+  <meta name="twitter:description" content="{{escape page_description}}">
+{{else if (contains template 'product')}}
+  <meta name="twitter:title" content="{{escape (strip_html product.title)}}">
+  <meta name="twitter:description" content="{{escape (truncate (strip_html product.description) 200 '')}}">
+  <meta name="twitter:image" content="https:{{img_url product '600x600'}}">
+  <meta name="twitter:image:width" content="600">
+  <meta name="twitter:image:height" content="600">
+{{else if (contains template 'article')}}
+  <meta name="twitter:title" content="{{escape (strip_html article.title)}}">
+  <meta name="twitter:description" content="{{escape (truncate (strip_html article.excerpt_or_content) 200 '')}}">
+  {{#if article.image}}
+    <meta property="twitter:image" content="https:{{img_url article '1024x1024'}}">
+  {{/if}}
+{{/if}}

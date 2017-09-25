@@ -1,0 +1,31 @@
+<ul class="list--inline pagination">
+  <li>
+    {{#unless paginate.previous.is_link}}
+      <div class="btn btn--secondary btn--narrow btn--disabled">
+        {{include 'icon-arrow-left'}}
+        <span class="icon__fallback-text">{{t 'general.pagination.previous'}}</span>
+      </div>
+    {{else}}
+      <a href="{{ paginate.previous.url }}" class="btn btn--secondary btn--narrow">
+        {{include 'icon-arrow-left'}}
+        <span class="icon__fallback-text">{{t 'general.pagination.previous'}}</span>
+      </a>
+    {{/unless}}
+  </li>
+  <li class="pagination__text">
+    {{t 'general.pagination.current_page' current paginate.current_page total paginate.pages}}
+  </li>
+  <li>
+    {{#unless paginate.next.is_link}}
+      <div class="btn btn--secondary btn--narrow btn--disabled">
+        {{include 'icon-arrow-right'}}
+        <span class="icon__fallback-text">{{t 'general.pagination.next'}}</span>
+      </div>
+    {{else}}
+      <a href="{{ paginate.next.url }}" class="btn btn--secondary btn--narrow">
+        {{include 'icon-arrow-right'}}
+        <span class="icon__fallback-text">{{t 'general.pagination.next'}}</span>
+      </a>
+    {{/unless}}
+  </li>
+</ul>

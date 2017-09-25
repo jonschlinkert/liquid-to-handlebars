@@ -1,0 +1,62 @@
+{{assign 'container_aspect_ratio' (divided_by (times width 1.0) height)}}
+<style>
+  {{#if (lt image.aspect_ratio 1.0)}}
+    {{assign 'maximum_width' (times height image.aspect_ratio)}}
+    {{#if (lte image.height height)}}
+      {{assign 'maximum_height' image.height}}
+      {{assign 'maximum_width' image.width}}
+    {{else}}
+      {{assign 'maximum_height' height}}
+    {{/if}}
+  {{else if (lt image.aspect_ratio container_aspect_ratio)}}
+    {{assign 'maximum_height' (divided_by height image.aspect_ratio)}}
+    {{#if (lte image.height height)}}
+      {{assign 'maximum_height' image.height}}
+      {{assign 'maximum_width' image.width}}
+    {{else}}
+      {{assign 'maximum_height' height}}
+      {{assign 'maximum_width' (times height image.aspect_ratio)}}
+    {{/if}}
+  {{else}}
+    {{assign 'maximum_height' (divided_by height image.aspect_ratio)}}
+    {{#if (lte image.width width)}}
+      {{assign 'maximum_height' image.height}}
+      {{assign 'maximum_width' image.width}}
+    {{else}}
+      {{assign 'maximum_width' width}}
+      {{assign 'maximum_height' (divided_by maximum_width image.aspect_ratio)}}
+    {{/if}}
+  {{/if}}
+  
+  {{#if small_style}}@media screen and (min-width: 750px) { {{/if}}
+    #{{ img_id }} {
+      max-width: {{ maximum_width }}px;
+      max-height: {{ maximum_height }}px;
+    }
+    #{{ wrapper_id }} {
+      max-width: {{ maximum_width }}px;
+      max-height: {{ maximum_height }}px;
+    }
+  {{#if small_style}} } {{/if}}
+  
+  {{#if small_style}}
+    {{#if (lt image.aspect_ratio 1)}}
+      {{assign 'maximum_width' (times 750 image.aspect_ratio)}}
+    {{else}}
+      {{#if (lt image.width 750)}}
+        {{assign 'maximum_width' image.width}}
+      {{else}}
+        {{assign 'maximum_width' 750}}
+      {{/if}}
+    {{/if}}
+    @media screen and (max-width: 749px) {
+      #{{ img_id }} {
+        max-width: {{ maximum_width }}px;
+        max-height: 750px;
+      }
+      #{{ wrapper_id }} {
+        max-width: {{ maximum_width }}px;
+      }
+    }
+  {{/if}}
+</style>

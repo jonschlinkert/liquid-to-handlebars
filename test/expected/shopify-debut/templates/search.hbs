@@ -1,0 +1,74 @@
+{{#paginate search.results by=10}}
+
+<div class="page-width">
+  {{#if (or (is search.results_count 0) (is search.performed false))}}
+    <div class="empty-page-content text-center">
+      <h1 class="h2">{{t 'general.search.title'}}</h1>
+  {{else}}
+    <div class="section-header text-center">
+      <h1 class="h2">{{t 'general.search.results_with_count' terms search.terms count search.results_count}}</h1>
+  {{/if}}
+        <div class="grid">
+          <div class="grid__item medium-up--two-fifths medium-up--push-three-tenths">
+            <form action="/search" method="get" role="search" class="search">
+              <div class="input-group">
+                <input type="search"
+                  id="SearchInput"
+                  class="input-group__field search__input"
+                  name="q"
+                  value="{{escape search.terms}}"
+                  placeholder="{{t 'general.search.placeholder'}}"
+                  aria-label="{{t 'general.search.placeholder'}}"
+                  autofocus>
+                <span class="input-group__btn">
+                  <button class="btn search__submit" type="submit">{{t 'general.search.submit'}}</button>
+                </span>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        {{#if (and search.performed (is search.results_count 0))}}
+          <hr class="hr--small hr--invisible">
+          <p>{{t 'general.search.no_results_html' terms search.terms}}</p>
+        {{/if}}
+  </div>
+</div>
+
+
+{{#if search.performed}}
+  {{#if (gt search.results_count 0)}}
+    <hr>
+  {{/if}}
+  <div class="page-width list-view-items">
+    {{#each search.results as |item|}}
+      <a href="{{ item.url }}" class="list-view-item">
+        {{#if (is item.object_type 'product')}}
+          {{include 'product-card-list",' product: item}}
+        {{else}}
+          {{#if item.image}}
+            <div class="list-view-item__image-column">
+              <div class="list-view-item__image-wrapper">
+                <img class="list-view-item__image" src="{{img_url item.image.src '600x600'}}" alt="{{escape item.image.alt}}">
+              </div>
+            </div>
+          {{/if}}
+
+          <div class="list-view-item__title-column">
+            <div class="list-view-item__title">{{ item.title }}</div>
+            <div class="">
+              {{#if item.published_at}}{{date item.published_at '%b %d, %Y'}} &#8212; {{/if}}
+              {{truncate (strip_html item.content) 200}}
+            </div>
+          </div>
+        {{/if}}
+      </a>
+    {{/each}}
+  </div>
+
+  {{#if (gt paginate.pages 1)}}
+    {{include 'pagination'}}
+  {{/if}}
+{{/if}}
+
+{{/paginate}}

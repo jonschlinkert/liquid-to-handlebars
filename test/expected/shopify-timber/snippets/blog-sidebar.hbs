@@ -1,0 +1,30 @@
+<!-- /snippets/blog-sidebar.liquid -->
+{{#comment}}
+  Recent blog posts
+{{/comment}}
+<h3 class="h4">{{t 'blogs.sidebar.recent_articles'}}</h3>
+<ul class="no-bullets">
+  {{#each (get blogs (toPath blog.handle 'articles')) as |article|}}
+    <li>
+      <a href="{{ article.url }}">{{ article.title }}</a>
+      <br>
+      <time datetime="{{date article.published_at '%Y-%m-%d'}}">{{date article.published_at format 'month_day_year'}}</time>
+    </li>
+  {{/each}}
+</ul>
+
+{{#comment}}
+  Blog tags
+{{/comment}}
+{{#if (gt blog.all_tags.size 0)}}
+  <h3 class="h4">{{t 'blogs.sidebar.categories'}}</h3>
+  <ul class="no-bullets">
+    {{#each blog.all_tags as |tag|}}
+      {{#if (contains current_tags tag)}}
+      <li>{{ tag }}</li>
+      {{else}}
+      <li>{{link_to_tag tag tag}}</li>
+      {{/if}}
+    {{/each}}
+  </ul>
+{{/if}}

@@ -1,0 +1,41 @@
+{{#if collection.image}}
+  {{assign 'collection_image' collection.image}}
+{{else if (and collection.products.first (isnt collection.products.first.images empty))}}
+  {{assign 'collection_image' collection.products.first.featured_image}}
+{{else}}
+  {{assign 'collection_image' blank}}
+{{/if}}
+
+<div class="collection-grid-item">
+  <a href="{{#if (is collection.products empty)}}#{{else}}{{ collection.url }}{{/if}}" class="collection-grid-item__link">
+    {{#unless (is collection_image blank)}}
+      <div class="collection-grid-item__overlay box ratio-container lazyload js"
+         data-bgset="{{include 'bgset",' image: collection_image}}"
+         data-sizes="auto"
+         data-parent-fit="cover"
+         style="background-image: url('{{img_url collection_image '300x300'}}')">
+      </div>
+     <noscript>
+       <div class="collection-grid-item__overlay" style="background-image: url('{{img_url collection_image '1024x1024'}}')"></div>
+     </noscript>
+   {{else}}
+     {{#if (is collection empty)}}
+        <div class="collection-grid-item__overlay">
+          {{#capture 'current'}}{{cycle 1 2 3}}{{/capture}}
+          {{placeholder_svg_tag (append 'collection-' current) 'placeholder-svg'}}
+        </div>
+      {{else}}
+         <div class="collection-grid-item__overlay" style="background-image: url('{{img_url collection_image '1024x1024'}}')"></div>
+      {{/if}}
+   {{/unless}}
+    <div class="collection-grid-item__title-wrapper">
+      <h3 class="collection-grid-item__title">
+        {{#if (is collection.title blank)}}
+          {{t 'homepage.onboarding.collection_title'}}
+        {{else}}
+          {{ collection.title }}
+        {{/if}}
+      </h3>
+    </div>
+  </a>
+</div>

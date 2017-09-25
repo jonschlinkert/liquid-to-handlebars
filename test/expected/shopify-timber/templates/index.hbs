@@ -1,0 +1,163 @@
+<!-- /templates/index.liquid -->
+{{#comment}}
+
+  This is the homepage of your site.
+
+  More info on global variables (available on all templates):
+    - http://docs.shopify.com/themes/liquid-variables/global
+{{/comment}}
+
+<h2>{{t 'homepage.sections.frontpage_title'}}</h2>
+
+{{#comment}}
+  Use class grid-uniform to have evenly sized columns clear
+  each other properly at each breakpoint.
+{{/comment}}
+<div class="grid-uniform">
+
+  {{#comment}}
+    Loop through products in your Frontpage collection.
+    This collection is created by default, but you must add products to it.
+  {{/comment}}
+  {{#each (limit collections.frontpage.products 4) as |product|}}
+
+    {{#comment}}
+      Change the grid item width by using classes from the grid in
+      the grid_item_width variable.
+
+      Example:
+        - {{assign 'grid_item_width' 'large--one-third medium--one-half'}}
+    {{/comment}}
+    {{assign 'grid_item_width' 'large--one-quarter medium--one-half'}}
+    {{include 'product-grid-item'}}
+
+  {{else}}
+    {{#comment}}
+      For onboarding new users to your theme, we add some default products and onboarding tutorials to help populate their store
+    {{/comment}}
+    {{#unless emptyState}}
+      {{stylesheet_tag (global_asset_url 'theme-onboarding.css')}}
+      {{assign 'emptyState' true}}
+    {{/unless}}
+
+    {{include 'onboarding-featured-products'}}
+
+  {{/each}}
+
+</div>
+
+<hr>
+
+<h2>{{t 'homepage.sections.featured_title'}}</h2>
+
+<div class="grid-uniform">
+
+  {{#comment}}
+    Show five collections, unless it's 'frontpage'.
+
+    Use an index variable in combination to the limit filter
+    to account for the frontpage collection being in top six returned.
+
+    Use variable isEmpty to check if no collections will be shown.
+    For empty store demo only.
+  {{/comment}}
+  {{assign 'index' 1}}
+  {{assign 'isEmpty' true}}
+
+  {{#each (limit collections 6) as |collection|}}
+    {{#unless (gt index 5)}}
+
+      {{#unless (is collection.handle 'frontpage')}}
+        {{assign 'isEmpty' false}}
+        {{assign 'collection_item_width' 'large--one-fifth medium--one-third'}}
+        <div class="grid__item {{ collection_item_width }} text-center">
+          {{#comment}}
+            Use capture to put the collection title in a variable that is used in liquid filters
+          {{/comment}}
+          {{#capture 'collection_title'}}{{escape collection.title}}{{/capture}}
+
+          <a href="{{ collection.url }}" title="{{t 'collections.general.link_title' title collection_title}}" class="grid__image">
+            {{#if collection.image}}
+              {{img_tag (img_url collection.image.src 'large') collection_title}}
+            {{else}}
+              {{img_tag (img_url collection.products.first.featured_image 'large') collection_title}}
+            {{/if}}
+          </a>
+
+          <p>
+            <a href="{{ collection.url }}" title="{{t 'collections.general.link_title' title collection_title}}">{{ collection.title }}</a><br>
+            {{t 'collections.general.items_with_count' count collection.all_products_count}}
+          </p>
+        </div>
+        {{assign 'index' (plus index 1)}}
+      {{/unless}}
+
+    {{/unless}}
+  {{/each}}
+
+  {{#comment}}
+    For onboarding new users to your theme, we add some default collections and onboarding tutorials to help populate their store
+  {{/comment}}
+
+  {{#if isEmpty}}
+    {{#unless emptyState}}
+      {{stylesheet_tag (global_asset_url 'theme-onboarding.css')}}
+      {{assign 'emptyState' true}}
+    {{/unless}}
+
+    {{include 'onboarding-featured-collections'}}
+  {{/if}}
+
+</div>
+
+<hr>
+
+{{#comment}}
+  Loop through three recent blog articles with the following code.
+
+  Since we're not on the blog template, we need to define the blog
+  handle we want to focus on. For this example we'll use the default 'news',
+  but you can create a blog page-specific content if you want.
+{{/comment}}
+<h2>{{t 'homepage.sections.news_title'}}</h2>
+
+<div class="grid">
+  {{#each (get blogs (toPath 'news' 'articles')) as |article|}}
+
+    <div class="grid__item large--one-third">
+
+      <time datetime="{{date article.published_at '%Y-%m-%d'}}">{{date article.published_at format 'month_day_year'}}</time>
+      <h3><a href="{{ article.url }}">{{ article.title }}</a></h3>
+
+      {{#comment}}
+        Add a surrounding div with class 'rte' to anything that will come from the rich text editor.
+        Since this is just a listing page, you can either use the excerpt or truncate the full article.
+      {{/comment}}
+      <div class="rte">
+        {{#if (gt article.excerpt.size 0)}}
+          {{ article.excerpt }}
+        {{else}}
+          <p>{{truncatewords (strip_html article.content) 20}}</p>
+        {{/if}}
+      </div>
+
+      {{#comment}}
+        Show off meta information like number of comments and tags.
+      {{/comment}}
+      <ul>
+        {{#if blog.comments_enabled}}
+        <li>
+          <a href="{{ article.url }}#comments">
+            {{ article.comments_count }}
+            {{t 'blogs.comments.with_count' count article.comments_count}}
+          </a>
+        </li>
+        {{/if}}
+      </ul>
+
+      <p><a href="{{ article.url }}">{{t 'blogs.article.read_more'}} &rarr;</a></p>
+
+    </div>
+
+  {{/each}}
+</div>

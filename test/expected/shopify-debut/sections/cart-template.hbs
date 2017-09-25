@@ -1,0 +1,168 @@
+<div class="page-width" data-section-id="{{ section.id }}" data-section-type="cart-template">
+
+  {{#if (gt cart.item_count 0)}}
+    <div class="section-header text-center">
+      <h1>{{t 'cart.general.title'}}</h1>
+    </div>
+
+    <form action="/cart" method="post" novalidate class="cart">
+      <table>
+        <thead class="cart__row cart__header">
+          <th colspan="2">{{t 'cart.label.product'}}</th>
+          <th>{{t 'cart.label.price'}}</th>
+          <th class="text-center">{{t 'cart.label.quantity'}}</th>
+          <th class="text-right">{{t 'cart.label.total'}}</th>
+        </thead>
+        <tbody>
+          {{#each cart.items as |item|}}
+            <tr class="cart__row border-bottom line{{ forloop.index }} cart-flex{{#if forloop.first}} border-top{{/if}}">
+              <td class="cart__image-wrapper cart-flex-item">
+                <a href="{{within item.url collections.all}}">
+                  <img class="cart__image" src="{{img_url item '95x95' scale 2}}" alt="{{escape item.title}}">
+                </a>
+              </td>
+              <td class="cart__meta small--text-left cart-flex-item">
+                <div class="list-view-item__title">
+                  <a href="{{ item.url }}">
+                    {{ item.product.title }}
+                    {{#if (gt item.quantity 1)}}
+                      <span class="medium-up--hide"><span class="visually-hidden">{{t 'cart.label.quantity'}}</span>(x{{ item.quantity }})</span>
+                    {{/if}}
+                  </a>
+                </div>
+                {{#unless (contains item.variant.title 'Default')}}
+                  <div class="cart__meta-text">
+                    {{#each item.product.options as |option|}}
+                      {{ option }}: {{get item.variant.options "forloop.index0}}<br/>
+                    {{/each}}
+                  </div>
+                {{/unless}}
+
+                {{#comment}}
+                  Optional, loop through custom product line items if available
+
+                  Line item properties come in as having two parts. The first part will be passed with the default form,
+                  but p.last is the actual custom property and may be blank. If it is, don't show it.
+
+                  For more info on line item properties, visit:
+                    - http://docs.shopify.com/support/your-store/products/how-do-I-collect-additional-information-on-the-product-page-Like-for-a-monogram-engraving-or-customization
+                {{/comment}}
+                {{assign 'property_size' (size item.properties)}}
+                {{#if (gt property_size 0)}}
+                  <div class="cart__meta-text">
+                    {{#each item.properties as |p|}}
+                      {{#unless (is p.last blank)}}
+                        {{ p.first }}:
+
+                        {{#comment}}
+                          Check if there was an uploaded file associated
+                        {{/comment}}
+                        {{#if (contains p.last '/uploads/')}}
+                          <a href="{{ p.last }}">{{last (split p.last '/')}}</a>
+                        {{else}}
+                          {{ p.last }}
+                        {{/if}}
+                      {{/unless}}
+                    {{/each}}
+                  </div>
+                {{/if}}
+
+                <p class="small--hide">
+                  <a href="/cart/change?line={{ forloop.index }}&amp;quantity=0" class="btn btn--small btn--secondary cart__remove">{{t 'cart.general.remove'}}</a>
+                </p>
+              </td>
+              <td class="cart__price-wrapper cart-flex-item">
+                {{money item.price}}
+
+                {{#each item.discounts as |discount|}}
+                  <div class="cart-item__discount medium-up--hide">{{ discount.title }}</div>
+                {{/each}}
+
+                <div class="cart__edit medium-up--hide">
+                  <button type="button" class="btn btn--secondary btn--small js-edit-toggle cart__edit--active" data-target="line{{ forloop.index }}">
+                    <span class="cart__edit-text--edit">{{t 'cart.general.edit'}}</span>
+                    <span class="cart__edit-text--cancel">{{t 'cart.general.cancel'}}</span>
+                  </button>
+                </div>
+              </td>
+              <td class="cart__update-wrapper cart-flex-item text-right">
+                <a href="/cart/change?line={{ forloop.index }}&amp;quantity=0" class="btn btn--small btn--secondary cart__remove medium-up--hide">{{t 'cart.general.remove'}}</a>
+                <div class="cart__qty">
+                  <label for="updates_{{ item.key }}" class="cart__qty-label">{{t 'cart.label.quantity'}}</label>
+                  <input class="cart__qty-input" type="number" name="updates[]" id="updates_{{ item.key }}" value="{{ item.quantity }}" min="0" pattern="[0-9]*">
+                </div>
+                <input type="submit" name="update" class="btn btn--small cart__update medium-up--hide" value="{{t 'cart.general.update'}}">
+              </td>
+              <td class="text-right small--hide">
+                {{#if (isnt item.original_line_price item.line_price)}}
+                  <div class="cart-item__original-price"><s>{{money item.original_line_price}}</s></div>
+                {{/if}}
+
+                <div>
+                  {{money item.line_price}}
+                </div>
+
+                {{#each item.discounts as |discount|}}
+                  <div class="cart-item__discount">{{ discount.title }}</div>
+                {{/each}}
+              </td>
+            </tr>
+          {{/each}}
+        </tbody>
+      </table>
+
+      <footer class="cart__footer">
+        <div class="grid">
+          {{#if section.settings.cart_notes_enable}}
+            <div class="grid__item medium-up--one-half cart-note">
+              <label for="CartSpecialInstructions" class="cart-note__label small--text-center">{{t 'cart.general.note'}}</label>
+              <textarea name="note" id="CartSpecialInstructions" class="cart-note__input">{{ cart.note }}</textarea>
+            </div>
+          {{/if}}
+          <div class="grid__item text-right small--text-center{{#if section.settings.cart_notes_enable}} medium-up--one-half{{/if}}">
+            <div>
+              <span class="cart__subtotal-title">{{t 'cart.general.subtotal'}}</span>
+              <span class="cart__subtotal">{{money cart.total_price}}</span>
+            </div>
+            {{#if (gt cart.total_discounts 0)}}
+              <div class="cart__savings">
+                {{t 'cart.general.savings'}}
+                <span class="cart__savings-amount">{{money cart.total_discounts}}</span>
+              </div>
+            {{/if}}
+            <div class="cart__shipping">{{t 'cart.general.shipping_at_checkout'}}</div>
+            <a href="collections/all" class="btn btn--secondary cart__update cart__continue--large small--hide" >{{t 'cart.general.continue_shopping'}}</a>
+            <input type="submit" name="update" class="btn btn--secondary cart__update cart__update--large small--hide" value="{{t 'cart.general.update'}}">
+            <input type="submit" name="checkout" class="btn btn--small-wide" value="{{t 'cart.general.checkout'}}">
+            {{#if additional_checkout_buttons}}
+              <div class="additional-checkout-buttons">{{ content_for_additional_checkout_buttons }}</div>
+            {{/if}}
+          </div>
+        </div>
+      </footer>
+    </form>
+  {{else}}
+    <div class="empty-page-content text-center">
+      <h1>{{t 'cart.general.title'}}</h1>
+      <p class="cart--empty-message">{{t 'cart.general.empty'}}</p>
+      <div class="cookie-message">
+        <p>{{t 'cart.general.cookies_required'}}</p>
+      </div>
+      <a href="/" class="btn btn--has-icon-after cart__continue-btn">{{t 'general.404.link'}}{{include 'icon-arrow-right'}}</a>
+    </div>
+  {{/if}}
+</div>
+
+{{#schema}}
+  {
+    "name": "Cart page",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "cart_notes_enable",
+        "label": "Enable cart notes",
+        "default": false
+      }
+    ]
+  }
+{{/schema}}

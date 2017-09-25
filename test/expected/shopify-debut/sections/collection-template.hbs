@@ -1,0 +1,352 @@
+{{#is section.settings.grid '2'}}
+    {{assign 'max_height' 530}}
+  {{else is section.settings.grid '3'}}
+    {{assign 'max_height' 345}}
+  {{else is section.settings.grid '4'}}
+    {{assign 'max_height' 250}}
+  {{else is section.settings.grid '5'}}
+    {{assign 'max_height' 195}}
+{{/is}}
+
+{{#if (is section.settings.layout 'grid')}}
+  {{assign 'limit' (times section.settings.grid section.settings.rows)}}
+{{else}}
+  {{assign 'limit' 16}}
+{{/if}}
+
+{{#paginate collection.products by=limit}}
+
+<div data-section-id="{{ section.id }}" data-section-type="collection-template">
+  <header class="collection-header">
+
+    {{#if (and section.settings.show_collection_image collection.image)}}
+      <div class="collection-hero">
+        <div class="collection-hero__image ratio-container lazyload js"
+             data-bgset="{{include 'bgset",' image: collection.image}}"
+             data-sizes="auto"
+             data-parent-fit="cover"
+             style="background-image: url('{{img_url collection.image '300x300'}});"></div>
+        <noscript>
+          <div class="collection-hero__image" style="background-image: url({{img_url collection.image '2048x600' crop 'top'}});"></div>
+        </noscript>
+        <div class="collection-hero__title-wrapper">
+          <h1 class="collection-hero__title page-width">{{ collection.title }}</h1>
+        </div>
+      </div>
+
+      {{#if (isnt collection.description blank)}}
+        <div class="rte collection-description page-width">
+          {{ collection.description }}
+        </div>
+      {{/if}}
+    {{else}}
+      <div class="page-width">
+        <div class="section-header text-center">
+          <h1>{{ collection.title }}</h1>
+          {{#if (isnt collection.description blank)}}
+            <div class="rte">
+              {{ collection.description }}
+            </div>
+          {{/if}}
+        </div>
+      </div>
+    {{/if}}
+
+    {{#if (or section.settings.tags_enable section.settings.sort_enable)}}
+      <div class="filters-toolbar-wrapper">
+        <div class="page-width">
+          <div class="filters-toolbar">
+            {{#if section.settings.tags_enable}}
+              <div class="filters-toolbar__item">
+                <label for="SortTags" class="label--hidden">{{t 'collections.filters.title_tags'}}</label>
+                <select class="filters-toolbar__input filters-toolbar__input--filter hidden" name="SortTags" id="SortTags">
+                  {{#if current_tags}}
+                    {{#if collection.handle}}
+                      <option value="/collections/{{ collection.handle }}">{{t 'collections.filters.all_tags'}}</option>
+                    {{else if collection.current_type}}
+                      <option value="{{url_for_type collection.current_type}}">{{t 'collections.filters.all_tags'}}</option>
+                    {{else if collection.current_vendor}}
+                      <option value="{{url_for_vendor collection.current_vendor}}">{{t 'collections.filters.all_tags'}}</option>
+                    {{/if}}
+                  {{else}}
+                    {{#if (contains current_tags tag)}}
+                      <option value="">{{t 'collections.filters.all_tags'}}</option>
+                    {{else}}
+                      <option value="">{{t 'collections.filters.title_tags'}}</option>
+                    {{/if}}
+                  {{/if}}
+                  {{#each collection.all_tags as |tag|}}
+                    <option value="/collections/{{#if (isnt collection.handle blank)}}{{ collection.handle }}{{else}}all{{/if}}/{{handleize tag}}"{{#if (contains current_tags tag)}} selected="selected"{{/if}}>{{ tag }}</option>
+                  {{/each}}
+                </select>
+              </div>
+            {{/if}}
+
+            <div class="filters-toolbar__item filters-toolbar__item--count">
+              <span class="filters-toolbar__product-count">{{t 'collections.general.items_with_count' count collection.products_count}}</span>
+            </div>
+
+            {{#if section.settings.sort_enable}}
+              <div class="filters-toolbar__item text-right">
+                {{assign 'sort_by' (default collection.sort_by collection.default_sort_by)}}
+                <label for="SortBy" class="label--hidden">{{t 'collections.sorting.title'}}</label>
+                <select name="SortBy" id="SortBy" class="filters-toolbar__input filters-toolbar__input--sort hidden">
+                  {{#if (is sort_by collection.default_sort_by)}}
+                    <option value="title-ascending" selected="selected">{{t 'collections.sorting.title'}}</option>
+                    {{#if (isnt collection.default_sort_by 'manual')}}
+                      <option value="manual"{{#if (is sort_by 'manual')}} selected="selected"{{/if}}>{{t 'collections.sorting.featured'}}</option>
+                    {{/if}}
+                    {{#if (isnt collection.default_sort_by 'best-selling')}}
+                      <option value="best-selling"{{#if (is sort_by 'best-selling')}} selected="selected"{{/if}}>{{t 'collections.sorting.best_selling'}}</option>
+                    {{/if}}
+                    {{#if (isnt collection.default_sort_by 'title-ascending')}}
+                      <option value="title-ascending"{{#if (is sort_by 'title-ascending')}}selected="selected"{{/if}}>{{t 'collections.sorting.az'}}</option>
+                    {{/if}}
+                    {{#if (isnt collection.default_sort_by 'title-descending')}}
+                      <option value="title-descending"{{#if (is sort_by 'title-descending')}} selected="selected"{{/if}}>{{t 'collections.sorting.za'}}</option>
+                    {{/if}}
+                    {{#if (isnt collection.default_sort_by 'price-ascending')}}
+                      <option value="price-ascending"{{#if (is sort_by 'price-ascending')}} selected="selected"{{/if}}>{{t 'collections.sorting.price_ascending'}}</option>
+                    {{/if}}
+                    {{#if (isnt collection.default_sort_by 'price-descending')}}
+                      <option value="price-descending"{{#if (is sort_by 'price-descending')}} selected="selected"{{/if}}>{{t 'collections.sorting.price_descending'}}</option>
+                    {{/if}}
+                    {{#if (isnt collection.default_sort_by 'created-descending')}}
+                      <option value="created-descending"{{#if (is sort_by 'created-descending')}} selected="selected"{{/if}}>{{t 'collections.sorting.date_descending'}}</option>
+                    {{/if}}
+                    {{#if (isnt collection.default_sort_by 'created-ascending')}}
+                      <option value="created-ascending"{{#if (is sort_by 'created-ascending')}} selected="selected"{{/if}}>{{t 'collections.sorting.date_ascending'}}</option>
+                    {{/if}}
+                  {{else}}
+                    <option value="manual"{{#if (is sort_by 'manual')}} selected="selected"{{/if}}>{{t 'collections.sorting.featured'}}</option>
+                    <option value="best-selling"{{#if (is sort_by 'best-selling')}} selected="selected"{{/if}}>{{t 'collections.sorting.best_selling'}}</option>
+                    <option value="title-ascending"{{#if (is sort_by 'title-ascending')}}selected="selected"{{/if}}>{{t 'collections.sorting.az'}}</option>
+                    <option value="title-descending"{{#if (is sort_by 'title-descending')}} selected="selected"{{/if}}>{{t 'collections.sorting.za'}}</option>
+                    <option value="price-ascending"{{#if (is sort_by 'price-ascending')}} selected="selected"{{/if}}>{{t 'collections.sorting.price_ascending'}}</option>
+                    <option value="price-descending"{{#if (is sort_by 'price-descending')}} selected="selected"{{/if}}>{{t 'collections.sorting.price_descending'}}</option>
+                    <option value="created-descending"{{#if (is sort_by 'created-descending')}} selected="selected"{{/if}}>{{t 'collections.sorting.date_descending'}}</option>
+                    <option value="created-ascending"{{#if (is sort_by 'created-ascending')}} selected="selected"{{/if}}>{{t 'collections.sorting.date_ascending'}}</option>
+                  {{/if}}
+                </select>
+                <input class="collection-header__default-sort" type="hidden" value="{{ collection.default_sort_by }}">
+              </div>
+            {{/if}}
+          </div>
+        </div>
+      </div>
+    {{/if}}
+  </header>
+
+  <div class="page-width" id="Collection">
+    {{#if (is section.settings.layout 'grid')}}
+      {{#is section.settings.grid '2'}}
+        {{assign 'grid_item_width' 'medium-up--one-half'}}
+      {{else is section.settings.grid '3'}}
+        {{assign 'grid_item_width' 'small--one-half medium-up--one-third'}}
+      {{else is section.settings.grid '4'}}
+        {{assign 'grid_item_width' 'small--one-half medium-up--one-quarter'}}
+      {{else is section.settings.grid '5'}}
+        {{assign 'grid_item_width' 'small--one-half medium-up--one-fifth'}}
+{{/is}}
+
+      <div class="grid grid--uniform{{#if (gt collection.products_count 0)}} grid--view-items{{/if}}">
+        {{#each collection.products as |product|}}
+          <div class="grid__item grid__item--{{ section.id }} {{ grid_item_width }}">
+            {{include 'product-card-grid",' max_height: max_height}}
+          </div>
+        {{else}}
+          {{#comment}}
+          Add default products to help with onboarding for collections/all only.
+
+          The onboarding styles and products are only loaded if the
+          store has no products.
+          {{/comment}}
+          {{#if (and (is collection.handle 'all') (is collection.all_vendors.size 0) (is collection.all_types.size 0))}}
+            <div class="grid__item">
+              <div class="grid grid--uniform">
+                {{#each (range 1 limit) as |i|}}
+                  <div class="grid__item {{ grid_item_width }}">
+                    <div class="grid-view-item">
+                      <a href="#" class="grid-view-item__link">
+                        <div class="grid-view-item__image">
+                          {{#capture 'current'}}{{cycle 1 2 3 4 5 6}}{{/capture}}
+                          {{placeholder_svg_tag (append 'product-' current) 'placeholder-svg'}}
+                        </div>
+                        <div class="h4 grid-view-item__title">{{t 'homepage.onboarding.product_title'}}</div>
+                        <div class="grid-view-item__meta">
+                          <span class="product-price__price">$19.99</span>
+                        </div>
+                      </a>
+                    </div>
+                  </div>
+                {{/each}}
+              </div>
+            </div>
+          {{else}}
+            {{assign 'is_empty_collection' true}}
+          {{/if}}
+        {{/each}}
+      </div>
+    {{else}}
+      <div class="list-view-items">
+        {{#each collection.products as |product|}}
+          <a href="{{within product.url collection}}" class="list-view-item">
+            {{include 'product-card-list",' product: product}}
+          </a>
+        {{else}}
+
+          {{#comment}}
+          Add default products to help with onboarding for collections/all only.
+
+          The onboarding styles and products are only loaded if the
+          store has no products.
+          {{/comment}}
+          {{#if (and (is collection.handle 'all') (is collection.all_vendors.size 0) (is collection.all_types.size 0))}}
+            {{#each (range 1 4) as |i|}}
+              <a href="#" class="list-view-item">
+                <div class="list-view-item__image-column">
+                  <div class="list-view-item__image-wrapper">
+                    <div class="list-view-item__image">
+                      {{assign 'placeholder' (append 'placeholder-product-' i)}}
+                      {{include 'placeholder'}}
+                    </div>
+                  </div>
+                </div>
+
+                <div class="list-view-item__title-column">
+                  <div class="list-view-item__title">{{t 'homepage.onboarding.product_title'}}</div>
+                </div>
+
+                <div class="list-view-item__price-column">
+                  <span class="product-price__price">$19.99</span>
+                </div>
+              </a>
+            {{/each}}
+          {{else}}
+            {{assign 'is_empty_collection' true}}
+          {{/if}}
+        {{/each}}
+      </div>
+    {{/if}}
+
+    {{#if is_empty_collection}}
+      <div class="grid__item small--text-center">
+        <p class="text-center">{{t 'collections.general.no_matches'}}</p>
+      </div>
+    {{/if}}
+
+    {{#if (gt paginate.pages 1)}}
+      {{include 'pagination'}}
+    {{/if}}
+  </div>
+</div>
+
+{{/paginate}}
+
+{{#schema}}
+  {
+    "name": "Collection pages",
+    "settings": [
+      {
+        "type": "select",
+        "id": "layout",
+        "label": "Layout",
+        "default": "grid",
+        "options": [
+          {
+            "value": "grid",
+            "label": "Grid"
+          },
+          {
+            "value": "list",
+            "label": "List"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "grid",
+        "label": "Products per row (grid only)",
+        "default": "4",
+        "options": [
+          {
+            "value": "2",
+            "label": "2"
+          },
+          {
+            "value": "3",
+            "label": "3"
+          },
+          {
+            "value": "4",
+            "label": "4"
+          },
+          {
+            "value": "5",
+            "label": "5"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "rows",
+        "label": "Rows per page (grid only)",
+        "default": "2",
+        "options": [
+          {
+            "value": "2",
+            "label": "2"
+          },
+          {
+            "value": "3",
+            "label": "3"
+          },
+          {
+            "value": "4",
+            "label": "4"
+          },
+          {
+            "value": "5",
+            "label": "5"
+          },
+          {
+            "value": "6",
+            "label": "6"
+          },
+          {
+            "value": "7",
+            "label": "7"
+          },
+          {
+            "value": "8",
+            "label": "8"
+          }
+        ]
+      },
+      {
+        "type": "checkbox",
+        "id": "show_collection_image",
+        "label": "Show collection image",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "show_vendor",
+        "label": "Show product vendors",
+        "default": false
+      },
+      {
+        "type": "checkbox",
+        "id": "sort_enable",
+        "label": "Enable sorting",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "tags_enable",
+        "label": "Enable tag filtering",
+        "default": true
+      }
+    ]
+  }
+{{/schema}}

@@ -1,0 +1,190 @@
+<!-- /templates/search.liquid -->
+{{#comment}}
+
+  To return only products or pages in results:
+    - http://docs.shopify.com/manual/configuration/store-customization/return-only-product-in-storefront-search-results
+    - Or manually add type=product or type=page to the search URL as a parameter
+
+{{/comment}}
+
+{{#comment}}
+  Set grid_results to true and set search results as a grid instead of a list.
+  This works well when your search is only for products.
+{{/comment}}
+{{assign 'grid_results' false}}
+
+{{#comment}}
+  Check to enforce respond.js
+{{/comment}}
+{{assign 'respond_js_secret_key' (md5 shop.domain)}}
+{{#unless (is search.terms respond_js_secret_key)}}
+
+{{#comment}}
+  Avoid accessing search.results before the opening paginate tag.
+  If you do, the pagination of results will be broken.
+{{/comment}}
+{{#paginate search.results by=10}}
+
+  <div class="grid">
+    <div class="grid__item large--two-thirds push--large--one-sixth">
+
+      {{#if search.performed}}
+        {{#if (is search.results_count 0)}}
+          <h1 class="text-center">{{t 'general.search.no_results_html' terms search.terms}}</h1>
+        {{else}}
+          <h1 class="text-center">{{t 'general.search.results_for_html' terms search.terms}}</h1>
+        {{/if}}
+      {{else}}
+        <h1 class="text-center">{{t 'general.search.title'}}</h1>
+      {{/if}}
+
+      {{include 'search-bar'}}
+
+      {{#if search.performed}}
+
+        <hr class="hr--clear">
+
+        <div class="grid-uniform">
+          {{#each search.results as |item|}}
+            {{#comment}}
+              Check if the product is on sale and set a variable to be used below.
+            {{/comment}}
+            {{assign 'on_sale' false}}
+            {{#if (gt item.compare_at_price item.price)}}
+              {{assign 'on_sale' true}}
+            {{/if}}
+
+            {{#comment}}
+              Check if the product is sold out and set a variable to be used below.
+            {{/comment}}
+            {{assign 'sold_out' true}}
+            {{#if item.available}}
+              {{assign 'sold_out' false}}
+            {{/if}}
+
+            {{#if (is grid_results false)}}
+              <!-- begin list search results-->
+              <div class="grid__item">
+                <div class="grid">
+                  {{#if item.featured_image}}
+                    {{#comment}}
+                      We have a featured_image, so it's likely a product
+                    {{/comment}}
+                    <div class="grid__item one-third">
+                      <a href="{{ item.url }}" title="{{escape item.title}}">
+                        {{img_tag (img_url item.featured_image.src 'medium') item.featured_image.alt}}
+                      </a>
+                    </div>
+                  {{/if}}
+
+                  {{#comment}}
+                    If we don't have a featured_image, add a push-- class to keep the alignment the same
+                  {{/comment}}
+                  <div class="grid__item two-thirds {{#unless item.featured_image}}push--one-third{{/unless}}">
+                    <h2 class="h3">{{link_to item.title item.url}}</h2>
+
+                    {{#if item.price}}
+                      <p>
+                        {{#comment}}
+                          You can show a leading 'from' or 'up to' by checking 'product.price_varies'
+                          if your variants have different prices.
+                        {{/comment}}
+                        {{#if on_sale}}
+                          {{#if item.price_varies}}
+                            {{assign 'sale_price' (money item.price)}}
+                            {{t 'products.product.on_sale_from_html' price sale_price}}
+                          {{else}}
+                            <strong>{{t 'products.product.on_sale'}}</strong>
+                            <span itemprop="price">{{money item.price}}</span>
+                          {{/if}}
+                        {{else}}
+                          {{#if item.price_varies}}
+                            {{assign 'price' (money item.price)}}
+                            <span itemprop="price">{{t 'products.general.from_text_html' price price}}</span>
+                          {{else}}
+                            <span itemprop="price">{{money item.price}}</span>
+                          {{/if}}
+                        {{/if}}
+                        {{#if sold_out}}
+                          <br><strong>{{t 'products.product.sold_out'}}</strong>
+                        {{/if}}
+                        {{#if on_sale}}
+                          <br><span class="visually-hidden">{{t 'products.general.sale_price'}}</span><s>{{money item.compare_at_price}}</s>
+                        {{/if}}
+                      </p>
+                    {{/if}}
+
+                    {{#comment}}
+                      Get a brief excerpt of raw text from the page/product
+                    {{/comment}}
+                    <p>{{truncatewords (strip_html item.content) 50}}</p>
+                  </div>
+                </div>
+                {{#unless forloop.last}}<hr>{{/unless}}
+              </div>
+              <!-- //list search results-->
+            {{else}}
+              <!-- begin grid search results-->
+              <div class="grid__item search-result large--one-third medium--one-third">
+                {{#if item.featured_image}}
+                  <a href="{{within item.url collection}}" title="{{escape item.title}}">
+                    {{img_tag (img_url item.featured_image.src 'medium') item.featured_image.alt}}
+                  </a>
+                {{/if}}
+
+                <h5>{{link_to item.title item.url}}</h5>
+
+                {{#if item.price}}
+                  <p>
+                    {{#if on_sale}}
+                      {{#if item.price_varies}}
+                        {{assign 'sale_price' (money item.price)}}
+                        {{t 'products.product.on_sale_from_html' price sale_price}}
+                      {{else}}
+                        <strong>{{t 'products.product.on_sale'}}</strong>
+                        <span itemprop="price">{{money item.price}}</span>
+                      {{/if}}
+                    {{else}}
+                      {{#if item.price_varies}}
+                        {{assign 'price' (money item.price)}}
+                        <span itemprop="price">{{t 'products.general.from_text_html' price price}}</span>
+                      {{else}}
+                        <span itemprop="price">{{money item.price}}</span>
+                      {{/if}}
+                    {{/if}}
+                    {{#if sold_out}}
+                      <br><strong>{{t 'products.product.sold_out'}}</strong>
+                    {{/if}}
+                    {{#if on_sale}}
+                      <br><s>{{money item.compare_at_price}}</s>
+                    {{/if}}
+                  </p>
+                {{else}}
+                  <p>{{truncatewords (strip_html item.content) 50}}</p>
+                {{/if}}
+              </div>
+              <!-- //grid search results-->
+            {{/if}}
+
+          {{/each}}
+        </div>
+
+        {{#if (gt paginate.pages 1)}}
+          <hr>
+          <div class="pagination">
+            {{replace (replace (default_pagination paginate) '&laquo; Previous' '&larr;') 'Next &raquo;' '&rarr;'}}
+          </div>
+        {{/if}}
+
+      {{/if}}
+
+    </div>
+  </div>
+
+{{/paginate}}
+
+{{else}}
+  {{include 'respond'}}
+  ---
+layout: none---
+{{/unless}}

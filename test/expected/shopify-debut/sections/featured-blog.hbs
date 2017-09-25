@@ -1,0 +1,184 @@
+<div class="page-width">
+  {{#if (isnt section.settings.title blank)}}
+    <header class="section-header text-center">
+      <h2>{{escape section.settings.title}}</h2>
+    </header>
+  {{/if}}
+
+  {{assign 'blog' (get blogs section.settings.blog)}}
+
+  {{#unless (is blog.articles_count 0)}}
+    <div class="grid grid--uniform grid--blog">
+      {{#each (limit blog.articles undefined) as |article|}}
+        <div class="grid__item medium-up--one-third">
+          {{#if article.image}}
+            {{#capture 'img_id'}}ArticleImage-{{ article.image.id }}{{/capture}}
+            {{#capture 'img_wrapper_id'}}ArticleImageWrapper-{{ article.image.id }}{{/capture}}
+            {{assign 'img_url' (replace (img_url article.image '1x1') '_1x1.' '_{width}x.')}}
+
+            {{include 'image-style' image: article.image, small_style: true, width: 345, height: 345, wrapper_id: img_wrapper_id, img_id: img_id}}
+            <div id="{{ img_wrapper_id }}" class="article__grid-image-wrapper js">
+              <a href="{{ article.url }}" class="article__grid-image-container" style="padding-top:{{times (divided_by 1 article.image.aspect_ratio) 100}}%;">
+                <img id="{{ img_id }}"
+                     class="article__grid-image lazyload"
+                     src="{{img_url article.image '300x300'}}"
+                     data-src="{{ img_url }}"
+                     data-widths="[180, 360, 540, 720, 900, 1080, 1296, 1512, 1728, 2048]"
+                     data-aspectratio="{{ article.image.aspect_ratio }}"
+                     data-sizes="auto"
+                     alt="{{escape article.image.alt}}">
+              </a>
+            </div>
+            <noscript>
+              <a href="{{ article.url }}" class="article__grid-image-wrapper">
+                {{img_tag (img_url article '345x345' scale 2) article.title 'article__grid-image'}}
+              </a>
+            </noscript>
+          {{/if}}
+
+          <div class="article__grid-meta{{#if article.image}} article__grid-meta--has-image{{/if}}">
+            <h2 class="h3 article__title">
+              <a href="{{ article.url }}">{{ article.title }}</a>
+            </h2>
+
+            {{#if section.settings.blog_show_author}}
+              <span class="article__author">{{t 'blogs.article.by_author' author article.author}}</span>
+            {{/if}}
+
+            {{#if section.settings.blog_show_date}}
+              <span class="article__date">
+                {{time_tag article.published_at format 'month_day_year'}}
+              </span>
+            {{/if}}
+
+            <div class="rte article__grid-excerpt">
+              {{#if (gt article.excerpt.size 0)}}
+                {{ article.excerpt }}
+              {{else}}
+                {{truncate (strip_html article.content) 150}}
+              {{/if}}
+            </div>
+
+            {{#if (gt article.tags.size 0)}}
+              <div class="article__tags rte">
+                {{#each article.tags as |tag|}}
+                  <a href="{{ blog.url }}/tagged/{{handle tag}}" class="article__grid-tag">{{ tag }}</a>
+                {{/each}}
+              </div>
+            {{/if}}
+
+            <ul class="list--inline article__meta-buttons">
+              <li>
+                <a href="{{ article.url }}" class="btn btn--secondary btn--small">
+                  {{t 'blogs.article.read_more'}}
+                </a>
+              </li>
+
+              {{#if (and blog.comments_enabled (gt article.comments_count 0))}}
+                <li>
+                  <a href="{{ article.url }}#comments" class="btn btn--small btn--link">
+                    {{t 'blogs.comments.comments_with_count' count article.comments_count}}
+                  </a>
+                </li>
+              {{/if}}
+            </ul>
+          </div>
+        </div>
+      {{/each}}
+    </div>
+  {{else}}
+    <div class="grid grid--uniform grid--blog">
+      {{#each (range 1 section.settings.post_limit) as |i|}}
+        <div class="grid__item medium-up--one-third">
+          <div class="article__grid-meta">
+            <h2 class="h3 article__title">
+              <a href="#">{{t 'homepage.onboarding.blog_title'}}</a>
+            </h2>
+
+            {{#if section.settings.blog_show_author}}
+              <span class="article__author">{{t 'homepage.onboarding.blog_author'}}</span>
+            {{/if}}
+
+            <div class="rte article__grid-excerpt">
+              {{t 'homepage.onboarding.blog_excerpt'}}
+            </div>
+
+            <ul class="list--inline article__meta-buttons">
+              <li>
+                <a href="{{ article.url }}" class="btn btn--secondary btn--small">
+                  {{t 'blogs.article.read_more'}}
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      {{/each}}
+    </div>
+  {{/unless}}
+
+  {{#if section.settings.show_view_all}}
+    <hr class="hr--invisible"></hr>
+    <div class="text-center">
+      <a href="{{ blog.url }}" class="btn">
+        {{t 'blogs.article.view_all'}}
+      </a>
+    </div>
+  {{/if}}
+</div>
+
+{{#schema}}
+  {
+    "name": "Blog posts",
+    "class": "index-section",
+    "settings": [
+      {
+        "type": "text",
+        "id": "title",
+        "label": "Heading",
+        "default": "Blog posts"
+      },
+      {
+        "id": "blog",
+        "type": "blog",
+        "label": "Blog"
+      },
+      {
+        "type": "range",
+        "id": "post_limit",
+        "label": "Posts",
+        "min": 3,
+        "max": 12,
+        "step": 3,
+        "default": 3
+      },
+      {
+        "type": "checkbox",
+        "id": "blog_show_author",
+        "label": "Show author",
+        "default": false
+      },
+      {
+        "type": "checkbox",
+        "id": "blog_show_date",
+        "label": "Show date",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "show_view_all",
+        "label": "Show 'View all' button",
+        "default": false
+      }
+    ],
+    "presets": [
+      {
+        "name": "Blog posts",
+        "category": "Blog",
+        "settings": {
+          "blog": "News",
+          "post_limit": 3
+        }
+      }
+    ]
+  }
+{{/schema}}

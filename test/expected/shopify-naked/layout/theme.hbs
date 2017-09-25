@@ -1,0 +1,124 @@
+<!doctype html>
+<!--[if lt IE 7]><html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
+<!--[if IE 7]><html class="no-js lt-ie9 lt-ie8" lang="en"> <![endif]-->
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en"> <![endif]-->
+<!--[if IE 9 ]><html class="ie9 no-js"> <![endif]-->
+<!--[if (gt IE 9)|!(IE)]><!--> <html class="no-js"> <!--<![endif]-->  
+<head>
+  <meta charset="utf-8" />
+  <!--[if IE]><meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1' /><![endif]-->
+
+  <title>
+  {{{ page_title }}}{{#if current_tags}} &ndash; tagged "{{join current_tags ', '}}"{{/if}}{{#if (isnt current_page 1)}} &ndash; Page {{ current_page }}{{/if}}{{#unless (contains page_title shop.name)}} &ndash; {{ shop.name }}{{/unless}}
+  </title>
+
+  {{#if page_description}}
+    <meta name="description" content="{{escape page_description}}" />
+  {{/if}}
+
+  <link rel="canonical" href="{{ canonical_url }}" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  
+  {{include 'open-graph-tags'}}
+  {{include 'twitter-card'}}
+
+  {{ content_for_header }}
+
+  {{stylesheet_tag (asset_url 'style.scss.css')}}
+
+  <!--[if lt IE 9]>
+  {{script_tag '//html5shiv.googlecode.com/svn/trunk/html5.js'}}
+  <![endif]-->
+
+  {{script_tag (shopify_asset_url 'shopify_common.js')}}
+  {{#if (contains template 'customers')}}  
+    {{script_tag (shopify_asset_url 'customer_area.js')}}
+  {{/if}}
+  
+  <!-- Additional Shopify helpers that will likely be added to the global shopify_common.js some day soon. -->
+  {{script_tag (asset_url 'shopify_common.js')}}
+
+  {{script_tag (shopify_asset_url 'option_selection.js')}}
+
+  {{script_tag '//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js'}}
+  <script>jQuery('html').removeClass('no-js').addClass('js');</script>
+
+</head>
+
+<body id="{{handle page_title}}" class="{{#if customer}}customer-logged-in {{/if}}template-{{handle (truncatewords (replace template '.' ' ') 1 '')}}" >
+  
+  <header>
+    {{#comment}}
+      Note on checkout link: it is a good idea to avoid linking to /checkout directly because shops that use 
+      Paypal Express Checkout and/or Google Checkout have special checkout buttons on the /cart page. Also,
+      special instructions for the seller are entered on the /cart page. Finally, the universal tracking code 
+      of Google Analytics may not work if linking directly to the /checkout page.
+    {{/comment}}
+    
+    <a href="/cart">{{ cart.item_count }} {{pluralize cart.item_count 'item' 'items'}} ({{money cart.total_price}})</a>
+          
+    {{#if shop.customer_accounts_enabled}}
+      {{#if customer}}
+        Logged in as <a href="/account">{{ customer.first_name }}</a> · {{customer_logout_link 'Log out'}}
+      {{else}}
+        {{customer_login_link 'Log in'}}
+        {{#if shop.customer_accounts_optional}}
+        or {{customer_register_link 'Create an account'}}
+        {{/if}}
+      {{/if}}
+    {{/if}}
+    
+    {{#comment}}
+      It would be nice if the logo was a shop setting, rather than a theme setting.
+      But for now, it is a theme setting. The shop logo is uploaded on the theme settings page.
+      Link to the theme settings page of currently published theme will always be:
+      http://www.shopify.com/admin/themes/current/settings.
+      To add theme settings to a theme, see this: http://docs.shopify.com/themes/theme-templates/settings
+      Theme settings are added to http://www.shopify.com/admin/themes/current#config/settings.html
+    {{/comment}}
+
+    {{#if settings.use_logo}}
+      <a id="logo" href="/">
+        {{img_tag (asset_url 'logo.png') shop.name}}
+      </a>
+    {{else}}
+      <a id="site-title" href="/">
+        {{ shop.name }}
+      </a>
+    {{/if}}
+
+    {{#comment}}
+      Main Navigation 
+    {{/comment}}
+    {{include 'site-nav'}}
+
+  </header>
+
+  {{#comment}}
+    IE8 and IE9 don't support the HTML5 placeholder attribute, so it's a good idea to use JavaScript
+    to show and hide the placeholder text.
+    Have a look in assets/shop.js.liquid to see sample JavaScript for this.
+  {{/comment}}      
+  <form action="/search" method="get" class="search-form right" role="search">
+    <input name="q" type="search" id="search-field" placeholder="Search store..." value="{{escape search.terms}}" />
+    <input type="submit" id="search-submit" value="Search" />
+  </form>
+
+  {{#comment}}}
+    We have a template file to render.
+    That's what content_for_layout is for.
+  {{/comment}}
+  <main role="main">
+    {{ content_for_layout }}
+  </main>
+
+  <footer>
+    Copyright &copy; {{date 'now' '%Y'}} {{ shop.name }}. {{ powered_by_link }}.
+  </footer>
+
+  {{script_tag (asset_url 'shop.js')}}
+
+</body>
+
+</html>

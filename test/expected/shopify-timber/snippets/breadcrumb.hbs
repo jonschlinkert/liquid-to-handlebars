@@ -1,0 +1,63 @@
+<!-- /snippets/breadcrumb.liquid -->
+{{#comment}}
+  Documentation - http://docs.shopify.com/support/your-website/navigation/creating-a-breadcrumb-navigation
+{{/comment}}
+{{#unless (or (is template 'index') (is template 'cart'))}}
+<nav class="breadcrumb" role="navigation" aria-label="breadcrumbs">
+  <a href="/" title="{{t 'general.breadcrumbs.home_link_title'}}">{{t 'general.breadcrumbs.home'}}</a>
+
+  {{#if (contains template 'product')}}
+
+    {{#if collection}}
+      <span aria-hidden="true">&rsaquo;</span>
+      {{#if collection.handle}}
+        {{#capture 'url'}}/collections/{{ collection.handle }}{{/capture}}
+        {{link_to collection.title url}}
+      {{/if}}
+    {{/if}}
+    <span aria-hidden="true">&rsaquo;</span>
+    <span>{{ product.title }}</span>
+
+  {{else if (and (contains template 'collection') collection.handle)}}
+
+    <span aria-hidden="true">&rsaquo;</span>
+    {{#if current_tags}}
+      {{#capture 'url'}}/collections/{{ collection.handle }}{{/capture}}
+      {{link_to collection.title url}}
+      <span aria-hidden="true">&rsaquo;</span>
+      <span>{{join current_tags ' + '}}</span>
+    {{else}}
+      <span>{{ collection.title }}</span>
+    {{/if}}
+
+  {{else if (is template 'blog')}}
+
+    <span aria-hidden="true">&rsaquo;</span>
+    {{#if current_tags}}
+      {{link_to blog.title blog.url}}
+      <span aria-hidden="true">&rsaquo;</span>
+      <span>{{join current_tags ' + '}}</span>
+    {{else}}
+    <span>{{ blog.title }}</span>
+    {{/if}}
+
+  {{else if (is template 'article')}}
+
+    <span aria-hidden="true">&rsaquo;</span>
+    {{link_to blog.title blog.url}}
+    <span aria-hidden="true">&rsaquo;</span>
+    <span>{{ article.title }}</span>
+
+  {{else if (contains template 'page')}}
+
+   <span aria-hidden="true">&rsaquo;</span>
+   <span>{{{ page.title }}}</span>
+
+  {{else}}
+
+   <span aria-hidden="true">&rsaquo;</span>
+   <span>{{{ page_title }}}</span>
+
+  {{/if}}
+</nav>
+{{/unless}}

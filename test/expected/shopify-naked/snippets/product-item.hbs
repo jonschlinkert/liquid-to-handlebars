@@ -1,0 +1,27 @@
+{{#comment}}Is this product on sale?{{/comment}}
+{{assign 'on_sale' false}}
+{{#if (gt product.compare_at_price product.price)}}
+  {{assign 'on_sale' true}}
+{{/if}}
+
+<li class="{{#unless product.available}} sold-out{{/unless}}{{#if on_sale}} on-sale{{/if}}">
+
+  <a href="{{within product.url collection}}">
+    <img src="{{img_url product 'grande'}}" alt="{{escape product.featured_image.alt}}" />
+  </a>
+  
+  <a href="{{within product.url collection}}">
+    {{ product.title }}
+  </a>
+  {{#if product.price_varies}}From{{/if}}
+  {{money product.price}}
+  {{#if on_sale}}
+    <s class="compare-at-price">{{money product.compare_at_price}}</s>
+  {{/if}}
+  {{#comment}}
+    All themes by Shopify should support the Product Reviews app out of the box.
+    https://apps.shopify.com/product-reviews
+  {{/comment}}
+  <span class="shopify-product-reviews-badge" data-id="{{ product.id }}"></span>
+  
+</li>

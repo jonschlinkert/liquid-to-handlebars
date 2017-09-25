@@ -1,0 +1,84 @@
+<div class="page-width" data-section-id="{{ section.id }}" data-section-type="quotes">
+  {{#if (isnt section.settings.title blank)}}
+    <div class="section-header text-center">
+      <h2>{{escape section.settings.title}}</h2>
+    </div>
+  {{/if}}
+
+  {{#if (gt section.blocks.size 0)}}
+    <div class="quotes-wrapper">
+      <div class="quotes-slider" id="Quotes-{{ section.id }}" data-count="{{ section.blocks.size }}">
+        {{#each section.blocks as |block|}}
+          <div class="quotes-slide--{{ block.id }}" {{ block.shopify_attributes }}>
+            <blockquote class="quotes-slider__text text-center">
+              <span class="quote-icon">{{include 'icon-quote'}}</span>
+              {{#if (isnt block.settings.quote blank)}}
+                <div class="rte-setting">{{ block.settings.quote }}</div>
+              {{/if}}
+              {{#if (isnt block.settings.author blank)}}
+                <cite>{{escape block.settings.author}}</cite>
+              {{/if}}
+            </blockquote>
+          </div>
+        {{/each}}
+      </div>
+    </div>
+  {{/if}}
+
+  {{#if (is section.blocks.size 0)}}
+    {{include 'no-blocks'}}
+  {{/if}}
+</div>
+
+{{#schema}}
+  {
+    "name": "Testimonials",
+    "class": "index-section",
+    "max_blocks": 9,
+    "settings": [
+      {
+        "type": "text",
+        "id": "title",
+        "label": "Heading",
+        "default": "Testimonials"
+      }
+    ],
+    "blocks": [
+      {
+        "type": "quote",
+        "name": "Testimonial",
+        "settings": [
+          {
+            "type": "richtext",
+            "id": "quote",
+            "label": "Text",
+            "default": "<p>Add customer reviews and testimonials to showcase your store’s happy customers.</p>"
+          },
+          {
+            "type": "text",
+            "id": "author",
+            "label": "Author",
+            "default": "Author's name"
+          }
+        ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "Testimonials",
+        "category": "Text",
+        "blocks": [
+          {
+            "type": "quote"
+          },
+          {
+            "type": "quote"
+          },
+          {
+            "type": "quote"
+          }
+        ]
+      }
+    ]
+  }
+{{/schema}}

@@ -1,0 +1,86 @@
+<div class="page-width">
+  {{#if (isnt section.settings.title blank)}}
+    <div class="section-header text-center">
+      <h2>{{escape section.settings.title}}</h2>
+    </div>
+  {{/if}}
+
+  {{#if (gt section.blocks.size 0)}}
+    <div class="logo-bar{{#if section.settings.title_enable}} logo-bar--large{{/if}}">
+      {{#each section.blocks as |block|}}
+        <div class="logo-bar__item{{#if section.settings.title_enable}} logo-bar__item--large{{/if}}" {{ block.shopify_attributes }}>
+          {{#if (isnt block.settings.link blank)}}
+            <a href="{{ block.settings.link }}" class="logo-bar__link">
+          {{/if}}
+          {{#if (isnt block.settings.image blank)}}
+            {{img_tag (img_url block.settings.image '160x160' scale 2) block.settings.image.alt 'logo-bar__image'}}
+          {{else}}
+            {{placeholder_svg_tag 'logo' 'placeholder-svg'}}
+          {{/if}}
+          {{#if (isnt block.settings.link blank)}}
+            </a>
+          {{/if}}
+        </div>
+      {{/each}}
+    </div>
+  {{/if}}
+
+  {{#if (is section.blocks.size 0)}}
+    {{include 'no-blocks'}}
+  {{/if}}
+</div>
+
+{{#schema}}
+  {
+    "name": "Logo list",
+    "class": "index-section",
+    "max_blocks": 20,
+    "settings": [
+      {
+        "type": "text",
+        "id": "title",
+        "label": "Heading",
+        "default": "Logo list"
+      }
+    ],
+    "blocks": [
+      {
+        "type": "logo_image",
+        "name": "Logo",
+        "settings": [
+          {
+            "type": "image_picker",
+            "id": "image",
+            "label": "Image"
+          },
+          {
+            "type": "url",
+            "id": "link",
+            "label": "Link",
+            "info": "Optional"
+          }
+        ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "Logo list",
+        "category": "Image",
+        "blocks": [
+          {
+            "type": "logo_image"
+          },
+          {
+            "type": "logo_image"
+          },
+          {
+            "type": "logo_image"
+          },
+          {
+            "type": "logo_image"
+          }
+        ]
+      }
+    ]
+  }
+{{/schema}}

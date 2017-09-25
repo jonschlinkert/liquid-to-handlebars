@@ -1,0 +1,111 @@
+<div class="page-width">
+  <div class="section-header text-center">
+    <h1>{{t 'customer.account.title'}}</h1>
+    <p><a href="/account">{{t 'customer.account.return'}}</a></p>
+  </div>
+
+  <div class="grid">
+    <div class="grid__item medium-up--two-thirds">
+      <h2>{{t 'customer.order.title' name order.name}}</h2>
+
+      {{assign 'order_date' (date order.created_at '%B %d, %Y %I:%M%p')}}
+      <p>{{t 'customer.order.date' date order_date}}</p>
+
+      {{#if order.cancelled}}
+        <div class="order--cancelled">
+          {{assign 'cancelled_at' (date order.cancelled_at '%B %d, %Y %I:%M%p')}}
+          <p>{{t 'customer.order.cancelled' date cancelled_at}}</p>
+          <p>{{t 'customer.order.cancelled_reason' reason order.cancel_reason}}</p>
+        </div>
+      {{/if}}
+
+      <table class="responsive-table">
+        <thead>
+          <tr>
+            <th>{{t 'customer.order.product'}}</th>
+            <th>{{t 'customer.order.sku'}}</th>
+            <th>{{t 'customer.order.price'}}</th>
+            <th>{{t 'customer.order.quantity'}}</th>
+            <th>{{t 'customer.order.total'}}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#each order.line_items as |line_item|}}
+          <tr id="{{ line_item.key }}" class="responsive-table__row" >
+            <td data-label="{{t 'customer.order.product'}}">
+              {{link_to line_item.title line_item.product.url}}
+              {{#if line_item.fulfillment}}
+                <div class="note">
+                  {{assign 'created_at' (date line_item.fulfillment.created_at format 'month_day_year')}}
+                  {{t 'customer.order.fulfilled_at' date created_at}}
+                  <div>
+                    {{#if line_item.fulfillment.tracking_url}}
+                      <a href="{{ line_item.fulfillment.tracking_url }}">
+                        {{t 'customer.order.track_shipment'}}
+                      </a>
+                    {{/if}}
+                    <div>
+                      {{ line_item.fulfillment.tracking_company }}
+                      {{#if line_item.fulfillment.tracking_number}} #{{ line_item.fulfillment.tracking_number }} {{/if}}
+                    </div>
+                  </div>
+                </div>
+              {{/if}}
+            </td>
+            <td data-label="{{t 'customer.order.sku'}}">{{ line_item.sku }}</td>
+            <td data-label="{{t 'customer.order.price'}}">{{money line_item.price}}</td>
+            <td data-label="{{t 'customer.order.quantity'}}">{{ line_item.quantity }}</td>
+            <td data-label="{{t 'customer.order.total'}}">{{money (times line_item.quantity line_item.price)}}</td>
+          </tr>
+          {{/each}}
+        </tbody>
+        <tfoot>
+          <tr class="responsive-table__row">
+            <td colspan="4" class="small--hide">{{t 'customer.order.subtotal'}}</td>
+            <td data-label="{{t 'customer.order.subtotal'}}">{{money order.subtotal_price}}</td>
+          </tr>
+
+          {{#each order.discounts as |discount|}}
+            <tr class="order_summary discount">
+              <td colspan="4" class="small--hide">{{ discount.code }} {{t 'customer.order.discount'}}</td>
+              <td data-label="{{t 'customer.order.discount'}}">{{money discount.savings}}</td>
+            </tr>
+          {{/each}}
+
+          {{#each order.shipping_methods as |shipping_method|}}
+            <tr>
+              <td colspan="4" class="small--hide">{{t 'customer.order.shipping'}} ({{ shipping_method.title }})</td>
+              <td data-label="{{t 'customer.order.shipping'}} ({{ shipping_method.title }})">{{money shipping_method.price}}</td>
+            </tr>
+          {{/each}}
+
+          {{#each order.tax_lines as |tax_line|}}
+            <tr>
+              <td colspan="4" class="small--hide">{{t 'customer.order.tax'}} ({{ tax_line.title }} {{times tax_line.rate 100}}%)</td>
+              <td data-label="{{t 'customer.order.tax'}} ({{ tax_line.title }} {{times tax_line.rate 100}}%)">{{money tax_line.price}}</td>
+            </tr>
+          {{/each}}
+
+          <tr>
+            <td colspan="4" class="small--hide"><strong>{{t 'customer.order.total'}}</strong></td>
+            <td data-label="{{t 'customer.order.total'}}"><strong>{{money order.total_price}} {{ order.currency }}</strong></td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+    <div class="grid__item medium-up--one-third">
+      <hr class="medium-up--hide">
+      <h3>{{t 'customer.order.billing_address'}}</h3>
+
+      <p><strong>{{t 'customer.order.payment_status'}}:</strong> {{ order.financial_status_label }}</p>
+
+      {{format_address order.billing_address}}
+
+      <h3>{{t 'customer.order.shipping_address'}}</h3>
+
+      <p><strong>{{t 'customer.order.fulfillment_status'}}:</strong> {{ order.fulfillment_status_label }}</p>
+
+      {{format_address order.shipping_address}}
+    </div>
+  </div>
+</div>

@@ -1,0 +1,11 @@
+<form action="/search" method="get" class="search-header search" role="search">
+  <input class="search-header__input search__input"
+    type="search"
+    name="q"
+    placeholder="{{t 'general.search.placeholder'}}"
+    aria-label="{{t 'general.search.placeholder'}}">
+  <button class="search-header__submit search__submit btn--link" type="submit">
+    {{include 'icon-search'}}
+    <span class="icon__fallback-text">{{t 'general.search.submit'}}</span>
+  </button>
+</form>

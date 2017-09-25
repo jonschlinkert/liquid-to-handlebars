@@ -1,0 +1,67 @@
+{{#paginate blog.articles by=5}}
+
+{{#if current_tags}}
+  <h1>{{link_to blog.title blog.url}} - {{ current_tags.first }}</h1>
+{{else}}
+  <h1>{{ blog.title }}</h1>
+{{/if}}
+
+{{#each blog.articles as |article|}}
+  
+  {{#comment}}
+    Let's extract a blog image.
+    We will look for an image in the excerpt first, and in the blog post itself second.
+    We will remove the image suffix to grab as big an image as we can.
+  {{/comment}}
+    
+  {{assign 'article_has_image' false}}
+  {{assign 'img_tag' (append '<' 'img')}}
+  {{#if (contains article.excerpt_or_content img_tag)}}
+    {{assign 'src' (split article.excerpt_or_content 'src="')}}
+    {{assign 'src' (first (split (get src 1) '"'))}}
+    {{#if src}}
+      {{assign 'article_has_image' true}}
+      {{assign 'image_src' (replace (replace (replace (replace (replace src '_small' '') '_compact' '') '_medium' '') '_large' '') '_grande' '')}}
+    {{/if}}
+  {{/if}}  
+
+  <h2><a href="{{ article.url }}">{{ article.title }}</a></h2>
+
+  <time pubdate datetime="{{date article.published_at '%Y-%m-%d'}}">{{date article.published_at '%b %d, %Y'}}</time>
+
+  {{#if article_has_image}}
+    <a href="{{ article.url }}">
+      <img src="{{ image_src }}" alt="">
+    </a>    
+  {{/if}}  
+
+  {{#if (gt article.excerpt.size 0)}}
+    {{ article.excerpt }}</div>
+  {{else}}
+    <p>{{truncatewords (strip_html article.content) 120}}
+  {{/if}}
+
+  <a href="{{ article.url }}">Read more</a>
+
+  {{#if (and blog.comments_enabled (gt article.comments_count 0))}}
+    <a href="{{ article.url }}#comments">{{ article.comments_count }} {{pluralize article.comments_count 'comment' 'comments'}}</a>
+  {{/if}}
+  
+  {{#if (gt article.tags.size 0)}}
+    {{#each article.tags as |tag|}} 
+      <a href="{{ blog.url }}/tagged/{{handle tag}}">{{ tag }}</a>{{#unless forloop.last}}, {{/unless}}
+    {{/each}}
+  {{/if}}
+
+{{/each}}
+  
+{{#if (gt paginate.pages 1)}}
+  {{#comment}}
+    When paginating blog articles, a previous article is actually a newer article, not an older one,
+    because blog articles are shown and paginated in a reversed chronological order.
+    The word 'previous' can be confusing, hence we'll change it.
+  {{/comment}}
+  {{replace (replace (default_pagination paginate) 'Previous' 'Newer articles') 'Next' 'Older articles'}}
+{{/if}}
+
+{{/paginate}}

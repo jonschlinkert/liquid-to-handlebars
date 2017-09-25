@@ -1,0 +1,170 @@
+<!-- /templates/article.liquid -->
+{{#comment}}
+
+  Comments will not appear right after they are submitted, either to be checked for spam
+  or to await moderation. When a comment is submitted, the browser is redirected to a page
+  that includes the new comment id in its URL.
+    Example: http://shopname.myshopify.com/blogs/news/2022072-my-post?comment=3721372
+
+  More information:
+    - http://docs.shopify.com/themes/liquid-variables/comment
+
+{{/comment}}
+
+{{assign 'number_of_comments' article.comments_count}}
+
+{{#comment}}
+  If a comment was just submitted and it has no blank fields, we have an extra comment to count.
+{{/comment}}
+{{#if (and comment comment.created_at)}}
+  {{assign 'number_of_comments' (plus article.comments_count 1)}}
+{{/if}}
+
+{{include 'breadcrumb'}}
+
+<div class="grid">
+
+  <article class="grid__item large--three-quarters" itemscope itemtype="http://schema.org/Article">
+
+    <header class="section-header">
+      <div class="section-header__left">
+        <h1>{{ article.title }}</h1>
+        {{#capture 'author'}}<strong>{{ article.author }}</strong>{{/capture}}
+        {{#capture 'date'}}<time datetime="{{date article.published_at '%Y-%m-%d'}}">{{date article.published_at format 'month_day_year'}}</time>{{/capture}}
+        <p>{{t 'blogs.article.author_on_date_html' author author date date}}</p>
+      </div>
+    </header>
+
+    <div class="rte" itemprop="articleBody">
+      {{ article.content }}
+    </div>
+
+    {{#comment}}
+      Show off meta information like comments and tags.
+    {{/comment}}
+    <ul class="inline-list">
+      {{include 'tags-article'}}
+    </ul>
+
+    {{#comment}}
+      Create links to the next and previous articles, if available.
+    {{/comment}}
+    {{#if (or blog.next_article blog.previous_article)}}
+      <hr>
+      <p class="clearfix">
+        {{#if blog.previous_article}}
+          <span class="left">
+            &larr; {{link_to (t 'blogs.article.older_post') blog.previous_article}}
+          </span>
+        {{/if}}
+        {{#if blog.next_article}}
+          <span class="right">
+            {{link_to (t 'blogs.article.newer_post') blog.next_article}} &rarr;
+          </span>
+        {{/if}}
+      </p>
+    {{/if}}
+
+    {{#if blog.comments_enabled}}
+      <hr>
+
+      <h2 class="h3">{{t 'blogs.comments.with_count' count number_of_comments}}</h2>
+
+      <hr>
+
+      {{#comment}}
+        Just like blog.liquid page, define how many comments should be on each page.
+      {{/comment}}
+      {{#paginate article.comments by=5}}
+        {{#comment}}
+          #comments is required, it is used as an anchor link by Shopify.
+        {{/comment}}
+        <div id="comments">
+
+          {{#if (and comment comment.created_at)}}
+            <p class="note form-success">
+              {{#if blog.moderated}}
+                {{t 'blogs.comments.success_moderated'}}
+              {{else}}
+                {{t 'blogs.comments.success'}}
+              {{/if}}
+            </p>
+          {{/if}}
+
+          {{#if (gt number_of_comments 0)}}
+            <ul class="no-bullets">
+              {{#comment}}
+                If a comment was just submitted with no blank field, show it.
+              {{/comment}}
+              {{#if (and comment comment.created_at)}}
+                <li id="{{ comment.id }}" class="comment first{{#if (is article.comments_count 0)}} last{{/if}}">
+                  {{include 'comment'}}
+                </li>
+              {{/if}}
+
+              {{#comment}}
+                Showing the rest of the comments.
+              {{/comment}}
+              {{#each article.comments as |comment|}}
+                <li id="{{ comment.id }}" class="comment{{#unless (gt number_of_comments article.comments_count)}}{{#if forloop.first}} first{{/if}}{{/unless}}{{#if forloop.last}} last {{/if}}">
+                  {{include 'comment'}}
+                </li>
+
+                {{#unless forloop.last}}
+                  <li><hr></li>
+                {{/unless}}
+              {{/each}}
+            </ul>
+
+            {{#if (gt paginate.pages 1)}}
+              <hr>
+              <div class="pagination">
+                {{replace (replace (default_pagination paginate) '&laquo; Previous' '&larr;') 'Next &raquo;' '&rarr;'}}
+              </div>
+            {{/if}}
+
+            <hr>
+
+          {{/if}}
+
+          <div class="form-vertical">
+            {{#form 'new_comment' article}}
+              <h2 class="h3">{{t 'blogs.comments.title'}}</h2>
+
+              {{default_errors form.errors}}
+
+              <div class="grid">
+
+                <div class="grid__item large--one-half">
+                  <label for="CommentAuthor" class="hidden-label">{{t 'blogs.comments.name'}}</label>
+                  <input type="text" name="comment[author]" id="CommentAuthor" class="input-full{{#if (contains form.errors 'author')}} error{{/if}}" placeholder="{{t 'blogs.comments.name'}}" value="{{ form.author }}" autocapitalize="words">
+
+                  <label for="CommentEmail" class="hidden-label">{{t 'blogs.comments.email'}}</label>
+                  <input type="email" name="comment[email]" id="CommentEmail" class="input-full{{#if (contains form.errors 'email')}} error{{/if}}" placeholder="{{t 'blogs.comments.email'}}" value="{{ form.email }}" autocorrect="off" autocapitalize="off">
+                </div>
+
+                <div class="grid__item large--one-half">
+                  <label for="CommentBody" class="hidden-label">{{t 'blogs.comments.message'}}</label>
+                  <textarea name="comment[body]" id="CommentBody" class="input-full{{#if (contains form.errors 'body')}} error{{/if}}" placeholder="{{t 'blogs.comments.message'}}">{{ form.body }}</textarea>
+                </div>
+
+              </div>
+
+              {{#if blog.moderated}}
+                <p>{{t 'blogs.comments.moderated'}}</p>
+              {{/if}}
+
+              <input type="submit" class="btn" value="{{t 'blogs.comments.post'}}">
+            {{/form}}
+          </div>
+
+        </div>
+      {{/paginate}}
+    {{/if}}
+
+  </article>
+
+  <aside class="grid__item large--one-quarter" role="complementary">
+    {{include 'blog-sidebar'}}
+  </aside>
+</div>

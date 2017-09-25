@@ -1,0 +1,30 @@
+{{assign 'products_per_page' (times settings.products_per_row settings.number_of_rows)}}
+{{assign 'numbers' (split 'one, two, three, four, five, six' ',')}}
+{{assign 'products_per_row' (minus settings.products_per_row 1)}}
+{{assign 'products_per_row' (append (strip (get numbers products_per_row)) '-per-row')}}
+
+{{#paginate blog.articles by=products_per_page}}
+
+{{#if current_tags}}
+<h1 class="delta">{{link_to blog.title blog.url}} <span class="quiet">&raquo;</span> {{ current_tags.first }}</h1>
+{{else}}
+<h1 class="delta">{{ blog.title }}</h1>
+{{/if}}
+
+<ul class="grid clearfix">
+  {{#each blog.articles as |article|}}
+    {{include 'article-grid-item' products_per_row}}
+  {{/each}}
+</ul>
+  
+{{#if (gt paginate.pages 1)}}
+<div class="pagination">
+{{#comment}}
+  When paginating blog articles, a previous article is actually a newer article, not an older one,
+  because blog articles are shown and paginated in a reversed chronological order.
+  The word 'previous' can be confusing, hence we'll change it.
+{{/comment}}
+{{replace (replace (default_pagination paginate) 'Previous' 'Newer articles') 'Next' 'Older articles'}}
+{{/if}}
+
+{{/paginate}}

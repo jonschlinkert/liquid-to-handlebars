@@ -1,0 +1,190 @@
+{{assign 'add_to_cart' 'Add to cart'}}
+{{assign 'sold_out' 'Sold Out'}}
+{{assign 'unavailable' 'Unavailable'}}
+
+<div itemscope itemtype="http://schema.org/Product">
+  
+  <meta itemprop="url" content="{{ shop.url }}{{ product.url }}" />
+  <meta itemprop="image" content="{{img_url product 'grande'}}" />
+  
+  <form action="/cart/add" method="post" enctype="multipart/form-data">
+    
+    {{#if (is product.images.size 0)}}
+  
+      <img src="{{img_url '' 'grande'}}" alt="" />
+    
+    {{else}}
+    
+      {{assign 'featured_image' (default product.selected_or_first_available_variant.featured_image product.featured_image)}}
+      <a href="{{img_url featured_image '1024x1024'}}">
+        <img src="{{img_url featured_image 'grande'}}" alt="{{escape product.title}}" />
+      </a>
+
+      {{#if (gt product.images.size 1)}}
+        <ul>
+          {{#each product.images as |image|}}
+            <li>
+              <a href="{{img_url image '1024x1024'}}">
+                <img src="{{img_url image 'large'}}" alt="{{escape image.alt}}" />
+              </a>
+            </li>
+          {{/each}}
+        </ul>
+      {{/if}}
+    
+    {{/if}}
+    
+      <h1>{{ product.title }}</h1>
+      
+      {{assign 'product_vendor_handle' (handle product.vendor)}}
+      {{#comment}}
+      Do we have a collection that has the same name as our product vendor name?
+      If we do, let's have the vendor link point to it.
+      If not, we will point to the automatic vendor collection.
+      {{/comment}}
+      {{#if (is (get collections (toPath product_vendor_handle 'handle')) product_vendor_handle)}}
+        {{assign 'vendor_url' (get collections (toPath product_vendor_handle 'url'))}}
+      {{else}}
+        {{assign 'vendor_url' (url_for_vendor product.vendor)}}
+      {{/if}}
+      <h2 itemprop="brand">{{link_to product.vendor vendor_url}}</h2>
+      
+      <div itemprop="description">
+        {{ product.description }}
+      </div>
+      
+      {{#comment}}
+        All themes by Shopify should support the Product Reviews app out of the box.
+        https://apps.shopify.com/product-reviews
+      {{/comment}}
+      <div id="shopify-product-reviews" data-id="{{ product.id }}">{{ product.metafields.spr.reviews }}</div>
+      
+      <div id="product-price" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+        <meta itemprop="priceCurrency" content="{{ shop.currency }}" />
+        {{#if product.available}}
+        <link itemprop="availability" href="http://schema.org/InStock" />
+        {{else}}
+        <link itemprop="availability" href="http://schema.org/OutOfStock" />
+        {{/if}}
+        <p>
+          {{assign 'variant' product.selected_or_first_available_variant}}
+          {{#if (gt product.compare_at_price product.price)}}
+          <span class="product-price on-sale" itemprop="price">{{money variant.price}}</span>
+          <s class="product-compare-price">{{money variant.compare_at_price}}</s>
+          {{else}}
+          <span class="product-price" itemprop="price">{{money variant.price}}</span>
+          {{/if}}
+        </p>
+      </div>
+      
+      {{assign 'hide_default_title' false}}
+      {{#if (and (is product.variants.size 1) (contains product.variants.first.title 'Default'))}}
+        {{assign 'hide_default_title' true}}
+      {{/if}}       
+
+      <div id="product-variants" class="{{#if hide_default_title}} hidden{{/if}}">
+        <select id="product-select" name="id">
+        {{#each product.variants as |variant|}}
+          <option{{#if (is variant product.selected_or_first_available_variant)}} selected{{/if}} value="{{ variant.id }}">
+          {{ variant.title }} - {{money variant.price}}
+          </option>
+        {{/each}}
+        </select>
+      </div>        
+             
+      <div id="backorder" class="hidden">
+        <p>{{replace '%s is back-ordered. We will ship it separately in 10 to 15 days.' '%s' '<span id="selected-variant"></span>'}}</p>
+      </div>
+        
+      <div id="product-add">
+        <input type="submit" name="add" id="add" value="{{escape add_to_cart}}">
+      </div>
+      
+      {{#if collection}}
+        {{#if (or collection.previous_product collection.next_product)}}
+        <div>     
+        {{#if collection.previous_product}}
+          {{#capture 'prev_url'}}{{ collection.previous_product }}#content{{/capture}}
+          <span class="left">{{link_to 'Previous Product' prev_url}}</span>
+        {{/if}}
+        {{#if collection.next_product}}
+          {{#capture 'next_url'}}{{ collection.next_product }}#content{{/capture}}
+          <span class="right">{{link_to 'Next Product' next_url}}</span>
+        {{/if}}
+        </div>
+        {{/if}}
+      {{/if}}
+
+  </form>
+
+</div>
+
+{{#comment}}
+  Adding support for product options. See here for details:  
+  http://docs.shopify.com/support/your-website/themes/can-i-make-my-theme-use-products-with-multiple-options
+{{/comment}}
+
+<script>
+  
+var selectCallback = function(variant, selector) {
+
+  if (variant) {
+    
+    // Swap image.
+    if (variant.featured_image) {
+      var newImage = variant.featured_image; // New image object.
+      var mainImageDomEl = jQuery('.product-photo-container img')[0]; // DOM element of main image we need to swap.
+      Shopify.Image.switchImage(newImage, mainImageDomEl, switchImage); // Define switchImage (the callback) in your theme's JavaScript file.
+    }
+    
+    // Selected a valid variant that is available.
+    if (variant.available) {
+          
+      // Enabling add to cart button.
+      jQuery('#add').removeClass('disabled').prop('disabled', false).val({{json add_to_cart}});
+    
+      // If item is backordered yet can still be ordered, we'll show special message.
+      if (variant.inventory_management && variant.inventory_quantity <= 0) {
+        jQuery('#selected-variant').html({{json product.title}}{{#unless hide_default_title}} + ' - ' + variant.title{{/unless}});
+        jQuery('#backorder').removeClass("hidden");
+      } else {
+        jQuery('#backorder').addClass("hidden");
+      }
+      
+    } else {
+      // Variant is sold out.
+      jQuery('#backorder').addClass('hidden');
+      jQuery('#add').val({{json sold_out}}).addClass('disabled').prop('disabled', true);       
+    }
+    
+    // Whether the variant is in stock or not, we can update the price and compare at price.
+    if ( variant.compare_at_price > variant.price ) {
+      jQuery('#product-price').html('<span class="product-price on-sale">'+ Shopify.formatMoney(variant.price, "{{ shop.money_format }}") +'</span>'+'&nbsp;<s class="product-compare-price">'+Shopify.formatMoney(variant.compare_at_price, "{{ shop.money_format }}")+ '</s>');
+    } else {
+      jQuery('#product-price').html('<span class="product-price">'+ Shopify.formatMoney(variant.price, "{{ shop.money_format }}") + '</span>' );
+    }        
+
+  } else {
+    // variant doesn't exist.
+    jQuery('#product-price').empty();
+    jQuery('#backorder').addClass('hidden');
+    jQuery('#add').val({{json unavailable}}).addClass('disabled').prop('disabled', true);
+  }
+
+};
+  
+jQuery(function($) {
+
+  new Shopify.OptionSelectors('product-select', { product: {{json product}}, onVariantSelected: selectCallback, enableHistoryState: true });
+  
+  // Add label if only one product option and it isn't 'Title'.
+  {{#if (and (is product.options.size 1) (isnt product.options.first 'Title'))}}
+    $('.selector-wrapper:eq(0)').prepend('<label>{{ product.options.first }}</label>');
+  {{/if}}
+
+});
+
+Shopify.Image.preload({{json product.images}}, 'grande');
+Shopify.Image.preload({{json product.images}}, '1024x1024');
+
+</script>

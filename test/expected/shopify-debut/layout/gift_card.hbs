@@ -1,0 +1,41 @@
+<!doctype html>
+<!--[if IE 9]> <html class="ie9 no-js" lang="{{ shop.locale }}"> <![endif]-->
+<!--[if (gt IE 9)|!(IE)]><!--> <html class="no-js" lang="{{ shop.locale }}"> <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="{{ settings.color_button }}">
+  <link rel="canonical" href="{{ canonical_url }}">
+
+  {{#if (isnt settings.favicon blank)}}
+    <link rel="shortcut icon" href="{{img_url settings.favicon '32x32'}}" type="image/png">
+  {{/if}}
+
+  {{assign 'formatted_initial_value' (money_without_trailing_zeros gift_card.initial_value gift_card.currency)}}
+  {{assign 'formatted_initial_value_stripped' (strip_html formatted_initial_value)}}
+  <title>{{t 'gift_cards.issued.title_html' value formatted_initial_value_stripped shop shop.name}}</title>
+
+  <meta name="description" content="{{t 'gift_cards.issued.subtext'}}">
+
+  {{include 'google-fonts'}}
+
+  {{stylesheet_tag (asset_url 'theme.scss.css')}}
+  {{stylesheet_tag (asset_url 'gift-card.scss.css')}}
+
+  <!--[if (gt IE 9)|!(IE)]><!--><script src="{{shopify_asset_url 'vendor/qrcode.js'}}" defer="defer"></script><!--<![endif]-->
+  <!--[if lte IE 9]><script src="{{shopify_asset_url 'vendor/qrcode.js'}}"></script><![endif]-->
+
+  <!--[if (gt IE 9)|!(IE)]><!--><script src="{{asset_url 'vendor.js'}}" defer="defer"></script><!--<![endif]-->
+  <!--[if lte IE 9]><script src="{{asset_url 'vendor.js'}}"></script><![endif]-->
+
+  <!--[if (gt IE 9)|!(IE)]><!--><script src="{{asset_url 'gift-card.js'}}" defer="defer"></script><!--<![endif]-->
+  <!--[if lte IE 9]><script src="{{asset_url 'gift-card.js'}}"></script><![endif]-->
+
+  {{ content_for_header }}
+</head>
+
+<body class="template-giftcard">
+  {{ content_for_layout }}
+</body>
+</html>

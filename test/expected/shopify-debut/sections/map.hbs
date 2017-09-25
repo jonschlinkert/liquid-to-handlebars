@@ -1,0 +1,192 @@
+{{assign 'display_map' false}}
+{{assign 'onboarding' false}}
+{{assign 'bg_image' section.settings.background_image}}
+
+{{#if (and (is section.settings.api_key blank) (is bg_image blank))}}
+  {{assign 'onboarding' true}}
+{{/if}}
+{{#if (and (isnt section.settings.api_key blank) section.settings.map_address)}}
+  {{assign 'display_map' true}}
+{{/if}}
+
+<style>
+  {{#if (isnt bg_image.src blank)}}
+  #MapSection--{{ section.id }} .map-section__image {
+    background-position: {{ section.settings.background_image_position }};
+  }
+
+  @media only screen and (max-width: 750px) {
+    #MapSection--{{ section.id }} .map-section__image {
+      padding-top: {{times (divided_by 1 bg_image.aspect_ratio) 100}}%;
+    }
+  }
+  {{/if}}
+</style>
+
+
+<div id="MapSection--{{ section.id }}"
+     class="map-section
+           {{#if display_map}}map-section--display-map{{/if}}
+           {{#if (is onboarding true)}}map-section--onboarding{{/if}}"
+     data-section-id="{{ section.id }}"
+     data-section-type="map">
+  <div class="page-width map-section__wrapper">
+    <div class="map-section__content-wrapper">
+      <div class="map-section__content">
+        {{#if (isnt section.settings.heading blank)}}
+          <h3 class="h4">{{escape section.settings.heading}}</h3>
+        {{/if}}
+        {{#if (isnt section.settings.address blank)}}
+          <div class="rte-setting">{{ section.settings.address }}</div>
+          {{#if (and (isnt section.settings.map_address blank) (isnt section.settings.button_text blank))}}
+            <p>
+              <a href="https://maps.google.com?daddr={{escape section.settings.map_address}}"
+                 class="btn btn--secondary btn--small map_section__directions-btn"
+                 target="_blank"
+              >
+                {{#if section.settings.show_pin}}{{include 'icon-pin'}}{{/if}}
+                <span>{{escape section.settings.button_text}}</span>
+              </a>
+            </p>
+          {{/if}}
+        {{/if}}
+      </div>
+    </div>
+    <div class="map-section__background-wrapper">
+      {{#if (isnt bg_image blank)}}
+        <div class="map-section__image lazyload js"
+             data-bgset="{{include 'bgset",' image: bg_image}}"
+             data-sizes="auto"
+             data-parent-fit="cover"
+             style="background-image: url('{{img_url bg_image '300x300'}});">
+        </div>
+        <noscript>
+          <div class="map-section__image" style="background-image: url({{img_url bg_image 'x800' crop 'top'}});"></div>
+        </noscript>
+      {{else if (is onboarding true)}}
+        <div class="placeholder-background">
+          {{placeholder_svg_tag 'lifestyle-2' 'placeholder-svg'}}
+        </div>
+      {{/if}}
+      {{#if display_map}}
+        <div class="map-section__container"
+             id="Map-{{ section.id }}"
+             data-map
+             data-address-setting="{{escape section.settings.map_address}}"
+             data-api-key="{{ section.settings.api_key }}">
+        </div>
+        <div class="map-section__overlay" data-map-overlay></div>
+      {{/if}}
+    </div>
+  </div>
+</div>
+
+{{#schema}}
+  {
+    "name": "Map",
+    "class": "index-section index-section--flush-medium-up",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Text"
+      },
+      {
+        "id": "heading",
+        "type": "text",
+        "label": "Heading",
+        "default": "Our store"
+      },
+      {
+        "id": "address",
+        "type": "richtext",
+        "label": "Address and hours",
+        "default": "<p>123 Fake St.<br>Toronto, Canada</p><p>Mon - Fri, 10am - 9pm<br>Saturday, 11am - 9pm<br>Sunday, 11am - 5pm</p>"
+      },
+      {
+        "id": "map_address",
+        "type": "text",
+        "label": "Map address",
+        "info": "Google Maps will find the exact location",
+        "default": "80 Spadina Ave, Toronto"
+      },
+      {
+        "id": "button_text",
+        "type": "text",
+        "label": "Map link label",
+        "default": "Get directions"
+      },
+      {
+        "id": "show_pin",
+        "type": "checkbox",
+        "label": "Show pin",
+        "default": true
+      },
+      {
+        "type": "header",
+        "content": "Background"
+      },
+      {
+        "id": "api_key",
+        "type": "text",
+        "label": "Google Maps API key",
+        "info": "You’ll need to [register a Google Maps API Key](https://help.shopify.com/manual/using-themes/troubleshooting/map-section-api-key) to display the map"
+      },
+      {
+        "type": "image_picker",
+        "id": "background_image",
+        "label": "Image",
+        "info": "Displayed if the map isn’t loaded"
+      },
+      {
+        "type": "select",
+        "id": "background_image_position",
+        "label": "Image position",
+        "default": "center center",
+        "options": [
+          {
+            "label": "Top left",
+            "value": "top left"
+          },
+          {
+            "label": "Top center",
+            "value": "top center"
+          },
+          {
+            "label": "Top right",
+            "value": "top right"
+          },
+          {
+            "label": "Middle left",
+            "value": "center left"
+          },
+          {
+            "label": "Middle center",
+            "value": "center center"
+          },
+          {
+            "label": "Middle right",
+            "value": "center right"
+          },
+          {
+            "label": "Bottom left",
+            "value": "bottom left"
+          },
+          {
+            "label": "Bottom center",
+            "value": "bottom center"
+          },
+          {
+            "label": "Bottom right",
+            "value": "bottom right"
+          }
+        ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "Map",
+        "category": "Store information"
+      }
+    ]
+  }
+{{/schema}}

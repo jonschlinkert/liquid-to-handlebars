@@ -1,0 +1,163 @@
+<!-- /templates/collection.list.liquid -->
+{{#comment}}
+
+  By using a variation of the 'view all' parameter technique, you can create
+  a custom layout for any template by adding ?view=xxxx
+
+  In this example, you can have a list view of your collection page by going to
+  /collections/all?view=list
+
+  For more information on collection tags:
+    - http://docs.shopify.com/themes/liquid-variables/collection
+
+  For more information on the ?view parameter:
+    - http://docs.shopify.com/support/configuration/store-customization/can-i-show-more-than-50-products-on-my-homepage-can-i-add-a-view-all-function-to-my-collection-pages#add-view-all
+
+{{/comment}}
+
+{{#paginate collection.products by=12}}
+
+{{include 'breadcrumb'}}
+
+{{#comment}}
+  Use .grid--rev so that the collection tags appear below the products on mobile
+{{/comment}}
+<div class="grid--rev">
+  <div class="grid__item large--three-quarters">
+
+    {{#comment}}
+      Different markup if a collection description exists
+    {{/comment}}
+    {{#if (isnt collection.description blank)}}
+      <header class="section-header">
+        <h1 class="section-header__title">{{ collection.title }}</h1>
+        <div class="rte rte--header">
+          {{ collection.description }}
+        </div>
+      </header>
+      <hr>
+      <div class="section-header">
+        <div class="section-header__right">
+          {{include 'collection-sorting'}}
+        </div>
+      </div>
+    {{else}}
+      <header class="section-header">
+        <h1 class="section-header__title section-header__left">{{ collection.title }}</h1>
+        <div class="section-header__right">
+          {{include 'collection-sorting'}}
+        </div>
+      </header>
+    {{/if}}
+
+    {{#comment}}
+      Use class grid-uniform to have evenly sized columns clear
+      each other properly at each breakpoint.
+    {{/comment}}
+    <div class="grid-uniform">
+
+      <!-- begin product list output -->
+      {{#each collection.products as |product|}}
+
+        {{#comment}}
+          Check if the product is on sale and set a variable to be used below.
+        {{/comment}}
+        {{assign 'on_sale' false}}
+        {{#if (gt product.compare_at_price product.price)}}
+          {{assign 'on_sale' true}}
+        {{/if}}
+
+        {{#comment}}
+          Check if the product is sold out and set a variable to be used below.
+        {{/comment}}
+        {{assign 'sold_out' true}}
+        {{#if product.available}}
+          {{assign 'sold_out' false}}
+        {{/if}}
+
+        <div class="grid__item">
+
+          {{#comment}}
+            Link to your product with the 'within: collection' filter for the link to be aware of the collection.
+            This allows you to create collection-based navigation on the product page.
+
+            Results of using 'within: collection':
+            - Instead of a URL with /products/product-handle
+              you would get /collections/collection-handle/products/product-handle
+
+            For more info on navigation within a collection
+              - http://docs.shopify.com/support/your-store/collections/how-to-navigate-within-a-collection
+          {{/comment}}
+          <div class="grid large--display-table">
+            <div class="grid__item large--one-fifth large--display-table-cell medium--one-third">
+              <a href="{{within product.url collection}}">
+                <img src="{{img_url product.featured_image.src 'medium'}}" alt="{{escape product.featured_image.alt}}" class="grid__image">
+              </a>
+            </div>
+            <div class="grid__item large--four-fifths large--display-table-cell medium--two-thirds">
+              <div class="grid">
+                <div class="grid__item large--three-quarters medium--two-thirds">
+                  <p class="h6">{{ product.title }}</p>
+                  <div class="rte">
+                    <p>{{truncatewords (strip_html product.content) 30}}</p>
+                  </div>
+                </div>
+                <div class="grid__item large--one-quarter medium--one-third">
+                  {{#comment}}
+                    You can show a leading 'from' or 'up to' by checking 'product.price_varies'
+                    if your variants have different prices.
+                  {{/comment}}
+                  {{#if on_sale}}
+                    {{#if product.price_varies}}
+                      {{assign 'sale_price' (money product.price)}}
+                      {{t 'products.product.on_sale_from_html' price sale_price}}
+                    {{else}}
+                      <strong>{{t 'products.product.on_sale'}}</strong>
+                      {{money product.price}}
+                    {{/if}}
+                  {{else}}
+                    {{#if product.price_varies}}
+                      {{assign 'price' (money product.price)}}
+                      {{t 'products.general.from_text_html' price price}}
+                    {{else}}
+                      {{money product.price}}
+                    {{/if}}
+                  {{/if}}
+                  {{#if sold_out}}
+                    <br><strong>{{t 'products.product.sold_out'}}</strong>
+                  {{/if}}
+                  {{#if on_sale}}
+                    <br><span class="visually-hidden">{{t 'products.general.regular_price'}}</span><s>{{money product.compare_at_price}}</s>
+                  {{/if}}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      {{else}}
+
+        <div class="grid__item">
+          <p>{{t 'collections.general.no_matches'}}</p>
+        </div>
+
+      {{/each}}
+      <!-- //product list output -->
+
+    </div>
+
+    {{#if (gt paginate.pages 1)}}
+      <hr>
+      <div class="pagination">
+        {{replace (replace (default_pagination paginate) '&laquo; Previous' '&larr;') 'Next &raquo;' '&rarr;'}}
+      </div>
+    {{/if}}
+
+  </div>
+
+  <div class="grid__item large--one-quarter">
+    {{include 'collection-sidebar'}}
+  </div>
+</div>
+
+{{/paginate}}

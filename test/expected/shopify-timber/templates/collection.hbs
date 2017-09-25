@@ -1,0 +1,100 @@
+<!-- /templates/collection.liquid -->
+{{#comment}}
+
+  For more information on collection tags:
+    - http://docs.shopify.com/themes/liquid-variables/collection
+
+{{/comment}}
+
+{{#paginate collection.products by=12}}
+
+{{include 'breadcrumb'}}
+
+{{#comment}}
+  Use .grid--rev so that the collection tags appear below the products on mobile
+{{/comment}}
+<div class="grid--rev">
+  <div class="grid__item large--three-quarters">
+
+    {{#comment}}
+      Different markup if a collection description exists
+    {{/comment}}
+    {{#if (isnt collection.description blank)}}
+      <header class="section-header">
+        <h1 class="section-header__title">{{ collection.title }}</h1>
+        <div class="rte rte--header">
+          {{ collection.description }}
+        </div>
+      </header>
+      <hr>
+      <div class="section-header">
+        <div class="section-header__right">
+          {{include 'collection-sorting'}}
+        </div>
+      </div>
+    {{else}}
+      <header class="section-header">
+        <h1 class="section-header__title section-header__left">{{ collection.title }}</h1>
+        <div class="section-header__right">
+          {{include 'collection-sorting'}}
+        </div>
+      </header>
+    {{/if}}
+
+    {{#comment}}
+      Use class grid-uniform to have evenly sized columns clear
+      each other properly at each breakpoint.
+    {{/comment}}
+    <div class="grid-uniform">
+
+      {{#comment}}
+        Loop through our products in the current collection.
+        See the snippet 'product-grid-item' for the layout.
+      {{/comment}}
+      {{#each collection.products as |product|}}
+
+        {{include 'product-grid-item'}}
+
+      {{else}}
+
+        {{#if (and (is collection.handle 'all') (is current_tags ''))}}
+
+          {{#comment}}
+            Add default products to help with onboarding for collections/all only
+          {{/comment}}
+          {{#unless emptyState}}
+            {{stylesheet_tag (global_asset_url 'theme-onboarding.css')}}
+            {{assign 'emptyState' true}}
+          {{/unless}}
+          {{include 'onboarding-empty-collection'}}
+
+        {{else}}
+
+          {{#comment}}
+            If collection exists but is empty, display message
+          {{/comment}}
+          <div class="grid__item">
+            <p>{{t 'collections.general.no_matches'}}</p>
+          </div>
+
+        {{/if}}
+
+      {{/each}}
+
+    </div>
+
+    {{#if (gt paginate.pages 1)}}
+      <hr>
+      <div class="pagination">
+        {{replace (replace (default_pagination paginate) '&laquo; Previous' '&larr;') 'Next &raquo;' '&rarr;'}}
+      </div>
+    {{/if}}
+
+  </div>
+
+  <div class="grid__item large--one-quarter">
+    {{include 'collection-sidebar'}}
+  </div>
+</div>
+
+{{/paginate}}

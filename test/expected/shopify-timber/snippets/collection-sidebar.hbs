@@ -1,0 +1,71 @@
+<!-- /snippets/collection-sidebar.liquid -->
+{{#comment}}
+
+  Side navigation for the product types, vendors, and tags.
+  These can be based on the current collection or all products. Details in comments below.
+
+  Note: Clicking on a tag will filter the products within the current collection.
+  Clicking on a type or vendor link will take you out of the current collection
+  to a standalone collection page. E.g. /collections/vendors?q=Pepsi
+
+{{/comment}}
+
+{{#comment}}
+  Product tags in the current collection
+{{/comment}}
+{{#if (gt collection.all_tags.size 0)}}
+  <h2 class="h3">{{t 'collections.sidebar.tags'}}</h2>
+
+  {{#comment}}
+    To provide a 'catch-all' link at the top of the list,
+    check against the collection.handle, product type, and vendor.
+  {{/comment}}
+  <ul class="no-bullets">
+    <li{{#unless current_tags}} class="filter--active"{{/unless}}>
+
+      {{#comment}}
+        Good for /collections/all collection and regular collections
+      {{/comment}}
+      {{#if collection.handle}}
+        <a href="/collections/{{ collection.handle }}">
+          {{t 'collections.general.all_of_collection' collection collection.title}}
+        </a>
+
+      {{#comment}}
+        Good for automatic type collections
+      {{/comment}}
+      {{else if collection.current_type}}
+        <a href="{{url_for_type collection.current_type}}">
+          {{t 'collections.general.all_of_collection' collection collection.title}}
+        </a>
+
+      {{#comment}}
+        Good for automatic vendor collections
+      {{/comment}}
+      {{else if collection.current_vendor}}
+        <a href="{{url_for_vendor collection.current_vendor}}">
+          {{t 'collections.general.all_of_collection' collection collection.title}}
+        </a>
+      {{/if}}
+    </li>
+
+    {{#comment}}
+      And for the good stuff, loop through the tags themselves.
+    {{/comment}}
+    {{#each collection.all_tags as |tag|}}
+      {{#if (contains current_tags tag)}}
+        <li class="filter--active">
+          {{link_to_remove_tag tag tag}}
+        </li>
+      {{else}}
+        <li>
+          {{#comment}}
+            Use link_to_add_tag if you want to allow filtering
+            by multiple tags
+          {{/comment}}
+          {{link_to_tag tag tag}}
+        </li>
+      {{/if}}
+    {{/each}}
+  </ul>
+{{/if}}

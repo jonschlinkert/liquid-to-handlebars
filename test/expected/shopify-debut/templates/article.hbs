@@ -1,0 +1,142 @@
+{{#comment}}
+  Comments will not appear right after they are submitted, either to be checked for spam
+  or to await moderation. When a comment is submitted, the browser is redirected to a page
+  that includes the new comment id in its URL.
+    Example: http://shopname.myshopify.com/blogs/news/2022072-my-post?comment=3721372
+{{/comment}}
+
+{{assign 'new_comment' false}}
+{{#if (and comment comment.created_at)}}
+  {{assign 'new_comment' true}}
+  {{assign 'new_comment_id' comment.id}}
+{{/if}}
+
+{{#if new_comment}}
+  {{assign 'duplicate_comment' false}}
+  {{#each article.comments as |comment|}}
+    {{#if (is comment.id new_comment_id)}}
+      {{assign 'duplicate_comment' true}}
+      {{break}}
+    {{/if}}
+  {{/each}}
+
+  {{#if duplicate_comment}}
+    {{assign 'number_of_comments' article.comments_count}}
+  {{else}}
+    {{assign 'number_of_comments' (plus article.comments_count 1)}}
+  {{/if}}
+{{else}}
+  {{assign 'number_of_comments' article.comments_count}}
+{{/if}}
+
+<article class="page-width" itemscope itemtype="http://schema.org/Article">
+  <div class="grid">
+    <div class="grid__item medium-up--five-sixths medium-up--push-one-twelfth">
+      {{section 'article-template'}}
+    </div>
+  </div>
+</article>
+
+{{#if blog.comments_enabled}}
+  {{#if (gt number_of_comments 0)}}
+    <hr>
+    <div class="page-width">
+      <div class="grid">
+        <div class="grid__item medium-up--five-sixths medium-up--push-one-twelfth">
+          <h2 class="h3">{{t 'blogs.comments.comments_with_count' count number_of_comments}}</h2>
+
+          {{#paginate article.comments by=5}}
+
+            {{#comment}}
+              #comments is required, it is used as an anchor link by Shopify.
+            {{/comment}}
+            <div id="comments">
+
+              {{#if new_comment}}
+                <p class="note form-success">
+                  {{#if blog.moderated}}
+                    {{t 'blogs.comments.success_moderated'}}
+                  {{else}}
+                    {{t 'blogs.comments.success'}}
+                  {{/if}}
+                </p>
+              {{/if}}
+
+              <ul class="comments">
+                {{#comment}}
+                  If a comment was just submitted with no blank field, show it.
+                {{/comment}}
+                {{#if new_comment}}
+                  <li id="{{ comment.id }}" class="comment">
+                    {{include 'comment'}}
+                  </li>
+                {{/if}}
+
+                {{#each article.comments as |comment|}}
+                  {{#unless (is comment.id new_comment_id)}}
+                    <li id="{{ comment.id }}" class="comment">
+                      {{include 'comment'}}
+                    </li>
+                  {{/unless}}
+                {{/each}}
+              </ul>
+
+              {{#if (gt paginate.pages 1)}}
+                {{include 'pagination'}}
+              {{/if}}
+
+            </div>
+          {{/paginate}}
+        </div>
+      </div>
+    </div>
+  {{/if}}
+
+  <hr>
+  <div class="page-width">
+    <div class="grid">
+      <div class="grid__item medium-up--five-sixths medium-up--push-one-twelfth">
+        <div class="comment-form form-vertical">
+          {{#form 'new_comment' article}}
+
+            <h2 class="h3">{{t 'blogs.comments.title'}}</h2>
+
+            {{default_errors form.errors}}
+
+            <div class="grid">
+
+              <div class="grid__item medium-up--one-half">
+                <label for="CommentAuthor">{{t 'blogs.comments.name'}}</label>
+                <input type="text" name="comment[author]" id="CommentAuthor" class="input-full{{#if (contains form.errors 'author')}} input--error{{/if}}" value="{{ form.author }}">
+              </div>
+
+              <div class="grid__item medium-up--one-half">
+                <label for="CommentEmail">{{t 'blogs.comments.email'}}</label>
+                <input type="email" name="comment[email]" id="CommentEmail" class="input-full{{#if (contains form.errors 'email')}} input--error{{/if}}" value="{{ form.email }}" autocorrect="off" autocapitalize="off">
+              </div>
+
+              <div class="grid__item">
+                <label for="CommentBody">{{t 'blogs.comments.message'}}</label>
+                <textarea name="comment[body]" id="CommentBody" class="input-full{{#if (contains form.errors 'body')}} input--error{{/if}}">{{ form.body }}</textarea>
+              </div>
+
+            </div>
+
+            {{#if blog.moderated}}
+              <p class="fine-print">{{t 'blogs.comments.moderated'}}</p>
+            {{/if}}
+
+            <input type="submit" class="btn" value="{{t 'blogs.comments.post'}}">
+          {{/form}}
+        </div>
+      </div>
+    </div>
+  </div>
+{{/if}}
+
+<div class="text-center return-link-wrapper">
+  <a href="{{ blog.url }}" class="btn btn--secondary btn--has-icon-before return-link">
+    {{include 'icon-arrow-left'}}
+    {{t 'blogs.article.back_to_blog' title blog.title}}
+  </a>
+</div>
