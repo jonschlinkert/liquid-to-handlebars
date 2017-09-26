@@ -112,7 +112,7 @@
         We have a template file to render.
         That's what content_for_layout is for.
       {{/comment}}
-      {{ content_for_layout }}
+      {% body %}
     </div>
     <footer>
       {{#if (gt linklists.footer.links.size 0)}}

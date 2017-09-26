@@ -7,7 +7,7 @@
       {{assign 'column_size' 'medium-up--one-third'}}
     {{else}}
       {{assign 'column_size' 'medium-up--one-quarter'}}
-{{/is}}
+  {{/is}}
 
   {{#each section.blocks as |block|}}
     <div class="grid__item {{ column_size }} js" {{ block.shopify_attributes }}>

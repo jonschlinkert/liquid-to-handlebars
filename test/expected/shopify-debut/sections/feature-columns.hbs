@@ -17,7 +17,7 @@
       {{else is section.blocks.size 4}}
         {{assign 'grid_item_width' 'medium-up--one-half'}}
         {{assign 'max_height' 530}}
-{{/is}}
+    {{/is}}
     {{#each section.blocks as |block|}}
       {{#if (and (is section.blocks.size 5) (lt forloop.index 3))}}
         {{assign 'column_width' 'medium-up--one-half'}}

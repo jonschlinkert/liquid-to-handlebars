@@ -1,6 +1,7 @@
 <!-- /templates/gift_card.liquid -->
 ---
-layout: none---
+layout: none
+---
 {{assign 'formatted_initial_value' (money_without_trailing_zeros gift_card.initial_value gift_card.currency)}}
 {{assign 'formatted_initial_value_stripped' (strip_html formatted_initial_value)}}
 <!doctype html>

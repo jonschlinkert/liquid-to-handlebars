@@ -18,4 +18,4 @@
                          This is a bar<br />
                     {{else}}<br />
                          This is not a cookie/cake<br />
-{{/is}}</code>
+                    {{/is}}</code>

@@ -17,7 +17,7 @@
     {{else is section.settings.grid '5'}}
       {{assign 'grid_item_width' 'small--one-half medium-up--one-fifth'}}
       {{assign 'image_size' '225x'}}
-{{/is}}
+  {{/is}}
   
   <div class="grid grid--uniform">
     {{#if (is section.settings.display_type 'all')}}
@@ -25,7 +25,7 @@
           {{assign 'collections' (sort collections 'all_products_count')}}
         {{else is section.settings.sort 'date" or "date_reversed'}}
           {{assign 'collections' (sort collections 'published_at')}}
-{{/is}}
+      {{/is}}
       {{#if (or (is section.settings.sort 'products_low') (is section.settings.sort 'date') (is section.settings.sort 'alphabetical'))}}
         {{#each collections as |collection|}}
           <div class="grid__item {{ grid_item_width }}">

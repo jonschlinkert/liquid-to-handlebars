@@ -147,7 +147,7 @@
         {{assign 'grid_item_width' 'small--one-half medium-up--one-quarter'}}
       {{else is section.settings.grid '5'}}
         {{assign 'grid_item_width' 'small--one-half medium-up--one-fifth'}}
-{{/is}}
+      {{/is}}
 
       <div class="grid grid--uniform{{#if (gt collection.products_count 0)}} grid--view-items{{/if}}">
         {{#each collection.products as |product|}}
