@@ -35,15 +35,16 @@ Converter.prototype.compile = function(ast, options) {
   opts.stash = this.stash;
   var compiler = new snapdragon.Compiler(opts);
   compiler.use(tags.compilers(opts, this));
-  var res = compiler.compile(ast, opts);
-  return res.output;
+  compiler.tagNames = [];
+  return compiler.compile(ast, opts);
 };
 
 Converter.prototype.convert = function(str, options) {
   var opts = Object.assign({}, this.options, options);
   var ast = this.parse(str, opts);
   this.variables = [];
-  return this.compile(ast, opts);
+  var res = this.compile(ast, opts);
+  return res.output;
 };
 
 Converter.prototype.parseArgs = function(str, options) {
