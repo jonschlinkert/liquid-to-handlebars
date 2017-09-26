@@ -1,0 +1,104 @@
+<!-- /snippets/product-grid-item.liquid -->
+{{#comment}}
+
+  This snippet is used to showcase each product during the loop,
+  'for product in collection.products' in collection.liquid.
+
+  A liquid variable (grid_item_width) is set just before the this
+  snippet is included to change the size of the container.
+  Once the variable is set on a page, all future instances of this
+  snippet will use that width. Overwrite the variable to adjust this.
+
+  Example
+    - assign grid_item_width = 'large--one-quarter medium--one-half'
+
+{{/comment}}
+
+{{#unless grid_item_width}}
+  {{assign 'grid_item_width' 'large--one-third medium--one-half'}}
+{{/unless}}
+
+{{#unless width}}
+  {{assign 'width' 310}}
+{{/unless}}
+{{#unless height}}
+  {{assign 'height' 415}}
+{{/unless}}
+
+{{assign 'on_sale' false}}
+{{#if (gt product.compare_at_price product.price)}}
+  {{assign 'on_sale' true}}
+{{/if}}
+
+{{assign 'sold_out' true}}
+{{#if product.available}}
+  {{assign 'sold_out' false}}
+{{/if}}
+
+{{#capture 'img_id_class'}}ProductImage-{{ product.featured_image.id }}{{/capture}}
+{{#capture 'img_wrapper_id'}}ProductImageWrapper-{{ product.featured_image.id }}{{/capture}}
+{{assign 'img_url' (replace (img_url product.featured_image '1x1') '_1x1.' '_{width}x.')}}
+
+<div class="grid__item grid-product {{ grid_item_width }}{{#if sold_out}} is-sold-out{{/if}}">
+  <div class="grid-product__wrapper">
+    <div class="grid-product__image-wrapper">
+      <a class="grid-product__image-link" href="{{within product.url collection}}">
+        {{#if (is product.featured_image.src blank)}}
+          <img class="grid-product__image" src="{{img_url product.featured_image.src '1024x'}}" alt="{{escape product.featured_image.alt}}">
+        {{else}}
+          {{include 'image-style' image: product.featured_image, small_style: true, width: width, height: height, wrapper_id: img_wrapper_id, img_id_class: img_id_class}}
+          <div id="{{ img_wrapper_id }}" class="product--wrapper">
+            <div style="padding-top:{{times (divided_by 1 product.featured_image.aspect_ratio) 100}}%;">
+              <img class="product--image lazyload {{ img_id_class }}"
+                   src="{{img_url product.featured_image '150x150'}}"
+                   data-src="{{ img_url }}"
+                   data-widths="[180, 370, 590, 740, 900, 1080, 1296, 1512, 1728, 2048]"
+                   data-aspectratio="{{ product.featured_image.aspect_ratio }}"
+                   data-sizes="auto"
+                   alt="{{escape product.featured_image.alt}}">
+            </div>
+          </div>
+          <noscript>
+            <img class="grid-product__image" src="{{img_url product.featured_image.src '1024x'}}" alt="{{escape product.featured_image.alt}}">
+          </noscript>
+        {{/if}}
+      </a>
+      {{#if sold_out}}
+        <div class="grid-product__sold-out">
+          <p>{{t 'products.product.sold_out_html'}}</p>
+        </div>
+      {{else if on_sale}}
+        <div class="grid-product__on-sale">
+          {{#capture 'saved_amount'}}{{money_without_trailing_zeros (minus product.compare_at_price product.price)}}{{/capture}}
+          <p>{{t 'products.general.save_html' saved_amount saved_amount}}</p>
+        </div>
+      {{/if}}
+    </div>
+
+    <a href="{{within product.url collection}}" class="grid-product__meta">
+      <span class="grid-product__title">{{ product.title }}</span>
+      <span class="grid-product__price-wrap">
+        <span class="long-dash">—</span>
+        <span class="grid-product__price">
+          {{#if on_sale}}
+            <span class="visually-hidden">{{t 'products.general.sale_price'}}</span>
+          {{else}}
+             <span class="visually-hidden">{{t 'products.general.regular_price'}}</span>
+          {{/if}}
+          {{#if product.price_varies}}
+            {{money_without_trailing_zeros product.price_min}}
+            <span class="icon-fallback-text">
+              <span class="icon icon-plus grid-product__price-min" aria-hidden="true"></span>
+              <span class="fallback-text">+</span>
+            </span>
+          {{else}}
+            {{money_without_trailing_zeros product.price}}
+          {{/if}}
+        </span>
+      </span>
+      {{#if section.settings.product_vendor_enable}}
+        <p class="grid-product__vendor">{{ product.vendor }}</p>
+      {{/if}}
+    </a>
+  </div>
+</div>

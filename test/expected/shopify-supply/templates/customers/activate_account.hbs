@@ -1,0 +1,26 @@
+<div class="grid">
+  <div class="grid-item large--one-third push--large--one-third">
+
+    <h1>{{t 'customer.activate_account.title'}}</h1>
+    <p>{{t 'customer.activate_account.subtext'}}</p>
+
+    {{#form 'activate_customer_password'}}
+
+      {{include 'form-errors-custom'}}
+
+      <label for="customer_password">{{t 'customer.activate_account.password'}}</label>
+      <input type="password" value="" name="customer[password]" id="customer_password">
+
+      <label for="customer_password_confirmation">{{t 'customer.activate_account.password_confirm'}}</label>
+      <input type="password" value="" name="customer[password_confirmation]" id="customer_password_confirmation">
+
+      <div class="text-center">
+
+          <p><input type="submit" class="btn" value="{{t 'customer.activate_account.submit'}}"></p>
+          <p><input type="submit" class="btn-secondary" name="decline" id="customer_decline" value="{{t 'customer.activate_account.cancel'}}"></p>
+
+      </div>
+    {{/form}}
+
+  </div>
+</div>

@@ -1,0 +1,95 @@
+<div class="page-width">
+  <div class="section-block section-block--padding">
+    {{#if section.settings.title_enable}}
+      <div class="section-block__header text-center">
+        <h4 class="h1--mini section-block__title">{{escape section.settings.title}}</h4>
+      </div>
+    {{/if}}
+
+    <div class="flex flex--grid flex--grid-center">
+      {{#each section.blocks as |block|}}
+        <div class="flex__item flex__item--fixed flex flex--center-vertical one-half medium-up--one-quarter text-center" {{ block.shopify_attributes }}>
+          <div class="flex__item">
+            <div class="image-block">
+              {{#if (isnt block.settings.image blank)}}
+                <img src="{{img_url block.settings.image '250x250'}}" alt="{{ block.settings.image.alt }}" class="image-block__image">
+              {{else}}
+                <div class="image-block__image">
+                  {{placeholder_svg_tag 'image' 'placeholder-svg'}}
+                </div>
+              {{/if}}
+            </div>
+          </div>
+        </div>
+      {{/each}}
+    </div>
+
+    {{#if (is section.blocks.size 0)}}
+      {{include 'no-blocks'}}
+    {{/if}}
+  </div>
+</div>
+
+{{#schema}}
+  {
+    "name": "Logo list",
+    "class": "index-section",
+    "max_blocks": 20,
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "title_enable",
+        "label": "Show header",
+        "default": true
+      },
+      {
+        "type": "text",
+        "id": "title",
+        "label": "Heading",
+        "default": "Logo list"
+      }
+    ],
+    "blocks": [
+      {
+        "type": "logo",
+        "name": "Logo",
+        "settings": [
+          {
+            "type": "image_picker",
+            "id": "image",
+            "label": "Image"
+          }
+        ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "Logo list",
+        "category": "Image",
+        "blocks": [
+          {
+            "type": "logo"
+          },
+          {
+            "type": "logo"
+          },
+          {
+            "type": "logo"
+          },
+          {
+            "type": "logo"
+          },
+          {
+            "type": "logo"
+          },
+          {
+            "type": "logo"
+          },
+          {
+            "type": "logo"
+          }
+        ]
+      }
+    ]
+  }
+{{/schema}}

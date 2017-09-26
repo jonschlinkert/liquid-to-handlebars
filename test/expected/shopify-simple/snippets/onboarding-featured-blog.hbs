@@ -1,0 +1,36 @@
+<div class="grid grid--uniform helper">
+  {{#each (range 1 section.settings.post_limit) as |i|}}
+    <div class="grid__item {{ width }} slide-up-animation animated{{#if (gt forloop.index 3)}} hide-post__mobile{{/if}}">
+      <div class="featured-blog__post">
+        {{#if section.settings.blog_show_image}}
+          <a class="article__featured-link" href="#">
+            {{#capture 'current'}}{{cycle 1 2 3 4 5 6}}{{/capture}}
+            {{placeholder_svg_tag (append 'collection-' current) 'placeholder-svg'}}
+          </a>
+        {{/if}}
+        {{#unless (and (is section.settings.post_limit 1) section.settings.blog_show_image)}}
+          <h2 class="h3"><a href="#">{{t 'homepage.onboarding.blog_title'}}</a></h2>
+            {{#if section.settings.blog_show_excerpt}}
+              <div class="rte rte--indented-images">
+                {{t 'homepage.onboarding.blog_excerpt'}}
+              </div>
+            {{/if}}
+            <p class="read-more"><a href="{{ article.url }}">{{t 'blogs.article.read_more'}} &rarr;</a></p>
+        {{/unless}}
+      </div>
+    </div>
+    {{#if (and (is section.settings.post_limit 1) section.settings.blog_show_image)}}
+      <div class="grid__item {{ width }}">
+        <div class="featured-blog__post">
+          <h2 class="h3"><a href="#">{{t 'homepage.onboarding.blog_title'}}</a></h2>
+          {{#if section.settings.blog_show_excerpt}}
+            <div class="rte rte--indented-images">
+              {{t 'homepage.onboarding.blog_excerpt'}}
+            </div>
+          {{/if}}
+          <p class="read-more"><a href="{{ article.url }}">{{t 'blogs.article.read_more'}} &rarr;</a></p>
+        </div>
+      </div>
+    {{/if}}
+  {{/each}}
+</div>

@@ -1,0 +1,183 @@
+{{assign 'number_of_comments' article.comments_count}}
+
+{{#if (and comment comment.created_at)}}
+  {{assign 'number_of_comments' (plus article.comments_count 1)}}
+{{/if}}
+
+{{#paginate article.comments by=5}}
+
+{{#comment}}{{include 'breadcrumb'}}{{/comment}}
+
+<div class="grid" data-section-id="{{ section.id }}" data-section-type="article-template">
+
+  <article class="grid__item post-large--four-fifths" itemscope itemtype="http://schema.org/Article">
+
+    <div class="grid">
+      <div class="grid__item post-large--ten-twelfths">
+
+        <header class="section-header">
+          <h1 class="section-header__title">{{ article.title }}</h1>
+        </header>
+
+        <p>
+          <time datetime="{{date article.published_at '%Y-%m-%d'}}">{{date article.published_at format 'month_day_year'}}</time>
+          {{#if section.settings.article_author_enable}}
+            <span class="meta-sep">&#8226;</span>
+            {{ article.author }}
+          {{/if}}
+          {{#if (gt article.tags.size 0)}}
+            <span class="meta-sep">&#8226;</span>
+            {{#each article.tags as |tag|}}
+              <a href="{{ blog.url }}/tagged/{{handle tag}}">{{ tag }}</a>{{#unless forloop.last}} <span class="meta-sep">&#8226;</span> {{/unless}}
+            {{/each}}
+          {{/if}}
+        </p>
+
+        <div class="rte" itemprop="articleBody">
+          {{ article.content }}
+        </div>
+
+        {{#if section.settings.social_sharing}}
+          <hr class="hr--clear hr--small">
+          {{include 'social-sharing'}}
+        {{/if}}
+
+        {{#comment}}
+          Create links to the next and previous articles, if available.
+        {{/comment}}
+        {{#if (or blog.next_article blog.previous_article)}}
+          <hr class="hr--clear hr--small">
+          <p class="clearfix">
+            {{#if blog.previous_article}}
+              <span class="left">
+                &larr; {{link_to (t 'blogs.article.older_post') blog.previous_article}}
+              </span>
+            {{/if}}
+            {{#if blog.next_article}}
+              <span class="right">
+                {{link_to (t 'blogs.article.newer_post') blog.next_article}} &rarr;
+              </span>
+            {{/if}}
+          </p>
+        {{/if}}
+
+        {{#if blog.comments_enabled}}
+          <hr class="hr--clear hr--small">
+
+          {{#comment}}
+            Just like blog.liquid page, define how many comments should be on each page.
+          {{/comment}}
+
+            {{#comment}}
+              #comments is required, it is used as an anchor link by Shopify.
+            {{/comment}}
+            <div id="comments">
+
+              {{#if (and comment comment.created_at)}}
+                <p class="note form-success">
+                  {{#if blog.moderated}}
+                    {{t 'blogs.comments.success_moderated'}}
+                  {{else}}
+                    {{t 'blogs.comments.success'}}
+                  {{/if}}
+                </p>
+              {{/if}}
+
+              {{#if (gt number_of_comments 0)}}
+                <ul>
+                  {{#comment}}
+                    If a comment was just submitted with no blank field, show it.
+                  {{/comment}}
+                  {{#if (and comment comment.created_at)}}
+                    <li id="{{ comment.id }}" class="comment first{{#if (is article.comments_count 0)}} last{{/if}}">
+                      {{include 'comment'}}
+                    </li>
+                  {{/if}}
+
+                  {{#comment}}
+                    Showing the rest of the comments.
+                  {{/comment}}
+                  {{#each article.comments as |comment|}}
+                    <li id="{{ comment.id }}" class="comment{{#unless (gt number_of_comments article.comments_count)}}{{#if forloop.first}} first{{/if}}{{/unless}}{{#if forloop.last}} last {{/if}}">
+                      {{include 'comment'}}
+                    </li>
+                  {{/each}}
+                </ul>
+
+                {{#if (gt paginate.pages 1)}}
+                  <hr class="--clear hr--small">
+                  <div class="text-center">
+                    {{include 'pagination-custom'}}
+                  </div>
+                {{/if}}
+
+                <hr class="hr--clear hr--small">
+
+              {{/if}}
+
+              {{#comment}}
+                Comment submission form
+              {{/comment}}
+              {{#form 'new_comment' article}}
+
+                <h2 class="h4">{{t 'blogs.comments.title'}}</h2>
+
+                {{default_errors form.errors}}
+
+                <div class="grid">
+
+                  <div class="grid__item post-large--one-half">
+                    <label for="CommentAuthor" class="label--hidden">{{t 'blogs.comments.name'}}</label>
+                    <input {{#if (contains form.errors 'author')}} class="error"{{/if}} type="text" name="comment[author]" placeholder="{{t 'blogs.comments.name'}}" id="CommentAuthor" value="{{ form.author }}" autocapitalize="words">
+
+                    <label for="CommentEmail" class="label--hidden">{{t 'blogs.comments.email'}}</label>
+                    <input {{#if (contains form.errors 'email')}} class="error"{{/if}} type="email" name="comment[email]" placeholder="{{t 'blogs.comments.email'}}" id="CommentEmail" value="{{ form.email }}" autocorrect="off" autocapitalize="off">
+                  </div>
+
+                  <div class="grid__item">
+                    <label for="CommentBody" class="label--hidden">{{t 'blogs.comments.message'}}</label>
+                    <textarea {{#if (contains form.errors 'body')}} class="error"{{/if}} name="comment[body]" id="CommentBody" placeholder="{{t 'blogs.comments.message'}}">{{ form.body }}</textarea>
+                  </div>
+
+                </div>
+
+                {{#if blog.moderated}}
+                  <p><small>{{t 'blogs.comments.moderated'}}</small></p>
+                {{/if}}
+
+                <input type="submit" class="btn" value="{{t 'blogs.comments.post'}}">
+
+              {{/form}}
+
+            </div>
+
+        {{/if}}
+
+      </div>
+    </div>
+  </article>
+
+  <aside class="sidebar grid__item post-large--one-fifth">
+    {{include 'blog-sidebar'}}
+  </aside>
+</div>
+
+{{/paginate}}
+
+{{#schema}}
+  {
+    "name": "Article",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "article_author_enable",
+        "label": "Show blog post author"
+      },
+      {
+        "type": "checkbox",
+        "id": "social_sharing",
+        "label": "Enable blog post sharing"
+      }
+    ]
+  }
+{{/schema}}

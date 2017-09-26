@@ -1,0 +1,86 @@
+<div class="page-width">
+  <div class="section-block section-block--padding">
+    {{#if section.settings.title_enable}}
+      <div class="section-block__header text-center">
+        <h4 class="h1--mini section-block__title">{{escape section.settings.title}}</h4>
+      </div>
+    {{/if}}
+    <div class="grid">
+      <div class="grid__item medium-up--two-thirds medium-up--push-one-sixth">
+        <form action="/search" method="get" class="grid grid--half-gutters" role="search">
+          <div class="grid__item medium-up--three-quarters">
+            {{#comment}}<input type="hidden" name="type" value="product">{{/comment}}
+            <input type="search" name="q" value="{{escape search.terms}}" placeholder="{{t 'general.search.placeholder'}}" aria-label="{{t 'general.search.placeholder'}}" class="input--full">
+          </div>
+          <div class="grid__item medium-up--one-quarter">
+            <button type="submit" class="btn btn--narrow btn--full">{{t 'general.search.submit'}}</button>
+          </div>
+        </form>
+
+        {{#if section.settings.links_type}}
+          {{#each collections as |collection|}}
+            {{#capture 'collection_tags'}}{{join collection.tags ','}}{{/capture}}
+            {{#capture 'all_tags'}}{{#if all_tags}}{{ all_tags }},{{/if}}{{ collection_tags }}{{/capture}}
+          {{/each}}
+          <ul class="list--inline tag-list small--text-center">
+            <li class="tag-list__item">{{escape section.settings.quick_link_label}}</li>
+            {{assign 'all_tags' (uniq (split all_tags ','))}}
+            {{#each (limit all_tags undefined) as |tag|}}
+              <li class="tag-list__item"><a href="/search?q={{handleize tag}}">{{ tag }}</a></li>
+            {{/each}}
+          </ul>
+        {{/if}}
+      </div>
+    </div>
+  </div>
+</div>
+
+{{#stylesheet}}
+  .tag-list {
+    margin-top: 10px;
+  }
+
+  .tag-list__item {
+    margin-right: 10px;
+  }
+{{/stylesheet}}
+
+{{#schema}}
+  {
+    "name": "Search",
+    "class": "index-section",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "title_enable",
+        "label": "Show header",
+        "default": true
+      },
+      {
+        "type": "text",
+        "id": "title",
+        "label": "Heading",
+        "default": "Search"
+      },
+      {
+        "type": "checkbox",
+        "id": "links_type",
+        "label": "Enable quick links",
+        "info": "Links are automatically generated from product tags",
+        "default": true
+      },
+      {
+        "type": "text",
+        "id": "quick_link_label",
+        "label": "Quick links label",
+        "default": "Quick links:"
+      }
+    ],
+    "presets": [
+      {
+        "name": "Search",
+        "category": "Store information"
+      }
+    ]
+  }
+{{/schema}}

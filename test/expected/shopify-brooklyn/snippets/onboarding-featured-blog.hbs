@@ -1,0 +1,43 @@
+<!-- snippets/onboarding-featured-blog.liquid -->
+<div class="grid-uniform">
+  {{#each (range 1 section.settings.post_limit) as |i|}}
+    <div class="grid__item {{ width }}{{#if (gt forloop.index 3)}} hide-post__mobile{{/if}}">
+      <div class="featured-blog__post">
+        {{#if section.settings.blog_show_image}}
+          <div class="article__featured-link">
+            {{#capture 'current'}}{{cycle 1 2 3 4 5 6}}{{/capture}}
+            {{placeholder_svg_tag (append 'collection-' current) 'placeholder-svg'}}
+          </div>
+        {{/if}}
+        {{#unless (and (is section.settings.post_limit 1) section.settings.blog_show_image)}}
+          <h2 class="h3{{#if (and (is section.settings.post_limit 1) (is section.settings.blog_show_image false))}} title--one-post{{/if}}"><a href="{{ article.url }}">{{t 'home_page.onboarding.blog_title'}}</a></h2>
+          {{#if section.settings.blog_show_excerpt}}
+            <div class="rte rte--indented-images">
+              {{t 'home_page.onboarding.blog_excerpt'}}
+            </div>
+          {{/if}}
+          <p>
+            <a href="{{ article.url }}" class="text-link">{{t 'blogs.article.read_more'}} <span class="icon icon-arrow-right" aria-hidden="true"></span></a>
+          </p>
+        {{/unless}}
+      </div>
+    </div>
+
+    {{#if (and (is section.settings.post_limit 1) section.settings.blog_show_image)}}
+      <div class="grid__item {{ width }}">
+        <div class="featured-blog__post">
+          <h2 class="h3{{#if (and (is section.settings.post_limit 1) (is section.settings.blog_show_image false))}} title--one-post{{/if}}"><a href="{{ article.url }}">{{t 'home_page.onboarding.blog_title'}}</a></h2>
+          {{#if section.settings.blog_show_excerpt}}
+            <div class="rte rte--indented-images">
+              {{t 'home_page.onboarding.blog_excerpt'}}
+            </div>
+          {{/if}}
+          <p>
+            <a href="{{ article.url }}" class="text-link">{{t 'blogs.article.read_more'}} <span class="icon icon-arrow-right" aria-hidden="true"></span></a>
+          </p>
+        </div>
+      </div>
+    {{/if}}
+
+  {{/each}}
+</div>

@@ -1,0 +1,36 @@
+<div class="grid-uniform placeholder">
+  {{#each (range 1 section.settings.post_limit) as |i|}}
+    <div class="grid-item {{ width }}">
+      <div class="featured-blog__post">
+        {{#if section.settings.blog_show_image}}
+          <div class="article__featured-link">
+            {{#capture 'current'}}{{cycle 1 2 3}}{{/capture}}
+            {{placeholder_svg_tag (append 'collection-' current) 'placeholder-svg'}}
+          </div>
+        {{/if}}
+        {{#unless (and (is section.settings.post_limit 1) section.settings.blog_show_image)}}
+          <h2 class="h3"><a href="#">{{t 'homepage.onboarding.blog_title'}}</a></h2>
+          {{#if section.settings.blog_show_excerpt}}
+            <div class="rte rte--indented-images">
+              {{t 'homepage.onboarding.blog_excerpt'}}
+            </div>
+          {{/if}}
+          <p><a href="#">{{t 'blogs.article.read_more'}} →</a></p>
+        {{/unless}}
+      </div>
+    </div>
+    {{#if (and (is section.settings.post_limit 1) section.settings.blog_show_image)}}
+      <div class="grid-item {{ width }}">
+        <div class="featured-blog__post">
+          <h2 class="h3"><a href="#">{{t 'homepage.onboarding.blog_title'}}</a></h2>
+          {{#if section.settings.blog_show_excerpt}}
+            <div class="rte rte--indented-images">
+              {{t 'homepage.onboarding.blog_excerpt'}}
+            </div>
+          {{/if}}
+          <p><a href="#">{{t 'blogs.article.read_more'}} &rarr;</a></p>
+        </div>
+      </div>
+    {{/if}}
+  {{/each}}
+</div>

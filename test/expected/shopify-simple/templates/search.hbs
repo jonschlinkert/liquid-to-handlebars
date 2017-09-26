@@ -1,0 +1,60 @@
+<!-- /templates/search.liquid -->
+{{#paginate search.results by=12}}
+
+  <h1 class="h2 small--text-center">
+    {{#if search.performed}}
+      {{#if (is search.results_count 0)}}
+        {{t 'general.search.no_results_html' terms search.terms}}
+      {{else}}
+        {{t 'general.search.results_for_html' terms search.terms}}
+      {{/if}}
+    {{else}}
+      {{t 'general.search.title'}}
+    {{/if}}
+  </h1>
+
+  {{#unless search.performed}}
+    <form action="/search" method="get" class="search-bar medium-up--one-half" role="search">
+      {{#comment}}<input type="hidden" name="type" value="product">{{/comment}}
+      <div class="input-group">
+        <input type="search" name="q" value="{{escape search.terms}}" placeholder="{{t 'general.search.placeholder'}}" aria-label="{{t 'general.search.placeholder'}}" class="input-group__field">
+        <div class="input-group__btn">
+          <button type="submit" class="btn">
+            {{include 'icon-search'}}
+            <span class="icon__fallback-text">{{t 'general.search.submit'}}</span>
+          </button>
+        </div>
+      </div>
+    </form>
+  {{/unless}}
+
+  {{#if search.performed}}
+    <div class="grid grid--uniform">
+      {{#each search.results as |item|}}
+
+        {{#if (is item.object_type 'product')}}
+
+          {{assign 'product' item}}
+          {{include 'product-grid-item'}}
+
+        {{else}}
+
+          <div class="grid__item medium-up--one-third small--one-half">
+            <h2 class="h3">{{link_to item.title item.url}}</h2>
+            <p>{{truncatewords (strip_html item.content) 50}}</p>
+          </div>
+
+        {{/if}}
+
+      {{/each}}
+    </div>
+
+    {{#if (gt paginate.pages 1)}}
+      <div class="pagination">
+        {{default_pagination paginate}}
+      </div>
+    {{/if}}
+
+  {{/if}}
+
+{{/paginate}}

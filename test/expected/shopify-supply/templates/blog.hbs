@@ -1,0 +1,85 @@
+{{#paginate blog.articles by=5}}
+
+{{include 'breadcrumb'}}
+
+<div class="grid grid-border">
+
+  <div class="grid-item large--four-fifths">
+    <div class="grid">
+      <div class="grid-item large--ten-twelfths">
+
+        {{#if current_tags}}
+          <h1>{{link_to blog.title blog.url}} &mdash; {{ current_tags.first }}</h1>
+        {{else}}
+          <h1>{{ blog.title }}</h1>
+        {{/if}}
+
+        {{#each blog.articles as |article|}}
+
+          <h2><a href="{{ article.url }}">{{ article.title }}</a></h2>
+          <p class="text-light">
+            {{#capture 'date'}}<strong><time pubdate datetime="{{date article.published_at '%Y-%m-%d'}}">{{date article.published_at format 'month_day_year'}}</time></strong>{{/capture}}
+            {{#capture 'author'}}<strong>{{ article.author }}</strong>{{/capture}}
+            {{t 'blogs.article.author_on_date_html' author author date date}}
+          </p>
+
+          <div class="rte">
+          {{#if article.image}}
+            {{assign 'image_alt' (escape article.title)}}
+            <p>
+            {{#comment}}{{link_to (img_tag (img_url article '1024x1024') image_alt 'article__image') article.url}}{{/comment}}
+            {{assign 'img_url' (replace (img_url article.image '1x1') '_1x1.' '_{width}x.')}}
+            <a href="{{ article.url }}" alt="{{ image_alt }}">
+            <div class="lazyload__image-wrapper no-js" style="padding-top:{{times (divided_by 1 article.image.aspect_ratio) 100}}%;">
+            <img id="{{ img_id }}"
+              class="lazyload js article__image"
+              src="{{img_url article.image '300x'}}"
+              data-src="{{ img_url }}"
+              data-widths="[180, 360, 540, 720, 900, 1080, 1296, 1512, 1728, 2048]"
+              data-aspectratio="{{ article.image.aspect_ratio }}"
+              data-sizes="auto"
+              alt="{{ image_alt }}">
+          </div>
+          </a>
+            </p>
+          {{/if}}
+            {{#if (gt article.excerpt.size 0)}}
+              {{ article.excerpt }}
+            {{else}}
+              <p>{{truncatewords (strip_html article.content) 100}}</p>
+            {{/if}}
+          </div>
+
+          <ul>
+            {{#if blog.comments_enabled}}
+            <li>
+              <a href="{{ article.url }}#comments">
+                {{t 'blogs.comments.with_count' count article.comments_count}}
+              </a>
+            </li>
+            {{/if}}
+
+            {{include 'tags-article'}}
+          </ul>
+
+          <p><a href="{{ article.url }}">{{t 'blogs.article.read_more'}} →</a></p>
+
+        {{/each}}
+
+        {{#if (gt paginate.pages 1)}}
+        <hr>
+        <div class="text-center">
+          {{include 'pagination-custom'}}
+        </div>
+        {{/if}}
+
+      </div>
+    </div>
+  </div>
+
+  <aside class="sidebar grid-item large--one-fifth grid-border--left">
+    {{include 'blog-sidebar'}}
+  </aside>
+</div>
+
+{{/paginate}}

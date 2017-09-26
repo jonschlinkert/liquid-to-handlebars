@@ -1,0 +1,9 @@
+<form action="/search" method="get" class="search-bar" role="search">
+  <input type="hidden" name="type" value="product">
+
+  <input type="search" name="q" value="{{escape search.terms}}" placeholder="{{t 'layout.search_bar.placeholder'}}" aria-label="{{t 'layout.search_bar.placeholder'}}">
+  <button type="submit" class="search-bar--submit icon-fallback-text">
+    <span class="icon icon-search" aria-hidden="true"></span>
+    <span class="fallback-text">{{t 'layout.search_bar.submit'}}</span>
+  </button>
+</form>

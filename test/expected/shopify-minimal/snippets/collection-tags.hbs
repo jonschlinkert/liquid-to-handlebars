@@ -1,0 +1,32 @@
+{{#if (gt collection.all_tags.size 0)}}
+<div class="form-horizontal">
+  <label for="BrowseBy">{{t 'collections.sorting.browse'}}</label>
+  {{#comment}}Good for /collections/all collection and regular collections{{/comment}}
+  {{#if collection.handle}}
+    {{#capture 'collection_url'}}/collections/{{ collection.handle }}{{#unless (is collection.sort_by blank)}}?sort_by={{ collection.sort_by }}{{/unless}}{{/capture}}
+  {{#comment}}Good for automatic type collections{{/comment}}
+  {{else if collection.current_type}}
+    {{assign 'collection_url' (sort_by (url_for_type collection.current_type) collection.sort_by)}}
+  {{#comment}}Good for automatic vendor collections{{/comment}}
+  {{else if collection.current_vendor}}
+    {{assign 'collection_url' (sort_by (url_for_vendor collection.current_vendor) collection.sort_by)}}
+  {{/if}}
+  <select name="BrowseBy" id="BrowseBy" class="btn--tertiary">
+    <option value="{{ collection_url }}">{{t 'collections.sorting.all_tags'}}</option>
+    {{#each collection.all_tags as |tag|}}
+      {{#capture 'new_url'}}{{first (split (last (split (link_to_tag tag tag) 'href="')) '"')}}{{/capture}}
+      <option{{#if (contains current_tags tag)}} selected{{/if}} value="{{ new_url }}">{{ tag }}</option>
+    {{/each}}
+  </select>
+</div>
+{{/if}}
+
+<script>
+  $(function() {
+    $('#BrowseBy')
+      .bind('change', function() {
+        location.href = jQuery(this).val();
+      }
+    );
+  });
+</script>

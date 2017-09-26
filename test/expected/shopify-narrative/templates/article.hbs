@@ -1,0 +1,115 @@
+<!-- /templates/article.liquid -->
+{{#comment}}
+  Comments will not appear right after they are submitted, either to be checked for spam
+  or to await moderation. When a comment is submitted, the browser is redirected to a page
+  that includes the new comment id in its URL.
+    Example: http://shopname.myshopify.com/blogs/news/my-post?comment=3721372
+{{/comment}}
+
+{{assign 'number_of_comments' article.comments_count}}
+
+{{#comment}}
+  If a comment was just submitted but requires moderation, we have an extra comment to count.
+{{/comment}}
+{{#if (and comment (isnt comment.status 'published'))}}
+  {{assign 'number_of_comments' (plus article.comments_count 1)}}
+{{/if}}
+
+<article itemscope itemtype="http://schema.org/Article">
+
+  {{section 'article-template'}}
+
+  {{#if (and blog.comments_enabled (gt number_of_comments 0))}}
+    <div class="comments-wrapper">
+      <div class="page-width">
+        <div class="grid">
+          <div class="grid__item medium-up--push-one-twelfth">
+            <h3 class="h4">{{t 'blogs.comments.with_count' count number_of_comments}}</h3>
+          </div>
+        </div>
+
+        {{#paginate article.comments by=5}}
+
+          {{#comment}}
+            If a comment was just submitted, show it with the appropriate success message.
+          {{/comment}}
+          <div id="comments" class="grid">
+
+            {{#if (and comment comment.status (is paginate.current_page 1))}}
+              <div class="grid__item medium-up--ten-twelfths medium-up--push-one-twelfth">
+                <div class="form-success form-success--comment">
+                  {{#if (and blog.moderated (isnt comment.status 'published'))}}
+                    {{t 'blogs.comments.success_moderated'}}
+                  {{else}}
+                    {{t 'blogs.comments.success'}}
+                  {{/if}}
+                </div>
+              </div>
+            {{/if}}
+
+            {{#if (gt number_of_comments 0)}}
+              {{#if (and comment (isnt comment.status 'published'))}}
+                {{include 'comment'}}
+              {{/if}}
+
+              {{#each article.comments as |comment|}}
+                {{include 'comment'}}
+              {{/each}}
+            {{/if}}
+
+            {{#if (gt paginate.pages 1)}}
+              <div class="grid__item">
+                {{include 'pagination'}}
+              </div>
+            {{/if}}
+          </div>
+        {{/paginate}}
+      </div>
+    </div>
+  {{/if}}
+
+  {{#if blog.comments_enabled}}
+    <div class="comments-form-wrapper">
+      <div class="page-width">
+        <div class="grid">
+          <div class="grid__item medium-up--push-one-twelfth">
+            <h3 class="comments-form__title h4">{{t 'blogs.comments.title'}}</h3>
+          </div>
+
+          {{#form 'new_comment' article}}
+
+            <div class="grid__item medium-up--ten-twelfths medium-up--push-one-twelfth">
+              {{default_errors form.errors}}
+            </div>
+
+            <div class="grid__item medium-up--five-twelfths medium-up--push-one-twelfth">
+              <label for="CommentAuthor" class="label--hidden">{{t 'blogs.comments.name'}}</label>
+              <input type="text" name="comment[author]" id="CommentAuthor" class="{{#if (contains form.errors 'author')}} input--error{{/if}}" placeholder="{{t 'blogs.comments.name'}}" value="{{ form.author }}">
+            </div>
+
+            <div class="grid__item medium-up--five-twelfths medium-up--push-one-twelfth">
+              <label for="CommentEmail" class="label--hidden">{{t 'blogs.comments.email'}}</label>
+              <input type="email" name="comment[email]" id="CommentEmail" class="{{#if (contains form.errors 'email')}} input--error{{/if}}" placeholder="{{t 'blogs.comments.email'}}" value="{{ form.email }}" autocorrect="off" autocapitalize="off">
+            </div>
+
+            <div class="grid__item medium-up--ten-twelfths medium-up--push-one-twelfth">
+              <label for="CommentBody" class="label--hidden">{{t 'blogs.comments.message'}}</label>
+              <textarea name="comment[body]" id="CommentBody" class="{{#if (contains form.errors 'body')}} input--error{{/if}}" placeholder="{{t 'blogs.comments.message'}}">{{ form.body }}</textarea>
+            </div>
+
+            <div class="grid__item medium-up--push-one-twelfth">
+              <input type="submit" class="btn btn--input" value="{{t 'blogs.comments.post'}}">
+            </div>
+
+          {{/form}}
+
+          {{#if blog.moderated}}
+            <div class="grid__item medium-up--push-one-twelfth">
+              <p class="comments__moderated text-small">{{t 'blogs.comments.moderated'}}</p>
+            </div>
+          {{/if}}
+        </div>
+      </div>
+    </div>
+  {{/if}}
+</article>

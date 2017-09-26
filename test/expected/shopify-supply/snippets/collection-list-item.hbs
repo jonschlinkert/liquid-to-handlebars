@@ -1,0 +1,32 @@
+{{#capture 'collection_title'}}{{ collection.title }}{{/capture}}
+
+<div class="section-header">
+  <h1 class="section-header--left">{{ collection_title }}</h1>
+  <div class="section-header--right">
+    <a href="{{ collection.url }}" title="{{t 'collections.general.link_title' title collection_title}}">{{t 'homepage.featured_collection_rows.more_in_collection' collection_title collection_title}} &rsaquo;</a>
+  </div>
+</div>
+
+{{assign 'grid_item_width' 'large--one-fifth medium--one-half'}}
+{{assign 'width' '195'}}
+{{assign 'height' '175'}}
+
+<div class="grid">
+  {{#if collection.products}}
+    {{#comment}}
+      Default collection order
+    {{/comment}}
+    {{#each (limit collection.products 5) as |product|}}
+      {{include 'product-grid-item' height: height, width: width}}
+    {{/each}}
+
+  {{else}}
+    {{#comment}}
+      Custom order collections by 'all-collections' linklist
+    {{/comment}}
+    {{#each (get collections (toPath collection.handle 'products')) as |product|}}
+      {{include 'product-grid-item' height: height, width: width}}
+    {{/each}}
+                                                                                                     
+  {{/if}}
+</div>

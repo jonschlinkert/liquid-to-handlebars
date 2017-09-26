@@ -1,0 +1,80 @@
+<!-- snippets/featured-products.liquid -->
+{{#if (and (gt section_number 1) (gt number_of_index_sections 1))}}
+  <hr class="hr--clear">
+{{/if}}
+
+<div class="featured-products">
+  {{#comment}}
+    By default, featured products come from your Frontpage collection.
+    This collection is empty by default and must have products added to it
+  {{/comment}}
+  {{#if (is settings.home_featured_products blank)}}
+    {{assign 'featured_collection' 'frontpage'}}
+  {{else}}
+    {{assign 'featured_collection' settings.home_featured_products}}
+  {{/if}}
+
+  {{#comment}}Heading for screen readers{{/comment}}
+  <h2 class="visually-hidden">{{ featured_collection }}</h2>
+
+  <div class="grid grid--no-gutters grid--uniform collection-grid">
+    {{#comment}}
+      Set grid item widths based on settings
+    {{/comment}}
+    {{include 'product-grid-width'}}
+
+    {{#each (get collections (toPath featured_collection 'products')) as |product|}}
+      {{assign 'price' (money_without_trailing_zeros product.price)}}
+      {{include 'product-grid-item'}}
+    {{else}}
+      {{#comment}}
+        If collection is empty, show onboarding state
+        For onboarding new users to your theme, we add some default products and onboarding tutorials to help populate their store
+      {{/comment}}
+
+      {{#unless onboardingLoaded}}
+        {{#comment}}
+          Only load onboarding styles if they have not already been loaded.
+        {{/comment}}
+        {{stylesheet_tag (global_asset_url 'theme-onboarding.css')}}
+        {{assign 'onboardingLoaded' true}}
+      {{/unless}}
+
+      <div class="grid__item">
+        <div class="helper-section">
+          <div class="helper-note">
+            <span class="helper-icon"></span>
+            <h3>{{t 'homepage.onboarding.modal_title'}}</h3>
+            <p>{{t 'homepage.onboarding.no_products_html'}}</p>
+            <p><a class="admin-btn-primary" href="/admin/collections?tutorial=Frontpage">{{t 'homepage.onboarding.add_product'}}</a></p>
+          </div>
+
+          <div class="grid grid--uniform grid--no-gutters helper-content">
+            {{assign 'home_onboarding_index' 1}}
+            {{#each (range 1 8) as |i|}}
+              {{#is i 7}}
+                  {{assign 'home_onboarding_index' 1}}
+                {{else is i 8}}
+                  {{assign 'home_onboarding_index' 2}}
+              {{/is}}
+              <div class="product-item grid__item {{ grid_item_width }}">
+                <a class="product-item__link" href="/admin/products">
+                  {{#capture 'imageUrl'}}//cdn.shopify.com/s/images/themes/product-{{ home_onboarding_index }}.png{{/capture}}
+                  <img src="{{ imageUrl }}" class="product-item__image">
+
+                  <span class="product-item__meta">
+                    <span class="product-item__meta__inner">
+                      <p class="product-item__title">{{t 'homepage.onboarding.product_title'}}</p>
+                      <p>$19.99</p>
+                    </span>
+                  </span>
+                </a>
+              </div>
+              {{assign 'home_onboarding_index' (plus home_onboarding_index 1)}}
+            {{/each}}
+          </div>
+        </div>
+      </div>
+    {{/each}}
+  </div>
+</div>

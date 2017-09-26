@@ -1,0 +1,171 @@
+<div class="product-template" itemscope itemtype="http://schema.org/Product" id="ProductSection-{{ section.id }}" data-section-id="{{ section.id }}" data-section-type="product" data-enable-history-state="true">
+
+{{assign 'header_title' product.title}}
+{{include 'page_header' header_title}}
+
+<div class="wrapper wrapper--margins">
+
+  <div class="product grid">
+
+    {{assign 'current_variant' product.selected_or_first_available_variant}}
+    {{assign 'featured_image' (default current_variant.featured_image product.featured_image)}}
+
+    <meta itemprop="url" content="{{ shop.url }}{{ product.url }}">
+    <meta itemprop="image" content="{{img_url product.featured_image.src 'grande'}}">
+
+    <div class="product__image grid__item one-half medium-down--one-whole">
+      <div id="slider-{{ section.id }}" class="regular-slider flexslider">
+        <ul class="slides">
+          {{#if (gt product.images.size 0)}}
+            {{assign 'img_url' (replace (img_url featured_image '1x1') '_1x1.' '_{width}x.')}}
+                <li class="slide" data-index="0" data-variant-img="{{ featured_image.id }}">
+                  <a class="image-popup">
+                  <div class="lazyload__image-wrapper supports-no-js" style="padding-top:{{times (divided_by 1 featured_image.aspect_ratio) 100}}%;">
+                    <img class="no-js lazyload"
+                    src="{{img_url featured_image '300x300'}}"
+                    data-src="{{ img_url }}"
+                    data-widths="[180, 360, 540, 720, 900, 1080, 1296, 1512, 1728, 2048]"
+                    data-aspectratio="{{ featured_image.aspect_ratio }}"
+                    data-sizes="auto"
+                    data-parent-fit="width"
+                    alt="{{escape featured_image.alt}}">
+                    </div>
+                    <noscript>
+                      <img src="{{img_url featured_image '1024x1024'}}"
+                        srcset="{{img_url featured_image '1024x1024'}} 1x, {{img_url featured_image '1024x1024' scale 2}} 2x"
+                        alt="{{ featured_image.alt }}" style="opacity:1;">
+                        <style>
+                          .flexslider .slides li {
+                            display: block;
+                          }
+                        </style>
+                    </noscript>
+                  </a>
+                </li>
+                {{#if (gt product.images.size 1)}}
+                  {{assign 'index' 0}}
+                  {{#each product.images as |image|}}
+                  {{assign 'img_url' (replace (img_url image '1x1') '_1x1.' '_{width}x.')}}
+                    {{#unless (contains image featured_image)}}
+                      {{assign 'index' (plus index 1)}}
+                      <li class="slide" data-index="{{ index }}" data-variant-img="{{ image.id }}">
+                        <a class="image-popup">
+                        <div class="lazyload__image-wrapper supports-no-js" style="padding-top:{{times (divided_by 1 image.aspect_ratio) 100}}%;">
+                          <img class="no-js lazyload"
+                          data-src="{{ img_url }}"
+                          data-widths="[320, 360, 375, 414, 568, 684, 720, 732, 736, 768, 1024, 1200, 1296, 1512, 1728, 1944, 2048, 4472]"
+                          data-aspectratio="{{ image.aspect_ratio }}"
+                          data-sizes="auto"
+                          data-parent-fit="width"
+                          alt="{{escape image.alt}}">
+                          </div>
+                        </a>
+                      </li>
+                    {{/unless}}
+                  {{/each}}
+                {{/if}}
+          {{else}}
+            <li class="slide">
+              {{placeholder_svg_tag 'product-1' 'placeholder-svg'}}
+            </li>
+          {{/if}}
+        </ul>
+      </div>
+    </div>
+
+    <div class="product__content grid__item one-half medium-down--one-whole">
+
+      <h2 class="secondary-title hidden">{{ product.title }}</h2>
+
+      <div itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+
+        <meta itemprop="priceCurrency" content="{{ shop.currency }}">
+
+        <link itemprop="availability" href="http://schema.org/{{#if product.available}}InStock{{else}}OutOfStock{{/if}}">
+
+        <form action="/cart/add" method="post" enctype="multipart/form-data" id="AddToCartForm">
+
+          {{#if (gt product.compare_at_price_max product.price)}}
+            <span id="ComparePriceA11y" class="visually-hidden">{{t 'products.product.sale_price'}}</span>
+          {{else}}
+            <span class="visually-hidden">{{t 'products.product.regular_price'}}</span>
+          {{/if}}
+          <span id="ProductPrice-{{ section.id }}" class="h1 price" itemprop="price" content="{{divided_by current_variant.price 100.00}}">
+            {{money current_variant.price}}
+          </span>
+
+          {{#if (gt product.compare_at_price_max product.price)}}
+            <span class="visually-hidden">{{t 'products.product.regular_price'}}</span>
+            <p id="ComparePrice-{{ section.id }}" class="h3 price compare-price">
+              {{money current_variant.compare_at_price}}
+            </p>
+          {{/if}}
+
+          <div class="form__row">
+
+      	      <select name="id" id="productSelect-{{ section.id }}" class="product-single__variants">
+      	        {{#each product.variants as |variant|}}
+      	          {{#if variant.available}}
+
+      	            <option {{#if (is variant current_variant)}} selected="selected" {{/if}} data-sku="{{ variant.sku }}" value="{{ variant.id }}">{{ variant.title }} - {{money_with_currency variant.price}}</option>
+
+      	          {{else}}
+      	            <option disabled="disabled">
+      	              {{ variant.title }} - {{t 'products.product.sold_out'}}
+      	            </option>
+      	          {{/if}}
+      	        {{/each}}
+      	      </select>
+
+      		    <div id="quantity-selector-{{ section.id }}" class="form__column quantity-selector">
+      			    <label for="Quantity" class="quantity-selector">{{t 'products.product.quantity'}}</label>
+      			    <input type="number" id="Quantity" name="quantity" value="1" min="1" class="qty-remove-defaults quantity-selector">
+      		    </div>
+
+              <div class="form__column">
+              <label>&nbsp;</label>
+                <button type="submit" name="add" id="AddToCart-{{ section.id }}" class="btn btn--fill btn--regular btn--color">
+                  <span id="AddToCartText-{{ section.id }}">{{t 'products.product.add_to_cart'}}</span>
+                </button>
+              </div>
+
+          </div>
+
+        </form>
+
+      </div>
+
+      {{#if section.settings.social_sharing_products}}
+        {{include 'page_share'}}
+      {{/if}}
+
+      <div class="product-description rte" itemprop="description">
+        {{ product.description }}
+      </div>
+
+    </div>
+
+  </div>
+
+ </div>
+</div>
+
+{{#unless (is product empty)}}
+  <script type="application/json" id="ProductJson-{{ section.id }}">
+    {{json product}}
+  </script>
+{{/unless}}
+
+{{#schema}}
+  {
+    "name": "Product pages",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "social_sharing_products",
+        "label": "Enable product sharing",
+        "default": true
+      }
+    ]
+  }
+{{/schema}}

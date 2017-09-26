@@ -1,0 +1,11 @@
+<div class="comment">
+  <div class="rte">
+    {{ comment.content }}
+  </div>
+
+  <em>
+    {{#capture 'author'}}<strong>{{ comment.author }}</strong>{{/capture}}
+    {{#capture 'date'}}<strong><time datetime="{{date comment.created_at '%Y-%m-%d'}}">{{date comment.created_at format 'month_day_year'}}</time></strong>{{/capture}}
+    {{t 'blogs.article.comment_meta_html' author author date date}}
+  </em>
+</div>

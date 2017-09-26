@@ -1,0 +1,12 @@
+{{#capture 'seo_title'}}
+  {{{ page_title }}}
+  {{#if current_tags}}
+    {{assign 'meta_tags' (join current_tags ', ')}} &ndash; {{t 'general.meta.tags' tags meta_tags}}
+  {{/if}}
+  {{#if (isnt current_page 1)}}
+    &ndash; {{t 'general.meta.page' page current_page}}
+  {{/if}}
+  {{#unless (contains page_title shop.name)}}
+    &ndash; {{ shop.name }}
+  {{/unless}}
+{{/capture}}

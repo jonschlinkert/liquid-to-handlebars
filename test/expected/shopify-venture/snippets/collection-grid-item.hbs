@@ -1,0 +1,83 @@
+<div class="grid__item {{ grid_item_width }}" {{ block.shopify_attributes }}>
+  {{#if (is featured_collection empty)}}
+    {{assign 'block_title' (t 'homepage.onboarding.collection_title')}}
+    {{assign 'image_src' ''}}
+  {{else}}
+    {{assign 'block_title' featured_collection.title}}
+    {{#if featured_collection.image}}
+      {{assign 'image_src' (img_url featured_collection.image.src '480x480')}}
+    {{else}}
+      {{assign 'image_src' (img_url featured_collection.products.first.featured_image '480x480')}}
+    {{/if}}
+  {{/if}}
+
+  <noscript>
+    <a href="{{ featured_collection.url }}" title="{{t 'collections.general.link_title' title featured_collection.title}}" class="featured-card{{#if stretch_collection_image}} featured-card--cover{{/if}}"{{#if stretch_collection_image}} style="background-image: url('{{ image_src }}')"{{/if}}>
+      {{#if (and stretch_collection_image (is featured_collection empty))}}
+        <div class="placeholder-background">
+          {{#capture 'current'}}{{cycle 1 2 3 4 5 6}}{{/capture}}
+          {{placeholder_svg_tag (append 'collection-' current) 'placeholder-svg'}}
+        </div>
+      {{/if}}
+      <div class="featured-card__header{{#if stretch_collection_image}} featured-card__header--background{{/if}}">
+        <p class="h1 featured-card__title">{{ block_title }}</p>
+        <span class="featured-card__action">{{t 'collections.general.view_all'}}</span>
+      </div>
+      {{#unless stretch_collection_image}}
+        <div class="featured-card__image-wrapper">
+          {{#if (is featured_collection empty)}}
+            <div class="featured-card__image">
+              {{#capture 'current'}}{{cycle 1 2 3 4 5 6}}{{/capture}}
+              {{placeholder_svg_tag (append 'collection-' current) 'placeholder-svg'}}
+            </div>
+          {{else}}
+            <img src="{{ image_src }}" alt="{{escape featured_collection.image.alt}}" class="featured-card__image">
+          {{/if}}
+        </div>
+      {{/unless}}
+    </a>
+  </noscript>
+  {{#if featured_collection.image}}
+    {{assign 'image_src' featured_collection.image}}
+  {{else}}
+    {{assign 'image_src' featured_collection.products.first.featured_image}}
+  {{/if}}
+  <a href="{{ featured_collection.url }}" title="{{t 'collections.general.link_title' title featured_collection.title}}" class="featured-card lazyload{{#if stretch_collection_image}} featured-card--cover{{/if}}"
+  {{#if stretch_collection_image}}
+    {{#unless (is image_src blank)}}
+      style="background-image: url('{{img_url image_src '300x300'}});"
+    {{/unless}}
+    data-bgset="{{include 'bgset",' image: image_src}}"
+    data-sizes="auto"
+    data-parent-fit="cover"
+  {{/if}}>
+    {{#if (and stretch_collection_image (is featured_collection empty))}}
+      <div class="placeholder-background">
+        {{placeholder_svg_tag (append 'collection-' current) 'placeholder-svg'}}
+      </div>
+    {{/if}}
+    <div class="featured-card__header{{#if stretch_collection_image}} featured-card__header--background{{/if}}">
+      <p class="h1 featured-card__title">{{ block_title }}</p>
+      <span class="featured-card__action">{{t 'collections.general.view_all'}}</span>
+    </div>
+    {{#unless stretch_collection_image}}
+      <div class="featured-card__image-wrapper">
+        {{#if (is featured_collection empty)}}
+          <div class="featured-card__image">
+            {{placeholder_svg_tag (append 'collection-' current) 'placeholder-svg'}}
+          </div>
+        {{else if (is image_src blank)}}
+          <img class="featured-card__image" src="{{img_url image_src.src '540x'}}" alt="{{escape image_src.alt}}">
+        {{else}}
+          <img class="featured-card__image"
+            src="{{img_url image_src '420x'}}" alt="{{escape image_src.alt}}"
+            srcset="
+            {{#if (gt image_src.width 640)}}{{img_url image_src '640x'}} 640w{{/if}}
+            {{#if (gt image_src.width 720)}},{{img_url image_src '720x'}} 720w{{/if}}
+            {{#if (gt image_src.width 900)}},{{img_url image_src '900x'}} 900w{{/if}}"
+            sizes="(min-width: 960px) 450px, (min-width: 720px) 50vw, 100vw"/>
+        {{/if}}
+      </div>
+    {{/unless}}
+  </a>
+</div>

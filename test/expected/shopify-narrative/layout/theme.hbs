@@ -1,0 +1,101 @@
+{{#if (or (is template.name 'blog') (is template.name 'collection') (is template.name 'list-collections'  ) (is template.name 'search'))}}
+  {{assign 'hide_footer' true}}
+{{/if}}
+
+<!doctype html>
+<!--[if IE 9]> <html class="ie9 supports-no-js{{#if hide_footer}} site-footer--hidden{{/if}}" lang="{{ shop.locale }}"> <![endif]-->
+<!--[if (gt IE 9)|!(IE)]><!--> <html class="supports-no-js {{#if hide_footer}} site-footer--hidden{{/if}}" lang="{{ shop.locale }}"> <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=9,chrome=1">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="{{ settings.color_primary }}">
+  <link rel="canonical" href="{{ canonical_url }}">
+
+  {{#if (isnt settings.favicon blank)}}
+    <link rel="shortcut icon" href="{{img_url settings.favicon '32x32'}}" type="image/png">
+  {{/if}}
+
+  <title>
+    {{{ page_title }}}{{#if current_tags}}{{assign 'meta_tags' (join current_tags ', ')}} &ndash; {{t 'general.meta.tags' tags meta_tags}}{{/if}}{{#if (isnt current_page 1)}} &ndash; {{t 'general.meta.page' page current_page}}{{/if}}{{#unless (contains page_title shop.name)}} &ndash; {{ shop.name }}{{/unless}}
+  </title>
+
+  {{#if page_description}}
+    <meta name="description" content="{{escape page_description}}">
+  {{/if}}
+
+  {{include 'social-meta-tags'}}
+
+  {{ content_for_header }}
+
+  {{include 'critical-css'}}
+  {{include 'google-fonts'}}
+  {{include 'load-css'}}
+
+  <script>
+    var theme = {
+      stylesheet: "{{asset_url 'theme.scss.css'}}",
+      strings: {
+        addToCart: {{json (t 'products.product.add_to_cart')}},
+        soldOut: {{json (t 'products.product.sold_out')}},
+        unavailable: {{json (t 'products.product.unavailable')}},
+        addItemSuccess: {{json (t 'products.product.item_added_to_cart')}},
+        cartError: {{json (t 'cart.general.cart_error')}},
+        cartQuantityError: {{json (t 'cart.general.cart_quantity_error_html' quantity '[quantity]' title '[title]')}},
+        newsletter: {
+          blankError: {{json (t 'general.newsletter_form.blank_error')}},
+          invalidError: {{json (t 'general.newsletter_form.invalid_error')}}
+        },
+        map: {
+          zeroResults: {{json (t 'sections.map.address_no_results')}},
+          overQueryLimit: {{json (t 'sections.map.address_query_limit_html')}},
+          authError: {{json (t 'sections.map.auth_error_html')}},
+          addressError: {{json (t 'sections.map.address_error')}}
+        }
+      },
+      isOnline: true,
+      moneyFormat: {{json shop.money_format}},
+      mediaQuerySmall: 750,
+      mediaQueryMedium: 990
+    };
+
+    {{#if (is template.directory 'customers')}}
+      theme.countryOptionTags = {{json country_option_tags}};
+    {{/if}}
+
+    document.documentElement.className = document.documentElement.className.replace('supports-no-js', '');
+  </script>
+
+  <!--[if lte IE 9]><script src="{{asset_url 'polyfills.js'}}"></script><![endif]-->
+
+  <!--[if (gt IE 9)|!(IE)]><!--><script src="{{asset_url 'lazysizes.min.js'}}" async="async"></script><!--<![endif]-->
+  <!--[if lte IE 9]><script src="{{asset_url 'lazysizes.min.js'}}"></script><![endif]-->
+
+  <!--[if (gt IE 9)|!(IE)]><!--><script src="{{asset_url 'theme.min.js'}}" defer="defer"></script><!--<![endif]-->
+  <!--[if lte IE 9]><script src="{{asset_url 'theme.min.js'}}"></script><![endif]-->
+
+  <!--[if (gt IE 9)|!(IE)]><!--><script src="{{asset_url 'custom.js'}}" defer="defer"></script><!--<![endif]-->
+  <!--[if lte IE 9]><script src="{{asset_url 'custom.js'}}"></script><![endif]-->
+</head>
+
+<body id="{{handle page_title}}" class="{{#if customer}}customer-logged-in {{/if}}template-{{handle (first (split template '.'))}} data-animations">
+
+  <a class="in-page-link visually-hidden skip-link" href="#MainContent">{{t 'general.accessibility.skip_to_content'}}</a>
+
+  {{section 'header'}}
+
+  <div class="main-content" data-drawer-push>
+    <div class="main-content__wrapper">
+
+      <main class="content-for-layout" id="MainContent" role="main">
+        {% body %}
+      </main>
+
+      {{section 'footer'}}
+    </div>
+  </div>
+
+  {{include 'cart-drawer'}}
+
+</body>
+</html>

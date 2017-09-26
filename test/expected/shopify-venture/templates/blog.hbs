@@ -1,0 +1,99 @@
+{{#paginate blog.articles by=5}}
+
+<div class="page-width">
+
+  <h1>
+    {{#if current_tags}}
+      {{ current_tags.first }}
+    {{else}}
+      {{ blog.title }}
+    {{/if}}
+    <a href="{{ shop.url }}{{ blog.url }}.atom" class="blog__rss-link link-accent-color">
+      {{include 'icon-rss'}}
+      <span class="icon__fallback-text">RSS</span>
+    </a>
+  </h1>
+
+  <div class="grid">
+    <div class="grid__item{{#if (gt blog.all_tags.size 0)}} medium-up--three-quarters large-up--four-fifths{{/if}}">
+      {{#each blog.articles as |article|}}
+        <div class="content-block">
+
+          <p class="blog__meta">
+            {{#if (gt article.tags.size 0)}}
+              {{#each article.tags as |tag|}}
+                <a href="{{ blog.url }}/tagged/{{handle tag}}" class="link-body-color"><strong>{{ tag }}</strong></a>{{#if forloop.last}} - {{else}}, {{/if}}
+              {{/each}}
+            {{/if}}
+            {{time_tag article.published_at format 'month_day_year'}}
+          </p>
+
+          <h2 class="blog__title-link"><a href="{{ article.url }}">{{ article.title }}</a></h2>
+
+          {{#if article.image}}
+            <div class="content-block__full-image content-block__full-image--large">
+              <a href="{{ article.url }}">
+                <noscript>
+                  {{escape (img_tag (img_url article '1024x1024') article.title)}}
+                </noscript>
+                <div class="article__photo-container">
+                  <div class="article__photo-wrapper" style="padding-top:{{times (divided_by 1 article.image.aspect_ratio) 100}}%;">
+                  {{assign 'img_url' (replace (img_url article.image '1x1') '_1x1.' '_{width}x.')}}
+                    <img class="lazyload"
+                      src="{{img_url article.image '300x300'}}"
+                      data-src="{{ img_url }}"
+                      data-widths="[360, 540, 720, 900, 1080, 1296, 1512, 1728, 2048]"
+                      data-aspectratio="{{ article.image.aspect_ratio }}"
+                      data-sizes="auto"
+                      alt="{{escape article.title}}">
+                  </div>
+                </div>
+              </a>
+            </div>
+          {{/if}}
+
+          <div class="rte rte--indented-images">
+            {{#if (gt article.excerpt.size 0)}}
+              {{ article.excerpt }}
+            {{else}}
+              <p>{{truncatewords (strip_html article.content) 100}}</p>
+            {{/if}}
+          </div>
+
+          <p><a href="{{ article.url }}"><strong>{{t 'blogs.article.read_more'}}</strong></a></p>
+
+        </div>
+      {{/each}}
+    </div>
+    {{#if (gt blog.all_tags.size 0)}}
+      <div class="grid__item medium-up--one-quarter large-up--one-fifth small--hide">
+        <div class="content-block content-block--small">
+          <h6 class="content-block__title">{{t 'blogs.article.tags'}}</h6>
+          <ul class="list--no-bullets list--bold">
+            <li>
+              <a href="{{ blog.url }}">{{t 'blogs.article.all_tags'}}</a>
+            </li>
+            {{#each blog.all_tags as |tag|}}
+              {{#if (contains current_tags tag)}}
+              <li>{{ tag }}</li>
+              {{else}}
+              <li>{{link_to_tag tag tag}}</li>
+              {{/if}}
+            {{/each}}
+          </ul>
+        </div>
+      </div>
+    {{/if}}
+  </div>
+
+  {{section 'featured-products-subsection'}}
+
+  {{#if (gt paginate.pages 1)}}
+    <div class="pagination">
+      {{replace (replace (default_pagination paginate) '&laquo; Previous' '&larr;') 'Next &raquo;' '&rarr;'}}
+    </div>
+  {{/if}}
+
+</div>
+
+{{/paginate}}

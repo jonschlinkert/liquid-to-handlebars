@@ -1,0 +1,20 @@
+{{assign 'formatted_price' (money price)}}
+
+{{#comment}}
+  Unless this store uses multiple currencies,
+  if we apply a special style to cents,
+  we will wrap them in a sup (superscript) element.
+{{/comment}}
+
+{{#unless (or (contains shop.money_format 'money') (contains shop.money_format '.'))}}
+  {{#if settings.superscript_decimals}}
+    {{#if (or (contains shop.money_format '{{amount}}') (contains shop.money_format '{{ amount }}'))}}
+      {{#capture 'formatted_price'}}{{replace formatted_price '.' '<sup>'}}</sup>{{/capture}}
+    {{else if (or (contains shop.money_format '{{amount_with_comma_separator}}') (contains shop.money_format '{{ amount_with_comma_separator }}'))}}
+      {{#capture 'formatted_price'}}{{replace formatted_price ',' '<sup>'}}</sup>{{/capture}}
+    {{/if}}
+  {{/if}}
+{{/unless}}
+
+<small aria-hidden="true">{{ formatted_price }}</small>
+<span class="visually-hidden">{{money price}}</span>

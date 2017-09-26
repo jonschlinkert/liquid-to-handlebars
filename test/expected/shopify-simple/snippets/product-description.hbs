@@ -1,0 +1,46 @@
+{{#if (gt product.description.size 0)}}
+  {{#unless (or (is section.settings.show_extra_tab false) (is (get pages section.settings.extra_tab_content) empty))}}
+    {{#if (is section.settings.product_description_position position)}}
+      <div class="tabs">
+        <ul class="list--inline tab-switch__nav section-header">
+          <li>
+            <a href="#description" data-link="description" class="tab-switch__trigger h3 section-header__title">{{t 'products.product.description'}}</a>
+          </li>
+          <li>
+            <a href="#extra" data-link="extra" class="tab-switch__trigger h3 section-header__title">{{get pages (toPath section.settings.extra_tab_content "title")}}</a>
+          </li>
+        </ul>
+        <div id="description" class="tab-switch__content" data-content="description">
+          <div class="rte" itemprop="description">
+            {{ product.description }}
+          </div>
+        </div>
+        <div id="extra" class="tab-switch__content" data-content="extra">
+          <div class="rte">
+            {{get pages (toPath section.settings.extra_tab_content "content")}}
+          </div>
+        </div>
+      </div>
+    {{/if}}
+  {{else}}
+    {{#if (contains product.description '<!-- break -->')}}
+      {{#if (is position 'right')}}
+        <div class="product-single__description rte" itemprop="description">
+          {{first (split product.description '<!-- break -->')}}
+        </div>
+      {{else if (is position 'below')}}
+        <div class="product-single__description rte">
+          {{last (split product.description '<!-- break -->')}}
+        </div>
+      {{/if}}
+    {{else if (and (is section.settings.product_description_position 'right') (is position 'right'))}}
+      <div class="product-single__description rte" itemprop="description">
+        {{ product.description }}
+      </div>
+    {{else if (and (is section.settings.product_description_position 'below') (is position 'below'))}}
+      <div class="product-single__description rte" itemprop="description">
+        {{ product.description }}
+      </div>
+    {{/if}}
+  {{/unless}}
+{{/if}}

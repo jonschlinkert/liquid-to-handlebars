@@ -1,0 +1,31 @@
+<div class="card critical-clear" data-animate>
+  <a href="{{ collection.url }}" class="card__wrapper{{#if section.settings.show_spacing}} card__wrapper--padding{{/if}} text-center">
+
+    {{#if (is collection.title blank)}}
+      {{assign 'collection_image' blank}}
+    {{else if collection.image}}
+      {{assign 'collection_image' collection.image}}
+    {{else}}
+      {{assign 'collection_image' collection.products.first.featured_image}}
+    {{/if}}
+
+    {{#unless (is collection.title blank)}}
+      {{include 'card-image",' type: collection_image}}
+    {{else}}
+      <div class="card__image-wrapper">
+        {{#capture 'current'}}{{cycle 1 2 3 4 5 6}}{{/capture}}
+        {{placeholder_svg_tag (append 'collection-' current) 'placeholder-svg'}}
+      </div>
+    {{/unless}}
+
+    <div class="card__info">
+      <h3 class="card__name h4">{{#if (isnt collection.title blank)}}{{ collection.title }}{{else}}{{t 'homepage.onboarding.collection_title'}}{{/if}}</h3>
+
+      {{#if (and section.settings.show_description (isnt collection.description blank))}}
+        <div class="rte card__description{{#if (is width '2')}} card__description--padding{{/if}}">
+          {{truncatewords (strip_html collection.description) 15}}
+        </div>
+      {{/if}}
+    </div>
+  </a>
+</div>

@@ -1,0 +1,87 @@
+{{#comment}}
+  List out your main-menu linklist (default)
+
+  More info on linklists:
+    - http://docs.shopify.com/themes/liquid-variables/linklists
+{{/comment}}
+
+{{#comment}}
+  This is a variable that turns on and off if the theme has dropdown. If it doesn't, it removes the extra padding in the mobile menu.
+{{/comment}}
+{{assign 'has_dropdown' false}}
+<ul class="site-nav" id="accessibleNav">
+  {{#comment}}
+    Read the links from the menu passed in from {{include 'site-nav' ...}}
+  {{/comment}}
+  {{#each navMenu.links as |link|}}
+    {{#comment}}
+      Create a dropdown menu by naming a linklist the same as a link in the parent nav
+
+      More info on dropdowns:
+        - http://docs.shopify.com/manual/your-website/navigation/create-drop-down-menu
+    {{/comment}}
+
+    {{assign 'child_list_handle' (handleize link.title)}}
+    {{#if (isnt (get linklists (toPath child_list_handle 'links')) blank)}}
+    {{assign 'has_dropdown' true}}
+      <li class="site-nav--has-dropdown{{#unless (is template.name 'index')}}{{#if link.active}} site-nav--open-dropdown{{/if}}{{/unless}}" aria-haspopup="true">
+        <div class="grid--full">
+          <div class="grid-item large--one-whole">
+            <a href="{{ link.url }}" class="site-nav__linkdrop site-nav__label icon-fallback-text {{#if link.active}} site-nav--active{{/if}}">
+              {{ link.title }}
+            </a>
+            <button type="button" class="btn site-nav__dropdown-icon--open site-nav__dropdown-toggle icon-fallback-text medium-down--hide">
+              <span class="icon icon-plus" aria-hidden="true"></span>
+              <span class="fallback-text">{{t 'general.navigation.expand'}}</span>
+            </button>
+            <button type="button" class="btn site-nav__dropdown-icon--close site-nav__dropdown-toggle icon-fallback-text medium-down--hide">
+              <span class="icon icon-minus" aria-hidden="true"></span>
+              <span class="fallback-text">{{t 'general.navigation.collapse'}}</span>
+            </button>
+            <button type="button" class="btn site-nav__dropdown-icon--open site-nav__dropdown-toggle large--hide icon-fallback-text">
+              <span class="icon icon-chevron-down" aria-hidden="true"></span>
+              <span class="fallback-text">{{t 'general.navigation.expand'}}</span>
+            </button>
+            <button type="button" class="btn site-nav__dropdown-icon--close site-nav__dropdown-toggle large--hide icon-fallback-text">
+              <span class="icon icon-chevron-up" aria-hidden="true"></span>
+              <span class="fallback-text">{{t 'general.navigation.collapse'}}</span>
+            </button>
+
+          </div>
+        </div>
+        <ul class="site-nav__dropdown">
+          {{#each (get linklists (toPath child_list_handle 'links')) as |childlink|}}
+            <li {{#unless (is template.name 'index')}}{{#if childlink.active}}class="site-nav--active site-nav__child-link--active"{{/if}}{{/unless}}>
+              <a href="{{ childlink.url }}" class="site-nav__link">{{escape childlink.title}}</a>
+            </li>
+          {{/each}}
+        </ul>
+      </li>
+    {{else}}
+      {{#if (is link.title '-')}}
+        <hr class="hr--small medium-down--hide">
+      {{else}}
+        <li {{#if link.active}}class="site-nav--active"{{/if}}>
+          <a href="{{ link.url }}" class="site-nav__link{{#if (is has_dropdown false)}} site-nav__linknodrop{{/if}}">{{ link.title }}</a>
+        </li>
+      {{/if}}
+    {{/if}}
+  {{/each}}
+  {{#if shop.customer_accounts_enabled}}
+    {{#if customer}}
+      <li class="large--hide">
+          <a href="/account" class="site-nav__link">{{t 'layout.customer.account'}}</a>
+      </li>
+      <li class="large--hide">
+        <a href="/account/logout" class="site-nav__link">{{t 'layout.customer.log_out'}}</a>
+      </li>
+    {{else}}
+      <li class="large--hide">
+        <a href="/account/login" class="site-nav__link">{{t 'layout.customer.log_in'}}</a>
+      </li>
+      <li class="large--hide">
+        <a href="/account/register" class="site-nav__link">{{t 'layout.customer.create_account'}}</a>
+      </li>
+    {{/if}}
+  {{/if}}
+</ul>

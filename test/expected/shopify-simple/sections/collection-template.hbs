@@ -1,0 +1,138 @@
+<!-- /templates/collection.liquid -->
+{{#paginate collection.products by=12}}
+
+<div data-section-id="{{ section.id }}" data-section-type="collection-template" data-sort-enabled="{{ section.settings.collection_sort_enable }}" data-tags-enabled="{{ section.settings.collection_tag_enable }}">
+  <header class="grid">
+    <h1 class="grid__item small--text-center {{#if (or section.settings.collection_sort_enable section.settings.collection_tag_enable)}}medium-up--one-third{{/if}}">{{#if (gt current_tags.size 0)}}{{ current_tags.first }}{{else}}{{ collection.title }}{{/if}}</h1>
+
+    {{#if (or section.settings.collection_sort_enable section.settings.collection_tag_enable)}}
+      <div class="collection-sorting grid__item medium-up--two-thirds medium-up--text-right small--text-center">
+        {{#if (and section.settings.collection_tag_enable (gt collection.all_tags.size 0))}}
+          <div class="collection-sorting__dropdown">
+            <label for="BrowseBy" class="label--hidden">{{t 'collections.general.tags'}}</label>
+            <select name="BrowseBy" id="BrowseBy">
+              {{#if current_tags}}
+                {{#if collection.handle}}
+                  <option value="/collections/{{ collection.handle }}">{{t 'collections.general.all_tags'}}</option>
+                {{else if collection.current_type}}
+                  <option value="{{url_for_type collection.current_type}}">{{t 'collections.general.all_tags'}}</option>
+                {{else if collection.current_vendor}}
+                  <option value="{{url_for_vendor collection.current_vendor}}">{{t 'collections.general.all_tags'}}</option>
+                {{/if}}
+              {{else}}
+                <option value="">{{t 'collections.general.tags'}}</option>
+              {{/if}}
+              {{#each collection.all_tags as |tag|}}
+                <option value="/collections/{{#if (isnt collection.handle blank)}}{{ collection.handle }}{{else}}all{{/if}}/{{handleize tag}}"{{#if (contains current_tags tag)}} selected="selected"{{/if}}>{{ tag }}</option>
+              {{/each}}
+            </select>
+          </div>
+        {{/if}}
+        {{#if (and section.settings.collection_sort_enable (gt collection.products.size 1))}}
+          <div class="collection-sorting__dropdown">
+            <label for="SortBy" class="label--hidden">{{t 'collections.sorting.title'}}</label>
+            <select name="SortBy" id="SortBy" data-value="{{default collection.sort_by collection.default_sort_by}}">
+              <option value="manual">{{t 'collections.sorting.featured'}}</option>
+              <option value="best-selling">{{t 'collections.sorting.best_selling'}}</option>
+              <option value="title-ascending">{{t 'collections.sorting.az'}}</option>
+              <option value="title-descending">{{t 'collections.sorting.za'}}</option>
+              <option value="price-ascending">{{t 'collections.sorting.price_ascending'}}</option>
+              <option value="price-descending">{{t 'collections.sorting.price_descending'}}</option>
+              <option value="created-descending">{{t 'collections.sorting.date_descending'}}</option>
+              <option value="created-ascending">{{t 'collections.sorting.date_ascending'}}</option>
+            </select>
+          </div>
+        {{/if}}
+      </div>
+    {{/if}}
+
+    {{#if (isnt collection.description blank)}}
+      <div class="collection-description grid__item rte">
+        {{ collection.description }}
+      </div>
+    {{/if}}
+  </header>
+
+  <div class="grid grid--uniform" role="list">
+
+    {{#each collection.products as |product|}}
+      {{#if (is collection.products.size 1)}}
+        {{assign 'grid_item_width' 'medium-up--one-third small--one-whole'}}
+      {{else}}
+        {{assign 'grid_item_width' 'medium-up--one-third small--one-half'}}
+      {{/if}}
+      {{include 'product-grid-item'}}
+    {{else}}
+      {{#comment}}
+        Add default products to help with onboarding for collections/all only.
+
+        The onboarding styles and products are only loaded if the
+        store has no products.
+      {{/comment}}
+      {{#if (and (is shop.products_count 0) (is collection.handle 'all'))}}
+        {{#unless onboardingLoaded}}
+          {{#comment}}
+            Only load onboarding styles if they have not already been loaded.
+          {{/comment}}
+          {{assign 'onboardingLoaded' true}}
+        {{/unless}}
+        <div class="grid__item">
+          <div class="grid grid--uniform">
+            {{assign 'collection_index' 1}}
+            {{#each (range 1 6) as |i|}}
+              <div class="grid__item small--one-half medium-up--one-third text-center">
+                <a href="/admin/products" class="grid__image">
+                  {{#capture 'current'}}{{cycle 1 2 3 4 5 6}}{{/capture}}
+                  {{placeholder_svg_tag (append 'product-' current) 'placeholder-svg'}}
+                </a>
+                <div class="product__title"><a href="/admin/products">{{t 'homepage.onboarding.product_title'}}</a></div>
+                <div class="product__price">$19.99</div>
+              </div>
+              {{assign 'collection_index' (plus collection_index 1)}}
+            {{/each}}
+          </div>
+        </div>
+      {{else}}
+        {{#comment}}
+          If collection exists but is empty, display message
+        {{/comment}}
+        <div class="grid__item">
+          <p>{{t 'collections.general.no_matches'}}</p>
+        </div>
+      {{/if}}
+    {{/each}}
+  </div>
+
+  {{#if (gt paginate.pages 1)}}
+    <div class="pagination text-center">
+      {{default_pagination paginate}}
+    </div>
+  {{/if}}
+ </div>
+
+{{/paginate}}
+
+{{#schema}}
+  {
+    "name": "Collection pages",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "vendor_show",
+        "label": "Show product vendor"
+      },
+      {
+        "type": "checkbox",
+        "id": "collection_sort_enable",
+        "label": "Enable collection sorting",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "collection_tag_enable",
+        "label": "Enable filtering by product tag",
+        "default": false
+      }
+    ]
+  }
+{{/schema}}

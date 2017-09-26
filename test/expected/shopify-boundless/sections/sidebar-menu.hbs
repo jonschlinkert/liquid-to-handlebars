@@ -1,0 +1,177 @@
+<div class="drawer__header" data-section-id="{{ section.id }}" data-section-type="sidebar-menu-section">
+  <div class="drawer__close">
+    <button type="button" class="drawer__close-button js-drawer-close">
+      <span class="icon icon-x" aria-hidden="true"></span>
+      <span class="icon__fallback-text">{{t 'layout.drawers.close_menu'}}</span>
+    </button>
+  </div>
+</div>
+<div class="drawer__inner">
+  <ul class="drawer-nav">
+    {{#each (get linklists (toPath section.settings.sidebar_top_link_list 'links')) as |link|}}
+      {{assign 'child_list_handle' (handleize link.title)}}
+      {{#if (isnt (get linklists (toPath child_list_handle 'links')) blank)}}
+        {{#comment}} See if nav has any active childlist items {{/comment}}
+        {{assign 'has_active_child_link' false}}
+        {{#each (get linklists (toPath child_list_handle 'links')) as |childlink|}}
+          {{#if childlink.active}}
+            {{assign 'has_active_child_link' true}}
+          {{/if}}
+        {{/each}}
+        <li class="drawer-nav__item{{#unless (is template.name 'index')}}{{#if link.active}} drawer-nav__item--active{{/if}}{{/unless}}" aria-haspopup="true">
+          <div class="drawer-nav__has-sublist{{#if has_active_child_link}} drawer-nav--expanded{{/if}}">
+            <a href="{{ link.url }}" class="drawer-nav__link h2">{{ link.title }}</a>
+            <div class="drawer-nav__toggle">
+              <button type="button" class="drawer-nav__toggle-button">
+                <span class="drawer-nav__toggle-open">
+                  <span class="icon icon-plus" aria-hidden="true"></span>
+                  <span class="icon__fallback-text">See More</span>
+                </span>
+                <span class="drawer-nav__toggle-close">
+                  <span class="icon icon-minus" aria-hidden="true"></span>
+                  <span class="icon__fallback-text">{{t 'cart.general.close_cart'}}</span>
+                </span>
+              </button>
+            </div>
+          </div>
+          <ul class="drawer-nav__sublist">
+            {{#each (get linklists (toPath child_list_handle 'links')) as |childlink|}}
+              <li class="drawer-nav__item{{#unless (is template.name 'index')}}{{#if childlink.active}} drawer-nav__item--active{{/if}}{{/unless}}">
+                <a href="{{ childlink.url }}" class="drawer-nav__link">{{escape childlink.title}}</a>
+              </li>
+            {{/each}}
+          </ul>
+        </li>
+      {{else}}
+        <li class="drawer-nav__item{{#unless (is template.name 'index')}}{{#if link.active}} drawer-nav__item--active{{/if}}{{/unless}}">
+          <a href="{{ link.url }}" class="drawer-nav__link h2">{{ link.title }}</a>
+        </li>
+      {{/if}}
+    {{/each}}
+
+    <li class="drawer-nav__spacer"></li>
+
+    {{#if shop.customer_accounts_enabled}}
+      {{#if customer}}
+        <li class="drawer-nav__item drawer-nav__item--secondary">
+          <a href="/account">{{t 'layout.customer.account'}}</a>
+        </li>
+        <li class="drawer-nav__item drawer-nav__item--secondary">
+          {{customer_logout_link (t 'layout.customer.log_out')}}
+        </li>
+      {{else}}
+        <li class="drawer-nav__item drawer-nav__item--secondary">
+          {{customer_login_link (t 'layout.customer.log_in')}}
+        </li>
+        <li class="drawer-nav__item drawer-nav__item--secondary">
+          {{customer_register_link (t 'layout.customer.create_account')}}
+        </li>
+      {{/if}}
+    {{/if}}
+    {{#each (get linklists (toPath section.settings.sidebar_bottom_link_list 'links')) as |link|}}
+      <li class="drawer-nav__item drawer-nav__item--secondary"><a href="{{ link.url }}">{{ link.title }}</a></li>
+    {{/each}}
+  </ul>
+
+  <ul class="list--inline social-icons social-icons--drawer">
+    {{#if (isnt settings.social_twitter_link blank)}}
+      <li>
+        <a href="{{escape settings.social_twitter_link}}" title="{{t 'layout.footer.social_platform' name shop.name platform 'Twitter'}}">
+          <span class="icon icon-twitter" aria-hidden="true"></span>
+          <span class="visually-hidden">Twitter</span>
+        </a>
+      </li>
+    {{/if}}
+    {{#if (isnt settings.social_facebook_link blank)}}
+      <li>
+        <a href="{{escape settings.social_facebook_link}}" title="{{t 'layout.footer.social_platform' name shop.name platform 'Facebook'}}">
+          <span class="icon icon-facebook" aria-hidden="true"></span>
+          <span class="visually-hidden">Facebook</span>
+        </a>
+      </li>
+    {{/if}}
+    {{#if (isnt settings.social_pinterest_link blank)}}
+      <li>
+        <a href="{{escape settings.social_pinterest_link}}" title="{{t 'layout.footer.social_platform' name shop.name platform 'Pinterest'}}">
+          <span class="icon icon-pinterest" aria-hidden="true"></span>
+          <span class="visually-hidden">Pinterest</span>
+        </a>
+      </li>
+    {{/if}}
+    {{#if (isnt settings.social_google_plus_link blank)}}
+      <li>
+        <a href="{{escape settings.social_google_plus_link}}" rel="publisher" title="{{t 'layout.footer.social_platform' name shop.name platform 'Google Plus'}}">
+          <span class="icon icon-google_plus" aria-hidden="true"></span>
+          <span class="visually-hidden">Google Plus</span>
+        </a>
+      </li>
+    {{/if}}
+    {{#if (isnt settings.social_instagram_link blank)}}
+      <li>
+        <a href="{{escape settings.social_instagram_link}}" title="{{t 'layout.footer.social_platform' name shop.name platform 'Instagram'}}">
+          <span class="icon icon-instagram" aria-hidden="true"></span>
+          <span class="visually-hidden">Instagram</span>
+        </a>
+      </li>
+    {{/if}}
+    {{#if (isnt settings.social_snapchat_link blank)}}
+      <li>
+        <a href="{{escape settings.social_snapchat_link}}" title="{{t 'layout.footer.social_platform' name shop.name platform 'Snapchat'}}">
+          <span class="icon icon-snapchat" aria-hidden="true"></span>
+          <span class="visually-hidden">Snapchat</span>
+        </a>
+      </li>
+    {{/if}}
+    {{#if (isnt settings.social_tumblr_link blank)}}
+      <li>
+        <a href="{{escape settings.social_tumblr_link}}" title="{{t 'layout.footer.social_platform' name shop.name platform 'Tumblr'}}">
+          <span class="icon icon-tumblr" aria-hidden="true"></span>
+          <span class="visually-hidden">Tumblr</span>
+        </a>
+      </li>
+    {{/if}}
+    {{#if (isnt settings.social_youtube_link blank)}}
+      <li>
+        <a href="{{escape settings.social_youtube_link}}" title="{{t 'layout.footer.social_platform' name shop.name platform 'YouTube'}}">
+          <span class="icon icon-youtube" aria-hidden="true"></span>
+          <span class="visually-hidden">YouTube</span>
+        </a>
+      </li>
+    {{/if}}
+    {{#if (isnt settings.social_vimeo_link blank)}}
+      <li>
+        <a href="{{escape settings.social_vimeo_link}}" title="{{t 'layout.footer.social_platform' name shop.name platform 'Vimeo'}}">
+          <span class="icon icon-vimeo" aria-hidden="true"></span>
+          <span class="visually-hidden">Vimeo</span>
+        </a>
+      </li>
+    {{/if}}
+    {{#if (isnt settings.social_fancy_link blank)}}
+      <li>
+        <a href="{{escape settings.social_fancy_link}}" title="{{t 'layout.footer.social_platform' name shop.name platform 'Fancy'}}">
+          <span class="icon icon-fancy" aria-hidden="true"></span>
+          <span class="visually-hidden">Fancy</span>
+        </a>
+      </li>
+    {{/if}}
+  </ul>
+</div>
+
+{{#schema}}
+  {
+    "name": "Sidebar menu",
+    "class": "sidebar-menu-section",
+    "settings": [  {
+        "type": "link_list",
+        "id": "sidebar_top_link_list",
+        "label": "Primary menu",
+        "default": "main-menu"
+      },  {
+        "type": "link_list",
+        "id": "sidebar_bottom_link_list",
+        "label": "Additional menu",
+        "default": "footer"
+      }
+    ]
+  }
+{{/schema}}

@@ -1,0 +1,5618 @@
+{{#if (isnt settings.ajax_cart_method 'page')}}
+
+/*============================================================================
+  Shopify Ajax Cart
+  Copyright 2014 Shopify Inc.
+  Author Carson Shold @cshold
+  Built with Sass - http://sass-lang.com/
+
+  Some things to know about this file:
+    - This file uses the same grid as timber.scss.liquid.
+      - If you want to use this separately, please include the following sections from timber.scss.liquid:
+        * #Breakpoint and Grid Variables
+        * #Grid Setup
+      - You may need to massage the code so it doesn't reference any non-existent mixins.
+
+  This file includes
+    - Sass helpers
+    - Colour variables to customize
+    - Styles for cart drawer, modal, and the flipped add to cart button
+==============================================================================*/
+
+/*============================================================================
+  #Breakpoint and Grid Variables (from timber.scss.liquid)
+==============================================================================*/
+$viewportIncrement: 1px;
+
+$small: 480px;
+$medium: 768px;
+$large: 769px;
+
+$postSmall: $small + $viewportIncrement;
+$preMedium: $medium - $viewportIncrement;
+$preLarge: $large - $viewportIncrement;
+
+$gutter: 24px;
+
+/*============================================================================
+  Ajaxify Colours
+  Add your theme colors in here, or create new styles.
+    - If creating new styles, you may have to restyle text, headers and links
+==============================================================================*/
+$colorBody: {{ settings.color_body_bg }};
+$colorTextBody: {{ settings.color_body_text }};
+$colorBorder: {{ settings.color_borders }};
+
+/*============================================================================
+  Dependency-free breakpoint mixin
+// http://blog.grayghostvisuals.com/sass/sass-media-query-mixin/
+==============================================================================*/
+$min: min-width;
+$max: max-width;
+@mixin at-query ($constraint, $viewport1, $viewport2:null) {
+  @if $constraint == $min {
+    @media screen and ($min: $viewport1) {
+      @content;
+    }
+  } @else if $constraint == $max {
+    @media screen and ($max: $viewport1) {
+      @content;
+    }
+  } @else {
+    @media screen and ($min: $viewport1) and ($max: $viewport2) {
+      @content;
+    }
+  }
+}
+
+/*============================================================================
+  Sass Helpers
+==============================================================================*/
+@mixin prefix($property, $value) {
+  -webkit-#{$property}: #{$value};
+  -moz-#{$property}: #{$value};
+  -ms-#{$property}: #{$value};
+  -o-#{$property}: #{$value};
+  #{$property}: #{$value};
+}
+
+@mixin transform-origin($origin) {
+  @include prefix('transform-origin', #{$origin});
+}
+
+@mixin transform-style($style: preserve-3d) {
+  @include prefix('transform-style', #{$style});
+}
+
+@mixin perspective($perspective) {
+  @include prefix('perspective', #{$perspective});
+}
+
+@mixin backface($visibility: hidden) {
+  @include prefix('backface-visibility', #{$visibility});
+}
+
+@mixin box-sizing($box-sizing: border-box) {
+  -webkit-box-sizing: #{$box-sizing};
+  -moz-box-sizing: #{$box-sizing};
+  box-sizing: #{$box-sizing};
+}
+
+@mixin transform($transform) {
+  @include prefix('transform', #{$transform});
+}
+
+@mixin transition($transition: 0.1s all) {
+  @include prefix('transition', #{$transition});
+}
+
+@mixin clearfix() {
+  &:after {
+    content: "";
+    display: table;
+    clear: both;
+  }
+}
+
+@function color-control($color) {
+  @if (lightness( $color ) > 40) {
+    @return #000;
+  }
+  @else {
+    @return #fff;
+  }
+}
+
+/*============================================================================
+  General Styles
+==============================================================================*/
+@include at-query ($max, $small) {
+  body.ajaxify-modal--visible {
+    overflow: hidden;
+  }
+}
+
+.ajaxifyCart-loader {
+  display: none;
+  opacity: 0;
+  position: absolute;
+  left: -24px;
+  top: 50%;
+  margin-top: -8px;
+  padding: 0;
+  width: 16px;
+  height: 16px;
+  @include transition(opacity 0.1s);
+  background-repeat: no-repeat;
+  background-image: url(data:image/gif;base64,R0lGODlhEAAQAPYAAP///8zMzPX19enp6d7e3tjY2NnZ2eHh4evr6/f39+zs7NPT09PT09XV1dbW1tjY2ODg4PDw8NHR0eLi4vr6+vr6+vLy8ufn59vb297e3vHx8fT09NfX19DQ0Ofn5+3t7d7e3uTk5Pj4+Obm5s7OzuDg4Orq6uDg4O/v79nZ2c3Nze7u7unp6dDQ0M3Nzfn5+fz8/OPj4+Xl5fz8/OXl5e3t7f39/f39/fHx8fPz8/z8/Pb29u7u7vv7+/X19fj4+Pf39/T09PLy8vHx8fj4+Pb29vv7+/b29uTk5O/v7+/v79ra2tzc3N3d3d/f39jY2NfX1/Ly8uPj49XV1fr6+tTU1Ofn593d3dTU1NHR0evr69vb28/Pz+bm5t/f39bW1vPz8/T09Pn5+fDw8OTk5Ojo6Ovr69zc3Ojo6Nra2tra2tLS0uzs7M/Pz87Ozu3t7czMzOrq6tPT08/Pz9fX1+Li4tXV1c3NzeLi4tLS0tzc3OHh4eXl5QAAAAAAAAAAACH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAAHjYAAgoOEhYUbIykthoUIHCQqLoI2OjeFCgsdJSsvgjcwPTaDAgYSHoY2FBSWAAMLE4wAPT89ggQMEbEzQD+CBQ0UsQA7RYIGDhWxN0E+ggcPFrEUQjuCCAYXsT5DRIIJEBgfhjsrFkaDERkgJhswMwk4CDzdhBohJwcxNB4sPAmMIlCwkOGhRo5gwhIGAgAh+QQJCgAAACwAAAAAEAAQAAAHjIAAgoOEhYU7A1dYDFtdG4YAPBhVC1ktXCRfJoVKT1NIERRUSl4qXIRHBFCbhTKFCgYjkII3g0hLUbMAOjaCBEw9ukZGgidNxLMUFYIXTkGzOmLLAEkQCLNUQMEAPxdSGoYvAkS9gjkyNEkJOjovRWAb04NBJlYsWh9KQ2FUkFQ5SWqsEJIAhq6DAAIBACH5BAkKAAAALAAAAAAQABAAAAeJgACCg4SFhQkKE2kGXiwChgBDB0sGDw4NDGpshTheZ2hRFRVDUmsMCIMiZE48hmgtUBuCYxBmkAAQbV2CLBM+t0puaoIySDC3VC4tgh40M7eFNRdH0IRgZUO3NjqDFB9mv4U6Pc+DRzUfQVQ3NzAULxU2hUBDKENCQTtAL9yGRgkbcvggEq9atUAAIfkECQoAAAAsAAAAABAAEAAAB4+AAIKDhIWFPygeEE4hbEeGADkXBycZZ1tqTkqFQSNIbBtGPUJdD088g1QmMjiGZl9MO4I5ViiQAEgMA4JKLAm3EWtXgmxmOrcUElWCb2zHkFQdcoIWPGK3Sm1LgkcoPrdOKiOCRmA4IpBwDUGDL2A5IjCCN/QAcYUURQIJIlQ9MzZu6aAgRgwFGAFvKRwUCAAh+QQJCgAAACwAAAAAEAAQAAAHjIAAgoOEhYUUYW9lHiYRP4YACStxZRc0SBMyFoVEPAoWQDMzAgolEBqDRjg8O4ZKIBNAgkBjG5AAZVtsgj44VLdCanWCYUI3txUPS7xBx5AVDgazAjC3Q3ZeghUJv5B1cgOCNmI/1YUeWSkCgzNUFDODKydzCwqFNkYwOoIubnQIt244MzDC1q2DggIBACH5BAkKAAAALAAAAAAQABAAAAeJgACCg4SFhTBAOSgrEUEUhgBUQThjSh8IcQo+hRUbYEdUNjoiGlZWQYM2QD4vhkI0ZWKCPQmtkG9SEYJURDOQAD4HaLuyv0ZeB4IVj8ZNJ4IwRje/QkxkgjYz05BdamyDN9uFJg9OR4YEK1RUYzFTT0qGdnduXC1Zchg8kEEjaQsMzpTZ8avgoEAAIfkECQoAAAAsAAAAABAAEAAAB4iAAIKDhIWFNz0/Oz47IjCGADpURAkCQUI4USKFNhUvFTMANxU7KElAhDA9OoZHH0oVgjczrJBRZkGyNpCCRCw8vIUzHmXBhDM0HoIGLsCQAjEmgjIqXrxaBxGCGw5cF4Y8TnybglprLXhjFBUWVnpeOIUIT3lydg4PantDz2UZDwYOIEhgzFggACH5BAkKAAAALAAAAAAQABAAAAeLgACCg4SFhjc6RhUVRjaGgzYzRhRiREQ9hSaGOhRFOxSDQQ0uj1RBPjOCIypOjwAJFkSCSyQrrhRDOYILXFSuNkpjggwtvo86H7YAZ1korkRaEYJlC3WuESxBggJLWHGGFhcIxgBvUHQyUT1GQWwhFxuFKyBPakxNXgceYY9HCDEZTlxA8cOVwUGBAAA7AAAAAAAAAAAA);
+
+  .flip--is-loading & {
+    display: block;
+    opacity: 1;
+  }
+}
+
+form[action="/cart/add"],
+form[action^="/cart/add"] {
+  @include clearfix;
+}
+
+
+/*============================================================================
+  Ajaxify Cart - General
+==============================================================================*/
+.ajaxifyCart--content {
+  position: relative;
+  background-color: $colorBody;
+  @include perspective(1000px);
+  @include transform-style(preserve-3d);
+  @include transition(all 450ms cubic-bezier(0.57,.06,.05,.95));
+  padding-top: $gutter;
+  padding-bottom: $gutter;
+  overflow: hidden;
+
+  .is-visible & {
+    @include transition(all 550ms cubic-bezier(0.57, 0.06, 0.05, 0.95));
+  }
+
+  form {
+    margin-bottom: 0;
+  }
+
+  @include at-query ($max, $medium) {
+    padding-top: 15px;
+    padding-bottom: 15px;
+  }
+}
+
+// Row and column spacing
+.ajaxifyCart--products {
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+}
+
+.ajaxifyCart--product {
+  position: relative;
+  padding: 10px 0;
+
+  &:first-child {
+    padding-top: 0;
+  }
+}
+
+.ajaxifyCart--product,
+.cart-row {
+  @include transform-origin(top);
+  @include transition(all 650ms cubic-bezier(0.57, 0.06, 0.05, 0.95));
+  max-height: 500px;
+  visibility: visible;
+
+  &.is-removed {
+    overflow: hidden;
+    opacity: 0;
+    padding: 0;
+    margin: -$gutter 0 0;
+    visibility: hidden;
+    @include transform('rotateX(-92deg)');
+    @include backface(hidden);
+    @include transition(all 450ms cubic-bezier(0.57,.06,.05,.95));
+    max-height: 0;
+  }
+}
+
+.ajaxifyCart--row {
+  clear: both;
+  @include clearfix;
+}
+
+.ajaxCart--product-image {
+  display: block;
+  overflow: hidden;
+  margin-bottom: 15px;
+
+  img {
+    display: block;
+    margin: 0 auto;
+    max-width: 100%;
+  }
+}
+
+
+/*============================================================================
+  #Quantity Selectors
+==============================================================================*/
+.js-qty {
+  position: relative;
+  margin-bottom: 1em;
+  max-width: 100px;
+  min-width: 75px;
+  overflow: visible;
+  @include backface(hidden);
+
+  input[type="text"] {
+    display: block;
+    background: none;
+    text-align: center;
+    width: 100%;
+    padding: 5px 25px;
+    margin: 0;
+  }
+}
+
+.js--qty-adjuster {
+  cursor: pointer;
+  position: absolute;
+  display: block;
+  top: 0;
+  bottom: 0;
+  padding: 5px 0;
+  width: 20px;
+  text-align: center;
+  overflow: hidden;
+  -webkit-user-select: none;
+  -moz-user-select:    none;
+  -ms-user-select:     none;
+  -o-user-select:      none;
+  user-select:         none;
+  @include transition(all 0.2s ease-out);
+
+  &:hover {
+    background-color: $colorBorder;
+  }
+
+  &:active {
+    background-color: darken($colorBorder, 10%);
+  }
+}
+
+.js--add {
+  right: 0;
+  border-left: 1px solid $colorBorder;
+}
+
+.js--minus {
+  left: 0;
+  border-right: 1px solid $colorBorder;
+}
+
+/*============================================================================
+  #Quantity Selectors in the Ajax Cart
+==============================================================================*/
+.ajaxifyCart--qty {
+  @extend .js-qty;
+  margin: 0;
+
+  .ajaxifyCart--is-loading & {
+    opacity: 0.5;
+    @include transition(none);
+  }
+}
+
+.ajaxifyCart--num {
+  @include transition(all 0.1s ease-out);
+
+  .supports-no-touch & {
+    border: 1px solid rgba(0,0,0,0);
+  }
+
+  .cart-row:hover &,
+  .ajaxifyCart--product:hover &,
+  .supports-touch & {
+    border-color: $colorBorder;
+  }
+}
+
+.ajaxifyCart--qty-adjuster {
+  @extend .js--qty-adjuster;
+  opacity: 0;
+
+  .cart-row:hover &,
+  .ajaxifyCart--product:hover &,
+  .supports-touch & {
+    opacity: 1;
+    @include transition(background-color 0.2s ease-out);
+  }
+
+  // Turn off animation on initial hover
+  .ajaxifyCart--product:hover &:hover {
+    @include transition(none);
+  }
+}
+
+.ajaxifyCart--add {
+  @extend .js--add;
+}
+
+.ajaxifyCart--minus {
+  @extend .js--minus;
+}
+
+
+/*============================================================================
+  Ajaxify Flip
+==============================================================================*/
+.flip {
+  display: block;
+  float: left;
+  position: relative;
+  @include perspective(600px);
+}
+
+.flip-front,
+.flip-back {
+  @include transform-style(preserve-3d);
+  @include transition(all 0.3s);
+  @include backface(hidden);
+  overflow: hidden;
+
+  position: relative;
+  z-index: 10;
+
+  &:focus {
+    outline: 0 none;
+  }
+}
+
+.flip-front {
+  @include transform-origin(100% 0);
+
+  .is-flipped & {
+    @include transform('rotateX(92deg) translateY(-50%)');
+  }
+}
+
+.flip-back {
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  opacity: 0;
+  text-align: center;
+  background-color: #464646;
+  @include box-sizing();
+  @include transform('rotateX(-90deg) translateY(50%)');
+  @include transform-origin(0 100%);
+
+  .is-flipped & {
+    opacity: 1;
+    @include transform('rotateX(0deg)');
+  }
+}
+
+// Backup for no transforms
+.flip.no-transforms {
+  .flip-back {
+    display: none;
+  }
+
+  &.is-flipped {
+    .flip-back {
+      display: block;
+    }
+  }
+}
+
+.flip-extra {
+  display: inline-block;
+  opacity: 0;
+  visibility: hidden;
+  padding: 4px 0;
+  overflow: visible;
+  width: 0;
+  white-space: nowrap;
+  z-index: 5;
+  line-height: 34px;
+  @include transition(opacity 450ms cubic-bezier(0.57,.06,.05,.95));
+
+  .is-flipped + & {
+    opacity: 1;
+    visibility: visible;
+    width: auto;
+    padding-left: 10px;
+    @include transition(opacity 650ms cubic-bezier(0.57, 0.06, 0.05, 0.95) 750ms);
+  }
+}
+
+.flip-cart {
+  display: inline-block;
+  padding: 0 8px;
+}
+
+.flip-checkout {
+  margin: 0;
+}
+
+
+/*============================================================================
+  Ajaxify Modal
+==============================================================================*/
+.ajaxify-modal {
+  position: absolute;
+  top: 170px;
+  left: -200%;
+  margin-left: -500px; // overridden with JS
+  width: 100%;
+  max-width: 760px;
+  height: auto;
+  z-index: 99999999;
+  visibility: hidden;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  @include transition('left 0s linear 700ms, box-shadow 600ms cubic-bezier(0.47, 0.5, 0, 0.95) 400ms, margin-top 200ms ease-in-out');
+
+  // Short screens
+  @media only screen and (max-height:645px) {
+    top: 70px;
+  }
+
+  // Medium-down screens
+  @include at-query ($max, $medium) {
+    max-width: 90%;
+  }
+
+  // Small screens
+  @include at-query ($max, $small) {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    margin: 0!important;
+    max-height: none;
+    max-width: none;
+  }
+
+  .ajaxifyCart--content {
+    padding-left: $gutter;
+    padding-right: $gutter;
+
+    // Medium-down screens
+    @include at-query ($max, $medium) {
+      padding-left: 15px;
+      padding-right: 15px;
+    }
+
+    // Small screens
+    @include at-query ($max, $small) {
+      padding-bottom: 60px;
+      min-height: 100%;
+    }
+  }
+
+  &.is-visible {
+    visibility: visible;
+    left: 50%;
+    @include transition('left 0s linear, box-shadow 600ms cubic-bezier(0.47, 0.5, 0, 0.95) 400ms, margin-top 200ms ease-in-out');
+
+    // Large screens
+    @include at-query ($min, $large) {
+      box-shadow: 0px 10px 80px rgba(0,0,0,.25);
+    }
+
+    // Small screens
+    @include at-query ($max, $small) {
+      left: 0;
+    }
+  }
+
+  .ajaxifyCart--row {
+
+    & > div {
+      padding-left: 20px;
+
+      &:first-child {
+        padding-left: 0;
+      }
+    }
+  }
+
+  .ajaxifyCart--product {
+    @include transform(none);
+  }
+
+  .update-cart {
+    display: none!important;
+  }
+
+  // No transform fallback
+  &.no-transforms {
+    border: 1px solid $colorBorder;
+  }
+
+}
+
+#ajaxifyCart-overlay {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  visibility: hidden;
+  top: 0;
+  left: 0;
+  z-index: 99999998;
+  opacity: 0;
+  cursor: pointer;
+  @include transition(all 450ms cubic-bezier(0.57,.06,.05,.95));
+  @if (lightness( $colorBody ) > 40) {
+    background-color: #d3d3d3;
+  }
+  @else {
+    background-color: #333333;
+  }
+}
+
+@include at-query ($min, $postSmall) {
+  .is-visible ~ #ajaxifyCart-overlay {
+    visibility: visible;
+    @include transition(all 650ms cubic-bezier(0.57, 0.06, 0.05, 0.95));
+    @if (lightness( $colorBody ) > 40) {
+      opacity: 0.8;
+    }
+    @else {
+      opacity: 0.95;
+    }
+
+    .lt-ie9 & {
+      -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=80)";
+    }
+  }
+}
+
+// Modal content transition
+.ajaxify-modal .ajaxifyCart--content {
+  @include transform(scale(0.9));
+  opacity: 0;
+}
+
+.ajaxify-modal.is-visible .ajaxifyCart--content {
+  @include transform(scale(1));
+  opacity: 1;
+}
+
+// Quantity selector colors in the modal
+// TO DO
+.ajaxify-modal {
+
+  // Small screen quantity appearance
+  @include at-query ($max, $medium) {
+    input[type="text"] {
+      border-color: $colorBorder;
+    }
+
+    .ajaxifyCart--qty-adjuster {
+      opacity: 1;
+    }
+  }
+}
+
+/*============================================================================
+  Ajaxify Drawer
+==============================================================================*/
+.ajaxify-drawer {
+  height: 0px;
+  overflow: hidden;
+  border-bottom: 0px solid transparent;
+  @include perspective (1000px);
+  @include transform-style(preserve-3d);
+  @include transition(all 600ms cubic-bezier(0.47, 0.5, 0, 0.95));
+
+  &.is-visible {
+    @include transition(all 550ms cubic-bezier(0.47, 0, 0, 0.95));
+    border-bottom: 1px solid $colorBorder;
+  }
+
+  .update-cart {
+    display: none!important;
+  }
+
+  .ajaxifyCart--content {
+    margin: 0 auto;
+    opacity: 0;
+    overflow: hidden;
+    padding-top: $gutter;
+    padding-bottom: $gutter;
+    @include transform-origin(top);
+    @include transform('rotateX(-90deg)');
+  }
+
+  &.is-visible .ajaxifyCart--content {
+    opacity: 1;
+    @include transform('rotateX(0deg)');
+  }
+}
+
+.ajaxifyDrawer-caret {
+  position: relative;
+  display: block;
+  height: 0;
+  opacity: 0;
+  overflow: hidden;
+
+  @include at-query ($max, $medium) {
+    display: none;
+  }
+
+  .is-visible + & {
+    opacity: 1;
+    overflow: visible;
+  }
+
+  & > span {
+    position: absolute;
+    top: 0;
+    left: 100%;
+    display: block;
+    width: 0;
+    height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 6px solid $colorBody;
+    margin-left: -6px;
+    opacity: 0;
+    @include transform(translate(0,-12px));
+    @include transition(all 0.25s ease-in-out 0.2s);
+  }
+
+  .is-visible + & > span {
+    @include transform(translate(0,0));
+    opacity: 1;
+  }
+}
+
+
+
+/*============================================================================
+  Sprites
+//   - using data URIs to prevent any additional http requests
+==============================================================================*/
+.sprite {
+  display: block;
+  text-indent: -9999px;
+  background-repeat: no-repeat;
+  background-position: 0 0;
+}
+
+.ajaxifyCart--add {
+  @extend .sprite;
+  background-position: center center;
+  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyNpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNS1jMDE0IDc5LjE1MTQ4MSwgMjAxMy8wMy8xMy0xMjowOToxNSAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIChNYWNpbnRvc2gpIiB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOjIxNTJBNEY1NDY1OTExRTM4ODdCODU0OEQ4MDA1MjgwIiB4bXBNTTpEb2N1bWVudElEPSJ4bXAuZGlkOjIxNTJBNEY2NDY1OTExRTM4ODdCODU0OEQ4MDA1MjgwIj4gPHhtcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InhtcC5paWQ6QUU4MjYyOEE0NjU3MTFFMzg4N0I4NTQ4RDgwMDUyODAiIHN0UmVmOmRvY3VtZW50SUQ9InhtcC5kaWQ6MjE1MkE0RjQ0NjU5MTFFMzg4N0I4NTQ4RDgwMDUyODAiLz4gPC9yZGY6RGVzY3JpcHRpb24+IDwvcmRmOlJERj4gPC94OnhtcG1ldGE+IDw/eHBhY2tldCBlbmQ9InIiPz6VbCy4AAAAWklEQVR42mJsampigAIeIH4GZUsB8RcQg4UBAUACvEhsBpgCkE5GKA0DklBF/0EKXgExJwMqgFn1nYmBAACZIIZkBbojwVbAHPQZSeNzZBOQvfkZiQ3WCBBgALZlEm83dptmAAAAAElFTkSuQmCC);
+}
+
+.ajaxifyCart--minus {
+  @extend .sprite;
+  background-position: center center;
+  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyNpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNS1jMDE0IDc5LjE1MTQ4MSwgMjAxMy8wMy8xMy0xMjowOToxNSAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIChNYWNpbnRvc2gpIiB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOjIxNTJBNEZENDY1OTExRTM4ODdCODU0OEQ4MDA1MjgwIiB4bXBNTTpEb2N1bWVudElEPSJ4bXAuZGlkOjIxNTJBNEZFNDY1OTExRTM4ODdCODU0OEQ4MDA1MjgwIj4gPHhtcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InhtcC5paWQ6MjE1MkE0RkI0NjU5MTFFMzg4N0I4NTQ4RDgwMDUyODAiIHN0UmVmOmRvY3VtZW50SUQ9InhtcC5kaWQ6MjE1MkE0RkM0NjU5MTFFMzg4N0I4NTQ4RDgwMDUyODAiLz4gPC9yZGY6RGVzY3JpcHRpb24+IDwvcmRmOlJERj4gPC94OnhtcG1ldGE+IDw/eHBhY2tldCBlbmQ9InIiPz6MzbYiAAAALElEQVR42mL6//8/Az7MxEAAEFTA2NTU9A1Ic+KQ/07YBJBDKHIDQQUAAQYAbksecMSS2doAAAAASUVORK5CYII=);
+}
+
+.ajaxifyCart--close {
+  @extend .sprite;
+  position: absolute;
+  top: $gutter;
+  right: 20px;
+  opacity: 0;
+  visibility: hidden;
+  border: 0 none;
+  width: 30px;
+  height: 25px;
+  cursor: pointer;
+  background: {
+    color: transparent;
+    position: center center;
+    image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAALCAYAAACprHcmAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyNpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNS1jMDE0IDc5LjE1MTQ4MSwgMjAxMy8wMy8xMy0xMjowOToxNSAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIChNYWNpbnRvc2gpIiB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOkMzRUY2REVBNDY1QjExRTM4ODdCODU0OEQ4MDA1MjgwIiB4bXBNTTpEb2N1bWVudElEPSJ4bXAuZGlkOkMzRUY2REVCNDY1QjExRTM4ODdCODU0OEQ4MDA1MjgwIj4gPHhtcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InhtcC5paWQ6QzNFRjZERTg0NjVCMTFFMzg4N0I4NTQ4RDgwMDUyODAiIHN0UmVmOmRvY3VtZW50SUQ9InhtcC5kaWQ6QzNFRjZERTk0NjVCMTFFMzg4N0I4NTQ4RDgwMDUyODAiLz4gPC9yZGY6RGVzY3JpcHRpb24+IDwvcmRmOlJERj4gPC94OnhtcG1ldGE+IDw/eHBhY2tldCBlbmQ9InIiPz7sdZ8fAAAAp0lEQVR42nSPQQ6CMBBFx4ZEj+DSY8BGt9SVwRP1QBDdULeygaN4BFzpn+Q3mZCW5DFk/uvQ2YUQfiIygYuUnzc4O7wW/QCxIEbmi8oNG23mgO03js0reDF4gCNry77mUpkpHvSgo7QHA7gnwW1+q8FKcbViTtbJB/Bl7Uty5BWe4MTa2aWTPJplbuDDmpYe04IzqBn4zbU8J2udHcUpI9oDmtd/AQYAX20mtnhTCxQAAAAASUVORK5CYII=)
+  }
+  z-index: 999999999;
+  @include backface(hidden);
+  @include transition(all 450ms cubic-bezier(0.57,.06,.05,.95));
+
+  .is-visible & {
+    opacity: 0.8;
+    visibility: visible;
+    @include transition(opacity 650ms cubic-bezier(0.57, 0.06, 0.05, 0.95) 200ms);
+  }
+
+  &:hover {
+    opacity: 1;
+  }
+
+  @include at-query ($max, $medium) {
+    top: 15px;
+    right: 8px;
+  }
+}
+
+
+@media
+(-webkit-min-device-pixel-ratio: 2),
+(min-resolution: 192dpi) {
+
+  .ajaxifyCart--add {
+    background-size: 8px;
+    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyNpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNS1jMDE0IDc5LjE1MTQ4MSwgMjAxMy8wMy8xMy0xMjowOToxNSAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIChNYWNpbnRvc2gpIiB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOkFFODI2Mjg4NDY1NzExRTM4ODdCODU0OEQ4MDA1MjgwIiB4bXBNTTpEb2N1bWVudElEPSJ4bXAuZGlkOkFFODI2Mjg5NDY1NzExRTM4ODdCODU0OEQ4MDA1MjgwIj4gPHhtcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InhtcC5paWQ6QUU4MjYyODY0NjU3MTFFMzg4N0I4NTQ4RDgwMDUyODAiIHN0UmVmOmRvY3VtZW50SUQ9InhtcC5kaWQ6QUU4MjYyODc0NjU3MTFFMzg4N0I4NTQ4RDgwMDUyODAiLz4gPC9yZGY6RGVzY3JpcHRpb24+IDwvcmRmOlJERj4gPC94OnhtcG1ldGE+IDw/eHBhY2tldCBlbmQ9InIiPz7Q1IXcAAAAL0lEQVR42mJsampiwAH+o/EZsSliYqAQjBrAwMCCJbSJjZXhFAaMoylxgA0ACDAAufIFqTR3duwAAAAASUVORK5CYII=);
+  }
+
+  .ajaxifyCart--minus {
+    background-size: 8px;
+    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyNpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNS1jMDE0IDc5LjE1MTQ4MSwgMjAxMy8wMy8xMy0xMjowOToxNSAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIChNYWNpbnRvc2gpIiB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOjIxNTJBNEY5NDY1OTExRTM4ODdCODU0OEQ4MDA1MjgwIiB4bXBNTTpEb2N1bWVudElEPSJ4bXAuZGlkOjIxNTJBNEZBNDY1OTExRTM4ODdCODU0OEQ4MDA1MjgwIj4gPHhtcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InhtcC5paWQ6MjE1MkE0Rjc0NjU5MTFFMzg4N0I4NTQ4RDgwMDUyODAiIHN0UmVmOmRvY3VtZW50SUQ9InhtcC5kaWQ6MjE1MkE0Rjg0NjU5MTFFMzg4N0I4NTQ4RDgwMDUyODAiLz4gPC9yZGY6RGVzY3JpcHRpb24+IDwvcmRmOlJERj4gPC94OnhtcG1ldGE+IDw/eHBhY2tldCBlbmQ9InIiPz54TqQaAAAAKElEQVR42mL8//8/AyWAiYFCMGoAAwNLc3Pz/xEeBoyjKXEQGAAQYABVgwijPO94YQAAAABJRU5ErkJggg==);
+  }
+
+}
+
+{{/if}}
+
+/*============================================================================
+  Shopify Timber v1.4.0
+  Copyright 2014 Shopify Inc.
+  Author Carson Shold @cshold
+  Built with Sass - http://sass-lang.com/
+
+  Some things to know about this file:
+    - Sass is compiled on Shopify's server so you don't need to convert it to CSS yourself
+    - The output CSS is compressed and comments are removed
+    - You cannot use @imports in this file
+        * Use grunt or gulp tasks to enable @imports - https://github.com/Shopify/shopify-css-import
+    - Helpers variables, mixins, and starter classes are provided. Change as needed.
+==============================================================================*/
+
+/*============================================================================
+  Table of Contents
+
+  #Breakpoint and Grid Variables
+  #General Variables
+  #Sass Mixins
+  #Normalize
+  #Grid Setup
+  #Basic Styles
+  #Helper Classes
+  #Typography
+  #Rich Text Editor
+  #Links and Buttons
+  #Lists
+  #Tables
+  #OOCSS Media Object
+  #Images and Iframes
+  #Forms
+  #Icons
+  #Pagination
+  #Site Header
+  #Site Nav and Dropdowns
+  #Mobile Nav Bar
+  #Site Footer
+  #Product Grid and List Views
+  #Collection Filters
+  #Breadcrumbs
+  #Product Page
+  #Blogs and Comments
+  #Notes and Form Feedback
+  #Cart Page
+  #Demo Styles - for empty store state
+  #FlexSlider
+  #Magnific Popup
+  #Product Reviews
+  #Password Page
+  #Custom Content
+  #Blank States
+  #Lazysizes
+  #Featured blog post
+==============================================================================*/
+
+/*============================================================================
+  #Breakpoint and Grid Variables
+==============================================================================*/
+$viewportIncrement: 1px;
+
+$small: 480px;
+$medium: 768px;
+$large: 769px;
+
+$postSmall: $small + $viewportIncrement;
+$preMedium: $medium - $viewportIncrement;
+$preLarge: $large - $viewportIncrement;
+
+/*================ The following are dependencies of csswizardry grid ================*/
+$breakpoints: (
+  'small' '(max-width: #{$small})',
+  'medium' '(min-width: #{$postSmall}) and (max-width: #{$medium})',
+  'medium-down' '(max-width: #{$medium})',
+  'large' '(min-width: #{$large})'
+);
+$breakpoint-has-widths: ('small', 'medium', 'medium-down', 'large');
+$breakpoint-has-push:  ('medium', 'medium-down', 'large');
+$breakpoint-has-pull:  ('medium', 'medium-down', 'large');
+
+/*============================================================================
+  #General Variables
+==============================================================================*/
+
+// Supply Theme Colors
+$colorPrimary: {{ settings.color_primary }};
+$colorSecondary: {{ settings.color_secondary }};
+$colorAccent: {{ settings.color_accent }};
+
+// Button colors
+$colorBtnPrimary: $colorPrimary;
+$colorBtnPrimaryHover: darken($colorBtnPrimary, 5%);
+$colorBtnPrimaryActive: darken($colorBtnPrimaryHover, 5%);
+
+$colorBtnSecondary: $colorSecondary;
+$colorBtnSecondaryHover: darken($colorBtnSecondary, 5%);
+$colorBtnSecondaryActive: darken($colorBtnSecondaryHover, 5%);
+
+// Text link colors
+$colorLink: $colorPrimary;
+$colorLinkHover: lighten($colorPrimary, 15%);
+
+// General colors
+$colorBody: {{ settings.color_body_bg }};
+$colorTextBody: {{ settings.color_body_text }};
+$colorHeaders: {{ settings.color_heading_text }};
+
+// Border colors
+$colorBorder: {{ settings.color_borders }};
+
+// Site Header
+$headerBackground: {{ settings.color_header_background }};
+$headerText: {{ settings.color_header_text }};
+$headerButtonAndSearch: {{ settings.color_header_cart_search }};
+
+// Nav background
+$colorNav: {{ settings.color_nav_bg }};
+$colorNavText: {{ settings.color_nav_text }};
+
+// Mobile Nav Bar
+$mobileNavBarHeight: 50px;
+
+// Site Footer
+$colorFooterBg: {{ settings.color_footer_bg }};
+$colorFooterText: {{ settings.color_footer_text }};
+
+// Helper colors
+$disabledGrey: #f6f6f6;
+$disabledBorder: darken($disabledGrey, 25%);
+$errorRed: #dc0000;
+$errorRedBg: lighten($errorRed, 55%);
+$successGreen: #0a942a;
+
+// Width variables
+$siteWidth: 1060px;
+$gutter: 30px;
+$gridGutter: 30px;
+$maxWidthBp: $siteWidth + $gutter*2;
+
+// Radius
+$radius: 2px;
+
+// Password page
+$passwordPageUseBgImage: true;
+
+/*================ Typography ================*/
+
+/*============================================================================
+  Get font-families from theme settings
+==============================================================================*/
+{{#if (contains settings.type_base_family 'Google')}}
+  {{assign 'type_base_parts' (split settings.type_base_family '_')}}
+  {{assign 'type_base_name' (get type_base_parts 1)}}
+  {{#capture 'base_family'}}"{{replace (first (split type_base_name ':')) '+' ' '}}"{{#if (is type_base_parts.last 'serif')}}, serif {{else}}, "HelveticaNeue", "Helvetica Neue", sans-serif{{/if}}{{/capture}}
+{{else}}
+  {{assign 'base_family' settings.type_base_family}}
+{{/if}}
+
+{{#if (contains settings.type_header_family 'Google')}}
+  {{assign 'type_header_parts' (split settings.type_header_family '_')}}
+  {{assign 'type_header_name' (get type_header_parts 1)}}
+  {{#capture 'header_family'}}"{{replace (first (split type_header_name ':')) '+' ' '}}"{{#if (is type_header_parts.last 'serif')}}, serif {{else}}, "HelveticaNeue", "Helvetica Neue", sans-serif{{/if}}{{/capture}}
+  {{assign 'header_weight' (get type_header_parts 2)}}
+{{else}}
+  {{assign 'header_family' settings.type_header_family}}
+  {{assign 'header_weight' 700}}
+{{/if}}
+
+{{#if (contains settings.type_accent_family 'Google')}}
+  {{assign 'type_accent_parts' (split settings.type_accent_family '_')}}
+  {{assign 'type_accent_name' (get type_accent_parts 1)}}
+  {{#capture 'accent_family'}}"{{replace (first (split type_accent_name ':')) '+' ' '}}"{{#if (is type_accent_parts.last 'serif')}}, serif {{else}}, "HelveticaNeue", "Helvetica Neue", sans-serif{{/if}}{{/capture}}
+  {{assign 'accent_weight' (get type_accent_parts 2)}}
+{{else}}
+  {{assign 'accent_family' settings.type_accent_family}}
+  {{assign 'accent_weight' 500}}
+{{/if}}
+
+// Header Font
+$headerFontStack: {{ header_family }};
+$headerFontWeight: {{ header_weight }};
+
+// Body Font
+$bodyFontStack: {{ base_family }};
+$baseFontSize: {{ settings.type_base_size }};
+
+// Navigation and Button Font
+$accentFontStackBold: {{ accent_family }};
+$accentFontWeight: {{ accent_weight }};
+
+// Icons
+@font-face {
+  font-family: "icons";
+  src: url('{{asset_url 'icons.eot'}}');
+  src: url('{{asset_url 'icons.eot'}}#iefix') format("embedded-opentype"),
+       url('{{asset_url 'icons.woff'}}') format("woff"),
+       url('{{asset_url 'icons.ttf'}}') format("truetype"),
+       url('{{asset_url 'icons.svg'}}#timber-icons') format("svg");
+  font-weight: normal;
+  font-style: normal;
+}
+$socialIconFontStack: 'icons';
+
+/*============================================================================
+  #Sass Mixins
+==============================================================================*/
+.clearfix {
+  &:after {
+    content: "";
+    display: table;
+    clear: both;
+  }
+}
+@mixin clearfix() {
+  &:after {
+    content: "";
+    display: table;
+    clear: both;
+  }
+}
+
+@mixin visuallyHidden {
+  clip: rect(0 0 0 0);
+  clip: rect(0, 0, 0, 0);
+  overflow: hidden;
+  position: absolute;
+  height: 1px;
+  width: 1px;
+}
+
+@mixin prefix($property, $value) {
+  -webkit-#{$property}: #{$value};
+  -moz-#{$property}: #{$value};
+  -ms-#{$property}: #{$value};
+  -o-#{$property}: #{$value};
+  #{$property}: #{$value};
+}
+
+/*============================================================================
+  Prefix mixin for generating vendor prefixes.
+  Based on https://github.com/thoughtbot/bourbon/blob/master/app/assets/stylesheets/addons/_prefixer.scss
+  Usage:
+    // Input:
+    .element {
+      @include prefix(transform, scale(1), ms webkit spec);
+    }
+    // Output:
+    .element {
+      -ms-transform: scale(1);
+      -webkit-transform: scale(1);
+      transform: scale(1);
+    }
+==============================================================================*/
+@mixin prefixFlex($property, $value, $prefixes) {
+  @each $prefix in $prefixes {
+    @if $prefix == webkit {
+      -webkit-#{$property}: $value;
+    } @else if $prefix == moz {
+      -moz-#{$property}: $value;
+    } @else if $prefix == ms {
+      -ms-#{$property}: $value;
+    } @else if $prefix == o {
+      -o-#{$property}: $value;
+    } @else if $prefix == spec {
+      #{$property}: $value;
+    } @else  {
+      @warn 'Unrecognized prefix: #{$prefix}';
+    }
+  }
+}
+
+@mixin transition($transition: 0.1s all) {
+  @include prefix('transition', #{$transition});
+}
+
+@mixin gradient($from, $to, $fallback) {
+  background: $fallback;
+  background: -moz-linear-gradient(top, $from 0%, $to 100%);
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,$from), color-stop(100%,$to));
+  background: -webkit-linear-gradient(top, $from 0%,$to 100%);
+  background: -o-linear-gradient(top, $from 0%,$to 100%);
+  background: -ms-linear-gradient(top, $from 0%,$to 100%);
+  background: linear-gradient(top bottom, $from 0%,$to 100%);
+}
+
+@mixin backface($visibility: hidden) {
+  @include prefix('backface-visibility', #{$visibility});
+}
+
+@mixin box-sizing($box-sizing: border-box) {
+  -webkit-box-sizing: #{$box-sizing};
+  -moz-box-sizing: #{$box-sizing};
+  box-sizing: #{$box-sizing};
+}
+
+@function add-to-cart-color($color) {
+  @if (lightness( $color) > 48) {
+    @return $colorBody;
+  }
+  @else {
+    @return #fff;
+  }
+}
+
+@function color-control($color) {
+  @if (lightness( $color ) > 48) {
+    @return $headerText;
+  }
+  @else {
+    @return #fff;
+  }
+}
+
+@function em($target, $context: $baseFontSize) {
+  @if $target == 0 {
+    @return 0;
+  }
+  @return $target / $context + 0em;
+}
+
+/*============================================================================
+  Dependency-free breakpoint mixin
+// http://blog.grayghostvisuals.com/sass/sass-media-query-mixin/
+==============================================================================*/
+$min: min-width;
+$max: max-width;
+@mixin at-query ($constraint, $viewport1, $viewport2:null) {
+  @if $constraint == $min {
+    @media screen and ($min: $viewport1) {
+      @content;
+    }
+  } @else if $constraint == $max {
+    @media screen and ($max: $viewport1) {
+      @content;
+    }
+  } @else {
+    @media screen and ($min: $viewport1) and ($max: $viewport2) {
+      @content;
+    }
+  }
+}
+
+/*============================================================================
+  Flexbox prefix mixins from Bourbon
+    https://github.com/thoughtbot/bourbon/blob/master/app/assets/stylesheets/css3/_flex-box.scss
+==============================================================================*/
+@mixin display-flexbox() {
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  width: 100%; // necessary for ie10
+}
+
+@mixin flex-wrap($value: nowrap) {
+  @include prefixFlex(flex-wrap, $value, webkit moz ms spec);
+}
+
+@mixin flex-direction($value) {
+  @include prefixFlex(flex-direction, $value, webkit moz ms spec);
+}
+
+@mixin align-items($value: stretch) {
+  $alt-value: $value;
+
+  @if $value == 'flex-start' {
+    $alt-value: start;
+  } @else if $value == 'flex-end' {
+    $alt-value: end;
+  }
+
+  // sass-lint:disable no-misspelled-properties
+  -ms-flex-align: $alt-value;
+  @include prefixFlex(align-items, $value, webkit moz ms o spec);
+}
+
+@mixin flex($value) {
+  @include prefixFlex(flex, $value, webkit moz ms spec);
+}
+
+@mixin flex-basis($width: auto) {
+  // sass-lint:disable no-misspelled-properties
+  -ms-flex-preferred-size: $width;
+  @include prefixFlex(flex-basis, $width, webkit moz spec);
+}
+
+@mixin align-self($align: auto) {
+  // sass-lint:disable no-misspelled-properties
+  -ms-flex-item-align: $align;
+  @include prefixFlex(align-self, $align, webkit spec);
+}
+
+@mixin justify-content($justify: flex-start) {
+  @include prefixFlex(justify-content, $justify, webkit ms spec);
+}
+
+/*============================================================================
+  #Normalize
+==============================================================================*/
+*, input, :before, :after {
+  @include box-sizing();
+}
+
+article, aside, details, figcaption, figure, footer, header, hgroup, main, nav, section, summary {
+  display: block;
+}
+
+audio, canvas, progress, video {
+  display: inline-block;
+  vertical-align: baseline;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  height: auto;
+}
+
+input[type="search"]::-webkit-search-cancel-button,
+input[type="search"]::-webkit-search-decoration {
+  -webkit-appearance: none;
+}
+
+.vertical-middle {
+  position: relative;
+  top: 50%;
+  transform: translate(0, -50%);
+}
+
+/*============================================================================
+  #Grid Setup
+    - Based on csswizardry grid, but with floated columns and a fixed gutter size
+    - Breakpoints defined above, under #Breakpoint and Grid Variables
+    - Note the inclusion of .grid-uniform to take care of clearfixes on evenly sized grid-items
+==============================================================================*/
+$responsive:         true;
+$mobile-first:       true;
+$use-silent-classes: false;
+$push:               true;
+$pull:               false;
+
+/* Force clearfix on grids */
+.grid,
+.grid-uniform {
+  @include clearfix;
+}
+
+/* Manual grid-item clearfix */
+.grid-item.clear {
+  clear: both;
+}
+
+$class-type: unquote(".");
+
+@if $use-silent-classes == true {
+  $class-type: unquote("%");
+}
+
+@mixin grid-media-query($media-query) {
+  $breakpoint-found: false;
+
+  @each $breakpoint in $breakpoints {
+    $name: nth($breakpoint, 1);
+    $declaration: nth($breakpoint, 2);
+
+    @if $media-query == $name and $declaration {
+      $breakpoint-found: true;
+
+      @media only screen and #{$declaration} {
+        @content;
+      }
+    }
+  }
+
+  @if $breakpoint-found == false{
+    @warn "Breakpoint '#{$media-query}' does not exist";
+  }
+}
+
+
+/*============================================================================
+  Drop relative positioning into silent classes which can't take advantage of
+  the `[class*="push--"]` and `[class*="pull--"]` selectors.
+==============================================================================*/
+@mixin silent-relative() {
+  @if $use-silent-classes == true{
+    position:relative;
+  }
+}
+
+/*============================================================================
+  Grid Setup
+    1. Allow the grid system to be used on lists.
+    2. Remove any margins and paddings that might affect the grid system.
+    3. Apply a negative `margin-left` to negate the columns' gutters.
+==============================================================================*/
+#{$class-type}grid,
+#{$class-type}grid-uniform {
+  list-style:none;
+  margin:0;
+  padding:0;
+  margin-left:-$gridGutter;
+}
+
+#{$class-type}grid-item {
+  float: left;
+  padding-left:$gridGutter;
+  vertical-align:top;
+  @if $mobile-first == true {
+    width:100%;
+  }
+  @include box-sizing();
+}
+
+/*============================================================================
+  Reversed grids allow you to structure your source in the opposite
+  order to how your rendered layout will appear.
+==============================================================================*/
+#{$class-type}grid--rev {
+  @extend #{$class-type}grid;
+  direction:rtl;
+  text-align:left;
+
+  > #{$class-type}grid-item {
+    direction:ltr;
+    text-align:left;
+    float: right;
+  }
+}
+
+/* Gutterless grids have all the properties of regular grids, minus any spacing. */
+#{$class-type}grid--full {
+  @extend #{$class-type}grid;
+  margin-left:0;
+
+  > #{$class-type}grid-item {
+    padding-left:0;
+  }
+}
+
+/*============================================================================
+  WIDTHS
+    - Create width classes, prefixed by the specified namespace.
+==============================================================================*/
+@mixin device-type($namespace:"") {
+  /** Whole */
+  #{$class-type}#{$namespace}one-whole       { width:100%; }
+
+  /* Halves */
+  #{$class-type}#{$namespace}one-half        { width:50%; }
+
+  /* Thirds */
+  #{$class-type}#{$namespace}one-third       { width:33.333%; }
+  #{$class-type}#{$namespace}two-thirds      { width:66.666%; }
+
+  /* Quarters */
+  #{$class-type}#{$namespace}one-quarter     { width:25%; }
+  #{$class-type}#{$namespace}two-quarters    { @extend #{$class-type}#{$namespace}one-half; }
+  #{$class-type}#{$namespace}three-quarters  { width:75%; }
+
+  /* Fifths */
+  #{$class-type}#{$namespace}one-fifth       { width:20%; }
+  #{$class-type}#{$namespace}two-fifths      { width:40%; }
+  #{$class-type}#{$namespace}three-fifths    { width:60%; }
+  #{$class-type}#{$namespace}four-fifths     { width:80%; }
+
+  /* Sixths */
+  #{$class-type}#{$namespace}one-sixth       { width:16.666%; }
+  #{$class-type}#{$namespace}two-sixths      { @extend #{$class-type}#{$namespace}one-third; }
+  #{$class-type}#{$namespace}three-sixths    { @extend #{$class-type}#{$namespace}one-half; }
+  #{$class-type}#{$namespace}four-sixths     { @extend #{$class-type}#{$namespace}two-thirds; }
+  #{$class-type}#{$namespace}five-sixths     { width:83.333%; }
+
+  /* Eighths */
+  #{$class-type}#{$namespace}one-eighth      { width:12.5%; }
+  #{$class-type}#{$namespace}two-eighths     { @extend #{$class-type}#{$namespace}one-quarter; }
+  #{$class-type}#{$namespace}three-eighths   { width:37.5%; }
+  #{$class-type}#{$namespace}four-eighths    { @extend #{$class-type}#{$namespace}one-half; }
+  #{$class-type}#{$namespace}five-eighths    { width:62.5%; }
+  #{$class-type}#{$namespace}six-eighths     { @extend #{$class-type}#{$namespace}three-quarters; }
+  #{$class-type}#{$namespace}seven-eighths   { width:87.5%; }
+
+  /* Tenths */
+  #{$class-type}#{$namespace}one-tenth       { width:10%; }
+  #{$class-type}#{$namespace}two-tenths      { @extend #{$class-type}#{$namespace}one-fifth; }
+  #{$class-type}#{$namespace}three-tenths    { width:30%; }
+  #{$class-type}#{$namespace}four-tenths     { @extend #{$class-type}#{$namespace}two-fifths; }
+  #{$class-type}#{$namespace}five-tenths     { @extend #{$class-type}#{$namespace}one-half; }
+  #{$class-type}#{$namespace}six-tenths      { @extend #{$class-type}#{$namespace}three-fifths; }
+  #{$class-type}#{$namespace}seven-tenths    { width:70%; }
+  #{$class-type}#{$namespace}eight-tenths    { @extend #{$class-type}#{$namespace}four-fifths; }
+  #{$class-type}#{$namespace}nine-tenths     { width:90%; }
+
+  /* Twelfths */
+  #{$class-type}#{$namespace}one-twelfth     { width:8.333%; }
+  #{$class-type}#{$namespace}two-twelfths    { @extend #{$class-type}#{$namespace}one-sixth; }
+  #{$class-type}#{$namespace}three-twelfths  { @extend #{$class-type}#{$namespace}one-quarter; }
+  #{$class-type}#{$namespace}four-twelfths   { @extend #{$class-type}#{$namespace}one-third; }
+  #{$class-type}#{$namespace}five-twelfths   { width:41.666% }
+  #{$class-type}#{$namespace}six-twelfths    { @extend #{$class-type}#{$namespace}one-half; }
+  #{$class-type}#{$namespace}seven-twelfths  { width:58.333%; }
+  #{$class-type}#{$namespace}eight-twelfths  { @extend #{$class-type}#{$namespace}two-thirds; }
+  #{$class-type}#{$namespace}nine-twelfths   { @extend #{$class-type}#{$namespace}three-quarters; }
+  #{$class-type}#{$namespace}ten-twelfths    { @extend #{$class-type}#{$namespace}five-sixths; }
+  #{$class-type}#{$namespace}eleven-twelfths { width:91.666%; }
+}
+
+/*================ Clearfix helper on uniform grids ================*/
+@mixin clearfix-helper($namespace:"") {
+  .grid-uniform {
+    #{$class-type}#{$namespace}one-half:nth-child(2n+1),
+    #{$class-type}#{$namespace}one-third:nth-child(3n+1),
+    #{$class-type}#{$namespace}one-quarter:nth-child(4n+1),
+    #{$class-type}#{$namespace}one-fifth:nth-child(5n+1),
+    #{$class-type}#{$namespace}one-sixth:nth-child(6n+1),
+    #{$class-type}#{$namespace}two-sixths:nth-child(3n+1),
+    #{$class-type}#{$namespace}three-sixths:nth-child(2n+1),
+    #{$class-type}#{$namespace}two-eighths:nth-child(4n+1),
+    #{$class-type}#{$namespace}four-eighths:nth-child(2n+1),
+    #{$class-type}#{$namespace}five-tenths:nth-child(2n+1),
+    #{$class-type}#{$namespace}one-twelfth:nth-child(12n+1),
+    #{$class-type}#{$namespace}two-twelfths:nth-child(6n+1),
+    #{$class-type}#{$namespace}three-twelfths:nth-child(4n+1),
+    #{$class-type}#{$namespace}four-twelfths:nth-child(3n+1),
+    #{$class-type}#{$namespace}six-twelfths:nth-child(2n+1)    { clear:both; }
+  }
+}
+
+/*============================================================================
+  HELPERS
+==============================================================================*/
+
+/*================ Helper show/hide classes around our breakpoints ================*/
+@mixin device-helper($namespace:"") {
+  #{$class-type}#{$namespace}show        { display:block!important; }
+  #{$class-type}#{$namespace}hide        { display:none!important; }
+
+  #{$class-type}#{$namespace}text-left   { text-align:left!important; }
+  #{$class-type}#{$namespace}text-right  { text-align:right!important; }
+  #{$class-type}#{$namespace}text-center { text-align:center!important; }
+
+  #{$class-type}#{$namespace}left        { float:left!important; }
+  #{$class-type}#{$namespace}right       { float:right!important; }
+}
+
+/*================ Our regular, non-responsive width and helper classes ================*/
+@include device-type();
+@include device-helper();
+
+/*================ Our responsive classes, if we have enabled them ================*/
+@if $responsive == true {
+  @each $name in $breakpoint-has-widths {
+    @include grid-media-query($name) {
+      @include device-type('#{$name}--');
+      @include device-helper('#{$name}--');
+      @include clearfix-helper('#{$name}--');
+    }
+  }
+}
+
+/*============================================================================
+  PUSH
+    - Push classes, to move grid items over to the right by certain amounts
+==============================================================================*/
+@mixin push-setup($namespace: "") {
+  /* Whole */
+  #{$class-type}push--#{$namespace}one-whole       { left:100%; @include silent-relative(); }
+
+  /* Halves */
+  #{$class-type}push--#{$namespace}one-half        { left:50%; @include silent-relative(); }
+
+  /* Thirds */
+  #{$class-type}push--#{$namespace}one-third       { left:33.333%; @include silent-relative(); }
+  #{$class-type}push--#{$namespace}two-thirds      { left:66.666%; @include silent-relative(); }
+
+  /* Quarters */
+  #{$class-type}push--#{$namespace}one-quarter     { left:25%; @include silent-relative(); }
+  #{$class-type}push--#{$namespace}two-quarters    { @extend #{$class-type}push--#{$namespace}one-half; }
+  #{$class-type}push--#{$namespace}three-quarters  { left:75%; @include silent-relative(); }
+
+  /* Fifths */
+  #{$class-type}push--#{$namespace}one-fifth       { left:20%; @include silent-relative(); }
+  #{$class-type}push--#{$namespace}two-fifths      { left:40%; @include silent-relative(); }
+  #{$class-type}push--#{$namespace}three-fifths    { left:60%; @include silent-relative(); }
+  #{$class-type}push--#{$namespace}four-fifths     { left:80%; @include silent-relative(); }
+
+  /* Sixths */
+  #{$class-type}push--#{$namespace}one-sixth       { left:16.666%; @include silent-relative(); }
+  #{$class-type}push--#{$namespace}two-sixths      { @extend #{$class-type}push--#{$namespace}one-third; }
+  #{$class-type}push--#{$namespace}three-sixths    { @extend #{$class-type}push--#{$namespace}one-half; }
+  #{$class-type}push--#{$namespace}four-sixths     { @extend #{$class-type}push--#{$namespace}two-thirds; }
+  #{$class-type}push--#{$namespace}five-sixths     { left:83.333%; @include silent-relative(); }
+
+  /* Eighths */
+  #{$class-type}push--#{$namespace}one-eighth      { left:12.5%; @include silent-relative(); }
+  #{$class-type}push--#{$namespace}two-eighths     { @extend #{$class-type}push--#{$namespace}one-quarter; }
+  #{$class-type}push--#{$namespace}three-eighths   { left:37.5%; @include silent-relative(); }
+  #{$class-type}push--#{$namespace}four-eighths    { @extend #{$class-type}push--#{$namespace}one-half; }
+  #{$class-type}push--#{$namespace}five-eighths    { left:62.5%; @include silent-relative(); }
+  #{$class-type}push--#{$namespace}six-eighths     { @extend #{$class-type}push--#{$namespace}three-quarters; }
+  #{$class-type}push--#{$namespace}seven-eighths   { left:87.5%; @include silent-relative(); }
+
+  /* Tenths */
+  #{$class-type}push--#{$namespace}one-tenth       { left:10%; @include silent-relative(); }
+  #{$class-type}push--#{$namespace}two-tenths      { @extend #{$class-type}push--#{$namespace}one-fifth; }
+  #{$class-type}push--#{$namespace}three-tenths    { left:30%; @include silent-relative(); }
+  #{$class-type}push--#{$namespace}four-tenths     { @extend #{$class-type}push--#{$namespace}two-fifths; }
+  #{$class-type}push--#{$namespace}five-tenths     { @extend #{$class-type}push--#{$namespace}one-half; }
+  #{$class-type}push--#{$namespace}six-tenths      { @extend #{$class-type}push--#{$namespace}three-fifths; }
+  #{$class-type}push--#{$namespace}seven-tenths    { left:70%; @include silent-relative(); }
+  #{$class-type}push--#{$namespace}eight-tenths    { @extend #{$class-type}push--#{$namespace}four-fifths; }
+  #{$class-type}push--#{$namespace}nine-tenths     { left:90%; @include silent-relative(); }
+
+  /* Twelfths */
+  #{$class-type}push--#{$namespace}one-twelfth     { left:8.333%; @include silent-relative(); }
+  #{$class-type}push--#{$namespace}two-twelfths    { @extend #{$class-type}push--#{$namespace}one-sixth; }
+  #{$class-type}push--#{$namespace}three-twelfths  { @extend #{$class-type}push--#{$namespace}one-quarter; }
+  #{$class-type}push--#{$namespace}four-twelfths   { @extend #{$class-type}push--#{$namespace}one-third; }
+  #{$class-type}push--#{$namespace}five-twelfths   { left:41.666%; @include silent-relative(); }
+  #{$class-type}push--#{$namespace}six-twelfths    { @extend #{$class-type}push--#{$namespace}one-half; }
+  #{$class-type}push--#{$namespace}seven-twelfths  { left:58.333%; @include silent-relative(); }
+  #{$class-type}push--#{$namespace}eight-twelfths  { @extend #{$class-type}push--#{$namespace}two-thirds; }
+  #{$class-type}push--#{$namespace}nine-twelfths   { @extend #{$class-type}push--#{$namespace}three-quarters; }
+  #{$class-type}push--#{$namespace}ten-twelfths    { @extend #{$class-type}push--#{$namespace}five-sixths; }
+  #{$class-type}push--#{$namespace}eleven-twelfths { left:91.666%; @include silent-relative(); }
+}
+
+@if $push == true {
+  [class*="push--"]{ position:relative; }
+
+  @include push-setup();
+
+  @if $responsive == true {
+    @each $name in $breakpoint-has-push {
+      @include grid-media-query($name) {
+        @include push-setup('#{$name}--');
+      }
+    }
+  }
+}
+
+/*============================================================================
+  PULL
+    - Pull classes, to move grid items back to the left by certain amounts
+==============================================================================*/
+@mixin pull-setup($namespace: "") {
+  /* Whole */
+  #{$class-type}pull--#{$namespace}one-whole       { right:100%; @include silent-relative(); }
+
+  /* Halves */
+  #{$class-type}pull--#{$namespace}one-half        { right:50%; @include silent-relative(); }
+
+  /* Thirds */
+  #{$class-type}pull--#{$namespace}one-third       { right:33.333%; @include silent-relative(); }
+  #{$class-type}pull--#{$namespace}two-thirds      { right:66.666%; @include silent-relative(); }
+
+  /* Quarters */
+  #{$class-type}pull--#{$namespace}one-quarter     { right:25%; @include silent-relative(); }
+  #{$class-type}pull--#{$namespace}two-quarters    { @extend #{$class-type}pull--#{$namespace}one-half; }
+  #{$class-type}pull--#{$namespace}three-quarters  { right:75%; @include silent-relative(); }
+
+  /* Fifths */
+  #{$class-type}pull--#{$namespace}one-fifth       { right:20%; @include silent-relative(); }
+  #{$class-type}pull--#{$namespace}two-fifths      { right:40%; @include silent-relative(); }
+  #{$class-type}pull--#{$namespace}three-fifths    { right:60%; @include silent-relative(); }
+  #{$class-type}pull--#{$namespace}four-fifths     { right:80%; @include silent-relative(); }
+
+  /* Sixths */
+  #{$class-type}pull--#{$namespace}one-sixth       { right:16.666%; @include silent-relative(); }
+  #{$class-type}pull--#{$namespace}two-sixths      { @extend #{$class-type}pull--#{$namespace}one-third; }
+  #{$class-type}pull--#{$namespace}three-sixths    { @extend #{$class-type}pull--#{$namespace}one-half; }
+  #{$class-type}pull--#{$namespace}four-sixths     { @extend #{$class-type}pull--#{$namespace}two-thirds; }
+  #{$class-type}pull--#{$namespace}five-sixths     { right:83.333%; @include silent-relative(); }
+
+  /* Eighths */
+  #{$class-type}pull--#{$namespace}one-eighth      { right:12.5%; @include silent-relative(); }
+  #{$class-type}pull--#{$namespace}two-eighths     { @extend #{$class-type}pull--#{$namespace}one-quarter; }
+  #{$class-type}pull--#{$namespace}three-eighths   { right:37.5%; @include silent-relative(); }
+  #{$class-type}pull--#{$namespace}four-eighths    { @extend #{$class-type}pull--#{$namespace}one-half; }
+  #{$class-type}pull--#{$namespace}five-eighths    { right:62.5%; @include silent-relative(); }
+  #{$class-type}pull--#{$namespace}six-eighths     { @extend #{$class-type}pull--#{$namespace}three-quarters; }
+  #{$class-type}pull--#{$namespace}seven-eighths   { right:87.5%; @include silent-relative(); }
+
+  /* Tenths */
+  #{$class-type}pull--#{$namespace}one-tenth       { right:10%; @include silent-relative(); }
+  #{$class-type}pull--#{$namespace}two-tenths      { @extend #{$class-type}pull--#{$namespace}one-fifth; }
+  #{$class-type}pull--#{$namespace}three-tenths    { right:30%; @include silent-relative(); }
+  #{$class-type}pull--#{$namespace}four-tenths     { @extend #{$class-type}pull--#{$namespace}two-fifths; }
+  #{$class-type}pull--#{$namespace}five-tenths     { @extend #{$class-type}pull--#{$namespace}one-half; }
+  #{$class-type}pull--#{$namespace}six-tenths      { @extend #{$class-type}pull--#{$namespace}three-fifths; }
+  #{$class-type}pull--#{$namespace}seven-tenths    { right:70%; @include silent-relative(); }
+  #{$class-type}pull--#{$namespace}eight-tenths    { @extend #{$class-type}pull--#{$namespace}four-fifths; }
+  #{$class-type}pull--#{$namespace}nine-tenths     { right:90%; @include silent-relative(); }
+
+  /* Twelfths */
+  #{$class-type}pull--#{$namespace}one-twelfth     { right:8.333%; @include silent-relative(); }
+  #{$class-type}pull--#{$namespace}two-twelfths    { @extend #{$class-type}pull--#{$namespace}one-sixth; }
+  #{$class-type}pull--#{$namespace}three-twelfths  { @extend #{$class-type}pull--#{$namespace}one-quarter; }
+  #{$class-type}pull--#{$namespace}four-twelfths   { @extend #{$class-type}pull--#{$namespace}one-third; }
+  #{$class-type}pull--#{$namespace}five-twelfths   { right:41.666%; @include silent-relative(); }
+  #{$class-type}pull--#{$namespace}six-twelfths    { @extend #{$class-type}pull--#{$namespace}one-half; }
+  #{$class-type}pull--#{$namespace}seven-twelfths  { right:58.333%; @include silent-relative(); }
+  #{$class-type}pull--#{$namespace}eight-twelfths  { @extend #{$class-type}pull--#{$namespace}two-thirds; }
+  #{$class-type}pull--#{$namespace}nine-twelfths   { @extend #{$class-type}pull--#{$namespace}three-quarters; }
+  #{$class-type}pull--#{$namespace}ten-twelfths    { @extend #{$class-type}pull--#{$namespace}five-sixths; }
+  #{$class-type}pull--#{$namespace}eleven-twelfths { right:91.666%; @include silent-relative(); }
+}
+
+@if $pull == true {
+  [class*="pull--"]{ position:relative; }
+
+  @include pull-setup();
+
+  @if $responsive == true{
+    @each $name in $breakpoint-has-pull {
+      @include grid-media-query($name) {
+        @include pull-setup('#{$name}--');
+      }
+    }
+  }
+}
+
+/*================ IE8 grid uniform clearfix ================*/
+.lt-ie9 .grid-uniform {
+  text-align: left;
+  margin-left: 0;
+
+  .grid-item {
+    display: inline-block;
+    float: none;
+    padding: 0;
+    margin-left: -3px;
+  }
+}
+
+/*================ Home page section helpers ================*/
+.template-index {
+  main.main-content .shopify-section:nth-child(1) hr:first-child {
+      display: none;
+  }
+}
+
+/*============================================================================
+  #Basic Styles
+==============================================================================*/
+html, body {
+  padding: 0;
+  margin: 0;
+  background-color: $colorBody;
+  &.js {
+     .no-js {
+       display: block;
+     }
+   }
+   &.no-js{
+     .no-js{
+       display:none!important;
+     }
+   }
+}
+
+/*============================================================================
+  Commented out CSS for background for easy background image uploading in case customers ask.
+  Simply upload a file called 'bg.jpg' and delete lines as necessary.
+==============================================================================*/
+// body {
+  // background: url({{asset_url 'bg.jpg'}}) 0 0 repeat scroll;
+  // background: url({{asset_url 'bg.jpg'}}) 0 0 no-repeat scroll;
+  // background: url({{asset_url 'bg.jpg'}}) 0 0 repeat fixed;
+  // background: url({{asset_url 'bg.jpg'}}) 0 0 no-repeat fixed;
+
+  // Fullscreen background
+  // @include prefix('background-size', 'cover');
+// }
+
+.wrapper {
+  @include clearfix();
+  max-width: $siteWidth;
+  margin: 0 auto;
+  padding: 0 $gutter/2;
+
+  @include at-query ($min, $postSmall) {
+    padding: 0 $gutter;
+  }
+}
+
+.main-content {
+  display: block;
+  padding-top: $gutter;
+  padding-bottom: $gutter*2;
+}
+
+.grid-border {
+  & > .grid-item {
+    padding-top: $gutter;
+  }
+
+  // @include at-query ($min, $large) {
+  //   & > .grid-item + .grid-item {
+  //     padding-right: $gutter/2;
+  //   }
+  // }
+}
+
+@include at-query ($min, $large) {
+  .grid-border--right {
+    border-right: 1px solid $colorBorder;
+  }
+
+  .grid-border--left {
+    border-left: 1px solid $colorBorder;
+  }
+}
+
+/*============================================================================
+  #Helper Classes
+==============================================================================*/
+.left { float: left; }
+.right { float: right; }
+.text-center { text-align: center; }
+.text-right { text-align: right; }
+.hidden { display: none; }
+
+.display-table {
+  display: table;
+  table-layout: fixed;
+  width: 100%;
+}
+
+.display-table-cell {
+  display: table-cell;
+  vertical-align: middle;
+  float: none;
+}
+
+@include at-query ($min, $large) {
+  .large--display-table {
+    display: table;
+    table-layout: fixed;
+    width: 100%;
+  }
+
+  .large--display-table-cell {
+    display: table-cell;
+    vertical-align: middle;
+    float: none;
+  }
+}
+
+.visually-hidden {
+  @include visuallyHidden();
+}
+
+/*============================================================================
+  #Typography
+==============================================================================*/
+body,
+input,
+textarea,
+button,
+select {
+  font-size: $baseFontSize;
+  line-height: 1.6;
+  font-family: $bodyFontStack;
+  color: $colorTextBody;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  -webkit-text-size-adjust: 100%;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  display: block;
+  margin: 0 0 0.5em;
+  line-height: 1.4;
+  font-family: $headerFontStack;
+  font-weight: $headerFontWeight;
+  {{#if settings.type_header_transform}}
+  text-transform: uppercase;
+  {{/if}}
+
+  a {
+    text-decoration: none;
+    font-weight: inherit;
+  }
+}
+
+/*================ Pixel to EM conversion tool - http://pxtoem.com/ ================*/
+h1 {
+  font-size: 1.733em; // 26px
+  margin-bottom: 30px;
+}
+
+h2 { font-size: 1.333em; } // 20px
+h3 { font-size: 1.133em; } // 17px
+h4 { font-size: 1.067em; } // 16px
+h5 { font-size: 1em; } // 15px
+h6 { font-size: 1em; } // 15px
+
+.h1 { @extend h1; }
+.h2 { @extend h2; }
+.h3 { @extend h3; }
+.h4 { @extend h4; }
+.h5 { @extend h5; }
+.h6 { @extend h6; }
+
+.main-content {
+  h1, h2, h3, h4, h5 {
+    color: $colorHeaders;
+  }
+}
+
+.sidebar {
+  h2, h3, h4, h5 {
+    margin-top: 4px;
+  }
+}
+
+p {
+  margin: 0 0 $gutter/2 0;
+
+  img {
+    margin: 0;
+  }
+}
+
+em {
+  font-style: italic;
+}
+
+b, strong {
+  font-weight: bold;
+}
+
+small {
+  font-size: 80%;
+}
+
+sup, sub {
+  position: relative;
+  font-size: 60%;
+  vertical-align: baseline;
+}
+
+sup {
+  top: -0.5em;
+}
+
+sub {
+  bottom: -0.5em;
+}
+
+.text-light {
+  color: $colorTextBody;
+}
+
+s {
+  @extend .text-light;
+}
+
+/*================ Blockquotes ================*/
+blockquote, q { quotes: none; }
+
+blockquote:before,
+blockquote:after,
+q:before,
+q:after { content: none; }
+
+blockquote {
+  font-size: 1.125em;
+  line-height: 1.45;
+  font-style: italic;
+  margin: 0 0 $gutter;
+  padding: $gutter/2 $gutter;
+  border-left: 1px solid $colorBorder;
+
+  p {
+    margin-bottom: 0;
+
+    & + cite {
+      margin-top: $gutter/2;
+    }
+  }
+
+  cite {
+    display: block;
+    font-size: 0.75em;
+
+    &:before {
+      content: "\2014 \0020";
+    }
+  }
+}
+
+/*================ Code ================*/
+code, pre {
+  background-color: #faf7f5;
+  font-family: Consolas,monospace;
+  font-size: 1em;
+  border: 0 none;
+  padding: 0 2px;
+  color: #51ab62;
+}
+
+pre {
+  overflow: auto;
+  padding: 0.5em;
+  margin: 0 0 1em;
+}
+
+/*================ Horizontal Rules ================*/
+hr {
+  clear: both;
+  border-top: solid $colorBorder;
+  border-width: 1px 0 0;
+  margin: $gutter 0;
+  height: 0;
+
+  &.hr--small {
+    margin: $gutter/2 0;
+  }
+
+  &.hr--clear {
+    border-top-color: transparent;
+  }
+
+  footer & {
+    border-top-color: darken($colorFooterBg, 5%);
+  }
+
+  @include at-query ($min, $large) {
+    &.hr--offset-left {
+      margin-left: -$gutter;
+    }
+  }
+}
+
+/*================ Section Headers ================*/
+.section-header {
+  margin-bottom: $gutter/1.5;
+}
+
+.section-header--title {
+  margin-bottom: $gutter/2.5;
+}
+
+@include at-query ($min, $large) {
+  .section-header {
+    display: table;
+    width: 100%;
+  }
+
+  .section-header--left {
+    display: table-cell;
+    vertical-align: middle;
+    margin-bottom: 0;
+
+    h1, h2, h3, h4,
+    .h1, .h2, .h3, .h4 {
+      margin-bottom: 0;
+    }
+  }
+
+  .section-header--right {
+    display: table-cell;
+    vertical-align: middle;
+    text-align: right;
+    width: 335px;
+
+    @include at-query ($max, $medium) {
+      margin-bottom: $gutter;
+    }
+  }
+}
+
+.section-header--right {
+  .form-horizontal {
+    display: inline-block;
+    vertical-align: middle;
+  }
+
+  @include at-query ($min, $postSmall) {
+    label + select,
+    .collection-view {
+      margin-left: $gutter/2;
+    }
+  }
+}
+
+.collection-view {
+  display: none;
+  border: 1px solid $colorBorder;
+  border-radius: $radius;
+  padding: 11px;
+  height: 39px; // same as form elements
+  vertical-align: middle;
+
+  /*================ We use SVG icons, so simply hide this in oldIE ================*/
+  .lt-ie9 & {
+    display: none;
+  }
+
+  /*================ Only show on larger screens ================*/
+  @include at-query ($min, $large) {
+    display: inline-block;
+    // margin-right: -$gutter/2;
+  }
+
+  a {
+    color: $colorTextBody;
+    display: block;
+    float: left;
+    opacity: 0.7;
+    cursor: pointer;
+    line-height: 100%;
+    @include transition(opacity 0.15s ease-out);
+
+    & + a {
+      margin-left: 10px;
+    }
+
+    &:hover {
+      opacity: 0.9;
+      @include transition(opacity 0.05s ease-in);
+    }
+
+    &.collection-view--active {
+      opacity: 1;
+      cursor: default;
+    }
+  }
+
+  img {
+    display: block;
+    opacity: inherit;
+  }
+}
+
+.newsletter-section {
+  padding: 20px 0;
+
+  .h1 {
+    margin-bottom: 10px;
+  }
+
+  #contact_form {
+    @include at-query($min, $large) {
+      width: 50%;
+      margin: 0 auto;
+    }
+  }
+}
+
+/*============================================================================
+  #Rich Text Editor
+==============================================================================*/
+.rte {
+  margin-bottom: $gutter/2;
+
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+
+  // Add some top margin to headers from the rich text editor
+  h1, h2, h3, h4, h5, h6 {
+    margin-top: 0.5em;
+
+    &:first-child {
+      margin-top: 0;
+    }
+  }
+
+  & > div {
+    margin-bottom: $gutter/2;
+  }
+
+  ul, ol {
+    margin-left: 35px;
+  }
+
+  ul {
+    @extend ul.disc;
+
+    ul {
+      list-style: circle outside;
+
+      ul {
+        @extend ul.square;
+      }
+    }
+  }
+
+  li {
+    margin-bottom: 0.4em;
+  }
+
+  table {
+    table-layout: fixed;
+  }
+}
+
+.rte--header {
+  margin-bottom: 0;
+}
+
+/*============================================================================
+  #Links and Buttons
+==============================================================================*/
+a {
+  color: $colorLink;
+  text-decoration: none;
+  background: transparent;
+}
+
+a:hover,
+a:focus {
+  color: $colorLinkHover;
+}
+
+button {
+  overflow: visible;
+}
+
+button[disabled],
+html input[disabled] {
+  cursor: default;
+}
+
+.btn {
+  display: inline-block;
+  padding: 8px 20px;
+  margin: 0;
+  line-height: 1.42;
+  text-decoration: none;
+  text-align: center;
+  vertical-align: middle;
+  white-space: nowrap;
+  cursor: pointer;
+  border: 1px solid transparent;
+  @include prefix('user-select', 'none');
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  border-radius: $radius;
+  font: {
+    family: $accentFontStackBold;
+    weight: $accentFontWeight;
+    size: {{ settings.type_button_size }};
+  };
+  {{#if settings.type_button_transform}}
+  text-transform: uppercase;
+  {{/if}}
+  @include transition(background-color 0.2s ease-out);
+
+  &.btn--small {
+    padding: 8px 12px 7px;
+    font-size: {{ settings.type_button_size }} - 2;
+  }
+
+  &.btn--full {
+    width: 100%;
+  }
+
+  /*================ Set primary button colors - can override later ================*/
+  background-color: $colorBtnPrimary;
+  color: add-to-cart-color($colorBtnPrimary);
+
+  &:hover {
+    background-color: $colorBtnPrimaryHover;
+    color: add-to-cart-color($colorBtnPrimary);
+    @include transition(background-color 0.05s ease-in);
+  }
+
+  &:active {
+   background-color: $colorBtnPrimaryActive;
+   color: add-to-cart-color($colorBtnPrimary);
+  }
+
+  &[disabled],
+  &.disabled {
+    cursor: default;
+    color: $disabledBorder;
+    background-color: $disabledGrey;
+  }
+}
+
+.btn-secondary,
+input.btn-secondary {
+  @extend .btn;
+  background-color: $colorBtnSecondary;
+  color: $colorTextBody;
+
+  &:hover {
+    background-color: $colorBtnSecondaryHover;
+    color: $colorTextBody;
+  }
+
+  &:active {
+   background-color: $colorBtnSecondaryActive;
+    color: $colorTextBody;
+  }
+}
+
+/*================ Force an input/button to look like a text link ================*/
+.text-link {
+  display: inline;
+  border: 0 none;
+  background: none;
+  padding: 0;
+  margin: 0;
+}
+
+/*============================================================================
+  #Lists
+==============================================================================*/
+ul, ol { margin: 0 0 1em; padding: 0; }
+ul { list-style: none outside; }
+ol { list-style: decimal; }
+ol, ul.square, ul.disc { margin-left: 20px; }
+ul.square { list-style: square outside; }
+ul.disc { list-style: disc outside; }
+ol.alpha { list-style: lower-alpha outside; }
+ul ul, ul ol,
+ol ol, ol ul { margin: 4px 0 5px 20px; }
+li { margin-bottom: 0.25em; }
+.inline-list li { display: inline-block; margin-bottom: 0; }
+
+/*============================================================================
+  #Tables
+==============================================================================*/
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+  min-width: 50%;
+}
+
+table.full {
+  width: 100%;
+  margin-bottom: $gutter/2;
+}
+
+th {
+  font-weight: bold;
+}
+
+th, td {
+  text-align: left;
+  padding: $gutter/2;
+  border: 1px solid $colorBorder;
+}
+
+
+/*============================================================================
+  #OOCSS Media Object
+//  - http://www.stubbornella.org/content/2010/06/25/the-media-object-saves-hundreds-of-lines-of-code/
+==============================================================================*/
+.media,
+.media-flex {
+  overflow: hidden;
+  _overflow: visible;
+  zoom: 1;
+}
+
+.media-img {
+  float: left;
+  margin-right: $gutter;
+}
+
+.media-img-right {
+  float: right;
+  margin-left: $gutter;
+}
+
+.media-img img,
+.media-img-right img {
+  display: block;
+}
+
+
+/*============================================================================
+  #Images and Iframes
+==============================================================================*/
+img {
+  border: 0 none;
+}
+
+svg:not(:root) {
+  overflow: hidden;
+}
+
+img.auto,
+.grid-item img,
+.grid-item iframe {
+  max-width: 100%;
+}
+
+.video-wrapper {
+  position: relative;
+  overflow: hidden;
+  max-width: 100%;
+  padding-bottom: 56.25%;
+  height: 0;
+  height: auto;
+
+  iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+}
+
+
+/*============================================================================
+  #Forms
+==============================================================================*/
+form {
+  margin-bottom: $gutter;
+}
+
+button,
+input[type="text"],
+input[type="search"],
+input[type="password"],
+input[type="email"],
+input[type="file"],
+input[type="number"],
+input[type="tel"],
+input[type="submit"],
+textarea {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+input,
+textarea,
+select,
+fieldset {
+  border-radius: $radius;
+  max-width: 100%;
+
+  &.input-full {
+    width: 100%;
+  }
+}
+
+input,
+select,
+textarea {
+  font-size: 1em;
+  padding: 8px 10px;
+  line-height: 1.42;
+  background: transparent;
+}
+
+.cart-row input[type="submit"],
+.cart-row button[type="submit"]  {
+  margin-bottom: 2px;
+}
+
+fieldset {
+  border: 1px solid $colorBorder;
+  padding: $gutter/2 0;
+}
+
+legend {
+  border: 0;
+  padding: 0;
+}
+
+optgroup {
+  font-weight: bold;
+}
+
+input {
+  display: inline-block;
+  width: auto;
+}
+
+button,
+input[type="submit"] {
+  cursor: pointer;
+}
+
+input[type="submit"] {
+  @extend .btn;
+}
+
+/*================ Input width and border ================*/
+input[type="text"],
+input[type="search"],
+input[type="password"],
+input[type="email"],
+input[type="file"],
+input[type="number"],
+input[type="tel"],
+textarea,
+select {
+  border: 1px solid $colorBorder;
+  background-color: rgba($colorTextBody, 0.1);
+  width: 100%;
+  max-width: 100%;
+  display: block;
+  margin: 0 0 $gutter/1.5;
+
+  &:focus {
+    border: 1px solid darken($colorBorder, 10%);
+  }
+
+  &[disabled],
+  &.disabled {
+    cursor: default;
+    background-color: $disabledGrey;
+    border-color: $disabledBorder;
+  }
+}
+
+@include at-query($min, $small) {
+  input[type="number"] {
+    width: 50%;
+  }
+}
+
+textarea {
+  min-height: 100px;
+}
+
+input[type="checkbox"],
+input[type="radio"] {
+  display: inline;
+  margin: 0;
+  padding: 0;
+}
+
+select {
+  -webkit-appearance: none;
+     -moz-appearance: none;
+          appearance: none;
+  background-position: right center;
+  background: {
+    image: url('{{asset_url 'arrow-down.svg'}}');
+    repeat: no-repeat;
+    position: right 10px center;
+    color: $colorBody;
+  }
+  padding-right: 28px;
+  text-indent: 0.01px;
+  text-overflow: '';
+  cursor: pointer;
+
+  /*================ Hide the svg arrow in IE9 and below ================*/
+  .ie9 &,
+  .lt-ie9 & {
+    padding-right: 10px;
+    background-image: none;
+  }
+}
+
+select::-ms-expand {
+    display: none;
+}
+
+/*================ Form labels ================*/
+label,
+legend {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 14px;
+
+  &.inline {
+    display: inline;
+  }
+
+  .form-horizontal &.hidden-label,
+  &.hidden-label {
+    height: 0;
+    width: 0;
+    margin-bottom: 0;
+    overflow: hidden;
+
+    .ie9 &,
+    .lt-ie9 & {
+      height: auto;
+      margin-bottom: 2px;
+      overflow: visible;
+    }
+  }
+}
+
+/*================ We don't want the same label treatment for checkboxes/radios ================*/
+input[type="checkbox"] + label,
+input[type="radio"] + label {
+  font-weight: normal;
+}
+
+label[for] {
+  cursor: pointer;
+}
+
+.label-hint {
+  color: #999;
+}
+
+/*================ Horizontal Form ================*/
+form.form-horizontal,
+.form-horizontal {
+  margin-bottom: 0;
+
+  input[type="text"],
+  input[type="search"],
+  input[type="password"],
+  input[type="email"],
+  input[type="file"],
+  input[type="number"],
+  input[type="tel"],
+  textarea,
+  select,
+  label {
+    display: inline-block;
+    margin-bottom: 0;
+    width: auto;
+  }
+}
+
+/*================ Error styles ================*/
+input[type="text"],
+input[type="search"],
+input[type="password"],
+input[type="email"],
+input[type="file"],
+input[type="number"],
+input[type="tel"],
+textarea {
+  &.error {
+    border-color: $errorRed;
+    background-color: $errorRedBg;
+    color: $errorRed;
+  }
+}
+
+label.error {
+  color: $errorRed;
+}
+
+/*================ Input Group ================*/
+.input-group {
+  position: relative;
+  display: table;
+  border-collapse: separate;
+
+  .input-group-field:first-child,
+  .input-group-btn:first-child,
+  .input-group-btn:first-child > .btn,
+  input[type="hidden"]:first-child + .input-group-field,
+  input[type="hidden"]:first-child + .input-group-btn > .btn {
+    border-radius: $radius 0 0 $radius;
+    border-right: none;
+  }
+
+  .input-group-field:last-child,
+  .input-group-btn:last-child > .btn {
+   border-radius: 0 $radius $radius 0;
+
+  }
+
+  input {
+    // Nasty Firefox hack for inputs http://davidwalsh.name/firefox-buttons
+    &::-moz-focus-inner {
+      border: 0;
+      padding: 0;
+      margin-top: -1px;
+      margin-bottom: -1px;
+    }
+  }
+}
+
+.input-group-field,
+.input-group-btn {
+  display: table-cell;
+  vertical-align: middle;
+  margin: 0;
+}
+
+.input-group .btn,
+.input-group .input-group-field {
+  height: 42px;
+}
+
+.input-group .input-group-field {
+  width: 100%;
+  margin-bottom: 0;
+  border-color: darken($colorBorder, 20%);
+  border-right: none;
+}
+
+.input-group-btn {
+  position: relative;
+  white-space: nowrap;
+  width: 1%;
+  padding: 0;
+}
+
+.form-spacer {
+  margin: 0 $gutter/2;
+}
+
+/*============================================================================
+  #Icons
+==============================================================================*/
+.icon-fallback-text .icon {
+  display: none;
+
+  .supports-fontface & {
+    display: inline-block;
+  }
+}
+
+/*============================================================================
+  A generic way to visually hide content while
+  remaining accessible to screen readers (h5bp.com)
+==============================================================================*/
+.supports-fontface .icon-fallback-text .fallback-text {
+  clip: rect(0 0 0 0);
+  overflow: hidden;
+  position: absolute;
+  height: 1px;
+  width: 1px;
+}
+
+.icon:before {
+  display: none;
+}
+
+.supports-fontface .icon:before {
+  display: inline;
+  font-family: $socialIconFontStack;
+  text-decoration: none;
+  speak: none; // future fallback, limited in effect currently
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/*================ Icon mapping ================*/
+.icon-amazon_payments:before { content: "\e90c"; }
+.icon-american_express:before { content: "\41"; }
+.icon-apple_pay:before { content: "\e90b"; }
+.icon-arrow-down:before { content: "\34"; }
+.icon-arrow-left:before { content: "\e900"; }
+.icon-arrow-right:before { content: "\e901"; }
+.icon-bitcoin:before { content: "\42"; }
+.icon-cart:before { content: "\5b"; }
+.icon-cirrus:before { content: "\43"; }
+.icon-collection-view-grid:before { content: "\e902"; }
+.icon-collection-view-list:before { content: "\e903"; }
+.icon-dankort:before { content: "\64"; }
+.icon-diners_club:before { content: "\63"; }
+.icon-discover:before { content: "\44"; }
+.icon-dogecoin:before { content: "\e905"; }
+.icon-dwolla:before { content: "\e906"; }
+.icon-facebook:before { content: "\66"; }
+.icon-fancy:before { content: "\46"; }
+.icon-forbrugsforeningen:before { content: "\e907"; }
+.icon-google_plus:before { content: "\e90a"; }
+.icon-hamburger:before { content: "\e904"; }
+.icon-instagram:before { content: "\e908"; }
+.icon-interac:before { content: "\49"; }
+.icon-jcb:before { content: "\4a"; }
+.icon-litecoin:before { content: "\e909"; }
+.icon-maestro:before { content: "\6d"; }
+.icon-master:before { content: "\4d"; }
+.icon-paypal:before { content: "\50"; }
+.icon-pin:before { content: "\e90e"; }
+.icon-pinterest:before { content: "\70"; }
+.icon-rss:before { content: "\72"; }
+.icon-search:before { content: "\73"; }
+.icon-snapchat:before { content: "\e90d"; }
+.icon-stripe:before { content: "\53"; }
+.icon-tumblr:before { content: "\74"; }
+.icon-twitter:before { content: "\54"; }
+.icon-vimeo:before { content: "\76"; }
+.icon-visa:before { content: "\56"; }
+.icon-x:before { content: "\78"; }
+.icon-youtube:before { content: "\79"; }
+
+
+/*================ Button icons ================*/
+.icon-cart {
+  line-height: 0;
+
+  &:before {
+    position: relative;
+    top: -2px;
+    font-size: 19px;
+    line-height: 12px;
+    vertical-align: middle;
+    margin-right: 6px;
+  }
+}
+
+.payment-icons {
+  @include prefix('user-select', 'none');
+  cursor: default;
+  margin: 0;
+
+  li {
+    margin: 0 $gutter/4 $gutter/4;
+    color: {{ settings.color_footer_social_link }};
+    cursor: default;
+  }
+
+  .icon {
+    font-size: 30px;
+    line-height: 30px;
+  }
+
+  .fallback-text {
+    text-transform: capitalize;
+  }
+}
+
+.social-icons li {
+  margin: 0 $gutter/3 0 0;
+  vertical-align: middle;
+
+  @include at-query ($min, $postSmall) {
+    margin-left: 0;
+  }
+
+  .icon {
+    font-size: 20px;
+    line-height: 16px;
+  }
+
+  a {
+    color: {{ settings.color_footer_social_link }};
+    @include transition(color 0.2s ease-out);
+
+    &:hover {
+      color: darken({{ settings.color_footer_social_link }}, 15%);
+      @include transition(color 0.05s ease-in);
+    }
+  }
+}
+
+ul {
+  &.social-icons {
+    margin-bottom: 0;
+  }
+}
+
+/*================ Social share buttons ================*/
+$shareButtonHeight: 22px;
+$shareButtonCleanHeight: 30px;
+$shareBorderColor: #ececec;
+
+.social-sharing {
+  font-family: "HelveticaNeue", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  padding-top: $gutter/2;
+
+  a {
+    display: inline-block;
+    color: #fff;
+    border-radius: 2px;
+    margin: 0 10px 10px 0;
+    height: $shareButtonHeight;
+    line-height: $shareButtonHeight;
+    text-decoration: none;
+    font-weight: normal;
+
+    &:hover {
+      color: #fff;
+    }
+  }
+
+  span {
+    display: inline-block;
+    vertical-align: top;
+    height: $shareButtonHeight;
+    line-height: $shareButtonHeight;
+    font-size: 12px;
+  }
+
+  .icon {
+    padding: 0 5px 0 10px;
+
+    &:before {
+      line-height: $shareButtonHeight;
+    }
+  }
+
+  /*================ Large Buttons ================*/
+  &.is-large a {
+    height: $shareButtonHeight*2;
+    line-height: $shareButtonHeight*2;
+
+    span {
+      height: $shareButtonHeight*2;
+      line-height: $shareButtonHeight*2;
+      font-size: 18px;
+    }
+
+    .icon {
+      padding: 0 10px 0 18px;
+
+      &:before {
+        line-height: $shareButtonHeight*2;
+      }
+    }
+  }
+}
+
+.share-title {
+  font-weight: 900;
+  font-size: 12px;
+  padding-right: 10px;
+
+  .is-large & {
+    padding-right: 16px;
+  }
+}
+
+.share-facebook {
+  background-color: #3b5998;
+
+  &:hover {
+    background-color: darken(#3b5998, 10%);
+  }
+}
+
+.share-twitter {
+  background-color: #00aced;
+
+  &:hover {
+    background-color: darken(#00aced, 10%);
+  }
+}
+
+.share-pinterest {
+  background-color: #cb2027;
+
+  &:hover {
+    background-color: darken(#cb2027, 10%);
+  }
+}
+
+.share-fancy {
+  background-color: #4999dc;
+
+  &:hover {
+    background-color: darken(#4999dc, 10%);
+  }
+}
+
+.share-google {
+  background-color: #dd4b39;
+
+  &:hover {
+    background-color: darken(#dd4b39, 10%);
+  }
+}
+
+/*================ Clean Buttons ================*/
+.social-sharing.is-clean {
+  a {
+    background-color: #fff;
+    border: 1px solid $shareBorderColor;
+    color: #333;
+    height: $shareButtonCleanHeight;
+    line-height: $shareButtonCleanHeight;
+
+    span {
+      height: $shareButtonCleanHeight;
+      line-height: $shareButtonCleanHeight;
+      font-size: 13px;
+    }
+
+    &:hover {
+      background-color: #f9f9f9;
+    }
+
+    .share-title {
+      font-weight: normal;
+    }
+  }
+
+  .icon-facebook {
+    color: #3b5998;
+  }
+
+  .icon-twitter {
+    color: #00aced;
+  }
+
+  .icon-pinterest {
+    color: #cb2027;
+  }
+}
+
+/*============================================================================
+  #Pagination
+==============================================================================*/
+.pagination-border-top {
+  border-top: 1px solid $colorBorder;
+}
+
+/*================ Custom Pagination ================*/
+.pagination-custom {
+  display: inline-block;
+  padding-left: 0;
+  margin: 0 0 $gutter;
+}
+
+.pagination-custom > li {
+  display: inline;
+}
+
+.pagination-custom > li > a,
+.pagination-custom > li > span {
+  position: relative;
+  float: left;
+  padding: 5px 10px;
+  margin-left: -1px;
+  line-height: 1.42;
+  text-decoration: none;
+  border: 1px solid darken($colorBorder, 20%);
+}
+
+.pagination-custom > li:first-child > a,
+.pagination-custom > li:first-child > span {
+  margin-left: 0;
+}
+
+.pagination-custom > li > a:hover,
+.pagination-custom > li > span:hover,
+.pagination-custom > li > a:focus,
+.pagination-custom > li > span:focus {
+  // hover color
+}
+
+.pagination-custom > .active > a,
+.pagination-custom > .active > span,
+.pagination-custom > .active > a:hover,
+.pagination-custom > .active > span:hover,
+.pagination-custom > .active > a:focus,
+.pagination-custom > .active > span:focus {
+  z-index: 2;
+  cursor: default;
+  color: $colorTextBody;
+}
+
+.pagination-custom > .disabled > span,
+.pagination-custom > .disabled > a,
+.pagination-custom > .disabled > a:hover,
+.pagination-custom > .disabled > a:focus {
+  color: #999999;
+  cursor: not-allowed;
+}
+
+.pagination-custom-lg > li > a,
+.pagination-custom-lg > li > span {
+  padding: 10px 16px;
+  font-size: 18px;
+}
+
+.pagination-custom-sm > li > a,
+.pagination-custom-sm > li > span {
+  padding: 5px 10px;
+  font-size: 0.75em;
+}
+
+
+/*============================================================================
+  #Site Header
+==============================================================================*/
+.site-header {
+  padding: $gutter/2 0;
+  background-color: $headerBackground;
+  color: $headerText;
+
+  @include at-query ($min, $large) {
+    padding: $gutter 0;
+  }
+
+  .site-header--text-links a {
+    color: $headerText;
+
+    &:hover {
+      opacity: 0.9;
+    }
+  }
+
+  @include at-query ($min, $large) {
+    .grid {
+      display: table;
+      table-layout: fixed;
+      width: 100%;
+
+      & > .grid-item {
+        float: none;
+        display: table-cell;
+        vertical-align: middle;
+      }
+    }
+  }
+}
+
+.header-logo {
+  margin: $gutter auto;
+
+  @include at-query ($min, $large) {
+    margin: 15px 0;
+  }
+
+  @include at-query ($max, $medium) {
+    text-align: center;
+    .lazyload__image-wrapper  {
+      margin: 0 auto;
+    }
+  }
+
+  a,
+  a:hover,
+  a:focus {
+    text-decoration: none;
+    color: $headerText;
+  }
+
+  a, img {
+    display: block;
+  }
+
+  img {
+    margin: 0 auto;
+    @include at-query ($min, $large) {
+      float: left;
+    }
+  }
+}
+
+.site-header--text-links {
+  display: inline-block;
+  font-size: 0.85em;
+  margin-bottom: $gutter/2;
+
+  a {
+    font-weight: bold;
+  }
+}
+
+.site-header--meta-links {
+  display: inline-block;
+  margin-left: $gutter/2;
+}
+
+.site-header--spacer {
+  padding: 0 5px;
+}
+
+.header-cart-btn {
+  @extend .btn;
+  position: relative;
+  line-height: 26px;
+  padding-bottom: 10px;
+  border: 0 none;
+  margin-left: $gutter/2;
+  vertical-align: top;
+  background-color: $headerButtonAndSearch;
+  color: color-control($headerButtonAndSearch);
+
+  @include at-query ($max, $medium) {
+    display: none;
+  }
+
+  &:hover,
+  &:focus {
+    color: color-control($headerButtonAndSearch);
+    background-color: darken($headerButtonAndSearch, 5%);
+  }
+}
+
+.cart-count {
+  display: inline-block;
+  text-align: center;
+  background-color: $colorAccent;
+  color: $headerBackground;
+  font: {
+    weight: 700;
+    size: 13px;
+  };
+  min-width: 20px;
+  height: 20px;
+  line-height: 20px;
+  border-radius: 20px;
+
+  &.hidden-count {
+    display: none;
+  }
+}
+
+.cart-badge--desktop {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+}
+
+.search-bar {
+  position: relative;
+  max-width: 60%;
+  width: 100%;
+  margin: 0 auto $gutter;
+
+  .icon-search {
+    font-size: 18px;
+  }
+
+  @include at-query ($max, $medium) {
+    display: block;
+    max-width: 100%;
+    margin-bottom: $gutter/2;
+  }
+
+  input[type="text"],
+  input[type="search"] {
+    width: 100%;
+    margin-bottom: 0;
+    padding: 10px 45px 10px 10px; // 45 is same as submit button width
+    font: {
+      family: $accentFontStackBold;
+      weight: $accentFontWeight;
+      size: {{ settings.type_button_size }};
+    };
+
+    line-height: normal;
+  }
+  input:-ms-input-placeholder {
+    line-height: normal;
+    display: inline-block;
+  }
+
+  input[type="submit"],
+  .search-bar--submit {
+    position: absolute;
+    top: 2px;
+    bottom: 0;
+    right: 0;
+    width: 45px;
+    margin: 0;
+    border: 0 none;
+    background: none;
+    text-align: center;
+    cursor: pointer;
+
+    .site-header & {
+      color: color-control($headerButtonAndSearch);
+    }
+  }
+
+  input[type="submit"] {
+    text-indent: -9999px;
+  }
+
+  .site-header & {
+    display: none;
+    margin-bottom: 0;
+
+    @include at-query ($min, $large) {
+      display: inline-block;
+    }
+
+    input[type="text"],
+    input[type="search"] {
+      height: 44px;
+      border: 0 none;
+      background-color: $headerButtonAndSearch;
+      color: color-control($headerButtonAndSearch);
+      @include transition(background-color 0.2s ease-out);
+      &:hover, &:focus {
+        background-color: darken($headerButtonAndSearch, 5%);
+        @include transition(background-color 0.05s ease-in);
+      }
+      &:focus {
+        outline: 0;
+      }
+    }
+  }
+}
+
+.site-header input::-webkit-input-placeholder {
+  color: color-control($headerButtonAndSearch);
+}
+
+.site-header input::-moz-placeholder {
+  color: color-control($headerButtonAndSearch);
+}
+
+
+/*============================================================================
+  #Site Nav and Dropdowns
+==============================================================================*/
+.nav-bar {
+  top: 110%;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: $colorNav;
+
+  a {
+    color: $colorNavText;
+
+    &:active,
+    &:focus {
+      opacity: 0.9;
+    }
+  }
+}
+
+.site-nav {
+  margin: 0;
+  font: {
+    family: $accentFontStackBold;
+    weight: $accentFontWeight;
+    size: {{ settings.type_navigation_size }};
+  };
+  {{#if settings.type_navigation_transform}}
+  text-transform: uppercase;
+  {{/if}}
+  cursor: default;
+
+  li {
+    margin: 0;
+    display: block;
+  }
+
+  a {
+    display: block;
+    text-decoration: none;
+    padding: $gutter/2;
+  }
+
+  .customer-navlink {
+    color: $colorNavText;
+    background-color: lighten($colorNav, 15%);
+    border-bottom: 0;
+    border-top: 1px solid lighten($colorNav, 5%);
+    margin-top: -1px;
+  }
+}
+
+/*================ Small screen nav styles ================*/
+@include at-query ($max, $small) {
+  .nav-bar {
+    .show-nav & {
+      bottom: 0;
+      top: $mobileNavBarHeight;
+    }
+  }
+
+  .show-nav,
+  .show-nav body {
+    height: 100%;
+    overflow: hidden;
+  }
+}
+
+/*================ Medium-down screen nav styles ================*/
+@include at-query ($max, $medium) {
+  .nav-bar {
+    position: fixed;
+
+    z-index: 2000;
+    @include transition(all 600ms cubic-bezier(0.47, 0.5, 0, 0.95));
+
+    .show-nav & {
+      max-height: 100%;
+      overflow-y: scroll;
+      -webkit-overflow-scrolling: touch;
+      @include transition(all 450ms cubic-bezier(0.47, 0, 0, 0.95));
+    }
+
+    .wrapper {
+      padding: $gutter/2 0 0;
+
+      .show-nav & {
+        min-height: 101%;
+      }
+    }
+
+    .search-bar {
+      margin: 0 $gutter/2 $gutter/2;
+      width: auto;
+      input[type="search"]::-webkit-input-placeholder {
+        color: color-control($colorNav);
+      }
+      input::-webkit-input-placeholder {
+        color: color-control($colorNav);
+      }
+      .search-bar--submit .icon {
+        color: color-control($colorNav);
+      }
+    }
+  }
+
+  .site-nav {
+    border-top: 1px solid lighten($colorNav, 10%);
+  }
+
+  /*================ Menu items ================*/
+  .site-nav li {
+    border-bottom: 1px solid lighten($colorNav, 20%);
+    -webkit-tap-highlight-color: rgba(255,255,255,0.2);
+
+    &:hover {
+      background-color: lighten($colorNav, 10%);
+    }
+  }
+}
+
+/*================ Medium screen size only ================*/
+@include at-query (null, $postSmall, $medium) {
+  .nav-bar {
+    .show-nav & {
+      top: $mobileNavBarHeight;
+      bottom: 0;
+    }
+  }
+}
+
+/*================ Large screen bar navigation ================*/
+@include at-query ($min, $large) {
+  .nav-bar {
+    .search-bar {
+      display: none;
+    }
+  }
+
+  .site-nav {
+    text-align: left;
+    white-space: nowrap;
+    margin-left: -$gutter/2;
+
+    & > li {
+      position: relative;
+      display: inline-block;
+    }
+
+    a {
+      white-space: nowrap;
+    }
+
+  }
+}
+
+/*================ Dropdowns ================*/
+.icon-arrow-down {
+  position: relative;
+  top: -2px;
+  font-size: 12px;
+}
+
+.site-nav--dropdown {
+  display: none;
+  margin: 0;
+}
+
+.site-nav--dropdown .icon-arrow-down {
+  display: none !important;
+}
+
+/*================ Large screen dropdown styles ================*/
+@include at-query ($min, $large) {
+  .site-nav--dropdown {
+    display: block;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    border: 1px solid $colorBorder;
+    background-color: $colorBody;
+    opacity: 0;
+    overflow: hidden;
+    visibility: hidden;
+    z-index: 20;
+    @include transition(all 150ms);
+
+    .no-touch .site-nav--has-dropdown:hover &,
+    .site-nav--has-dropdown.nav-hover &,
+    .nav-focus + &,
+    .show-dropdown & {
+      opacity: 1;
+      box-shadow: 0 5px 40px rgba(0,0,0,0.05);
+      visibility: visible;
+      @include transition(all 90ms);
+    }
+
+    a {
+      color: $colorPrimary;
+      text-transform: none;
+      padding: $gutter/3 $gutter*1.5 $gutter/3 $gutter/2;
+
+      &:hover,
+      &:active,
+      &:focus {
+        color: darken($colorPrimary, 10%);
+      }
+
+      &:focus {
+        background-color: darken($colorBody, 5%);
+      }
+    }
+  }
+}
+
+/*================ Medium down dropdown styles ================*/
+@include at-query ($max, $medium) {
+  .site-nav {
+    text-align: center;
+  }
+
+  .site-nav--dropdown {
+    background-color: lighten($colorNav, 15%);
+
+    & > li {
+      float: none;
+      width: 100%;
+      border: none;
+      text-transform: none;
+      border-bottom: 1px solid lighten($colorNav, 5%);
+    }
+  }
+
+  .show-dropdown .site-nav--dropdown {
+    display: block;
+  }
+}
+
+/*============================================================================
+  #Mobile Nav Bar
+==============================================================================*/
+#mobileNavBar {
+  @include clearfix;
+  display: none;
+  width: 100%;
+  background-color: $colorNav;
+
+  .display-table-cell {
+    padding: 0 $gutter/2;
+  }
+
+  .cart-toggle {
+    text-align: right;
+  }
+
+  /*================ Small mobile nav bar ================*/
+  @include at-query ($max, $small) {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+  }
+
+  /*================ Medium-down mobile nav bar ================*/
+  @include at-query ($max, $medium) {
+    display: table;
+    height: $mobileNavBarHeight;
+    z-index: 999999999; // one 9 higher than #ajaxifyModal
+
+    .show-nav & {
+      position: fixed;
+      left: 0;
+      top: 0;
+    }
+  }
+}
+
+.mobileNavBar-link {
+  display: block;
+  padding: $gutter/3 0;
+  color: $colorNavText;
+  cursor: pointer;
+
+  &:hover,
+  &:focus {
+    color: $colorNavText;
+  }
+
+  &.menu-toggle {
+
+    .icon {
+      font-size: 12px;
+      margin-right: $gutter/3;
+    }
+
+    .lt-ie9 {
+      background-image: none;
+      padding-left: 0;
+    }
+
+  }
+}
+
+@include at-query($max, $medium) {
+  :target {
+    padding-top: $mobileNavBarHeight;
+  }
+}
+
+/*============================================================================
+  #Site Footer
+==============================================================================*/
+.site-footer {
+  background-color: $colorFooterBg;
+  padding: $gutter 0 10px;
+  color: $colorFooterText;
+
+  @include at-query ($min, $large) {
+    padding: $gutter*2 0 $gutter/5;
+  }
+
+  h3 {
+    margin: 0 0 $gutter/2 0;
+  }
+
+  a {
+    color: $colorFooterText;
+
+    &:hover {
+      color: darken($colorFooterText, 20%);
+    }
+  }
+}
+
+.legal-links {
+  margin-bottom: 0;
+
+  @include at-query($max, $medium) {
+    margin-bottom: $gutter/2;
+  }
+
+  & + & {
+    margin-bottom: $gutter/2;
+  }
+
+  li {
+    padding: 0 $gutter/2 0 0;
+    font-size: 13px;
+  }
+}
+
+/*============================================================================
+  #Product Grid and List Views
+==============================================================================*/
+.row-negative-bottom {
+  margin-bottom: -$gutter;
+}
+
+.sold-out {
+  .product-grid-image,
+  .product-list-image {
+    position: relative;
+    img {
+      opacity: 0.7;
+    }
+  }
+}
+
+.badge {
+  display: none;
+  position: absolute;
+  top: 50%;
+  width: 100%;
+  margin-top: -15px;
+  text-align: center;
+  z-index: 5;
+}
+
+.badge-label {
+  display: inline-block;
+  margin: 0 auto;
+  padding: 5px;
+  font-size: 13px;
+  font-weight: bold;
+  color: $colorBody;
+  background-color: $colorHeaders;
+  text-transform: uppercase;
+  border-radius: 2px;
+}
+
+.sold-out .badge--sold-out {
+  display: block;
+}
+
+.on-sale {
+
+}
+
+@include at-query ($max, $medium) {
+  .product-list-item .spr-badge {
+    clear: both;
+  }
+}
+
+@include at-query ($min, $large) {
+  .product-list-item {
+    .grid {
+      display: table;
+      table-layout: fixed;
+      width: 100%;
+    }
+
+    .grid-item {
+      display: table-cell;
+    }
+  }
+}
+
+.product-grid-image {
+  display: table;
+  table-layout: fixed;
+  width: 100%;
+  max-width: 100%;
+  min-width: 100%;
+  margin: 0 auto $gutter/2;
+
+  img {
+    display: block;
+    margin: 0 auto;
+    @include transition(opacity 0.3s ease-out);
+    @include backface();
+  }
+}
+
+.product-list-image {
+  display: block;
+  margin: 0 auto;
+}
+
+.product-grid-image--centered {
+  display: table-cell;
+  vertical-align: middle;
+}
+
+a.product-grid-item,
+.product-grid-item {
+  display: block;
+  color: $colorTextBody;
+  margin-bottom: $gutter*2;
+
+  &:hover img {
+    opacity: 0.9;
+    @include transition(opacity 0.05s ease-out);
+  }
+
+  @include at-query ($min, $large) {
+    margin-bottom: $gutter;
+
+    .template-list-collections & {
+      margin-bottom: 0;
+    }
+  }
+}
+
+.product-item--price {
+  @include clearfix;
+
+  .h1 {
+    margin-bottom: $gutter/2;
+  }
+
+  span {
+    line-height: 22px;
+  }
+
+  small {
+    white-space: nowrap;
+  }
+}
+
+.sale-tag {
+  display: inline-block;
+  text-transform: uppercase;
+  font-size: 13px;
+  font-weight: 900;
+  padding: 0 8px;
+  border-radius: 3px;
+  vertical-align: text-bottom;
+  color: $colorPrimary;
+  border: 2px solid $colorPrimary;
+
+  sup {
+    display: none;
+  }
+
+  &.large {
+    font-size: 16px;
+    padding: 0 12px;
+  }
+
+  .product-meta & {
+    position: relative;
+    top: 2px;
+  }
+
+  &.has-reviews {
+    margin-bottom: $gutter/3;
+  }
+}
+
+.featured-box {
+  position: relative;
+  display: block;
+  padding: $gutter/2 0;
+  border: 1px solid $colorBorder;
+  margin-bottom: $gutter;
+
+  &:after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,.02);
+    z-index: 5;
+  }
+
+  img, svg {
+    @include transition(opacity 0.1s ease-in-out);
+    @include backface();
+  }
+
+  &:hover img {
+    opacity: 0.9;
+  }
+}
+
+.featured-box--inner {
+  display: block;
+  margin: 0 auto;
+}
+
+.featured-box--image {
+  display: block;
+  vertical-align: middle;
+  width: 100%;
+  padding: 0 $gutter/2;
+
+  img, svg {
+    width: 100%;
+    &.placeholder-svg {
+      max-width: 100%;
+      max-height: 100%;
+      margin: 0 auto;
+    }
+  }
+}
+
+.featured-box--title {
+  position: relative;
+  display: block;
+  color: $colorTextBody;
+  font: {
+    family: $accentFontStackBold;
+    weight: $accentFontWeight;
+  };
+  padding-top: $gutter/2;
+  line-height: 1;
+  z-index: 10;
+}
+
+/*============================================================================
+  #Collection Filters
+==============================================================================*/
+$filterIconWidth: 12px;
+$innerFilterIconWidth: 6px;
+
+@include at-query ($max, $medium) {
+  .collection-filters {
+    display: none;
+  }
+}
+
+@include at-query ($min, $large) {
+  .toggle-filters {
+    display: none;
+  }
+}
+
+.advanced-filters {
+  margin-bottom: $gutter;
+}
+
+.advanced-filters a {
+  display: block;
+  position: relative;
+  padding-left: $filterIconWidth + 8px;
+
+  &:before,
+  &:after {
+    content:'';
+    display: block;
+    position: absolute;
+  }
+
+  &:before {
+    top: 6px;
+    left: 0;
+    width: $filterIconWidth;
+    height: $filterIconWidth;
+    background-color: $colorBody;
+    border: 1px solid $colorBorder;
+  }
+
+  &:after {
+    top: 6px + ($filterIconWidth - $innerFilterIconWidth)/2;
+    left: 0 + ($filterIconWidth - $innerFilterIconWidth)/2;
+    width: $innerFilterIconWidth;
+    height: $innerFilterIconWidth;
+    background-color: transparent;
+  }
+
+  &:hover:after {
+    background-color: $colorBorder;
+  }
+}
+
+.advanced-filter.active-filter {
+  a:after {
+    background-color: #000;
+  }
+
+  a:hover:after {
+    content: '\78';
+    top: 6px;
+    left: 0;
+    width: $filterIconWidth;
+    height: $filterIconWidth;
+    background-color: #000;
+    font-size: $filterIconWidth - 4;
+    text-align: center;
+    color: #fff;
+    font-family: $socialIconFontStack;
+    line-height: $filterIconWidth;
+    speak: none; // future fallback, limited in affect currently
+  }
+}
+
+/*============================================================================
+  #Breadcrumbs
+==============================================================================*/
+.breadcrumb {
+  font-size: 13px;
+  border-bottom: 1px solid $colorBorder;
+  margin-bottom: $gutter;
+  margin-top: -$gutter; // offset .main-content padding
+  height: 52px;
+
+  .lt-ie9 & {
+    margin-top: 0;
+  }
+
+  @include at-query ($min, $large) {
+    .template-page &,
+    .template-product & {
+      margin-bottom: $gutter*2;
+    }
+  }
+
+  @include at-query ($max, $medium) {
+    height: auto;
+  }
+
+  a {
+    color: $colorTextBody;
+
+    &:hover {
+      color: $colorTextBody;
+    }
+  }
+
+  a,
+  span {
+    display: inline-block;
+    padding: $gutter/2 7px $gutter/2 0;
+    margin-right: 7px;
+    overflow: hidden;
+
+    &:first-child {
+      padding-left: 0;
+    }
+  }
+  .divider {
+    font-size: 15px;
+    font-family: 'Verdana', sans-serif;
+    padding: 13px 7px 13px 0;
+    color: #767676;
+  }
+
+  & + .grid-border {
+    margin-top: -$gutter;
+  }
+}
+
+.breadcrumb--truncate {
+  width: 250px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+
+/*============================================================================
+  #Product Page
+==============================================================================*/
+
+/*================ Select fields ================*/
+.product-variants {
+  display: none;
+
+  .no-js & {
+    display: block;
+  }
+}
+
+@include at-query($min, $large) {
+  .selector-wrapper,
+  .product-variants {
+    select {
+      max-width: 40%;
+    }
+  }
+}
+
+#addToCartForm {
+  margin-bottom: 0;
+}
+
+@include at-query ($min, $postSmall) {
+  #addToCartForm select {
+    max-width: 50%;
+  }
+}
+
+/*================ Product details ================*/
+#productPrice {
+  font-size: 32px;
+  margin-bottom: 0;
+  white-space: nowrap;
+}
+
+#comparePrice {
+  white-space: nowrap;
+}
+
+.product-meta {
+  margin-bottom: 5px;
+
+  .product-meta--review {
+    display: block;
+  }
+
+  span {
+    margin-bottom: 0;
+  }
+
+  @include at-query ($min, $postSmall) {
+    display: table;
+
+    li,
+    .product-meta--review {
+      display: table-cell;
+      vertical-align: middle;
+      padding-right: $gutter/2;
+    }
+  }
+}
+
+.full-details {
+  display: inline-block;
+  margin-top: 15px;
+  cursor: pointer;
+}
+
+/*================ Notice of < 10 items left ================*/
+.variant-quantity {
+  display: none;
+  color: $colorPrimary;
+  line-height: 34px;
+  padding: 4px ($gutter / 2);
+
+  &.is-visible {
+    display: inline-block;
+  }
+}
+
+/*================ Product photos ================*/
+.product-photo-container {
+  margin-bottom: $gutter;
+  max-width: 100%;
+}
+
+.product-photo-container,
+.product-photo-thumbs {
+  a, img {
+    display: block;
+    margin: 0 auto;
+  }
+
+  li {
+    margin-bottom: $gutter;
+  }
+}
+
+@include at-query($min, $large) {
+  // Image zoom
+  .image-zoom {
+    display: inline-block;
+    cursor: move;
+  }
+}
+
+/*============================================================================
+  #Blogs and Comments
+==============================================================================*/
+.comment {
+  margin-bottom: $gutter;
+
+  & + & {
+    border-top: 1px solid $colorBorder;
+    padding-top: $gutter;
+  }
+}
+
+
+/*============================================================================
+  #Notes and Form Feedback
+==============================================================================*/
+.note,
+.errors {
+  border-radius: $radius;
+  padding: $gutter/2;
+  margin-bottom: $gutter/2;
+  border: 1px solid transparent;
+
+  ul,
+  ol {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+
+  li:last-child {
+    margin-bottom: 0;
+  }
+
+  p {
+    margin-bottom: 0;
+  }
+}
+
+.note {
+  border-color: $colorBorder;
+}
+
+.errors {
+  ul {
+    list-style: disc outside;
+    margin-left: 20px;
+  }
+}
+
+.form-success {
+  color: $successGreen;
+  background-color: lighten($successGreen, 65%);
+  border-color: $successGreen;
+  padding: 0.5em;
+}
+
+.form-error,
+.errors {
+  color: $errorRed;
+  background-color: $errorRedBg;
+  border-color: $errorRed;
+  padding: 0.5em;
+}
+
+
+/*============================================================================
+  #Cart Page
+==============================================================================*/
+.cart-row {
+  margin-top: $gutter;
+  padding-top: $gutter;
+  border-top: 1px solid $colorBorder;
+
+  &:first-child {
+    margin-top: 0;
+  }
+
+  &:first-child {
+    padding-top: 0;
+    border-top: 0 none;
+  }
+
+  a {
+    color: $colorTextBody;
+
+    &:hover {
+      color: $colorPrimary;
+    }
+  }
+
+  input[type="image"] {
+    padding: 15px 0px;
+  }
+
+  .additional-checkout-buttons {
+    & > *:not(script) {
+      padding: 10px 0 0 10px;
+      vertical-align: top;
+      line-height: 1;
+      &:first-child,
+      &:empty {
+        padding-left: 0px;
+      }
+    }
+  }
+}
+
+.cart-image,
+.cart-image img {
+  display: block;
+  width: 100%;
+  max-height: inherit;
+  height: inherit;
+}
+
+@include at-query ($max, $medium) {
+  .cart-image {
+    margin-bottom: $gutter/2;
+  }
+}
+
+.cart-subtotal {
+  margin-bottom: $gutter;
+}
+
+.cart-subtotal--price {
+  margin: 0 0 0 $gutter/3;
+  display: inline;
+}
+
+.cart-subtotal--savings,
+.cart-item--discount {
+  display: block;
+  padding-bottom: 15px;
+  font-weight: 700;
+}
+
+.cart--empty-message {
+  .cart--no-cookies & {
+    display: none;
+  }
+}
+
+.cart--continue-message {
+  .cart--no-cookies & {
+    display: none;
+  }
+}
+
+.cart--cookie-message {
+  display: none;
+  padding-bottom: 25px;
+
+  .cart--no-cookies & {
+    display: block;
+  }
+}
+
+/*================ Remove from cart icon ================*/
+$removeIconWidth: 19px;
+
+a.remove {
+  display: inline-block;
+  margin-top: 7px;
+  height: $removeIconWidth;
+  line-height: $removeIconWidth;
+  padding: 0 5px;
+  border-radius: $removeIconWidth;
+  font-size: 9px;
+  text-align: center;
+  border: 0 none;
+
+  .supports-fontface & {
+    padding: 0;
+    width: $removeIconWidth;
+  }
+}
+
+/*================ Ajax Cart ================*/
+
+#ajaxifyDrawer .ajaxifyCart--content a.remove {
+  color: $colorTextBody;
+}
+
+@include at-query ($max, $small) {
+  body {
+    padding-top: $mobileNavBarHeight;
+  }
+
+  .ajaxify-modal {
+
+    .ajaxifyCart--close {
+      top: $mobileNavBarHeight + 17px;
+    }
+
+    .ajaxifyCart--content {
+      margin-top: $mobileNavBarHeight;
+      margin-bottom: - $mobileNavBarHeight;
+    }
+  }
+}
+
+
+/*============================================================================
+  #Demo Styles - for empty store state
+==============================================================================*/
+.demo-image {
+  background: url('//cdn.shopify.com/s/files/1/0383/9765/t/1/assets/blankslate-producticon.png?4') no-repeat center center #eee;
+  display: block;
+  text-align: center;
+  padding: 100px 0;
+  color: #aaa;
+  font-size: 0.875em;
+  text-decoration: none;
+}
+
+/*============================================================================
+  #FlexSlider
+    - jQuery FlexSlider v2.2.2 | http://www.woothemes.com/flexslider/
+    - Contributing author: Tyler Smith (@mbmufffin)
+==============================================================================*/
+.flexslider {
+  margin: 0 0 $gutter*1.5;
+  padding: 0;
+}
+.flexslider li { margin: 0; max-width: 100%; }
+.flexslider .slides > li {
+  display: none; /* Hide the slides before the JS is loaded. Avoids image jumping */
+  margin: 0;
+  position: relative;
+  @include backface();
+
+  .slide-hide {
+      visibility: hidden;
+    }
+}
+.flexslider .slides img {
+  max-width: 100%;
+  margin: 0 auto;
+  display: block;
+}
+
+.flexslider .slides .placeholder-noblocks {
+  height: auto;
+  width: 100%;
+  max-height: 100%;
+  @include at-query ($min, $large) {
+    height: 430px;
+  }
+  @include at-query ($max, $medium) {
+    height: 30vh;
+  }
+}
+
+.slides { @include clearfix; }
+html[xmlns] .slides { display: block; }
+* html .slides { height: 1%; }
+
+/*================ No JS Fallback ================*/
+.no-js .slides > li:first-child { display: block; }
+.flexslider { position: relative; zoom: 1; }
+.flex-viewport { max-height: 2000px; -webkit-transition: all 1s ease; -moz-transition: all 1s ease; -o-transition: all 1s ease; transition: all 1s ease; }
+.loading .flex-viewport { max-height: 300px; }
+.flexslider .slides { zoom: 1; }
+.carousel li { margin-right: 5px; }
+
+/*================ Direction Nav ================*/
+.flex-direction-nav {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.flex-direction-nav { *height: 0; }
+.flex-direction-nav a  {
+  display: block;
+  width: 45px;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  z-index: 10;
+  overflow: hidden;
+  opacity: 0;
+  cursor: pointer;
+  @include transition(all .3s ease);
+}
+
+.flex-direction-nav .flex-disabled {
+  opacity: 0!important;
+  filter: alpha(opacity=0);
+  cursor: default;
+}
+
+.flex-direction-nav a {
+  text-indent: -9999px;
+  background: {
+    color: transparent;
+    repeat: no-repeat;
+    size: 20px auto;
+  }
+
+  /*================ Hide SVG arrows in oldIE ================*/
+  .lte-ie9 & {
+    display: none;
+  }
+
+  &.flex-prev {
+    background-image: url("data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjwhLS0gR2VuZXJhdG9yOiBBZG9iZSBJbGx1c3RyYXRvciAxNy4xLjAsIFNWRyBFeHBvcnQgUGx1Zy1JbiAuIFNWRyBWZXJzaW9uOiA2LjAwIEJ1aWxkIDApICAtLT4NCjwhRE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMS4xLy9FTiIgImh0dHA6Ly93d3cudzMub3JnL0dyYXBoaWNzL1NWRy8xLjEvRFREL3N2ZzExLmR0ZCI+DQo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9IkxheWVyXzEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4Ig0KCSB3aWR0aD0iMjIuM3B4IiBoZWlnaHQ9IjQwcHgiIHZpZXdCb3g9IjAgMCAyMi4zIDQwIiBlbmFibGUtYmFja2dyb3VuZD0ibmV3IDAgMCAyMi4zIDQwIiB4bWw6c3BhY2U9InByZXNlcnZlIj4NCjxwYXRoIGZpbGw9IiNEM0QzRDMiIGQ9Ik0xOC43LDBMMCwxOS43TDE4LjcsNDBjMCwwLDUuMi0xLDMuMS0zLjFTNS43LDE5LjcsNS43LDE5LjdzMTQtMTQuNSwxNi4xLTE2LjZTMTguNywwLDE4LjcsMHoiLz4NCjwvc3ZnPg0K");
+    background-position: center left;
+  }
+
+  &.flex-next {
+    background-image: url("data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjwhLS0gR2VuZXJhdG9yOiBBZG9iZSBJbGx1c3RyYXRvciAxNy4xLjAsIFNWRyBFeHBvcnQgUGx1Zy1JbiAuIFNWRyBWZXJzaW9uOiA2LjAwIEJ1aWxkIDApICAtLT4NCjwhRE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMS4xLy9FTiIgImh0dHA6Ly93d3cudzMub3JnL0dyYXBoaWNzL1NWRy8xLjEvRFREL3N2ZzExLmR0ZCI+DQo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9IkxheWVyXzEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4Ig0KCSB3aWR0aD0iMjIuM3B4IiBoZWlnaHQ9IjQwcHgiIHZpZXdCb3g9IjAgMCAyMi4zIDQwIiBlbmFibGUtYmFja2dyb3VuZD0ibmV3IDAgMCAyMi4zIDQwIiB4bWw6c3BhY2U9InByZXNlcnZlIj4NCjxwYXRoIGZpbGw9IiNEM0QzRDMiIGQ9Ik0wLjUsMy4xYzIuMSwyLjEsMTYuMSwxNi42LDE2LjEsMTYuNlMyLjYsMzQuOCwwLjUsMzYuOVMzLjYsNDAsMy42LDQwbDE4LjctMjAuM0wzLjYsMEMzLjYsMC0xLjYsMSwwLjUsMy4xDQoJeiIvPg0KPC9zdmc+DQo=");
+    background-position: center right;
+  }
+}
+
+/*================ Control Nav ================*/
+.flex-control-nav {
+  position: absolute;
+  bottom: -$gutter;
+  width: 100%;
+  text-align: center;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  li {
+    margin: 0 4px;
+    display: inline-block;
+    zoom: 1;
+    *display: inline;
+    vertical-align: middle;
+  }
+}
+
+.flex-control-paging li a {
+  width: 12px;
+  height: 12px;
+  display: block;
+  background-color: $colorBorder;
+  cursor: pointer;
+  text-indent: -9999px;
+  border-radius: 20px;
+  border: 2px solid $colorBody;
+  @include transition(all 0.1s ease-in-out);
+
+  &:hover {
+    background-color: darken($colorBorder, 10%);
+  }
+
+  &.flex-active {
+    background-color: $colorBody;
+    border-color: $colorPrimary;
+    cursor: default;
+  }
+}
+
+.flex-control-thumbs {margin: 5px 0 0; position: static; overflow: hidden;}
+.flex-control-thumbs li {width: 25%; float: left; margin: 0;}
+.flex-control-thumbs img {width: 100%; display: block; opacity: .7; cursor: pointer;}
+.flex-control-thumbs img:hover {opacity: 1;}
+.flex-control-thumbs .flex-active {opacity: 1; cursor: default;}
+
+@include at-query ($max, $medium) {
+  .flex-direction-nav a {
+    opacity: 1;
+    width: 25px;
+  }
+  .flex-direction-nav a.flex-prev {
+    left: 0;
+    background-position: center right;
+  }
+  .flex-direction-nav a.flex-next {
+    right: 0;
+    background-position: center left;
+  }
+}
+
+@include at-query ($min, $large) {
+  .flex-direction-nav .flex-prev { left: 10px; }
+  .flex-direction-nav .flex-next { right: 10px; }
+  .flexslider:hover .flex-prev { opacity: 1; left: (-$gutter)+5; }
+  .flexslider:hover .flex-next { opacity: 1; right: (-$gutter)+5; }
+}
+
+@include at-query ($min, $maxWidthBp) {
+  .flex-direction-nav .flex-prev { left: 20px; }
+  .flex-direction-nav .flex-next { right: 20px; }
+  .flexslider:hover .flex-prev { opacity: 1; left: -45px; }
+  .flexslider:hover .flex-next { opacity: 1; right: -45px; }
+}
+
+/*================ Custom Flexslider Styles ================*/
+.flexslider .slides {
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+}
+
+.slide-link {
+  display: block;
+
+  img {
+    display: block;
+  }
+}
+
+/*============================================================================
+  #Magnific Popup
+    http://dimsemenov.com/plugins/magnific-popup/
+==============================================================================*/
+
+.mfp-bg {
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1042;
+  overflow: hidden;
+  position: fixed;
+  background: #0b0b0b;
+  opacity: 0.8;
+  filter: alpha(opacity=80); }
+
+.mfp-wrap {
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1043;
+  position: fixed;
+  outline: none !important;
+  -webkit-backface-visibility: hidden; }
+
+.mfp-container {
+  text-align: center;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  left: 0;
+  top: 0;
+  padding: 0 8px;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box; }
+
+.mfp-container:before {
+  content: '';
+  display: inline-block;
+  height: 100%;
+  vertical-align: middle; }
+
+.mfp-align-top .mfp-container:before {
+  display: none; }
+
+.mfp-content {
+  position: relative;
+  display: inline-block;
+  vertical-align: middle;
+  margin: 0 auto;
+  text-align: left;
+  z-index: 1045; }
+
+.mfp-inline-holder .mfp-content, .mfp-ajax-holder .mfp-content {
+  width: 100%;
+  cursor: auto; }
+
+.mfp-ajax-cur {
+  cursor: progress; }
+
+.mfp-zoom-out-cur, .mfp-zoom-out-cur .mfp-image-holder .mfp-close {
+  cursor: -moz-zoom-out;
+  cursor: -webkit-zoom-out;
+  cursor: zoom-out; }
+
+.mfp-zoom {
+  cursor: pointer;
+  cursor: -webkit-zoom-in;
+  cursor: -moz-zoom-in;
+  cursor: zoom-in; }
+
+.mfp-auto-cursor .mfp-content {
+  cursor: auto; }
+
+.mfp-close, .mfp-arrow, .mfp-preloader, .mfp-counter {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none; }
+
+.mfp-loading.mfp-figure {
+  display: none; }
+
+.mfp-hide {
+  display: none !important; }
+
+.mfp-preloader {
+  color: #CCC;
+  position: absolute;
+  top: 50%;
+  width: auto;
+  text-align: center;
+  margin-top: -0.8em;
+  left: 8px;
+  right: 8px;
+  z-index: 1044; }
+  .mfp-preloader a {
+    color: #CCC; }
+    .mfp-preloader a:hover {
+      color: #FFF; }
+
+.mfp-s-ready .mfp-preloader {
+  display: none; }
+
+.mfp-s-error .mfp-content {
+  display: none; }
+
+button.mfp-close, button.mfp-arrow {
+  overflow: visible;
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  -webkit-appearance: none;
+  display: block;
+  outline: none;
+  padding: 0;
+  z-index: 1046;
+  -webkit-box-shadow: none;
+  box-shadow: none; }
+button::-moz-focus-inner {
+  padding: 0;
+  border: 0; }
+
+.mfp-close {
+  width: 44px;
+  height: 44px;
+  line-height: 44px;
+  position: absolute;
+  right: 0;
+  top: 0;
+  text-decoration: none;
+  text-align: center;
+  opacity: 0.65;
+  filter: alpha(opacity=65);
+  padding: 0 0 18px 10px;
+  color: #FFF;
+  font-style: normal;
+  font-size: 28px;
+  font-family: Arial, Baskerville, monospace; }
+  .mfp-close:hover, .mfp-close:focus {
+    opacity: 1;
+    filter: alpha(opacity=100); }
+  .mfp-close:active {
+    top: 1px; }
+
+.mfp-close-btn-in .mfp-close {
+  color: #333; }
+
+.mfp-image-holder .mfp-close, .mfp-iframe-holder .mfp-close {
+  color: #FFF;
+  right: -6px;
+  text-align: right;
+  padding-right: 6px;
+  width: 100%; }
+
+.mfp-counter {
+  position: absolute;
+  top: 0;
+  right: 0;
+  color: #CCC;
+  font-size: 12px;
+  line-height: 18px;
+  white-space: nowrap; }
+
+.mfp-arrow {
+  position: absolute;
+  opacity: 0.65;
+  filter: alpha(opacity=65);
+  margin: 0;
+  top: 50%;
+  margin-top: -55px;
+  padding: 0;
+  width: 90px;
+  height: 110px;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0); }
+  .mfp-arrow:active {
+    margin-top: -54px; }
+  .mfp-arrow:hover, .mfp-arrow:focus {
+    opacity: 1;
+    filter: alpha(opacity=100); }
+  .mfp-arrow:before, .mfp-arrow:after, .mfp-arrow .mfp-b, .mfp-arrow .mfp-a {
+    content: '';
+    display: block;
+    width: 0;
+    height: 0;
+    position: absolute;
+    left: 0;
+    top: 0;
+    margin-top: 35px;
+    margin-left: 35px;
+    border: medium inset transparent; }
+  .mfp-arrow:after, .mfp-arrow .mfp-a {
+    border-top-width: 13px;
+    border-bottom-width: 13px;
+    top: 8px; }
+  .mfp-arrow:before, .mfp-arrow .mfp-b {
+    border-top-width: 21px;
+    border-bottom-width: 21px;
+    opacity: 0.7; }
+
+.mfp-arrow-left {
+  left: 0; }
+  .mfp-arrow-left:after, .mfp-arrow-left .mfp-a {
+    border-right: 17px solid #FFF;
+    margin-left: 31px; }
+  .mfp-arrow-left:before, .mfp-arrow-left .mfp-b {
+    margin-left: 25px;
+    border-right: 27px solid #3F3F3F; }
+
+.mfp-arrow-right {
+  right: 0; }
+  .mfp-arrow-right:after, .mfp-arrow-right .mfp-a {
+    border-left: 17px solid #FFF;
+    margin-left: 39px; }
+  .mfp-arrow-right:before, .mfp-arrow-right .mfp-b {
+    border-left: 27px solid #3F3F3F; }
+
+.mfp-iframe-holder {
+  padding-top: 40px;
+  padding-bottom: 40px; }
+  .mfp-iframe-holder .mfp-content {
+    line-height: 0;
+    width: 100%;
+    max-width: 900px; }
+  .mfp-iframe-holder .mfp-close {
+    top: -40px; }
+
+.mfp-iframe-scaler {
+  width: 100%;
+  height: 0;
+  overflow: hidden;
+  padding-top: 56.25%; }
+  .mfp-iframe-scaler iframe {
+    position: absolute;
+    display: block;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.6);
+    background: #000; }
+
+/* Main image in popup */
+img.mfp-img {
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  display: block;
+  line-height: 0;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  padding: 40px 0 40px;
+  margin: 0 auto; }
+
+/* The shadow behind the image */
+.mfp-figure {
+  line-height: 0; }
+  .mfp-figure:after {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 40px;
+    bottom: 40px;
+    display: block;
+    right: 0;
+    width: auto;
+    height: auto;
+    z-index: -1;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.6);
+    background: #444; }
+  .mfp-figure small {
+    color: #BDBDBD;
+    display: block;
+    font-size: 12px;
+    line-height: 14px; }
+  .mfp-figure figure {
+    margin: 0; }
+
+.mfp-bottom-bar {
+  margin-top: -36px;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  cursor: auto; }
+
+.mfp-title {
+  text-align: left;
+  line-height: 18px;
+  color: #F3F3F3;
+  word-wrap: break-word;
+  padding-right: 36px; }
+
+.mfp-image-holder .mfp-content {
+  max-width: 100%; }
+
+.mfp-gallery .mfp-image-holder .mfp-figure {
+  cursor: pointer; }
+
+@media screen and (max-width: 800px) and (orientation: landscape), screen and (max-height: 300px) {
+  .mfp-img-mobile .mfp-image-holder {
+    padding-left: 0;
+    padding-right: 0; }
+  .mfp-img-mobile img.mfp-img {
+    padding: 0; }
+  .mfp-img-mobile .mfp-figure:after {
+    top: 0;
+    bottom: 0; }
+  .mfp-img-mobile .mfp-figure small {
+    display: inline;
+    margin-left: 5px; }
+  .mfp-img-mobile .mfp-bottom-bar {
+    background: rgba(0, 0, 0, 0.6);
+    bottom: 0;
+    margin: 0;
+    top: auto;
+    padding: 3px 5px;
+    position: fixed;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box; }
+    .mfp-img-mobile .mfp-bottom-bar:empty {
+      padding: 0; }
+  .mfp-img-mobile .mfp-counter {
+    right: 5px;
+    top: 3px; }
+  .mfp-img-mobile .mfp-close {
+    top: 0;
+    right: 0;
+    width: 35px;
+    height: 35px;
+    line-height: 35px;
+    background: rgba(0, 0, 0, 0.6);
+    position: fixed;
+    text-align: center;
+    padding: 0; }
+ }
+
+@media all and (max-width: 900px) {
+  .mfp-arrow {
+    -webkit-transform: scale(0.75);
+    transform: scale(0.75); }
+
+  .mfp-arrow-left {
+    -webkit-transform-origin: 0;
+    transform-origin: 0; }
+
+  .mfp-arrow-right {
+    -webkit-transform-origin: 100%;
+    transform-origin: 100%; }
+
+  .mfp-container {
+    padding-left: 6px;
+    padding-right: 6px; }
+ }
+
+.mfp-ie7 .mfp-img {
+  padding: 0; }
+.mfp-ie7 .mfp-bottom-bar {
+  width: 600px;
+  left: 50%;
+  margin-left: -300px;
+  margin-top: 5px;
+  padding-bottom: 5px; }
+.mfp-ie7 .mfp-container {
+  padding: 0; }
+.mfp-ie7 .mfp-content {
+  padding-top: 44px; }
+.mfp-ie7 .mfp-close {
+  top: 0;
+  right: 0;
+  padding-top: 0; }
+
+/*======================== Magnific Popup custom styles ===================== */
+
+.mfp-bg {
+  background-color: $colorBody;
+}
+
+.mfp-close {
+  color: inherit;
+}
+
+.mfp-bg.mfp-fade {
+  -webkit-backface-visibility: hidden;
+  opacity: 0;
+  -webkit-transition: all 0.3s ease-out;
+  -moz-transition: all 0.3s ease-out;
+  -ms-transition: all 0.3s ease-out;
+  -o-transition: all 0.3s ease-out;
+  transition: all 0.3s ease-out;
+}
+
+/* overlay animate in */
+.mfp-bg.mfp-fade.mfp-ready {
+  opacity: 1;
+  filter: alpha(opacity=100);
+}
+
+/* overlay animate out */
+.mfp-fade.mfp-bg.mfp-removing {
+  opacity: 0;
+  filter: alpha(opacity=100);
+}
+
+/* content at start */
+.mfp-fade.mfp-wrap .mfp-content {
+  opacity: 0;
+
+  -webkit-transition: all 0.2s ease-out;
+  -moz-transition: all 0.2s ease-out;
+  transition: all 0.2s ease-out;
+}
+/* content animate it */
+.mfp-fade.mfp-wrap.mfp-ready .mfp-content {
+  opacity: 1;
+}
+/* content animate out */
+.mfp-fade.mfp-wrap.mfp-removing .mfp-content {
+  opacity: 0;
+}
+
+/*============================================================================
+  #Product Reviews - Free Shopify App
+    - https://apps.shopify.com/product-reviews
+==============================================================================*/
+#shopify-product-reviews {
+  margin: 0;
+
+  .spr-header-title {
+    @extend h1;
+  }
+
+  .spr-container {
+    padding: 0;
+    border: 0 none;
+  }
+
+  /*================ Summary Rating ================*/
+  .spr-summary {
+    border-bottom: 1px solid $colorBorder;
+    padding-bottom: $gutter/2;
+    margin-bottom: $gutter;
+
+    @include at-query ($min, $large) {
+      float: left;
+      border: 1px solid $colorBorder;
+      width: 30%;
+      padding: $gutter/3;
+
+      .spr-summary-starrating {
+        display: block;
+        margin: 0;
+      }
+    }
+  }
+
+  .spr-summary-caption {
+    font-size: 14px;
+
+    @include at-query ($min, $large) {
+      display: block;
+      border-bottom: 1px solid $colorBorder;
+      margin-bottom: $gutter/3;
+      padding-bottom: $gutter/3;
+    }
+  }
+
+  .spr-summary-actions-newreview {
+    &:after {
+      content: ' \203A';
+      clear: none;
+      display: inline;
+    }
+
+    @include at-query ($min, $large) {
+      float: none;
+    }
+  }
+
+  .spr-header:after {
+    clear: none;
+  }
+
+  /*================ Content ================*/
+  .spr-content {
+    @include at-query ($min, $large) {
+      float: left;
+      width: 70%;
+      padding-left: $gutter;
+    }
+  }
+
+  .spr-reviews {
+    margin: 0;
+  }
+
+  .spr-review {
+    padding: 0;
+    margin: 0;
+    border: 0 none;
+
+    & + .spr-review {
+      margin-top: $gutter/2;
+    }
+  }
+
+  .spr-review-content-body {
+    font-size: inherit;
+
+    br {
+      content: '';
+      display: block;
+      overflow: hidden;
+      height: 1px;
+    }
+  }
+
+  /*================ Individual Ratings ================*/
+  .spr-review-header {
+    @include clearfix;
+    margin-bottom: 0;
+  }
+
+  .spr-review-header-title {
+    margin-right: $gutter/2;
+    font-family: $bodyFontStack;
+    font-weight: 400;
+    text-transform: uppercase;
+    font-size: 17px;
+    line-height: 20px; // may need adjusting if font sizes change
+    position: relative;
+    top: 2px;
+  }
+
+  @include at-query ($min, $large) {
+    .spr-review-header-starratings,
+    .spr-review-header-title {
+      display: inline;
+    }
+
+    .spr-review-header-title {
+      float: left;
+    }
+  }
+
+  .spr-review-header-starratings {
+    position: relative;
+    top: -2px;
+    margin: 0 $gutter/2 $gutter/3 0;
+  }
+
+  .spr-review-header-byline {
+    position: relative;
+    top: -2px;
+    display: inline-block;
+    margin: 0;
+  }
+
+  .spr-review-reportreview {
+    display: none;
+  }
+
+  /*================ Review Form ================*/
+  .spr-form {
+    border: 0 none;
+    border-bottom: 1px solid $colorBorder;
+    margin: 0 0 $gutter;
+    padding: 0 0 $gutter;
+  }
+}
+
+/*================ Star Icons ================*/
+
+.spr-badge-starrating {
+  white-space: nowrap;
+}
+
+.spr-badge-starrating,
+.spr-icon {
+  color: {{ settings.product_reviews_star_color }};
+  font-size: inherit;
+}
+
+/*================ Review count ================*/
+.spr-badge-caption {
+  display: inline-block;
+  font-size: 13px;
+}
+
+/*================ Hide review badge if no reviews ================*/
+.product-grid-item,
+.product-meta--review {
+  .spr-badge[data-rating="0.0"] {
+    display: none;
+  }
+}
+
+/*============================================================================
+  #Password Page
+==============================================================================*/
+
+.template-password {
+  height: 100vh;
+  text-align: center;
+  padding: 0;
+}
+
+.password-page__wrapper {
+  display: table;
+  height: 100%;
+  width: 100%;
+
+  @if $passwordPageUseBgImage {
+    background-image: url({{asset_url 'password-page-background.jpg'}});
+    background-size: cover;
+    background-repeat: no-repeat;
+    color: #ffffff;
+  } @else {
+    color: $colorTextBody;
+  }
+
+  a {
+    color: inherit;
+  }
+
+  .social-sharing a {
+    color: #ffffff;
+  }
+}
+
+.password-page__header {
+  display: table-row;
+  height: 1px;
+}
+
+.password-page__header__inner {
+  display: table-cell;
+  padding: ($gutter / 2) $gutter;
+  width: 100vw;
+}
+
+.password-page__logo {
+  margin-top: 3 * $gutter;
+
+  .logo {
+    max-width: 100%;
+  }
+}
+
+.password-page__main {
+  display: table-row;
+  width: 100%;
+  height: 100%;
+  margin: 0 auto;
+}
+
+.password-page__main__inner {
+  display: table-cell;
+  vertical-align: middle;
+  padding: ( $gutter / 2 ) $gutter;
+  width: 100vw;
+}
+
+.password-page__hero {
+  font-family: $headerFontStack;
+  font-weight: $headerFontWeight;
+  font-size: em(42px);
+  line-height: 1.25;
+  text-transform: none;
+  letter-spacing: 0;
+  text-rendering: optimizeLegibility;
+
+  @include at-query($min, $postSmall) {
+    font-size: em(60px);
+  }
+
+  @include at-query($min, $large) {
+    font-size: em(64px);
+  }
+}
+
+.password-page__message {
+  font-style: italic;
+  font-size: 120%;
+
+  img {
+    max-width: 100%;
+  }
+}
+
+.password-page__message,
+.password-page__login-form,
+.password-page__signup-form {
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.password-page__login-form {
+  text-align: center;
+  padding: $gutter;
+}
+
+.password-page__signup-form .input-group-field {
+  @if $passwordPageUseBgImage {
+    color: #ffffff;
+  } @else {
+    color: inherit;
+  }
+}
+
+.password-page__login-form,
+.password-page__signup-form {
+  @include at-query($min, $small) {
+    padding: 0 $gutter;
+  }
+
+  .input-group {
+    width: 100%;
+  }
+
+  .errors ul {
+    list-style-type: none;
+    margin-left: 0;
+  }
+}
+
+.storefront-password-form {
+  margin-bottom: $gutter / 2;
+}
+
+.password-page__social-sharing {
+  margin-top: $gutter;
+
+  .social-sharing {
+    padding-top: 0;
+  }
+}
+
+.password-login,
+.admin-login  {
+  margin-top: $gutter / 2;
+  a:hover {
+    color: inherit;
+  }
+}
+
+.password-login {
+  font-size: em(14px);
+  line-height: 14px;
+}
+
+.lock-icon-svg {
+  width: 14px;
+  height: 14px;
+  display: inline-block;
+  vertical-align: baseline;
+
+  path {
+    fill: currentColor;
+  }
+
+  /* Hiding the SVG logo in IE8 */
+  .lt-ie9 & {
+    display: none;
+  }
+}
+
+.admin-login {
+  font-size: 95%;
+}
+
+.password-page__footer {
+  display: table-row;
+  height: 1px;
+}
+
+.password-page__footer_inner {
+  display: table-cell;
+  vertical-align: bottom;
+  padding: $gutter;
+  line-height: 1.5 * $baseFontSize;
+  font-size: 95%;
+}
+
+.shopify-link {
+  color: inherit;
+
+  &:hover {
+    color: inherit;
+  }
+}
+
+.shopify-logo-svg {
+  width: 1.5 * $baseFontSize * 120 / 35;
+  height: 1.5 * $baseFontSize;
+  display: inline-block;
+  line-height: 0;
+  vertical-align: top;
+
+  path {
+    fill: currentColor;
+  }
+
+  /* Hiding the SVG logo in IE8, we show the word 'Shopify' instead */
+  .lt-ie9 & {
+    display: none;
+  }
+}
+
+/* =========
+   Hiding the word 'Shopify' but not from screen readers.
+   IE8 does not support SVG, so in it we hide the logo and show the word.
+   To target all browsers except IE8, we use the class 'modern',
+   which needs to be added to the html element.
+   ========= */
+
+.shopify-name {
+  .modern & {
+    @include visuallyHidden;
+  }
+}
+
+/*============================================================================
+  #Image with text
+==============================================================================*/
+
+.feature-row {
+  @include display-flexbox();
+  @include justify-content(space-between);
+  @include align-items(center);
+
+  @include at-query ($max, $small) {
+    @include flex-wrap(wrap);
+  }
+}
+
+.feature-row__item {
+  @include flex(0 1 50%);
+
+  @include at-query($max, $small) {
+    @include flex(1 1 100%);
+    max-width: 100%;
+  }
+}
+
+.feature-row__image-wrapper {
+  position: relative;
+  margin: 0 auto;
+}
+
+.feature-row__image {
+  display: block;
+  margin: 0 auto;
+
+  @include at-query ($max, $small) {
+    order: 1;
+  }
+
+  .js & {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+  }
+}
+
+.feature-row__text {
+  padding-top: $gutter;
+  padding-bottom: $gutter;
+
+  @include at-query($max, $small) {
+    order: 2;
+    padding-bottom: 0; // always last element on mobile
+  }
+}
+
+@include at-query($min, $postSmall) {
+  .feature-row__text--left {
+    padding-left: $gutter;
+  }
+
+  .feature-row__text--right {
+    padding-right: $gutter;
+  }
+}
+
+@include at-query($min, $postSmall) {
+  .featured-row__subtext {
+    font-size: em($baseFontSize + 2);
+  }
+}
+
+
+/*============================================================================
+  #Custom Content
+==============================================================================*/
+
+.custom-content {
+  @include display-flexbox;
+  @include align-items(stretch);
+  @include flex-wrap(wrap);
+  width: auto;
+  margin-bottom: $gridGutter;
+  margin-left: -$gridGutter;
+
+  @include at-query($max, $small) {
+    margin-bottom: $gridGutter/2;
+    margin-left: -$gridGutter/2;
+  }
+}
+
+.custom__item {
+  @include flex(0 0 auto);
+  margin-bottom: $gridGutter;
+  padding-left: $gridGutter;
+  max-width: 100%;
+
+  @include at-query($max, $small) {
+    @include flex(0 0 auto);
+    padding-left: $gridGutter/2;
+    margin-bottom: $gridGutter/2;
+
+    &.small--one-half {
+      @include flex(1 0 50%);
+      max-width: 400px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+  }
+}
+
+.custom__item-inner {
+  position: relative;
+  display: inline-block;
+  text-align: left;
+  max-width: 100%;
+}
+
+.custom__item-inner--video,
+.custom__item-inner--html {
+  display: block;
+}
+
+/*================ Flex item alignment ================*/
+.align--top-middle {
+  text-align: center;
+}
+
+.align--top-right {
+  text-align: right;
+}
+
+.align--middle-left {
+  @include align-self(center);
+}
+
+.align--center {
+  @include align-self(center);
+  text-align: center;
+}
+
+.align--middle-right {
+  @include align-self(center);
+  text-align: right;
+}
+
+.align--bottom-left {
+  @include align-self(flex-end);
+}
+
+.align--bottom-middle {
+  @include align-self(flex-end);
+  text-align: center;
+}
+
+.align--bottom-right {
+  @include align-self(flex-end);
+  text-align: right;
+}
+
+/*============================================================================
+  #Blank States
+==============================================================================*/
+
+// Placeholder colors
+$color-blankstate: rgba($colorTextBody, 0.35);
+$color-blankstate-border: rgba($colorTextBody, 0.2);
+$color-blankstate-background: rgba($colorTextBody, 0.1);
+
+.placeholder-svg {
+  display: block;
+  fill: $color-blankstate;
+  background-color: $color-blankstate-background;
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  border: 1px solid $color-blankstate-border;
+}
+
+.placeholder-noblocks {
+  padding: 40px;
+  text-align: center;
+  max-width:100%;
+  fill: $color-blankstate;
+  &.slide-link {
+    background-color: $color-blankstate-background;
+  }
+}
+
+// Mimic a background image by wrapping the placeholder svg with this class
+.placeholder-background {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  justify-content: center;
+  background-color: $color-blankstate-background;
+
+  .icon {
+    border: 0;
+  }
+
+  &.imagebox {
+    background-color: $colorSecondary;
+
+    svg.placeholder-image {
+      fill: rgba(color-control($colorSecondary),0.35);
+      border: 0px;
+      align-self: center;
+      width: 100%;
+      height: 100%;
+    }
+  }
+}
+
+// Custom styles for some blank state images
+.image-bar__content .placeholder-svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+/*============================================================================
+  #Lazysizes
+==============================================================================*/
+
+.lazyload__image-wrapper {
+  display: block;
+  margin-bottom: $gutter / 3;
+  position: relative;
+
+  img {
+    display: block;
+  }
+
+  img {
+    display: block;
+    width: 100%;
+    margin: 0 auto;
+    position: absolute;
+    top: 0;
+
+    &.lazyload {
+      opacity: 0;
+    }
+  }
+}
+
+.box {
+  background: no-repeat;
+  background-color: #f7f7f7;
+  background-size: contain;
+}
+
+/*============================================================================
+  #Featured blog post
+==============================================================================*/
+
+.article__featured-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: block;
+  width: 100%;
+}
+
+.article__featured-image-wrapper {
+  position: relative;
+  margin-bottom: $gutter;
+
+  .no-js & {
+    @include visuallyHidden();
+  }
+}
+
+.article__featured-image-wrapper-nojs {
+  margin-bottom: $gutter;
+}
+
+.featured-blog__meta {
+  margin-bottom: 0.5em;
+}
+
+.featured-blog__post {
+  margin-bottom: $gutter * 1.25;
+}
+
+.placeholder {
+  .article__featured-link {
+    margin-bottom: $gutter;
+  }
+}
+
+/*============================================================================
+  #Map section
+==============================================================================*/
+
+.map-section__wrapper {
+  @include display-flexbox();
+  @include flex-wrap(wrap);
+
+  // Fallback for IE9
+  .ie9 & {
+    display: block;
+    position: relative;
+  }
+}
+
+.map-section__content {
+  @include flex(1 1 auto);
+  width: 290px;
+  overflow: hidden;
+  position: relative;
+
+  @include at-query($max, $medium) {
+    @include flex(0 1 100%);
+    max-width: 100%;
+  }
+
+  // Fallback for IE9
+  .ie9 & {
+    @include at-query($min, $large) {
+      width: 50%;
+    }
+  }
+
+  .icon-pin {
+    font-size: {{ settings.type_button_size }} * 0.8;
+  }
+}
+
+.map-section__image {
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  padding-top: 50%;
+
+  @include at-query($max, $medium) {
+    order: 1;
+  }
+
+  // Flexbox height fix for Safari
+  @include at-query($min, $large) {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+  }
+
+  // Only show the background image if map fails to load
+  .map-section--display-map & {
+    display: none !important;
+  }
+}
+
+.map-section__background-wrapper {
+  // Fallback for IE9
+  .ie9 & {
+    @include at-query($min, $large) {
+      left: 50%;
+      height: 100%;
+      top: 0;
+      position: absolute;
+    }
+  }
+}
+
+.map-section__placeholder {
+  height: 100%;
+
+  // Flexbox height fix for Safari
+  @include at-query($min, $large) {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+  }
+}
+
+.map-section__text {
+  padding: $gutter;
+  background-color: #f8f8f8;
+
+  @include at-query($max, $medium) {
+    order: 0;
+  }
+}
+
+// Optically center map in visible area with
+// extended height/widths and negative margins
+.map-section__container {
+  width: 100%;
+  height: 55vh;
+
+  @include at-query($min, $large) {
+    position: absolute !important;
+    top: 0;
+    left: 0;
+    height: 100%;
+  }
+}
+

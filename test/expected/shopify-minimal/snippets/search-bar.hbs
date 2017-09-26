@@ -1,0 +1,36 @@
+{{#comment}}
+
+  A snippet to include a search bar anywhere in your theme.
+  Note we are using 'input-group' for the layout. Look under Forms > Input Groups for some demos.
+
+  More information:
+   - http://docs.shopify.com/themes/liquid-variables/search
+
+  To return only products in results:
+    - http://docs.shopify.com/manual/configuration/store-customization/return-only-product-in-storefront-search-results
+    - Or manually add type=product to the search URL as a query parameter
+    - Uncomment hidden input with value="product" below
+
+{{/comment}}
+
+{{#if (is search-bar 'header')}}
+  <form action="/search" method="get" class="header-bar__search-form clearfix" role="search">
+    {{#comment}}<input type="hidden" name="type" value="product">{{/comment}}
+    <button type="submit" class="btn icon-fallback-text header-bar__search-submit">
+      <span class="icon icon-search" aria-hidden="true"></span>
+      <span class="fallback-text">{{t 'general.search.submit'}}</span>
+    </button>
+    <input type="search" name="q" value="{{escape search.terms}}" aria-label="{{t 'general.search.placeholder'}}" class="header-bar__search-input" placeholder="{{t 'general.search.placeholder'}}">
+  </form>
+{{else}}
+  <form action="/search" method="get" class="input-group search-bar" role="search">
+    {{#comment}}<input type="hidden" name="type" value="product">{{/comment}}
+    <input type="search" name="q" value="{{escape search.terms}}" placeholder="{{t 'general.search.placeholder'}}" class="input-group-field" aria-label="{{t 'general.search.placeholder'}}" placeholder="{{t 'general.search.placeholder'}}">
+    <span class="input-group-btn">
+      <button type="submit" class="btn icon-fallback-text">
+        <span class="icon icon-search" aria-hidden="true"></span>
+        <span class="fallback-text">{{t 'general.search.submit'}}</span>
+      </button>
+    </span>
+  </form>
+{{/if}}

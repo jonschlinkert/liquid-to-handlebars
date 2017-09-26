@@ -1,0 +1,22 @@
+{{#unless collection_item_width}}
+  {{assign 'collection_item_width' 'medium--one-half large--one-third'}}
+{{/unless}}
+
+<div class="grid-item {{ collection_item_width }} text-center">
+
+  {{#capture 'collection_title'}}{{escape collection.title}}{{/capture}}
+
+  <a href="{{ collection.url }}" title="{{t 'collections.general.link_title' title collection_title}}">
+    {{#if collection.image}}
+      {{img_tag (img_url collection.image.src 'large') collection_title}}
+    {{else}}
+      {{img_tag (img_url collection.products.first.featured_image 'large') collection_title}}
+    {{/if}}
+  </a>
+
+  <h3 class="h5">
+    <a href="{{ collection.url }}" title="{{t 'collections.general.link_title' title collection_title}}">{{ collection.title }}</a>
+    <small>({{t 'collections.general.items_with_count' count collection.all_products_count}})</small>
+  </h3>
+
+</div>

@@ -1,0 +1,164 @@
+{{#if (is section.settings.layout 'grid')}}
+  {{#if (is section.settings.display_type 'all')}}
+    {{assign 'collection_count' 0}}
+    {{#each collections as |collection|}}
+      {{#unless (is collection.handle 'frontpage')}}
+        {{assign 'collection_count' (plus collection_count 1)}}
+      {{/unless}}
+    {{/each}}
+  {{else}}
+    {{assign 'collection_count' section.blocks.size}}
+  {{/if}}
+  
+  {{#is collection_count 1}}
+      {{assign 'grid_item_width' 'medium-up--one-half'}}
+    {{else is collection_count 2}}
+      {{assign 'grid_item_width' 'one-half'}}
+    {{else is collection_count 3}}
+      {{assign 'grid_item_width' 'medium-up--one-third'}}
+    {{else is collection_count 4}}
+      {{assign 'grid_item_width' 'one-half medium-up--one-quarter'}}
+    {{else}}
+      {{assign 'grid_item_width' 'medium-up--one-third'}}
+  {{/is}}
+{{/if}}
+
+<div class="page-width">
+  {{#if (is section.settings.display_type 'all')}}
+    {{#is section.settings.sort 'products_high" or "products_low'}}
+        {{assign 'list_collections' (sort collections 'all_products_count')}}
+      {{else is section.settings.sort 'date" or "date_reversed'}}
+        {{assign 'list_collections' (sort collections 'published_at')}}
+      {{else}}
+        {{assign 'list_collections' collections}}
+    {{/is}}
+    {{#if (or (is section.settings.sort 'products_low') (is section.settings.sort 'date') (is section.settings.sort 'alphabetical'))}}
+      <div class="grid grid--no-gutters grid--uniform collection">
+        {{#each list_collections as |collection|}}
+          {{assign 'featured_collection' collection}}
+          {{#unless (is collection.handle 'frontpage')}}
+            {{#if (is section.settings.layout 'list')}}
+              {{include 'collection-list-item'}}
+            {{else}}
+              {{include 'collection-grid-item' stretch_collection_image: false}}
+            {{/if}}
+          {{/unless}}
+        {{/each}}
+      </div>
+    {{else}}
+      <div class="grid grid--no-gutters grid--uniform collection">
+        {{#each list_collections as |collection|}}
+          {{assign 'featured_collection' collection}}
+          {{#unless (is collection.handle 'frontpage')}}
+            {{#if (is section.settings.layout 'list')}}
+              {{include 'collection-list-item'}}
+            {{else}}
+              {{include 'collection-grid-item' stretch_collection_image: false}}
+            {{/if}}
+          {{/unless}}
+        {{/each}}
+      </div>
+    {{/if}}
+  {{else}}
+    <div class="grid grid--no-gutters grid--uniform collection">
+      {{#each section.blocks as |block|}}
+        {{assign 'featured_collection' (get collections block.settings.collection)}}
+        {{#if (is section.settings.layout 'list')}}
+          {{include 'collection-list-item'}}
+        {{else}}
+          {{include 'collection-grid-item' stretch_collection_image: false}}
+        {{/if}}
+      {{/each}}
+    </div>
+  {{/if}}
+</div>
+
+{{#schema}}
+  {
+    "name": "Collections list page",
+    "settings": [
+      {
+        "type": "paragraph",
+        "content": "All of your collections are listed by default. To customize your list, choose 'Selected' and add collections."
+      },
+      {
+        "type": "radio",
+        "id": "display_type",
+        "label": "Select collections to show",
+        "default": "all",
+        "options": [
+          {
+            "value": "all",
+            "label": "All"
+          },
+          {
+            "value": "selected",
+            "label": "Selected"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "layout",
+        "label": "Select layout",
+        "default": "grid",
+        "options": [
+          {
+            "value": "grid",
+            "label": "Grid"
+          },
+          {
+            "value": "list",
+            "label": "List"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "sort",
+        "label": "Sort collections by:",
+        "info": "Sorting only applies when 'All' is selected",
+        "default": "alphabetical",
+        "options": [
+          {
+            "value": "products_high",
+            "label": "Product count, high to low"
+          },
+          {
+            "value": "products_low",
+            "label": "Product count, low to high"
+          },
+          {
+            "value": "alphabetical",
+            "label": "Alphabetically, A-Z"
+          },
+          {
+            "value": "alphabetical_reversed",
+            "label": "Alphabetically, Z-A"
+          },
+          {
+            "value": "date",
+            "label": "Date, old to new"
+          },
+          {
+            "value": "date_reversed",
+            "label": "Date, new to old"
+          }
+        ]
+      }
+    ],
+    "blocks": [
+      {
+        "type": "collection",
+        "name": "Collection",
+        "settings": [
+          {
+            "label": "Collection",
+            "id": "collection",
+            "type": "collection"
+          }
+        ]
+      }
+    ]
+  }
+{{/schema}}

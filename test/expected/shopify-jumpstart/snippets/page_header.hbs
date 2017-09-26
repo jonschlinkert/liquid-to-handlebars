@@ -1,0 +1,32 @@
+{{assign 'header_title' page_header}}
+
+<div class="header__custom display-table parallax-bg">
+	<div class="display-table-cell prlx-txt">
+		<div class="wrapper wrapper--margins">
+
+			<h1 itemprop="name">{{ header_title }}</h1>
+
+			{{#if (is template.name 'article')}}
+				{{include 'blog_meta' blog.comments_enabled}}
+			{{else if (is template.name 'cart')}}
+				<span class="cart-count"> {{t 'cart.general.items_count' count cart.item_count}} </span>
+			{{else if (is template.name 'collection')}}
+				{{#unless (is collection.description blank)}} <span> {{ collection.description }}</span> {{/unless}}
+			{{else if (is template.name 'search')}}
+			    {{#if search.performed}}
+			      {{#if (is search.results_count 0)}}
+			        <span>{{t 'general.search.no_results' terms search.terms}}</span>
+			      {{else}}
+			        <span>{{t 'general.search.results_for' terms search.terms count search.results_count}}</span>
+			      {{/if}}
+			    {{/if}}
+			{{else if (is template.name 'password')}}
+				<span>{{ shop.password_message }}</span>
+			{{/if}}
+
+   			<hr />
+
+		</div>
+	</div>
+	<span class="prlx-bg" style="background-color: {{ settings.color_body_bg_alt }}"></span>
+</div>

@@ -1,0 +1,58 @@
+<hr>
+<div class="text-centre">
+  <div class="section-header text-center">
+    {{#if (isnt section.settings.heading blank)}}
+      <label for="Email" class="h1">{{escape section.settings.heading}}</label>
+    {{/if}}
+    {{#if (isnt section.settings.subtext blank)}}
+      <p>{{escape section.settings.subtext}}</p>
+    {{/if}}
+  </div>
+  {{#form 'customer'}}
+    {{default_errors form.errors}}
+    {{#if form.posted_successfully}}
+      <p class="note form-success">{{t 'layout.footer.newsletter_confirmation'}}</p>
+    {{else}}
+      <input type="hidden" name="contact[tags]" value="newsletter">
+      <div class="input-group">
+        <label for="Email" class="visually-hidden">{{t 'contact.form.email'}}</label>
+        <input type="email" value="{{#if customer}}{{ customer.email }}{{/if}}" placeholder="{{t 'layout.footer.newsletter_email_placeholder'}}" name="contact[email]" id="Email" class="input-group-field" aria-label="{{t 'layout.footer.newsletter_email_placeholder'}}" autocorrect="off" autocapitalize="off">
+        <span class="input-group-btn">
+          <button type="submit" class="btn btn--small" name="commit" id="subscribe">{{t 'layout.footer.newsletter_sign_up'}}</button>
+        </span>
+      </div>
+    {{/if}}
+  {{/form}}
+</div>
+
+
+{{#schema}}
+  {
+    "name": "Newsletter",
+    "class": "newsletter-section",
+    "settings": [
+      {
+        "type": "text",
+        "id": "heading",
+        "label": "Heading",
+        "default": "Subscribe to our newsletter"
+      },
+      {
+        "type": "text",
+        "id": "subtext",
+        "label": "Subtext",
+        "default": "Promotions, new products and sales. Directly to your inbox."
+      },
+      {
+        "type": "paragraph",
+        "content": "Any customers who sign up will have an account created for them in Shopify. [View customers](/admin/customers?query=&accepts_marketing=1)"
+      }
+    ],
+    "presets": [
+      {
+        "name": "Newsletter",
+        "category": "Promotional"
+      }
+    ]
+  }
+{{/schema}}

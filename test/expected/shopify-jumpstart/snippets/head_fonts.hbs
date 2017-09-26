@@ -1,0 +1,10 @@
+{{#capture 'type_head'}} {{replace (replace (rstrip (lstrip (replace (replace settings.typography_headings ',sans-serif' '') ',serif' ''))) ' ' '+') '"' ''}} {{/capture}}
+{{#capture 'type_body'}} {{replace (replace (rstrip (lstrip (replace (replace settings.typography_body ',sans-serif' '') ',serif' ''))) ' ' '+') '"' ''}} {{/capture}}
+
+{{#unless (contains type_head 'default')}}
+	<link href="//fonts.googleapis.com/css?family={{replace type_head ' ' ''}}:400,400italic,500,600,700,700italic" rel="stylesheet" type="text/css">
+{{/unless}}
+
+{{#unless (or (contains type_body 'regular') (is type_body type_head) (is type_body type_menu))}}
+	<link href="//fonts.googleapis.com/css?family={{replace type_body ' ' ''}}:400,400italic,500,600,700,700italic" rel="stylesheet" type="text/css">
+{{/unless}}

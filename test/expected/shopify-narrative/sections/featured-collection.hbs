@@ -1,0 +1,149 @@
+{{assign 'limit' (times section.settings.products section.settings.rows)}}
+{{assign 'featuredCollection' (get collections section.settings.collection)}}
+{{assign 'totalProducts' featuredCollection.products.size}}
+
+<div class="featured-collection collection-template" data-section-id="{{ section.id }}" data-section-type="collection-template">
+  <div class="page-width">
+    <div class="featured-collection__heading grid text-center">
+      <div class="grid__item medium-up--ten-twelfths medium-up--push-one-twelfth">
+        <h2>{{ section.settings.title }}</h2>
+      </div>
+    </div>
+
+    {{assign 'desktopColumns' section.settings.products}}
+    {{assign 'mobileColumns' '1'}}
+
+    {{#capture 'gridClasses'}}
+      {{#if (is desktopColumns 4)}}
+        medium-up--one-quarter
+      {{else if (is desktopColumns 3)}}
+        medium-up--one-third
+      {{else if (is desktopColumns 2)}}
+        medium-up--one-half
+      {{else}}
+        medium-up--one-half
+      {{/if}}
+      {{#if (is mobileColumns '2')}}small--one-half {{/if}}
+    {{/capture}}
+
+    <div class="card-list grid" data-desktop-columns="{{ desktopColumns }}" data-mobile-columns="{{ mobileColumns }}">
+      <div class="card-list__column{{#if (is totalProducts 1)}} card-list__column--center{{/if}} grid grid__item {{ gridClasses }}">
+        {{#unless (is featuredCollection blank)}}
+          {{#each (limit featuredCollection.products undefined) as |product|}}
+            {{include 'product-card",' product: product}}
+          {{/each}}
+        {{else}}
+          {{#each (range 1 limit) as |i|}}
+            <div class="card" data-animate>
+              <a href="{{within product.url collection}}" class="card__wrapper{{#if section.settings.show_spacing}} card__wrapper--padding{{/if}} text-center">
+                <div class="card__image-wrapper{{#if settings.product_image_spacing}} card__image-wrapper--padding{{/if}}">
+                  {{#capture 'current'}}{{cycle 1 2 3 4 5 6}}{{/capture}}
+                  {{placeholder_svg_tag (append 'product-' current) 'placeholder-svg'}}
+
+                  <div class="card__info">
+                    {{#if section.settings.show_vendor}}
+                      <div class="card__brand">{{t 'homepage.onboarding.product_vendor'}}</div>
+                    {{/if}}
+
+                    <div class="card__name h4">{{t 'homepage.onboarding.product_title'}}</div>
+                    <div class="card__price">{{money 1999}}</div>
+                  </div>
+                </div>
+              </a>
+            </div>
+          {{/each}}
+        {{/unless}}
+      </div>
+    </div>
+
+    {{#unless (is section.settings.collection blank)}}
+      {{#if (is totalProducts 0)}}
+        <p class="text-center">{{t 'collections.general.no_matches'}}</p>
+      {{/if}}
+    {{/unless}}
+
+
+    {{#if section.settings.show_view_all}}
+      <div class="featured-collection__view-all">
+        <a href="{{ featuredCollection.url }}" class="btn{{#if section.settings.use_second_button}} btn--secondary{{/if}}">
+          {{t 'collections.general.view_all'}}
+        </a>
+      </div>
+    {{/if}}
+  </div>
+</div>
+
+{{#schema}}
+{
+  "name": "Featured collection",
+  "class": "index-section index-section--featured-collection",
+  "settings": [
+    {
+      "id": "collection",
+      "type": "collection",
+      "label": "Collection"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_spacing",
+      "label": "Enable image spacing"
+    },
+    {
+      "type": "header",
+      "content": "Text"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading",
+      "default": "Featured collection"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_vendor",
+      "label": "Show product vendors",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_view_all",
+      "label": "Show 'View all' button",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "use_second_button",
+      "label": "Use secondary button style",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "products",
+      "label": "Products per row",
+      "min": 2,
+      "max": 4,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "range",
+      "id": "rows",
+      "label": "Rows",
+      "min": 1,
+      "max": 5,
+      "step": 1,
+      "default": 2
+    }
+  ],
+  "presets": [
+    {
+      "name": "Featured collection",
+      "category": "Collection"
+    }
+  ]
+}
+{{/schema}}

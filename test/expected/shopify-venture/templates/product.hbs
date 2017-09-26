@@ -1,0 +1,25 @@
+{{#comment}}
+  The contents of the product.liquid template can be found in /sections/product-template.liquid
+{{/comment}}
+
+{{section 'product-template'}}
+
+{{#if collection}}
+  <div class="full-width full-width--return-link">
+    <a href="{{ collection.url }}" class="h1 return-link">
+      {{include 'icon-arrow-thin-left'}}
+      {{t 'products.product.collection_return' collection collection.title}}
+    </a>
+  </div>
+{{/if}}
+
+<script>
+  // Override default values of shop.strings for each template.
+  // Alternate product templates can change values of
+  // add to cart button, sold out, and unavailable states here.
+  window.productStrings = {
+    addToCart: {{json (t 'products.product.add_to_cart')}},
+    soldOut: {{json (t 'products.product.sold_out')}},
+    unavailable: {{json (t 'products.product.unavailable')}}
+  }
+</script>

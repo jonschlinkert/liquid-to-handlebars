@@ -1,0 +1,74 @@
+<!-- /templates/gift_card.liquid -->
+---
+layout: 'giftcard'
+---
+
+<header class="giftcard-header text-center">
+  {{#if settings.logo_use_image}}
+    <a href="{{ shop.url }}" class="giftcard__shop-link" itemprop="url">
+      <img class="logo" src="{{asset_url 'logo.png'}}" alt="{{ shop.name }}" itemprop="logo">
+    </a>
+  {{else}}
+    <h1 class="giftcard-header__shop-name h5">{{ shop.name }}</h1>
+  {{/if}}
+  <div class="giftcard__shop-url">{{escape shop.url}}</div>
+</header>
+
+<div class="text-center">
+  <main class="giftcard__wrapper{{#if (or gift_card.expired (isnt gift_card.enabled true))}} giftcard__disabled{{/if}}" role="main">
+    <div class="giftcard__content">
+
+      <h1 class="giftcard__title h2">{{t 'gift_cards.issued.subtext'}}</h1>
+      {{#unless gift_card.enabled}}
+      <span class="giftcard__tag">{{t 'gift_cards.issued.disabled'}}</span>
+      {{/unless}}
+      {{assign 'gift_card_expiry_date' (date gift_card.expires_on '%d/%m/%y')}}
+      {{#if (and gift_card.expired gift_card.enabled)}}
+        <span class="giftcard__tag">{{t 'gift_cards.issued.expired' expiry gift_card_expiry_date}}</span>
+      {{/if}}
+      {{#if (and (isnt gift_card.expired true) gift_card.expires_on gift_card.enabled)}}
+        <span class="giftcard__tag giftcard__tag--active">{{t 'gift_cards.issued.active' expiry gift_card_expiry_date}}</span>
+      {{/if}}
+
+      <p class="giftcard__instructions rte">
+        {{#capture 'print_link'}}
+        <a href="#" id="PrintGiftCard">{{t 'gift_cards.issued.print'}}</a>
+        {{/capture}}
+        {{t 'gift_cards.issued.redeem_html' print print_link}}
+      </p>
+
+      <div class="giftcard__wrap">
+        <img src="{{shopify_asset_url 'gift-card/card.jpg'}}" alt="Gift card illustration">
+
+        {{assign 'initial_value_size' (size formatted_initial_value)}}
+        <h2 class="giftcard__amount h3">{{ formatted_initial_value }}</h2>
+
+        {{#if (isnt gift_card.balance gift_card.initial_value)}}
+          <p>{{money (t 'gift_cards.issued.remaining_html' balance gift_card.balance)}}</p>
+        {{/if}}
+
+        {{assign 'code_size' (size (format_code gift_card.code))}}
+        <div class="giftcard__code">
+          <div class="giftcard__code-bubble">
+            <strong class="giftcard__code-text" id="GiftCardDigits">{{format_code gift_card.code}}</strong>
+          </div>
+        </div>
+      </div>
+
+      <div id="QrCode" class="giftcard__qr-code" data-identifier="{{ gift_card.qr_identifier }}"></div>
+
+      {{#if gift_card.pass_url}}
+        <a class="giftcard__apple-wallet" href="{{ gift_card.pass_url }}">
+          <img class="giftcard__apple-wallet-image" src="{{shopify_asset_url 'gift-card/add-to-apple-wallet.svg'}}" width="120" height="40" alt="{{t 'gift_cards.issued.add_to_apple_wallet'}}">
+        </a>
+      {{/if}}
+
+      <a href="{{ shop.url }}" class="giftcard__start-shopping btn btn--clear" target="_blank">
+        {{t 'gift_cards.issued.shop_link'}}
+        {{include 'icon-arrow-right'}}
+      </a>
+
+    </div>
+  </main>
+</div>
+

@@ -1,0 +1,85 @@
+<!-- /templates/blog.liquid -->
+{{#paginate blog.articles by=5}}
+
+<div>
+
+  {{#if current_tags}}
+    <h1>{{link_to blog.title blog.url}} &mdash; {{ current_tags.first }}</h1>
+  {{else}}
+    <h1>{{ blog.title }}</h1>
+  {{/if}}
+
+  {{#each blog.articles as |article|}}
+
+    <div class="article">
+
+      <h2 class="h3"><a href="{{ article.url }}">{{ article.title }}</a></h2>
+      {{#capture 'author'}}<strong>{{ article.author }}</strong>{{/capture}}
+      {{#capture 'date'}}<time datetime="{{date article.published_at '%Y-%m-%d'}}">{{date article.published_at format 'month_day_year'}}</time>{{/capture}}
+      <p class="txt--minor">{{t 'blogs.article.author_on_date_html' author author date date}}</p>
+
+      {{#if article.image}}
+        {{assign 'img_url' (replace (img_url article.image '1x1') '_1x1.' '_{width}x.')}}
+        {{#capture 'wrapper_id'}}ArticleImageWrapper--{{ article.image.id }}{{/capture}}
+        {{#capture 'img_id'}}ArticleImage--{{ article.image.id }}{{/capture}}
+        {{include 'image-style' image: article.image, width: 970, height: 1024, small_style: false, wrapper_id: wrapper_id, img_id: img_id}}
+        <div id="{{ wrapper_id }}" class="supports-js">
+          <a class="article__image-wrapper" href="{{ article.url }}" style="padding-top:{{times (divided_by 1 article.image.aspect_ratio) 100}}%;">
+            <img id="{{ img_id }}"
+                 class="article__image lazyload"
+                 src="{{img_url article.image '300x300'}}"
+                 data-src="{{ img_url }}"
+                 data-widths="[180, 360, 540, 720, 900, 1080, 1296, 1512, 1728, 2048]"
+                 data-aspectratio="{{ article.image.aspect_ratio }}"
+                 data-sizes="auto"
+                 alt="{{escape article.title}}"
+                 itemprop="image">
+          </a>
+        </div>
+
+        <noscript>
+          <a class="article__image" href="{{ article.url }}">
+            {{img_tag (img_url article '1024x1024') article.title}}
+          </a>
+        </noscript>
+      {{/if}}
+
+      <div class="rte">
+        {{#if (gt article.excerpt.size 0)}}
+          {{ article.excerpt }}
+        {{else}}
+          <p>{{truncatewords (strip_html article.content) 100}}</p>
+        {{/if}}
+      </div>
+
+      {{#if (or blog.comments_enabled (gt article.tags.size 0))}}
+        <ul class="list--inline txt--minor">
+          {{#if (and blog.comments_enabled (gt article.comments_count 0))}}
+            <li>
+              <a href="{{ article.url }}#comments">
+                {{t 'blogs.comments.with_count' count article.comments_count}}
+              </a>
+            </li>
+          {{/if}}
+        </ul>
+      {{/if}}
+
+      <p class="read-more"><a href="{{ article.url }}">{{t 'blogs.article.read_more'}} &rarr;</a></p>
+
+    </div>
+
+    {{#unless forloop.last}}
+      <hr>
+    {{/unless}}
+
+  {{/each}}
+
+  {{#if (gt paginate.pages 1)}}
+    <div class="pagination text-center">
+      {{replace (replace (default_pagination paginate) '&laquo; Previous' '&larr;') 'Next &raquo;' '&rarr;'}}
+    </div>
+  {{/if}}
+
+</div>
+
+{{/paginate}}

@@ -1,0 +1,33 @@
+{{assign 'saved_amount' (minus compare_price product_price)}}
+
+{{#comment}}
+  Unless this store uses multiple currencies,
+  we will remove the decimals when they are equal to 00,
+  or when the amount is > 10 (dollars, pounds, etc.).
+{{/comment}}
+
+{{#if (contains shop.money_format 'money')}}
+  {{assign 'saved_amount' (money saved_amount)}}
+{{else}}
+  {{#if (gt saved_amount 1000)}}
+    {{#if (and (contains shop.money_format '{{amount}}') (contains shop.money_format '.'))}}
+      {{assign 'saved_amount' (money_without_trailing_zeros saved_amount)}}
+    {{else if (contains shop.money_format '{{amount}}')}}
+      {{assign 'saved_amount' (first (split (money saved_amount) '.'))}}
+    {{else if (contains shop.money_format '{{amount_with_comma_separator}}')}}
+      {{assign 'saved_amount' (first (split (money saved_amount) ','))}}
+    {{else}}
+      {{assign 'saved_amount' (money_without_trailing_zeros saved_amount)}}
+    {{/if}}
+  {{else}}
+    {{assign 'saved_amount' (money_without_trailing_zeros saved_amount)}}
+  {{/if}}
+{{/if}}
+
+{{t 'products.general.save_html' saved_amount saved_amount}}
+
+{{#comment}}
+{{#if (gt compare_price product_price)}}
+  Save {{round (divided_by (times (minus compare_price product_price) 100) compare_price)}}%
+{{/if}}
+{{/comment}}

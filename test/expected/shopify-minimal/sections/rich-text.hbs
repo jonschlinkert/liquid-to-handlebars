@@ -1,0 +1,96 @@
+<div class="grid">
+  {{#each section.blocks as |block|}}
+    {{#if section.settings.home_page_full_width}}
+      <div class="grid__item page-content__item" {{ block.shopify_attributes }}>
+    {{else}}
+      <div class="grid__item page-content__item post-large--two-thirds push--post-large--one-sixth" {{ block.shopify_attributes }}>
+    {{/if}}
+      {{#if (and (is block.type 'page') block.settings.show_heading)}}
+        <div class="section-header section-header--small">
+          <h2 class="section-header__title">{{get pages (toPath block.settings.home_page_content "title")}}</h2>
+        </div>
+      {{else if (and (is block.type 'text') (isnt block.settings.title blank))}}
+        <div class="section-header section-header--small">
+          <h2 class="section-header__title">{{escape block.settings.title}}</h2>
+        </div>
+      {{/if}}
+        <div class="rte">
+          {{#is block.type 'page'}}
+              {{get pages (toPath block.settings.home_page_content "content")}}
+            {{else is block.type 'text'}}
+              {{ block.settings.home_page_richtext }}
+            {{else}}
+          {{/is}}
+        </div>
+      </div>
+  {{/each}}
+</div>
+
+{{#schema}}
+  {
+    "name": "Rich text",
+    "class": "index-section",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "home_page_full_width",
+        "label": "Wide display"
+      }
+    ],
+    "blocks" : [
+      {
+        "type": "page",
+        "name": "Page",
+        "settings": [
+          {
+            "type": "checkbox",
+            "id": "show_heading",
+            "label": "Show heading",
+            "default": true
+          },
+          {
+            "type": "page",
+            "id": "home_page_content",
+            "label": "Page content"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "name": "Text",
+        "settings": [
+          {
+            "type": "text",
+            "id": "title",
+            "label": "Heading",
+            "default": "Talk about your brand"
+          },
+          {
+            "type": "richtext",
+            "id": "home_page_richtext",
+            "label": "Text",
+            "default": "<p>Use this text to share information about your brand with your customers. Describe a product, share announcements, or welcome customers to your store.</p>"
+          }
+        ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "Rich text",
+        "category": "Text",
+        "settings": {
+          "home_page_full_width": "true"
+        },
+        "blocks": [
+          {
+            "type": "text",
+            "settings": {
+              "title": "Talk about your brand",
+              "home_page_richtext": "<p>Use this text to share information about your brand with your customers. Describe a product, share announcements, or welcome customers to your store.</p>"
+            }
+          }
+        ]
+      }
+    ]
+  }
+{{/schema}}

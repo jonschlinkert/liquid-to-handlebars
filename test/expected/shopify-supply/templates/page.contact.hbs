@@ -1,0 +1,45 @@
+{{include 'breadcrumb'}}
+
+<div class="grid">
+
+  <div class="grid-item large--two-thirds push--large--one-sixth">
+
+    <h2>{{{ page.title }}}</h2>
+
+    <div class="rte">
+      {{{ page.content }}}
+    </div>
+
+    <div>
+      {{#form 'contact'}}
+
+        {{#if form.posted_successfully}}
+          <p class="note form-success">
+            {{t 'contact.form.post_success'}}
+          </p>
+        {{/if}}
+
+        {{include 'form-errors-custom'}}
+
+        <div id="contactFormWrapper">
+          <label for="contactFormName" class="hidden-label">{{t 'contact.form.name'}}</label>
+          <input type="text" id="contactFormName" name="contact[name]" placeholder="{{t 'contact.form.name'}}" value="{{#if form.name}}{{ form.name }}{{else if customer}}{{ customer.name }}{{/if}}">
+
+          <label for="contactFormEmail" class="hidden-label">{{t 'contact.form.email'}}</label>
+          <input type="email" id="contactFormEmail" name="contact[email]" placeholder="{{t 'contact.form.email'}}" autocorrect="off" autocapitalize="off" value="{{#if form.email}}{{ form.email }}{{else if customer}}{{ customer.email }}{{/if}}">
+
+          <label for="contactFormPhone" class="hidden-label">{{t 'contact.form.phone'}}</label>
+          <input type="tel" id="contactFormPhone" name="contact[phone]" placeholder="{{t 'contact.form.phone'}}" value="{{#if form.phone}}{{ form.phone }}{{else if customer}}{{ customer.phone }}{{/if}}">
+
+          <label for="contactFormMessage" class="hidden-label">{{t 'contact.form.message'}}</label>
+          <textarea rows="10" id="contactFormMessage" name="contact[body]" placeholder="{{t 'contact.form.message'}}">{{#if form.body}}{{ form.body }}{{/if}}</textarea>
+
+          <input type="submit" class="btn right" value="{{t 'contact.form.send'}}">
+        </div>
+
+      {{/form}}
+    </div>
+
+  </div>
+
+</div>

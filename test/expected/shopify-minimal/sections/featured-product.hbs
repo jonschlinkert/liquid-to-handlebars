@@ -1,0 +1,211 @@
+{{assign 'product' (get all_products section.settings.featured_product)}}
+{{assign 'variant' product.selected_or_first_available_variant}}
+
+{{#if (is product empty)}}
+  {{assign 'section_onboarding' true}}
+  {{assign 'vendor' (t 'home_page.onboarding.product_vendor')}}
+  {{assign 'title' (t 'home_page.onboarding.product_title')}}
+  {{assign 'compare_at_price' 2999}}
+  {{assign 'price' 1999}}
+{{else}}
+  {{assign 'section_onboarding' false}}
+  {{assign 'vendor' product.vendor}}
+  {{assign 'title' product.title}}
+  {{assign 'compare_at_price' variant.compare_at_price}}
+  {{assign 'price' variant.price}}
+{{/if}}
+
+<div itemscope itemtype="http://schema.org/Product" id="ProductSection-{{ section.id }}" data-section-id="{{ section.id }}" data-section-type="product-template" data-image-zoom-type="{{ section.settings.product_image_zoom_type }}">
+
+  <meta itemprop="url" content="{{ shop.url }}{{ product.url }}">
+  <meta itemprop="image" content="{{img_url product.featured_image.src 'grande'}}">
+
+  <div class="section-header section-header--breadcrumb">
+    {{include 'breadcrumb'}}
+  </div>
+
+  <div class="product-single">
+    <div class="grid product-single__hero">
+      <div class="grid__item post-large--one-half">
+
+        <div class="product-single__photos">
+          {{#unless section_onboarding}}
+            {{assign 'featured_image' (default variant.featured_image product.featured_image)}}
+
+            {{#each product.images as |image|}}
+              {{#capture 'img_id'}}ProductImage-{{ image.id }}{{/capture}}
+              {{#capture 'img_wrapper_id'}}ProductImageWrapper-{{ image.id }}{{/capture}}
+              {{assign 'img_url' (replace (img_url image '1x1') '_1x1.' '_{width}x.')}}
+              {{include 'image-style' image: image, small_style: false, width: 700, height: 1024, wrapper_id: img_wrapper_id, img_id: img_id}}
+
+              <div id="{{ img_wrapper_id }}" class="product-single__image-wrapper supports-js{{#unless (is featured_image image)}} hide{{/unless}}{{#if (is section.settings.product_image_zoom_type 'lightbox')}} zoom-lightbox{{/if}}" data-image-id="{{ image.id }}">
+                <div style="padding-top:{{times (divided_by 1 image.aspect_ratio) 100}}%;">
+                  <img id="{{ img_id }}"
+                        class="product-single__image lazyload{{#unless (is featured_image image)}} lazypreload{{/unless}}"
+                        {{#if (is featured_image image)}}src="{{img_url image '300x300'}}"{{/if}}
+                        data-src="{{ img_url }}"
+                        data-widths="[180, 370, 540, 740, 900, 1080, 1296, 1512, 1728, 2048]"
+                        data-aspectratio="{{ image.aspect_ratio }}"
+                        data-sizes="auto"
+                        {{#if (is section.settings.product_image_zoom_type 'zoom-in')}} data-zoom="{{img_url image '1024x1024' scale 2}}"{{/if}}
+                        alt="{{escape image.alt}}">
+                </div>
+              </div>
+            {{/each}}
+
+            <noscript>
+              <img src="{{img_url featured_image '1024x1024' scale 2}}" alt="{{escape featured_image.alt}}">
+            </noscript>
+          {{else}}
+            {{placeholder_svg_tag 'product-1' 'placeholder-svg'}}
+          {{/unless}}
+        </div>
+
+        {{#if (is section.settings.product_image_zoom_type 'lightbox')}}
+          <ul class="gallery" class="hidden">
+            {{#each product.images as |image|}}
+              <li data-image-id="{{ image.id }}" class="gallery__item" data-mfp-src="{{img_url image '1024x1024' scale 2}}"></li>
+            {{/each}}
+          </ul>
+        {{/if}}
+
+      </div>
+      <div class="grid__item post-large--one-half">
+        {{#if section.settings.product_vendor_enable}}
+          <span class="h3" itemprop="brand">{{ vendor }}</span>
+        {{/if}}
+        <h1 itemprop="name">{{ title }}</h1>
+
+        <div itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+
+          <meta itemprop="priceCurrency" content="{{ shop.currency }}">
+          <link itemprop="availability" href="http://schema.org/{{#if product.available}}InStock{{else}}OutOfStock{{/if}}">
+
+          <div class="product-single__prices">
+            {{#if (gt compare_at_price price)}}
+              <span id="ComparePriceA11y" class="visually-hidden">{{t 'products.product.sale_price'}}</span>
+            {{else}}
+              <span id="PriceA11y" class="visually-hidden">{{t 'products.product.regular_price'}}</span>
+            {{/if}}
+            <span id="ProductPrice" class="product-single__price" itemprop="price" content="{{divided_by price 100.00}}">
+              {{money price}}
+            </span>
+
+            {{#if (gt compare_at_price price)}}
+              <span id="PriceA11y" class="visually-hidden">{{t 'products.product.regular_price'}}</span>
+              <s id="ComparePrice" class="product-single__sale-price">
+                {{money compare_at_price}}
+              </s>
+            {{/if}}
+          </div>
+
+          <form action="/cart/add" method="post" enctype="multipart/form-data" id="AddToCartForm">
+            <select name="id" id="ProductSelect-{{ section.id }}" class="product-single__variants">
+              {{#each product.variants as |variant|}}
+                {{#if variant.available}}
+
+                  <option {{#if (is variant product.selected_or_first_available_variant)}} selected="selected" {{/if}} data-sku="{{ variant.sku }}" value="{{ variant.id }}">{{ variant.title }} - {{money_with_currency variant.price}}</option>
+
+                {{else}}
+                  <option disabled="disabled">
+                    {{ variant.title }} - {{t 'products.product.sold_out'}}
+                  </option>
+                {{/if}}
+              {{/each}}
+            </select>
+
+            <div class="product-single__quantity{{#unless section.settings.product_quantity_enable}} is-hidden{{/unless}}">
+              <label for="Quantity">{{t 'products.product.quantity'}}</label>
+              <input type="number" id="Quantity" name="quantity" value="1" min="1" class="quantity-selector">
+            </div>
+
+            <button type="submit" name="add" id="AddToCart" class="btn"{{#unless current_variant.available}} disabled="disabled"{{/unless}}>
+              <span id="AddToCartText">{{t 'products.product.add_to_cart'}}</span>
+            </button>
+          </form>
+
+          <a class="product-single__full-details text-link"{{#unless section_onboarding}} href="{{ product.url }}?variant={{ variant.id }}"{{/unless}}>
+            {{t 'products.product.full_details'}} &#x2192;
+          </a>
+
+          {{#if section.settings.social_sharing}}
+            <hr class="hr--clear hr--small">
+            <h2 class="h4">{{t 'products.general.share_title'}}</h2>
+            {{include 'social-sharing'}}
+          {{/if}}
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</div>
+
+{{#unless (is product empty)}}
+  <script type="application/json" id="ProductJson-{{ section.id }}">
+    {{json product}}
+  </script>
+{{/unless}}
+
+{{#schema}}
+  {
+    "name": "Featured product",
+    "class": "index-section",
+    "settings": [
+      {
+        "type": "product",
+        "id": "featured_product",
+        "label": "Product"
+      },
+      {
+        "type": "checkbox",
+        "id": "product_vendor_enable",
+        "label": "Show vendor"
+      },
+      {
+        "type": "checkbox",
+        "id": "product_quantity_enable",
+        "label": "Show quantity selector"
+      },
+      {
+        "type": "select",
+        "id": "product_image_zoom_type",
+        "label": "Image zoom type",
+        "options": [
+          {
+            "value": "lightbox",
+            "label": "Lightbox"
+          },
+          {
+            "value": "zoom-in",
+            "label": "Zoom-in"
+          },
+          {
+            "value": "",
+            "label": "No zoom"
+          }
+        ]
+      },
+      {
+        "type": "checkbox",
+        "id": "social_sharing",
+        "label": "Show social sharing buttons",
+        "default": true,
+        "info": "Edit social accounts in General settings"
+      }
+    ],
+    "presets": [
+      {
+        "name": "Featured product",
+        "category": "Product"
+      }
+    ],
+    "presets":
+    [
+      {
+        "name": "Featured product",
+        "category": "Products"
+      }
+    ]
+  }
+{{/schema}}

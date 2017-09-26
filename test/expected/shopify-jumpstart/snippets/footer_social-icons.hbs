@@ -1,0 +1,83 @@
+{{#if (isnt settings.social_twitter '')}}
+  <li><a href="{{escape settings.social_twitter}}">
+    <span aria-hidden="true">{{include 'asset_svg' 'twitter'}}</span>
+    <span class="fallback-text">Twitter</span>
+  </a></li>
+{{/if}}
+
+{{#if (isnt settings.social_facebook '')}}
+  <li><a href="{{escape settings.social_facebook}}">
+    <span aria-hidden="true">{{include 'asset_svg' 'facebook'}}</span>
+    <span class="fallback-text">Facebook</span>
+  </a></li>
+{{/if}}
+
+{{#if (isnt settings.social_google '')}}
+  <li><a href="{{escape settings.social_google}}">
+    <span aria-hidden="true">{{include 'asset_svg' 'google_plus'}}</span>
+    <span class="fallback-text">Google Plus</span>
+  </a></li>
+{{/if}}
+
+{{#if (isnt settings.social_youtube '')}}
+  <li><a href="{{escape settings.social_youtube}}">
+    <span aria-hidden="true">{{include 'asset_svg' 'youtube'}}</span>
+    <span class="fallback-text">YouTube</span>
+  </a></li>
+{{/if}}
+
+{{#if (isnt settings.social_vimeo '')}}
+  <li><a href="{{escape settings.social_vimeo}}">
+    <span aria-hidden="true">{{include 'asset_svg' 'vimeo'}}</span>
+    <span class="fallback-text">Vimeo</span>
+  </a></li>
+{{/if}}
+
+{{#if (isnt settings.social_pinterest '')}}
+  <li><a href="{{escape settings.social_pinterest}}">
+    <span aria-hidden="true">{{include 'asset_svg' 'pinterest'}}</span>
+    <span class="fallback-text">Pinterest</span>
+  </a></li>
+{{/if}}
+
+{{#if (isnt settings.social_snapchat '')}}
+  <li><a href="{{ settings.social_snapchat }}">
+    <span aria-hidden="true">{{include 'asset_svg' 'snapchat'}}</span>
+    <span class="fallback-text">Snapchat</span>
+  </a></li>
+{{/if}}
+
+{{#if (isnt settings.social_tumblr '')}}
+  <li><a href="{{escape settings.social_tumblr}}">
+    <span aria-hidden="true">{{include 'asset_svg' 'tumblr'}}</span>
+    <span class="fallback-text">Tumblr</span>
+  </a></li>
+{{/if}}
+
+{{#if (isnt settings.social_instagram '')}}
+  <li><a href="{{escape settings.social_instagram}}">
+    <span aria-hidden="true">{{include 'asset_svg' 'instagram'}}</span>
+    <span class="fallback-text">Instagram</span>
+  </a></li>
+{{/if}}
+
+{{#if (isnt settings.social_linkedin '')}}
+  <li><a href="{{escape settings.social_linkedin}}">
+    <span aria-hidden="true">{{include 'asset_svg' 'linkedin'}}</span>
+    <span class="fallback-text">LinkedIn</span>
+  </a></li>
+{{/if}}
+
+{{#if (isnt settings.social_flickr '')}}
+  <li><a href="{{escape settings.social_flickr}}">
+    <span aria-hidden="true">{{include 'asset_svg' 'flickr'}}</span>
+    <span class="fallback-text">Flickr</span>
+  </a></li>
+{{/if}}
+
+{{#if (isnt settings.social_email '')}}
+  <li><a href="mailto:{{escape settings.social_email}}">
+    <span aria-hidden="true">{{include 'asset_svg' 'email'}}</span>
+    <span class="fallback-text">Email</span>
+  </a></li>
+{{/if}}

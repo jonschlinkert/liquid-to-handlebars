@@ -1,0 +1,89 @@
+{{include 'advanced-tag-loop'}}
+
+{{#unless (or (is template.name 'index') (is template.name 'cart'))}}
+<nav class="breadcrumb" role="navigation" aria-label="breadcrumbs">
+  <a href="/" title="{{t 'general.breadcrumbs.home_link_title'}}">{{t 'general.breadcrumbs.home'}}</a>
+
+  {{#if (is template.name 'product')}}
+
+    {{#if collection}}
+      <span class="divider" aria-hidden="true">&rsaquo;</span>
+      {{#if collection.handle}}
+        {{#capture 'url'}}/collections/{{ collection.handle }}{{/capture}}
+        {{link_to collection.title url}}
+      {{/if}}
+    {{/if}}
+    <span class="divider" aria-hidden="true">&rsaquo;</span>
+    <span class="breadcrumb--truncate">{{ product.title }}</span>
+
+  {{else if (and (is template.name 'collection') collection.handle)}}
+
+    <span class="divider" aria-hidden="true">&rsaquo;</span>
+
+    {{#if current_tags}}
+
+      {{#capture 'url'}}/collections/{{ collection.handle }}{{/capture}}
+      {{link_to collection.title url}}
+
+      <span class="divider" aria-hidden="true">&rsaquo;</span>
+
+      {{#each current_tags as |tag|}}
+
+        {{assign 'is_advanced_tag' false}}
+        {{assign 'cat' (first (split tag '_'))}}
+        {{#unless (is cat tag)}}
+          {{#if (contains cat_array cat)}}
+            {{assign 'is_advanced_tag' true}}
+            <span>
+              {{remove_first (remove_first tag cat) '_'}}
+            </span>
+          {{/if}}
+        {{/unless}}
+
+        {{#if (is is_advanced_tag false)}}
+        <span>
+          {{ tag }}
+        </span>
+        {{/if}}
+
+        {{#unless forloop.last}}
+        <span>+</span>
+        {{/unless}}
+
+      {{/each}}
+
+    {{else}}
+      <span>{{ collection.title }}</span>
+    {{/if}}
+
+  {{else if (is template.name 'blog')}}
+
+    <span class="divider" aria-hidden="true">&rsaquo;</span>
+    {{#if current_tags}}
+      {{link_to blog.title blog.url}}
+      <span class="divider" aria-hidden="true">&rsaquo;</span>
+      <span>{{join current_tags ' + '}}</span>
+    {{else}}
+    <span>{{ blog.title }}</span>
+    {{/if}}
+
+  {{else if (is template.name 'article')}}
+
+    <span class="divider" aria-hidden="true">&rsaquo;</span>
+    {{link_to blog.title blog.url}}
+    <span class="divider" aria-hidden="true">&rsaquo;</span>
+    <span>{{ article.title }}</span>
+
+  {{else if (is template.name 'page')}}
+
+    <span class="divider" aria-hidden="true">&rsaquo;</span>
+   <span>{{{ page.title }}}</span>
+
+  {{else}}
+
+    <span class="divider" aria-hidden="true">&rsaquo;</span>
+   <span>{{{ page_title }}}</span>
+
+  {{/if}}
+</nav>
+{{/unless}}

@@ -1,0 +1,9 @@
+<!-- /snippets/tags-article.liquid -->
+{{#if (gt article.tags.size 0)}}
+  <li>
+    <span class="tags__title">{{t 'blogs.article.tags'}}:</span>
+    {{#each article.tags as |tag|}}
+      <a href="{{ blog.url }}/tagged/{{handle tag}}" class="text-link">{{ tag }}</a>
+    {{/each}}
+  </li>
+{{/if}}

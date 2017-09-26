@@ -1,0 +1,56 @@
+<!-- snippets/onboarding-featured-products.liquid -->
+{{#if (is section.settings.collection_products_grid 'collage')}}
+  <div class="grid__item collage-grid__row">
+    <div class="grid helper">
+      {{#each (range 1 3) as |i|}}
+        {{#capture 'clearfix'}}{{cycle '' 'clearfix' ''}}{{/capture}}
+        {{#capture 'width'}}
+          {{cycle 'grid__item--large one-whole medium--two-thirds large--two-thirds' 'grid__item--small one-whole medium--one-third large--one-third' 'grid__item--small one-whole medium--one-third large--one-third'}}
+        {{/capture}}
+        <div class="grid__item {{ width }} {{ clearfix }}">
+          <div class="grid-product__wrapper">
+            <div class="grid-product__image-wrapper">
+              <a class="grid-product__image-link" href="/admin/products">
+                {{#capture 'current'}}{{cycle 1 2 3}}{{/capture}}
+                {{placeholder_svg_tag (append 'product-' current) 'placeholder-svg'}}
+              </a>
+            </div>
+            <a href="/admin/products" class="grid-product__meta">
+              <span class="grid-product__title">{{t 'home_page.onboarding.product_title'}}</span>
+              <span class="grid-product__price-wrap">
+                <span class="long-dash">—</span>
+                <span class="grid-product__price">$19.99</span>
+              </span>
+            </a>
+          </div>
+        </div>
+      {{/each}}
+      </div>
+    </div>
+{{else}}
+  <div class="grid__item">
+    <div class="helper-section">
+      <div class="grid-uniform helper-content">
+        {{#each (range 1 6) as |i|}}
+          <div class="grid__item grid-product medium--one-half large--one-third">
+            <div class="grid-product__wrapper">
+              <div class="grid-product__image-wrapper" style="height: 600px;">
+                <a class="grid-product__image-link" href="/admin/products">
+                  {{#capture 'current'}}{{cycle 1 2 3 4 5 6}}{{/capture}}
+                  {{placeholder_svg_tag (append 'product-' current) 'placeholder-svg'}}
+                </a>
+              </div>
+              <a href="/admin/products" class="grid-product__meta">
+                <span class="grid-product__title"><em>{{t 'home_page.onboarding.product_title'}}</em></span>
+                <span class="grid-product__price-wrap">
+                  <span class="long-dash">—</span>
+                  <span class="grid-product__price">$19.99</span>
+                </span>
+              </a>
+            </div>
+          </div>
+        {{/each}}
+      </div>
+    </div>
+  </div>
+{{/if}}

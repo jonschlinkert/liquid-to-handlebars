@@ -1,0 +1,12 @@
+{{#if (contains settings.type_base_family 'Google')}}
+  {{assign 'type_base_parts' (split settings.type_base_family '_')}}
+  {{#capture 'base_google_url'}}{{get type_base_parts 1}}:400,700{{/capture}}
+  {{stylesheet_tag (append '//fonts.googleapis.com/css?family=' base_google_url)}}
+{{/if}}
+{{#if (contains settings.type_accent_family 'Google')}}
+  {{#unless (contains settings.type_accent_family (get type_base_parts 1))}}
+    {{assign 'type_accent_parts' (split settings.type_accent_family '_')}}
+    {{#capture 'accent_google_url'}}{{get type_accent_parts 1}}:400,700{{/capture}}
+    {{stylesheet_tag (append '//fonts.googleapis.com/css?family=' accent_google_url)}}
+  {{/unless}}
+{{/if}}

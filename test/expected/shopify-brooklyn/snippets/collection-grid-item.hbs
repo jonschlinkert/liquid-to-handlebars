@@ -1,0 +1,84 @@
+<!-- /snippets/collection-grid-item.liquid -->
+{{#comment}}
+
+  This snippet is used to showcase each collection during the loop,
+  'for product in collections[collection_handle].products' in list-collections.liquid.
+
+{{/comment}}
+
+{{#comment}}
+  Set the default grid_item_width if no variable is set
+{{/comment}}
+{{#unless grid_item_width}}
+  {{assign 'grid_item_width' 'medium--one-half large--one-third'}}
+{{/unless}}
+
+{{#comment}}
+  Set the default image_size if no variable is set
+{{/comment}}
+{{#unless image_size}}
+  {{assign 'image_size' 'grande'}}
+{{/unless}}
+
+{{assign 'no_collection_image' true}}
+<div class="grid__item {{ grid_item_width }} collection-collage__item text-center" {{ block.shopify_attributes }}>
+  <a href="{{get collections (toPath collection_handle "url")}}" class="collection-grid__item-link collection-collage__item-wrapper">
+    {{#comment}}
+      Use capture to put the collection title in a variable that is used in liquid filters
+    {{/comment}}
+
+    {{#if (is collection blank)}}
+      {{assign 'collection_title' (t 'home_page.onboarding.collection_title')}}
+    {{else}}
+      {{assign 'collection_title' (escape (get collections (toPath collection_handle 'title')))}}
+    {{/if}}
+
+    {{#if collection.image}}
+      {{assign 'collection_image' collection.image}}
+    {{else if (and collection.products.first (isnt collection.products.first.images empty))}}
+      {{assign 'collection_image' collection.products.first.featured_image}}
+    {{else}}
+      {{assign 'collection_image' blank}}
+    {{/if}}
+
+    {{#if grid_item_responsive}}
+      {{#if (is collection blank)}}
+        <div class="collection-grid__item-overlay grid__image">{{placeholder_svg_tag 'collection-1' 'placeholder-svg'}}</div>
+      {{else}}
+        <noscript>
+          <div class="collection-grid__item-overlay grid__image grid__image--responsive{{#if (isnt block.settings.collection blank)}}--{{ block.id }}{{/if}}" style="background-image: url('{{img_url collection_image image_size}})"></div>
+        </noscript>
+        <div class="collection-grid__item-overlay grid__image lazyload"
+          {{#unless (is collection_image blank)}}
+            style="background-image: url('{{img_url collection_image '300x300'}});"
+          {{/unless}}
+          data-bgset="{{include 'bgset",' image: collection_image}}"
+          data-sizes="auto"
+          data-parent-fit="cover">
+        </div>
+      {{/if}}
+    {{else}}
+      {{#if (is collection blank)}}
+        {{#capture 'current'}}{{cycle 1 2 3 4 5 6}}{{/capture}}
+        <div class="collection-grid__item-overlay grid__image">{{placeholder_svg_tag (append 'collection-' current) 'placeholder-svg'}}</div>
+      {{else}}
+        <noscript>
+          <div class="collection-grid__item-overlay grid__image"{{#unless (is collection_image blank)}} style="background-image: url({{img_url collection_image image_size}})"{{/unless}}></div>
+        </noscript>
+        <div class="collection-grid__item-overlay grid__image lazyload"
+          {{#unless (is collection_image blank)}}
+            style="background-image: url('{{img_url collection_image '300x'}});"
+          {{/unless}}
+          data-bgset="{{include 'bgset",' image: collection_image}}"
+          data-sizes="auto"
+          data-parent-fit="cover">
+        </div>
+      {{/if}}
+    {{/if}}
+    <div class="collection-grid__item-title--wrapper">
+      <span class="collection-grid__item-title">
+        {{ collection_title }}
+      </span>
+    </div>
+  </a>
+</div>

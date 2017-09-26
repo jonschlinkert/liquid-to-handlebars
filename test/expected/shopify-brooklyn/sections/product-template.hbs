@@ -1,0 +1,286 @@
+<!-- /templates/product.liquid -->
+<div itemscope itemtype="http://schema.org/Product" id="ProductSection--{{ section.id }}" data-section-id="{{ section.id }}" data-section-type="product-template" data-image-zoom-type="{{ section.settings.zoom_enable }}" data-enable-history-state="true" data-scroll-to-image="true">
+  <div itemscope itemtype="http://schema.org/Product">
+
+    <meta itemprop="url" content="{{ shop.url }}{{ product.url }}">
+    <meta itemprop="image" content="{{img_url product.featured_image.src 'grande'}}">
+
+    {{assign 'current_variant' product.selected_or_first_available_variant}}
+
+    <div class="grid product-single">
+      <div class="grid__item large--seven-twelfths medium--seven-twelfths text-center">
+        <div class="product-single__photos">
+          {{assign 'featured_image' (default current_variant.featured_image product.featured_image)}}
+
+          {{#comment}}
+            We need to figure out the max width we want the image to be on the page
+            based on the aspect ratio of the image and based on the size of the
+            image.
+          {{/comment}}
+          {{#capture 'img_id_class'}}product-single__photo-{{ featured_image.id }}{{/capture}}
+          {{#capture 'wrapper_id'}}ProductImageWrapper-{{ featured_image.id }}{{/capture}}
+
+          {{#comment}}
+            Display current variant image
+          {{/comment}}
+          <div class="product-single__photo--flex-wrapper">
+            <div class="product-single__photo--flex">
+              {{include 'image-style' image: featured_image, width: 575, height: 850, small_style: true, wrapper_id: wrapper_id, img_id_class: img_id_class}}
+              <div id="{{ wrapper_id }}" class="product-single__photo--container">
+                <div class="product-single__photo-wrapper" style="padding-top:{{times (divided_by 1 featured_image.aspect_ratio) 100}}%;">
+                  {{assign 'img_url' (replace (img_url featured_image '1x1') '_1x1.' '_{width}x.')}}
+                  <img class="product-single__photo lazyload {{ img_id_class }}"
+                    src="{{img_url featured_image '300x300'}}"
+                    data-src="{{ img_url }}"
+                    data-widths="[180, 360, 590, 720, 900, 1080, 1296, 1512, 1728, 2048]"
+                    data-aspectratio="{{ featured_image.aspect_ratio }}"
+                    data-sizes="auto"
+                    {{#if section.settings.zoom_enable}}data-mfp-src="{{img_url featured_image '1024x1024'}}"{{/if}}
+                    data-image-id="{{ featured_image.id }}"
+                    alt="{{escape featured_image.alt}}">
+
+                  <noscript>
+                    <img class="product-single__photo"
+                      src="{{img_url featured_image 'master'}}"
+                      {{#if section.settings.zoom_enable}}data-mfp-src="{{img_url featured_image '1024x1024'}}"{{/if}}
+                      alt="{{escape featured_image.alt}}" data-image-id="{{ featured_image.id }}">
+                  </noscript>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {{#comment}}
+            Display rest of product images, not repeating the featured one
+          {{/comment}}
+          {{#each product.images as |image|}}
+            {{#unless (contains image featured_image)}}
+
+              {{#comment}}
+                We need to figure out the max width we want the image to be on the page
+                based on the aspect ratio of the image and based on the size of the
+                image.
+              {{/comment}}
+              {{#capture 'img_id_class'}}product-single__photo-{{ image.id }}{{/capture}}
+              {{#capture 'wrapper_id'}}ProductImageWrapper-{{ image.id }}{{/capture}}
+
+              <div class="product-single__photo--flex-wrapper">
+                <div class="product-single__photo--flex">
+                  {{include 'image-style' image: image, width: 575, height: 850, small_style: true, wrapper_id: wrapper_id, img_id_class: img_id_class}}
+                  <div id="{{ wrapper_id }}" class="product-single__photo--container">
+                    <div class="product-single__photo-wrapper" style="padding-top:{{times (divided_by 1 image.aspect_ratio) 100}}%;">
+                      {{assign 'img_url' (replace (img_url image '1x1') '_1x1.' '_{width}x.')}}
+                      <img class="product-single__photo lazyload {{ img_id_class }}"
+                        src="{{img_url image '300x'}}"
+                        data-src="{{ img_url }}"
+                        data-widths="[180, 360, 540, 720, 900, 1080, 1296, 1512, 1728, 2048]"
+                        data-aspectratio="{{ image.aspect_ratio }}"
+                        data-sizes="auto"
+                        {{#if section.settings.zoom_enable}}data-mfp-src="{{img_url image.src '1024x1024'}}"{{/if}}
+                        data-image-id="{{ image.id }}"
+                        alt="{{escape image.alt}}">
+
+                      <noscript>
+                        <img class="product-single__photo" src="{{img_url image.src 'master'}}"
+                          {{#if section.settings.zoom_enable}}data-mfp-src="{{img_url image.src '1024x1024'}}"{{/if}}
+                          alt="{{escape image.alt}}"
+                          data-image-id="{{ image.id }}">
+                      </noscript>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            {{/unless}}
+          {{/each}}
+        </div>
+      </div>
+
+      <div class="grid__item product-single__meta--wrapper medium--five-twelfths large--five-twelfths">
+        <div class="product-single__meta">
+          {{#if section.settings.product_vendor_enable}}
+            <h2 class="product-single__vendor" itemprop="brand">{{ product.vendor }}</h2>
+          {{/if}}
+
+          <h1 class="product-single__title" itemprop="name">{{ product.title }}</h1>
+
+          <div itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+            {{#comment}}
+              Optionally show the 'compare at' or original price of the product.
+            {{/comment}}
+
+            {{#if (gt product.compare_at_price_max product.price)}}
+              <span id="PriceA11y" class="visually-hidden">{{t 'products.general.regular_price'}}</span>
+              <span class="product-single__price--wrapper">
+                <span id="ComparePrice" class="product-single__price--compare-at">
+                  {{#if (gt current_variant.compare_at_price current_variant.price)}}
+                    {{money current_variant.compare_at_price}}
+                  {{/if}}
+                </span>
+              </span>
+              <span id="ComparePriceA11y" class="visually-hidden">{{t 'products.general.sale_price'}}</span>
+            {{else}}
+              <span id="PriceA11y" class="visually-hidden">{{t 'products.general.regular_price'}}</span>
+            {{/if}}
+
+            <span id="ProductPrice"
+              class="product-single__price{{#if (gt product.compare_at_price product.price)}} on-sale{{/if}}"
+              itemprop="price"
+              content="{{divided_by current_variant.price 100.00}}">
+              {{money current_variant.price}}
+            </span>
+
+            <hr class="hr--small">
+
+            <meta itemprop="priceCurrency" content="{{ shop.currency }}">
+            <link itemprop="availability" href="http://schema.org/{{#if product.available}}InStock{{else}}OutOfStock{{/if}}">
+
+            <form action="/cart/add" method="post" enctype="multipart/form-data" id="AddToCartForm--{{ section.id }}" class="product-single__form">
+              {{#unless (and (is product.options.size 1) (is (get product.variants '0.title') 'Default Title'))}}
+                {{#each product.options_with_values as |option|}}
+                  <div class="radio-wrapper js product-form__item">
+                    <label class="single-option-radio__label{{#if (or (is option.name 'Default') (is option.name 'Title'))}} hidden-label{{/if}}"
+                      for="ProductSelect-option-{{ forloop.index0 }}">
+                      {{ option.name }}
+                    </label>
+                    {{#if (is section.settings.product_selector 'radio')}}
+                      <fieldset class="single-option-radio"
+                        name="{{ option.name }}"
+                        id="ProductSelect-option-{{ forloop.index0 }}">
+                        {{assign 'option_index' forloop.index}}
+                        {{#each option.values as |value|}}
+                          {{assign 'variant_label_state' true}}
+                          {{#if (is product.options.size 1)}}
+                            {{#unless get product.variants (toPath 'forloop.index0' 'available')}}
+                              {{assign 'variant_label_state' false}}
+                            {{/unless}}
+                          {{/if}}
+                          <input type="radio"
+                            {{#if (is option.selected_value value)}} checked="checked"{{/if}}
+                            {{#unless variant_label_state}} disabled="disabled"{{/unless}}
+                            value="{{escape value}}"
+                            data-index="option{{ option_index }}"
+                            name="{{ option.name }}"
+                            class="single-option-selector__radio{{#unless variant_label_state}} disabled{{/unless}}"
+                            id="ProductSelect-option-{{ option.name }}-{{escape value}}">
+                          <label for="ProductSelect-option-{{ option.name }}-{{escape value}}"{{#unless variant_label_state}} class="disabled"{{/unless}}>{{escape value}}</label>
+                        {{/each}}
+                      </fieldset> 
+                    {{else}}
+                      <select class="single-option-selector__radio single-option-selector-{{ section.id }} product-form__input" id="SingleOptionSelector-{{ forloop.index0 }}" data-index="option{{ forloop.index }}">
+                        {{#each option.values as |value|}}
+                          <option value="{{escape value}}"{{#if (is option.selected_value value)}} selected="selected"{{/if}}>{{ value }}</option>
+                        {{/each}}
+                      </select>
+                    {{/if}}
+                  </div>
+                {{/each}}
+              {{/unless}}
+
+              <select name="id" id="ProductSelect" class="product-single__variants no-js">
+                {{#each product.variants as |variant|}}
+                  {{#if variant.available}}
+                    <option {{#if (is variant product.selected_or_first_available_variant)}}
+                      selected="selected" {{/if}}
+                      data-sku="{{ variant.sku }}"
+                      value="{{ variant.id }}">
+                      {{ variant.title }} - {{money_with_currency variant.price}}
+                    </option>
+                  {{else}}
+                    <option disabled="disabled">
+                      {{ variant.title }} - {{t 'products.product.sold_out'}}
+                    </option>
+                  {{/if}}
+                {{/each}}
+              </select>
+
+              {{#if section.settings.quantity_enabled}}
+              <div class="product-single__quantity">
+                <label for="Quantity" class="product-single__quantity-label js-quantity-selector">{{t 'products.product.quantity'}}</label>
+                <input type="number" hidden="hidden" id="Quantity" name="quantity" value="1" min="1" class="js-quantity-selector">
+              </div>
+              {{/if}}
+
+              <div class="product-single__add-to-cart">
+                <button type="submit" name="add" id="AddToCart--{{ section.id }}" class="btn add-to-cart"{{#unless current_variant.available}} disabled="disabled"{{/unless}}>
+                  <span class="add-to-cart-text">
+                    {{#if current_variant.available}}
+                      {{t 'products.product.add_to_cart'}}
+                    {{else}}
+                      {{t 'products.product.sold_out'}}
+                    {{/if}}
+                  </span>
+                </button>
+              </div>
+            </form>
+
+          </div>
+
+          <div class="product-single__description rte" itemprop="description">
+            {{ product.description }}
+          </div>
+
+          {{#if section.settings.social_sharing_products}}
+            {{include 'social-sharing",' share_title: product.title, share_permalink: product.url, share_image: product}}
+          {{/if}}
+        </div>
+      </div>
+    </div>
+
+    {{#if collection}}
+      <hr class="hr--clear">
+      <div class="text-center">
+        <a href="{{ collection.url }}" class="return-link">&larr; {{t 'products.general.collection_return' collection collection.title}}</a>
+      </div>
+    {{/if}}
+
+  </div>
+</div>
+{{#unless (is product.empty empty)}}
+  <script type="application/json" id="ProductJson-{{ section.id }}">
+    {{json product}}
+  </script>
+{{/unless}}
+
+{{#schema}}
+  {
+    "name": "Product pages",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "zoom_enable",
+        "label": "Enable image zoom"
+      },
+      {
+        "type": "checkbox",
+        "id": "quantity_enabled",
+        "label": "Show quantity selector"
+      },
+      {
+        "type": "checkbox",
+        "id": "social_sharing_products",
+        "label": "Enable product sharing",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "product_vendor_enable",
+        "label": "Show product vendor"
+      },
+      {
+        "type": "select",
+        "id": "product_selector",
+        "label": "Selector type",
+        "options": [
+          {
+            "value": "radio",
+            "label": "Button"
+          },
+          {
+            "value": "select",
+            "label": "Dropdown"
+          }
+        ]
+      }
+    ]
+  }
+{{/schema}}

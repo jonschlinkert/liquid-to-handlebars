@@ -1,0 +1,30 @@
+{{assign 'number_of_products' 5}}
+{{assign 'number_of_products_to_fetch' (plus number_of_products 1)}}
+
+{{#if (or (is collection null) (is collection.handle 'frontpage') (is collection.handle 'all'))}}
+  {{assign 'found_a_collection' false}}
+  {{#each product.collections as |c|}}
+    {{#if (and (is found_a_collection false) (isnt c.handle 'frontpage') (isnt c.handle 'all') (gt c.all_products_count 1))}}
+      {{assign 'found_a_collection' true}}
+      {{assign 'collection' c}}
+    {{/if}}
+  {{/each}}
+{{/if}}
+
+{{#if (and collection (gt collection.products_count 1))}}
+  <hr>
+  <h2 class="h1">{{t 'products.general.related_products'}}</h2>
+  <div class="grid-uniform">
+    {{assign 'current_product' product}}
+    {{assign 'current_product_found' false}}
+    {{#each (limit collection.products undefined) as |product|}}
+      {{#if (is product.handle current_product.handle)}}
+        {{assign 'current_product_found' true}}
+      {{else}}
+        {{#unless (and (is current_product_found false) forloop.last)}}
+          {{include 'product-grid-item'}}
+        {{/unless}}
+      {{/if}}
+    {{/each}}
+  </div>
+{{/if}}

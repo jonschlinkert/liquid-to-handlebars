@@ -1,0 +1,67 @@
+<div class="page-width">
+  <div class="section-block section-block--padding">
+    <div class="{{#if (or (isnt section.settings.heading blank) (isnt section.settings.subheading blank))}}section-block__header {{/if}}text-center">
+      {{#unless (is section.settings.heading blank)}}
+        <h4 class="h1--mini section-block__title">{{escape section.settings.heading}}</h4>
+      {{/unless}}
+      {{#unless (is section.settings.subheading blank)}}
+        <p class="section-block__subtext">{{escape section.settings.subheading}}</p>
+      {{/unless}}
+    </div>
+    <div class="grid">
+      <div class="grid__item medium-up--two-thirds medium-up--push-one-sixth">
+        <div class="form-vertical">
+          {{#form 'customer'}}
+            {{default_errors form.errors}}
+            {{#if form.posted_successfully}}
+              <p class="form-success">{{t 'general.newsletter_form.confirmation'}}</p>
+            {{else}}
+              <input type="hidden" name="contact[tags]" value="newsletter">
+              <label for="NewsletterEmail-{{ block.id }}" class="label--hidden">{{t 'general.newsletter_form.newsletter_label'}}</label>
+              <div class="input-group">
+                <input type="email" value="{{#if customer}}{{ customer.email }}{{/if}}" placeholder="{{t 'general.newsletter_form.newsletter_placeholder'}}" name="contact[email]" id="NewsletterEmail-{{ block.id }}" class="input-group__field" autocorrect="off" autocapitalize="off">
+                <div class="input-group__btn">
+                  <button type="submit" class="btn btn--narrow" name="commit">
+                    {{include 'icon-arrow-right'}}
+                    <span class="icon__fallback-text">{{t 'general.newsletter_form.submit'}}</span>
+                  </button>
+                </div>
+              </div>
+            {{/if}}
+          {{/form}}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{{#schema}}
+  {
+    "name": "Newsletter",
+    "class": "index-section",
+    "settings": [
+      {
+        "type": "text",
+        "id": "heading",
+        "label": "Heading",
+        "default": "Subscribe to our newsletter"
+      },
+      {
+        "type": "text",
+        "id": "subheading",
+        "label": "Subheading",
+        "default": "Promotions, new products and sales. Directly to your inbox."
+      },
+      {
+        "type": "paragraph",
+        "content": "Any customers who sign up will have an account created for them in Shopify. [View customers](/admin/customers?query=&accepts_marketing=1)"
+      }
+    ],
+    "presets": [
+      {
+        "name": "Newsletter",
+        "category": "Promotional"
+      }
+    ]
+  }
+{{/schema}}

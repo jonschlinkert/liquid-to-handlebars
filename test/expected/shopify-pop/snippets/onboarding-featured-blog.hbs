@@ -1,0 +1,24 @@
+<!-- snippets/onboarding-featured-blog.liquid -->
+<div class="grid-uniform helper">
+  {{#each (range 1 section.settings.post_limit) as |i|}}
+    <div class="grid-item {{ width }}">
+      <div class="featured-blog__post{{#if (and (is section.settings.post_limit 1) (is section.settings.blog_show_image false))}} text-center{{/if}}">
+        {{#if section.settings.blog_show_image}}
+          <div class="article__featured-link" href="{{ article.url }}">
+            {{#capture 'current'}}{{cycle 1 2 3 4 5 6}}{{/capture}}
+            {{placeholder_svg_tag (append 'collection-' current) 'placeholder-svg'}}
+          </div>
+        {{/if}}
+        <div class="featured-blog__post-inner">
+          <h2 class="h4 featured-blog__title">{{t 'home_page.onboarding.blog_title'}}</h2>
+          {{#if section.settings.blog_show_excerpt}}
+            <div class="rte rte--indented-images">
+               {{t 'home_page.onboarding.blog_excerpt'}}
+            </div>
+          {{/if}}
+           <p class="blog-post read-more"><a href="#">{{t 'blogs.article.read_more'}} <span class="icon icon-chevron-right" aria-hidden="true"></span></a></p>
+        </div>
+      </div>
+    </div>
+  {{/each}}
+</div>

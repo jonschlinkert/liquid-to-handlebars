@@ -1,0 +1,130 @@
+<footer class="site-footer" role="contentinfo">
+  {{#comment}}
+    Show Shop Links from footer linklist if it has any links
+  {{/comment}}
+  {{#if (gt (get linklists (toPath section.settings.footer_link_list 'links.size')) 0)}}
+    <ul class="list--inline site-footer__linklist">
+      {{#each (get linklists (toPath section.settings.footer_link_list 'links')) as |link|}}
+        <li class="h4"><a href="{{ link.url }}">{{ link.title }}</a></li>
+      {{/each}}
+    </ul>
+  {{/if}}
+
+  <div class="grid text-center large-up--grid--table">
+    <div class="grid__item large-up--one-quarter text-center">
+      <ul class="list--inline social-icons social-icons--footer">
+        {{#if (isnt settings.social_twitter_link blank)}}
+          <li>
+            <a href="{{escape settings.social_twitter_link}}" title="{{t 'layout.footer.social_platform' name shop.name platform 'Twitter'}}">
+              <span class="icon icon-twitter" aria-hidden="true"></span>
+              <span class="visually-hidden">Twitter</span>
+            </a>
+          </li>
+        {{/if}}
+        {{#if (isnt settings.social_facebook_link blank)}}
+          <li>
+            <a href="{{escape settings.social_facebook_link}}" title="{{t 'layout.footer.social_platform' name shop.name platform 'Facebook'}}">
+              <span class="icon icon-facebook" aria-hidden="true"></span>
+              <span class="visually-hidden">Facebook</span>
+            </a>
+          </li>
+        {{/if}}
+        {{#if (isnt settings.social_pinterest_link blank)}}
+          <li>
+            <a href="{{escape settings.social_pinterest_link}}" title="{{t 'layout.footer.social_platform' name shop.name platform 'Pinterest'}}">
+              <span class="icon icon-pinterest" aria-hidden="true"></span>
+              <span class="visually-hidden">Pinterest</span>
+            </a>
+          </li>
+        {{/if}}
+        {{#if (isnt settings.social_google_plus_link blank)}}
+          <li>
+            <a href="{{escape settings.social_google_plus_link}}" rel="publisher" title="{{t 'layout.footer.social_platform' name shop.name platform 'Google Plus'}}">
+              <span class="icon icon-google_plus" aria-hidden="true"></span>
+              <span class="visually-hidden">Google Plus</span>
+            </a>
+          </li>
+        {{/if}}
+        {{#if (isnt settings.social_instagram_link blank)}}
+          <li>
+            <a href="{{escape settings.social_instagram_link}}" title="{{t 'layout.footer.social_platform' name shop.name platform 'Instagram'}}">
+              <span class="icon icon-instagram" aria-hidden="true"></span>
+              <span class="visually-hidden">Instagram</span>
+            </a>
+          </li>
+        {{/if}}
+        {{#if (isnt settings.social_snapchat_link blank)}}
+        <li>
+          <a href="{{escape settings.social_snapchat_link}}" title="{{t 'layout.footer.social_platform' name shop.name platform 'Snapchat'}}">
+            <span class="icon icon-snapchat" aria-hidden="true"></span>
+            <span class="visually-hidden">Snapchat</span>
+          </a>
+        </li>
+        {{/if}}
+        {{#if (isnt settings.social_tumblr_link blank)}}
+          <li>
+            <a href="{{escape settings.social_tumblr_link}}" title="{{t 'layout.footer.social_platform' name shop.name platform 'Tumblr'}}">
+              <span class="icon icon-tumblr" aria-hidden="true"></span>
+              <span class="visually-hidden">Tumblr</span>
+            </a>
+          </li>
+        {{/if}}
+        {{#if (isnt settings.social_youtube_link blank)}}
+          <li>
+            <a href="{{escape settings.social_youtube_link}}" title="{{t 'layout.footer.social_platform' name shop.name platform 'YouTube'}}">
+              <span class="icon icon-youtube" aria-hidden="true"></span>
+              <span class="visually-hidden">YouTube</span>
+            </a>
+          </li>
+        {{/if}}
+        {{#if (isnt settings.social_vimeo_link blank)}}
+          <li>
+            <a href="{{escape settings.social_vimeo_link}}" title="{{t 'layout.footer.social_platform' name shop.name platform 'Vimeo'}}">
+              <span class="icon icon-vimeo" aria-hidden="true"></span>
+              <span class="visually-hidden">Vimeo</span>
+            </a>
+          </li>
+        {{/if}}
+        {{#if (isnt settings.social_fancy_link blank)}}
+          <li>
+            <a href="{{escape settings.social_fancy_link}}" title="{{t 'layout.footer.social_platform' name shop.name platform 'Fancy'}}">
+              <span class="icon icon-fancy" aria-hidden="true"></span>
+              <span class="visually-hidden">Fancy</span>
+            </a>
+          </li>
+        {{/if}}
+      </ul>
+    </div>
+    <div class="grid__item large-up--one-half">
+      <span class="site-footer__copyright">&copy; {{date 'now' '%Y'}}, <a href="/">{{ shop.name }}</a>. {{ powered_by_link }}</span>
+    </div>
+    <div class="grid__item large-up--one-quarter text-center">
+      {{#unless (is shop.enabled_payment_types empty)}}
+        {{assign 'payment_icons_available' (split 'amazon_payments,american_express,apple_pay,bitcoin,cirrus,dankort,diners_club,discover,dogecoin,dwolla,forbrugsforeningen,interac,jcb,litecoin,maestro,master,paypal,visa' ',')}}
+        <ul class="list--inline payment-icons payment-icons--footer">
+          {{#each shop.enabled_payment_types as |type|}}
+            {{#if (contains payment_icons_available type)}}
+              <li>
+                <span class="icon icon-{{ type }}" aria-hidden="true"></span>
+                <span class="icon__fallback-text">{{replace type '_' ' '}}</span>
+              </li>
+            {{/if}}
+          {{/each}}
+        </ul>
+      {{/unless}}
+    </div>
+  </div>
+</footer>
+
+{{#schema}}
+  {
+    "name": "Footer",
+    "class": "footer-section",
+    "settings": [{
+      "type": "link_list",
+      "id": "footer_link_list",
+      "label": "Menu",
+      "default": "footer"
+      }]
+  }
+{{/schema}}

@@ -1,0 +1,51 @@
+{{#capture 'header_title'}} {{t 'customer.register.title'}} {{/capture}}
+{{include 'page_header' header_title}}
+
+<div class="wrapper wrapper--margins wrapper--center">
+
+  <div class="form--customer">
+
+    {{#form 'create_customer'}}
+
+      {{default_errors form.errors}}
+
+      <div class="form__row">
+        <div class="form__column full">
+          <label for="FirstName">{{t 'customer.register.first_name'}}</label>
+          <input type="text" name="customer[first_name]" id="FirstName" class="input-full" {{#if form.first_name}}value="{{ form.first_name }}"{{/if}} autocapitalize="words" autofocus>
+        </div>
+      </div>
+
+      <div class="form__row">
+        <div class="form__column full">
+          <label for="LastName">{{t 'customer.register.last_name'}}</label>
+          <input type="text" name="customer[last_name]" id="LastName" class="input-full" {{#if form.last_name}}value="{{ form.last_name }}"{{/if}} autocapitalize="words">
+        </div>
+      </div>
+
+      <div class="form__row">
+        <div class="form__column full">
+          <label for="Email">{{t 'customer.register.email'}}</label>
+          <input type="email" name="customer[email]" id="Email" class="input-full{{#if (contains form.errors 'email')}} error{{/if}}" {{#if form.email}} value="{{ form.email }}"{{/if}} autocorrect="off" autocapitalize="off">
+        </div>
+      </div>
+
+      <div class="form__row">
+        <div class="form__column full">
+          <label for="CreatePassword">{{t 'customer.register.password'}}</label>
+          <input type="password" name="customer[password]" id="CreatePassword" class="input-full{{#if (contains form.errors 'password')}} error{{/if}}">
+        </div>
+      </div>
+
+      <input type="submit" value="{{t 'customer.register.submit'}}" class="btn btn--regular btn--color btn--fill">
+
+      <div class="submit--helper">
+        <span>{{t 'customer.register.returning_customer'}}</span>
+        <span>{{customer_login_link (t 'customer.login.sign_in')}}</span>
+      </div>
+
+    {{/form}}
+
+  </div>
+
+</div>

@@ -1,0 +1,8 @@
+{{#if (gt article.tags.size 0)}}
+  <li>
+    <span>{{t 'blogs.article.tags'}}:</span>
+    {{#each article.tags as |tag|}}
+      <a href="{{ blog.url }}/tagged/{{handle tag}}">{{ tag }}</a>{{#unless forloop.last}}, {{/unless}}
+    {{/each}}
+  </li>
+{{/if}}

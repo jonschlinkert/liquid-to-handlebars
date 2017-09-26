@@ -1,0 +1,375 @@
+{{#capture 'theme_settings_link'}}<a href="/admin/themes/{{ theme.id }}/settings">{{t 'layout.footer.theme_settings'}}</a>{{/capture}}
+
+<footer class="site-footer small--text-center" role="contentinfo">
+  <div class="wrapper">
+
+    <div class="grid">
+
+    {{#each section.blocks as |block|}}
+
+      {{#is block.settings.width '16%'}}
+          {{assign 'block_width' 'small--one-whole two-twelfths'}}
+        {{else is block.settings.width '25%'}}
+          {{assign 'block_width' 'small--one-whole one-quarter'}}
+        {{else is block.settings.width '33%'}}
+          {{assign 'block_width' 'small--one-whole one-third'}}
+        {{else is block.settings.width '50%'}}
+          {{assign 'block_width' 'small--one-whole one-half'}}
+        {{else is block.settings.width '66%'}}
+          {{assign 'block_width' 'small--one-whole two-thirds'}}
+        {{else is block.settings.width '75%'}}
+          {{assign 'block_width' 'small--one-whole three-quarters'}}
+        {{else is block.settings.width '100%'}}
+          {{assign 'block_width' 'one-whole'}}
+      {{/is}}
+
+
+    <div class="grid-item {{ block_width }}">
+      {{#if block.settings.title}}
+        <h3>{{escape block.settings.title}}</h3>
+      {{/if}}
+
+      {{#is block.type 'menu'}}
+        <ul>
+          {{#each (get linklists (toPath block.settings.menu 'links')) as |link|}}
+            <li><a href="{{ link.url }}">{{ link.title }}</a></li>
+          {{else}}
+            {{#capture 'theme_settings_footer_linklist_path'}}<strong>Footer</strong> > <strong>Quick links link list</strong>{{/capture}}
+            {{t 'layout.footer.instructions_for_linklist_html' theme_settings_link theme_settings_link theme_settings_footer_linklist_path theme_settings_footer_linklist_path}}
+          {{/each}}
+        </ul>
+
+        {{else is block.type 'text'}}
+
+            {{#if (isnt block.settings.richtext blank)}}
+              {{ block.settings.richtext }}
+            {{else}}
+              <p>{{t 'layout.footer.instructions_for_text_content_html' theme_settings_link theme_settings_link}}</p>
+            {{/if}}
+
+
+        {{else is block.type 'newsletter'}}
+          {{include 'newsletter-form'}}
+        {{/is}}
+      </div>
+    {{/each}}
+
+  </div>
+
+  {{#if (or section.settings.social_enabled (isnt section.settings.legal_menu blank))}}
+  <hr class="hr--small">
+  {{/if}}
+
+    <div class="grid">
+    {{#if (isnt section.settings.legal_menu blank)}}
+      <div class="grid-item{{#if section.settings.social_enabled}} large--two-fifths{{else}} one-whole text-center{{/if}}">
+
+          <ul class="legal-links inline-list">
+            {{#each (get linklists (toPath section.settings.legal_menu 'links')) as |link|}}
+              <li><a href="{{ link.url }}">{{ link.title }}</a></li>
+            {{/each}}
+          </ul>
+      </div>
+      {{/if}}
+      {{#if section.settings.social_enabled}}
+      <div class="grid-item{{#if (isnt section.settings.legal_menu blank)}} large--three-fifths text-right{{else}} one-whole text-center{{/if}}">
+          <ul class="inline-list social-icons">
+             {{#if (isnt settings.social_twitter_link blank)}}
+               <li>
+                 <a class="icon-fallback-text" href="{{escape settings.social_twitter_link}}" title="{{escape (t 'layout.footer.store_on_social_network' store_name shop.name social_network 'Twitter')}}">
+                   <span class="icon icon-twitter" aria-hidden="true"></span>
+                   <span class="fallback-text">Twitter</span>
+                 </a>
+               </li>
+             {{/if}}
+             {{#if (isnt settings.social_facebook_link blank)}}
+               <li>
+                 <a class="icon-fallback-text" href="{{escape settings.social_facebook_link}}" title="{{escape (t 'layout.footer.store_on_social_network' store_name shop.name social_network 'Facebook')}}">
+                   <span class="icon icon-facebook" aria-hidden="true"></span>
+                   <span class="fallback-text">Facebook</span>
+                 </a>
+               </li>
+             {{/if}}
+             {{#if (isnt settings.social_pinterest_link blank)}}
+               <li>
+                 <a class="icon-fallback-text" href="{{escape settings.social_pinterest_link}}" title="{{escape (t 'layout.footer.store_on_social_network' store_name shop.name social_network 'Pinterest')}}">
+                   <span class="icon icon-pinterest" aria-hidden="true"></span>
+                   <span class="fallback-text">Pinterest</span>
+                 </a>
+               </li>
+             {{/if}}
+             {{#if (isnt settings.social_google_plus_link blank)}}
+               <li>
+                 <a class="icon-fallback-text" href="{{escape settings.social_google_plus_link}}" title="{{escape (t 'layout.footer.store_on_social_network' store_name shop.name social_network 'Google')}}" rel="publisher">
+                   <span class="icon icon-google_plus" aria-hidden="true"></span>
+                   <span class="fallback-text">Google</span>
+                 </a>
+               </li>
+             {{/if}}
+             {{#if (isnt settings.social_instagram_link blank)}}
+               <li>
+                 <a class="icon-fallback-text" href="{{escape settings.social_instagram_link}}" title="{{escape (t 'layout.footer.store_on_social_network' store_name shop.name social_network 'Instagram')}}">
+                   <span class="icon icon-instagram" aria-hidden="true"></span>
+                   <span class="fallback-text">Instagram</span>
+                 </a>
+               </li>
+             {{/if}}
+             {{#if (isnt settings.social_snapchat_link blank)}}
+               <li>
+                 <a class="icon-fallback-text" href="{{ settings.social_snapchat_link }}" title="{{escape (t 'layout.footer.store_on_social_network' store_name shop.name social_network 'Snapchat')}}">
+                   <span class="icon icon-snapchat" aria-hidden="true"></span>
+                   <span class="fallback-text">Snapchat</span>
+                 </a>
+               </li>
+             {{/if}}
+             {{#if (isnt settings.social_tumblr_link blank)}}
+               <li>
+                 <a class="icon-fallback-text" href="{{escape settings.social_tumblr_link}}" title="{{escape (t 'layout.footer.store_on_social_network' store_name shop.name social_network 'Tumblr')}}">
+                   <span class="icon icon-tumblr" aria-hidden="true"></span>
+                   <span class="fallback-text">Tumblr</span>
+                 </a>
+               </li>
+             {{/if}}
+             {{#if (isnt settings.social_youtube_link blank)}}
+               <li>
+                 <a class="icon-fallback-text" href="{{escape settings.social_youtube_link}}" title="{{escape (t 'layout.footer.store_on_social_network' store_name shop.name social_network 'YouTube')}}">
+                   <span class="icon icon-youtube" aria-hidden="true"></span>
+                   <span class="fallback-text">YouTube</span>
+                 </a>
+               </li>
+             {{/if}}
+             {{#if (isnt settings.social_vimeo_link blank)}}
+               <li>
+                 <a class="icon-fallback-text" href="{{escape settings.social_vimeo_link}}" title="{{escape (t 'layout.footer.store_on_social_network' store_name shop.name social_network 'Vimeo')}}">
+                   <span class="icon icon-vimeo" aria-hidden="true"></span>
+                   <span class="fallback-text">Vimeo</span>
+                 </a>
+               </li>
+             {{/if}}
+             {{#if (isnt settings.social_fancy_link blank)}}
+               <li>
+                 <a class="icon-fallback-text" href="{{escape settings.social_fancy_link}}" title="{{escape (t 'layout.footer.store_on_social_network' store_name shop.name social_network 'Fancy')}}">
+                   <span class="icon icon-fancy" aria-hidden="true"></span>
+                   <span class="fallback-text">Fancy</span>
+                 </a>
+               </li>
+             {{/if}}
+           </ul>
+        </div>
+      {{/if}}
+      </div>
+      <hr class="hr--small">
+      <div class="grid">
+      <div class="grid-item{{#unless (is shop.enabled_payment_types empty)}} large--two-fifths{{/unless}}">
+          <ul class="legal-links inline-list">
+              <li>
+                &copy; {{date 'now' '%Y'}} {{link_to shop.name '/'}}
+              </li>
+              <li>
+                {{ powered_by_link }}
+              </li>
+          </ul>
+      </div>
+
+      {{#unless (is shop.enabled_payment_types empty)}}
+        <div class="grid-item large--three-fifths large--text-right">
+          {{assign 'payment_icons_available' (split 'amazon_payments,american_express,apple_pay,bitcoin,cirrus,dankort,diners_club,discover,dogecoin,dwolla,forbrugsforeningen,interac,jcb,litecoin,maestro,master,paypal,visa' ',')}}
+          <ul class="inline-list payment-icons">
+            {{#each shop.enabled_payment_types as |type|}}
+              {{#if (contains payment_icons_available type)}}
+                <li>
+                  <span class="icon-fallback-text">
+                    <span class="icon icon-{{ type }}" aria-hidden="true"></span>
+                    <span class="fallback-text">{{replace type '_' ' '}}</span>
+                  </span>
+                </li>
+              {{/if}}
+            {{/each}}
+          </ul>
+        </div>
+      {{/unless}}
+
+    </div>
+
+  </div>
+
+</footer>
+
+{{#schema}}
+  {
+    "name": "Footer",
+    "class": "footer-section",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "social_enabled",
+        "label": "Show social media icons",
+        "info": "Add accounts in Social media section"
+      },
+      {
+        "type": "link_list",
+        "id": "legal_menu",
+        "label": "Legal menu"
+      }
+    ],
+    "max_blocks": 9,
+    "blocks": [
+      {
+        "type": "menu",
+        "name": "Menu",
+        "settings": [
+          {
+            "type": "text",
+            "id": "title",
+            "label": "Heading",
+            "default": "Quick links"
+          },
+          {
+            "type": "link_list",
+            "id": "menu",
+            "label": "Menu"
+          },
+          {
+            "type": "select",
+            "id": "width",
+            "label": "Container width",
+            "default": "16%",
+            "options": [
+              {
+                "value": "16%",
+                "label": "16%"
+              },
+              {
+                "value": "25%",
+                "label": "25%"
+              },
+              {
+                "value": "33%",
+                "label": "33%"
+              },
+              {
+                "value": "50%",
+                "label": "50%"
+              },
+              {
+                "value": "66%",
+                "label": "66%"
+              },
+              {
+                "value": "75%",
+                "label": "75%"
+              },
+              {
+                "value": "100%",
+                "label": "100%"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "name": "Rich text",
+        "settings": [
+          {
+            "type": "text",
+            "id": "title",
+            "label": "Heading",
+            "default": "Get in touch"
+          },
+          {
+            "type": "richtext",
+            "id": "richtext",
+            "label": "Text",
+            "default": "<p>Use this text to share information about your brand with your customers.</p>"
+          },
+          {
+            "type": "select",
+            "id": "width",
+            "label": "Container width",
+            "default": "50%",
+            "options": [
+              {
+                "value": "16%",
+                "label": "16%"
+              },
+              {
+                "value": "25%",
+                "label": "25%"
+              },
+              {
+                "value": "33%",
+                "label": "33%"
+              },
+              {
+                "value": "50%",
+                "label": "50%"
+              },
+              {
+                "value": "66%",
+                "label": "66%"
+              },
+              {
+                "value": "75%",
+                "label": "75%"
+              },
+              {
+                "value": "100%",
+                "label": "100%"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "newsletter",
+        "name": "Newsletter signup",
+        "limit": 1,
+        "settings": [
+          {
+            "type": "text",
+            "id": "title",
+            "label": "Heading",
+            "default": "Newsletter"
+          },
+          {
+            "type": "paragraph",
+            "content": "Any customers who sign up will have an account created for them in Shopify. [View customers](/admin/customers?query=&accepts_marketing=1)"
+          },
+          {
+            "type": "select",
+            "id": "width",
+            "label": "Container width",
+            "default": "33%",
+            "options": [
+              {
+                "value": "25%",
+                "label": "25%"
+              },
+              {
+                "value": "33%",
+                "label": "33%"
+              },
+              {
+                "value": "50%",
+                "label": "50%"
+              },
+              {
+                "value": "66%",
+                "label": "66%"
+              },
+              {
+                "value": "75%",
+                "label": "75%"
+              },
+              {
+                "value": "100%",
+                "label": "100%"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+{{/schema}}

@@ -1,0 +1,171 @@
+<div data-section-id="{{ section.id }}" data-section-type="cart">
+  <div class="page-width">
+    {{#if (gt cart.item_count 0)}}
+
+      <h1 class="small--text-center">{{t 'cart.general.title'}}</h1>
+      <form action="/cart" method="post" novalidate class="cart">
+        <table class="responsive-table cart-table">
+          <thead class="cart__row visually-hidden">
+            <th colspan="2">{{t 'cart.label.product'}}</th>
+            <th>{{t 'cart.label.quantity'}}</th>
+            <th>{{t 'cart.label.total'}}</th>
+          </thead>
+          <tbody id="CartProducts">
+            {{#each cart.items as |item|}}
+              <tr class="cart__row responsive-table__row">
+                <td class="cart__cell--image text-center">
+                  <a href="{{within item.url collections.all}}" class="cart__image">
+                    <img src="{{img_url item '240x240'}}" alt="{{escape item.title}}">
+                  </a>
+                </td>
+                <td>
+                  <a href="{{ item.url }}" class="h5">
+                    {{ item.product.title }}
+                  </a>
+                  {{#unless (contains item.variant.title 'Default')}}
+                    <p>{{ item.variant.title }}</p>
+                  {{/unless}}
+
+                  {{assign 'property_size' (size item.properties)}}
+                  {{#if (gt property_size 0)}}
+                    {{#each item.properties as |p|}}
+                      {{assign 'first_character_in_key' (truncate p.first 1 '')}}
+                      {{#unless (or (is p.last blank) (is first_character_in_key '_'))}}
+                        {{ p.first }}:
+                        {{#if (contains p.last '/uploads/')}}
+                          <a href="{{ p.last }}">{{last (split p.last '/')}}</a>
+                        {{else}}
+                          {{ p.last }}
+                        {{/if}}
+
+                      {{/unless}}
+                    {{/each}}
+                  {{/if}}
+
+                  <p>
+                    <a href="/cart/change?line={{ forloop.index }}&amp;quantity=0">{{t 'cart.general.remove'}}</a>
+                  </p>
+                </td>
+                <td class="cart__cell--quantity">
+                  <label for="Updates_{{ item.key }}" class="cart__quantity-label medium-up--hide">{{t 'cart.label.quantity'}}</label>
+                  <input type="number" name="updates[]" id="Updates_{{ item.key }}" class="cart__quantity" value="{{ item.quantity }}" min="0" data-line="{{ forloop.index }}" aria-label="{{t 'cart.label.quantity'}}">
+                </td>
+                <td class="cart__cell--total">
+                  {{#if (isnt item.original_line_price item.line_price)}}
+                    <small class="cart-item__original-price cart__item-total"><s>{{money item.original_line_price}}</s></small><br>
+                  {{/if}}
+                  <span class="cart__item-total">
+                    {{money item.line_price}}
+                  </span>
+                  {{#each item.discounts as |discount|}}
+                    <p class="cart-item__discount cart__item-total">{{ discount.title }}</p>
+                  {{/each}}
+                </td>
+              </tr>
+            {{/each}}
+          </tbody>
+        </table>
+        <div class="grid cart__row">
+          {{#if section.settings.cart_notes_enable}}
+            <div class="grid__item medium-up--one-half">
+              <label for="CartSpecialInstructions">{{t 'cart.general.note'}}</label>
+              <textarea name="note" id="CartSpecialInstructions" class="cart__note">{{ cart.note }}</textarea>
+            </div>
+          {{/if}}
+          <div class="grid__item cart__buttons text-right small--text-center{{#if section.settings.cart_notes_enable}} medium-up--one-half{{/if}}">
+            <p class="h3 cart__subtotal" id="CartSubtotal">{{money cart.total_price}}</p>
+            <p id="cartDiscountTotal">
+            {{#if (gt cart.total_discounts 0)}}
+              {{assign 'savings' (money cart.total_discounts)}}
+              {{t 'cart.general.savings_html' price savings}}
+            {{/if}}
+            </p>
+            <p class="cart__taxes">{{t 'cart.general.shipping_at_checkout'}}</p>
+            <button type="submit" name="update" class="btn--secondary update-cart">{{t 'cart.general.update'}}</button>
+            <button type="submit" name="checkout" class="btn">{{t 'cart.general.checkout'}}</button>
+          </div>
+        </div>
+      </form>
+    {{else}}
+      <div class="page-empty text-center">
+        <h1>{{t 'cart.general.title'}}</h1>
+        <p class="cart--empty-message">{{t 'cart.general.empty'}}</p>
+        <hr>
+        <p class="cart--continue-message">
+          <a href="/collections/all" class="btn">{{t 'cart.general.continue_browsing'}}</a>
+        </p>
+        <p class="cart--cookie-message">{{t 'cart.general.cookies_required'}}</p>
+      </div>
+    {{/if}}
+  </div>
+
+  <script id="CartProductTemplate" type="text/template">
+    {{#raw}}
+      {{#items}}
+      <tr class="cart__row responsive-table__row">
+        <td class="cart__cell--image text-center">
+          <a href="{{ url }}" class="cart__image">
+            <img src="{{ img }}" alt="{{ name }}">
+          </a>
+        </td>
+        <td>
+          <a href="{{ url }}" class="h5">
+            {{{ name }}}
+          </a>
+          {{#if variation}}
+            <p>{{ variation }}</p>
+          {{/if}}
+
+          {{#properties}}
+            {{#each this}}
+              {{#if this}}
+                <p>{{ @key }}: {{ this }}</p>
+              {{/if}}
+            {{/each}}
+          {{/properties}}
+
+          <p>
+            <a href="/cart/change?line={{ line }}&amp;quantity=0">{{/raw}}{{t 'cart.general.remove'}}{{#raw}}</a>
+          </p>
+        </td>
+        <td class="cart__cell--quantity">
+          <label for="Updates_{{ key }}" class="cart__quantity-label medium-up--hide">
+            {{/raw}}{{t 'cart.label.quantity'}}{{#raw}}</label>
+          <input type="number" name="updates[]" id="Updates_{{ key }}" value="{{ itemQty }}" min="0" data-line="{{ line }}" aria-label="{{/raw}}{{t 'cart.label.quantity'}}{{#raw}}">
+        </td>
+        <td class="cart__cell--total">
+          {{#if discountsApplied}}
+            <small class="cart-item__original-price cart__item-total"><s>{{{ originalLinePrice }}}</s></small><br>
+            <span class="cart__item-total">{{{ linePrice }}}</span>
+          {{else}}
+            <span class="cart__item-total">{{{ linePrice }}}</span>
+          {{/if}}
+          {{#if discountsApplied}}
+          {{#each discounts}}
+            <p class="cart-item__discount cart__item-total">{{ this.title }}</p>
+            {{/each}}
+          {{/if}}
+        </td>
+      </tr>
+      {{/items}}
+    {{/raw}}
+  </script>
+</div>
+
+<script type="application/json" id="CartJson-{{ section.id }}">
+  {{json cart}}
+</script>
+
+{{#schema}}
+  {
+    "name": "Cart pages",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "cart_notes_enable",
+        "label": "Enable order notes",
+        "default": true
+      }
+    ]
+  }
+{{/schema}}

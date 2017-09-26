@@ -1,0 +1,36 @@
+<div class="form-horizontal">
+  <label for="sortBy" class="small--hide">{{t 'collections.sorting.title'}}</label>
+  <select name="sortBy" id="sortBy">
+    <option value="manual">{{t 'collections.sorting.featured'}}</option>
+    <option value="best-selling">{{t 'collections.sorting.best_selling'}}</option>
+    <option value="title-ascending">{{t 'collections.sorting.az'}}</option>
+    <option value="title-descending">{{t 'collections.sorting.za'}}</option>
+    <option value="price-ascending">{{t 'collections.sorting.price_ascending'}}</option>
+    <option value="price-descending">{{t 'collections.sorting.price_descending'}}</option>
+    <option value="created-descending">{{t 'collections.sorting.date_descending'}}</option>
+    <option value="created-ascending">{{t 'collections.sorting.date_ascending'}}</option>
+  </select>
+</div>
+
+<script>
+  Shopify.queryParams = {};
+  if (location.search.length) {
+    for (var aKeyValue, i = 0, aCouples = location.search.substr(1).split('&'); i < aCouples.length; i++) {
+      aKeyValue = aCouples[i].split('=');
+      if (aKeyValue.length > 1) {
+        Shopify.queryParams[decodeURIComponent(aKeyValue[0])] = decodeURIComponent(aKeyValue[1]);
+      }
+    }
+  }
+
+  $(function() {
+    $('#sortBy')
+      // select the current sort order
+      .val('{{escape (default collection.sort_by collection.default_sort_by)}}')
+      .bind('change', function() {
+        Shopify.queryParams.sort_by = jQuery(this).val();
+        location.search = jQuery.param(Shopify.queryParams).replace(/\+/g, '%20');
+      }
+    );
+  });
+</script>

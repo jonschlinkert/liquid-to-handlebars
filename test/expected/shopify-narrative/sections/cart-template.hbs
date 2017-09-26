@@ -1,0 +1,202 @@
+<div class="cart page-width{{#if (is cart.items.size 0)}} cart--empty{{/if}}" data-section-id="{{ section.id }}" data-section-type="cart-template" data-cart-token="{{ cart.id }}">
+
+
+  <div class="section-header section-header--small text-center">
+    <h1 class="section-header__title h2">{{t 'cart.general.title'}}</h1>
+  </div>
+
+  {{#comment}}
+  Cart no cookies state
+  {{/comment}}
+  <div class="cart__no-cookies">
+    <div class="cart-message text-center">
+      <p>{{t 'cart.general.cookies_required'}}</p>
+    </div>
+  </div>
+
+  {{#comment}}
+  Cart Empty State
+  {{/comment}}
+  <div class="cart__empty">
+    <div class="cart-message text-center">
+      <p>{{t 'cart.general.empty'}}</p>
+      <p>{{t 'cart.general.continue_browsing_html' classes 'btn btn--primary'}}</p>
+    </div>
+  </div>
+
+  <form action="/cart" method="post" novalidate class="cart__form">
+    <table class="cart__table">
+      <thead class="cart__table-header border-bottom">
+        <th class="text-left" colspan="2">{{t 'cart.label.product'}}</th>
+        <th class="text-center">{{t 'cart.label.price'}}</th>
+        <th class="text-center">{{t 'cart.label.quantity'}}</th>
+        <th class="text-right">{{t 'cart.label.total'}}</th>
+      </thead>
+
+      <tbody data-cart-item-list>
+
+        {{#comment}}
+        If the cart has no items, then include a item element with a template class
+        so that it is hidden but still available for use client-side by ajax-cart.js
+        {{/comment}}
+
+        {{assign 'cartItems' (split 'template ' ' ')}}
+        {{#if (gt cart.items.size 0)}}
+          {{assign 'cartItems' cart.items}}
+        {{/if}}
+
+        {{#each cartItems as |item|}}
+          <tr class="cart-item{{#if (is item 'template')}} ajax-cart__template{{/if}}" data-cart-item data-cart-item-id="{{ item.key }}">
+            <td class="cart-item__image-wrapper">
+              {{assign 'itemImage' true}}
+              {{#if (and (is item.image blank) (is item.product.featured_image blank))}}
+                {{assign 'itemImage' false}}
+              {{/if}}
+              <a class="cart-item__image-link" href="{{within item.url collections.all}}" style="background-image: {{#if itemImage}}url('{{img_url item 'medium'}}'){{else}}none{{/if}};" data-cart-item-background-image data-cart-item-href>
+                <img class="cart-item__image lazyload {{#unless itemImage}}hide{{/unless}}" src="{{img_url item 'medium'}}" alt="{{escape item.title}}" data-cart-item-image>
+              </a>
+            </td>
+
+            <td class="cart-item__meta small--text-left">
+              <a class="cart-item__meta-title h4" href="{{ item.url }}" data-cart-item-href data-cart-item-title>{{ item.product.title }}</a>
+
+              <p class="cart-item__meta-variant" data-cart-item-variant-title>
+                {{#unless (and (is item.product.variants.size 1) (is item.product.options.size 1) (is item.product.options.first 'Title') (is item.variant.title 'Default Title'))}}
+                  {{ item.variant.title }}
+                {{/unless}}
+              </p>
+
+              {{#comment}}
+              Optional, loop through custom product line items if available
+
+              Line item properties come in as having two parts. The first part will be passed with the default form,
+              but p.last is the actual custom property and may be blank. If it is, don't show it.
+
+              For more info on line item properties, visit:
+              - http://docs.shopify.com/support/your-store/products/how-do-I-collect-additional-information-on-the-product-page-Like-for-a-monogram-engraving-or-customization
+
+              If the item has no properties, then include a property element with a template class
+              so that it is hidden but still available for use client-side by ajax-cart.js
+              {{/comment}}
+
+              {{assign 'itemProperties' (split 'template ' ' ')}}
+              {{assign 'property_size' (size item.properties)}}
+
+              {{#if (gt property_size 0)}}
+                {{assign 'itemProperties' item.properties}}
+              {{/if}}
+
+              <ul class="cart-item__properties" data-cart-item-property-list>
+                {{#each itemProperties as |p|}}
+                  <li class="cart-item__property{{#if (is p 'template')}} ajax-cart__template{{/if}}{{#if (is p.last blank)}} visually-hidden{{/if}}" data-cart-item-property>
+                    {{ p.first }}:
+
+                    {{#comment}}
+                    Check if there was an uploaded file associated
+                    {{/comment}}
+                    {{#if (contains p.last '/uploads/')}}
+                      <a href="{{ p.last }}">{{last (split p.last '/')}}</a>
+                    {{else}}
+                      {{ p.last }}
+                    {{/if}}
+                  </li>
+                {{/each}}
+              </ul>
+
+              <p class="cart-item__price-container medium-up--hide">
+                <span class="cart-item__price" data-cart-item-price>{{money item.price}}</span>
+                <s class="cart-item__original-price" data-cart-item-original-price>{{#if (isnt item.price item.original_price)}}{{money item.original_price}}{{/if}}</s>
+              </p>
+
+              <div class="cart-item__discount-container" data-cart-item-discount-list>
+                {{#comment}}
+                If the item has no properties, then include a property element with a template class
+                so that it is hidden but still available for use client-side by ajax-cart.js
+                {{/comment}}
+
+                {{assign 'itemDiscounts' (split 'template ' ' ')}}
+                {{#if (gt item.discounts.size 0)}}
+                  {{assign 'itemDiscounts' item.discounts}}
+                {{/if}}
+
+                {{#each itemDiscounts as |discount|}}
+                  <p class="cart-item__discount text-small{{#if (is discount 'template')}} ajax-cart__template{{/if}}" data-cart-item-discount>{{ discount.title }}</p>
+                {{/each}}
+              </div>
+
+              <p class="small--hide">
+                <a href="/cart/change?line={{ forloop.index }}&amp;quantity=0" class="btn btn--small btn--clear btn--primary-color cart-item__remove" data-cart-item-delete>{{t 'cart.general.remove'}}</a>
+              </p>
+
+              <p class="cart-item__message" data-item-message></p>
+            </td>
+
+            <td class="cart-item__price-wrapper small--hide">
+              <p>
+                <span class="cart-item__price" data-cart-item-price>{{money item.price}}</span>
+                <s class="cart-item__original-price" data-cart-item-original-price>{{#if (isnt item.price item.original_price)}}{{money item.original_price}}{{/if}}</s>
+              </p>
+            </td>
+
+            <td class="cart-item__update-wrapper text-right">
+
+              <div class="cart-item__qty">
+                <label for="quantity_{{ item.key }}" class="cart-item__qty-label" data-cart-item-label-quantity>{{t 'cart.label.quantity'}}</label>
+                <input id="quantity_{{ item.key }}" class="cart-item__qty-input" value="{{ item.quantity }}" type="number" pattern="\d*" min="1" name="updates[{{ item.key }}]" required data-cart-item-input-quantity>
+              </div>
+
+              <a href="/cart/change?line={{ forloop.index }}&amp;quantity=0" class="btn-link cart-item__remove medium-up--hide" data-cart-item-delete>{{t 'cart.general.remove'}}</a>
+            </td>
+
+            <td class="text-right small--hide">
+                <span class="cart-item__price" data-cart-item-line-price>{{money item.line_price}}</span>
+            </td>
+          </tr>
+        {{/each}}
+      </tbody>
+    </table>
+
+    <footer class="cart-footer">
+      <div class="grid">
+        {{#if section.settings.cart_notes_enable}}
+          <div class="grid__item medium-up--one-half cart-note">
+            <label for="CartSpecialInstructions" class="cart-footer__note-label small--text-center">{{t 'cart.general.note'}}</label>
+            <textarea name="note" id="CartSpecialInstructions" class="cart-footer__note-input" rows="4" data-cart-note>{{ cart.note }}</textarea>
+          </div>
+        {{/if}}
+
+        <div class="grid__item text-right small--text-center{{#if section.settings.cart_notes_enable}} medium-up--one-half{{/if}}">
+          <p>
+            <span class="cart__subtotal-title h4">{{t 'cart.general.subtotal'}}</span>
+            <span class="cart-footer__subtotal" data-cart-subtotal>{{money cart.total_price}}</span>
+          </p>
+          <p class="text-small">{{t 'cart.general.shipping_at_checkout'}}</p>
+          <div class="btn-group">
+            <input type="submit" name="update" class="btn btn--secondary supports-no-js supports-js--hide" value="{{t 'cart.general.update'}}">
+            <button type="submit" name="checkout" class="btn btn--loader" data-cart-submit>
+              {{t 'cart.general.checkout'}}
+              <span class="btn--loader-balls"></span>
+            </button>
+          </div>
+          <div class="cart-footer__message-container">
+            <div class="cart-footer__message" data-cart-message></div>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </form>
+</div>
+
+{{#schema}}
+{
+  "name": "Cart page",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "cart_notes_enable",
+      "label": "Enable cart notes",
+      "default": true
+    }
+  ]
+}
+{{/schema}}

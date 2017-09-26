@@ -1,0 +1,21 @@
+<div class="social-links{{#if largeIcons}} social-links--large{{/if}}">
+  {{assign 'social_accounts' (split 'Facebook, Twitter, Pinterest, Instagram, Snapchat, Tumblr, YouTube, Vimeo' ',')}}
+  <ul class="list--inline">
+    {{#each social_accounts as |social_account|}}
+      {{assign 'social' (strip social_account)}}
+      {{assign 'social_handle' (handleize social)}}
+      {{#capture 'social_link'}}social_{{ social_handle }}_link{{/capture}}
+      {{#capture 'social_icon'}}icon-{{ social_handle }}{{/capture}}
+
+      {{#if (isnt (get settings social_link) blank)}}
+        <li class="social-links__icon">
+          <a target="_blank" href="{{get settings social_link}}" title="{{t 'general.social.social_platform' name shop.name platform social}}"{{#if disableTab}} tabindex="-1"{{/if}}>
+            {{include 'social_icon'}}
+            <span class="icon__fallback-text">{{ social }}</span>
+          </a>
+        </li>
+      {{/if}}
+
+    {{/each}}
+  </ul>
+</div>

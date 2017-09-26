@@ -1,0 +1,99 @@
+{{#each section.blocks as |block|}}
+	<div {{ block.shopify_attributes }}>
+	{{#is block.type 'text'}}
+
+		  <hr>
+		  {{#if (isnt block.settings.title blank)}}
+			<div class="section-header">
+			  <p class="h1">{{escape block.settings.title}}</p>
+			</div>
+		  {{/if}}
+			<div class="rte">
+				{{ block.settings.content }}
+			</div>
+
+		{{else is block.type 'page'}}
+			<hr>
+			{{#if (or (is block.settings.page blank) (is (get pages block.settings.page) empty))}}
+
+				{{#if block.settings.show_heading}}
+					<div class="section-header">
+					  <p class="h1">{{ block.title }}</p>
+					</div>
+				{{/if}}
+
+				<p>{{t 'homepage.onboarding.no_content'}}</p>
+
+			{{else}}
+
+			  {{assign 'page' (get pages block.settings.page)}}
+
+				{{#if block.settings.show_heading}}
+					<div class="section-header">
+					  <p class="h1">{{{ page.title }}}</p>
+					</div>
+				{{/if}}
+
+				  <div class="rte">
+				   {{{ page.content }}}
+				  </div>
+
+			{{/if}}
+	{{/is}}
+	</div>
+{{/each}}
+
+{{#schema}}
+	{
+	  "name": "Rich text",
+	  "class": "featured-content-section",
+	  "blocks": [
+      {
+        "type": "text",
+        "name": "Text",
+        "settings": [
+          {
+            "type": "text",
+            "id": "title",
+            "label": "Heading",
+            "default": "Talk about your brand"
+          },
+          {
+            "type": "richtext",
+	          "id": "content",
+	          "label": "Text",
+	          "default": "<p>Use this text to share information about your brand with your customers. Describe a product, share announcements, or welcome customers to your store.</p>"
+	        }
+	      ]
+      },
+	    {
+	      "type": "page",
+	      "name": "Page",
+	      "settings": [
+	        {
+		        "type": "checkbox",
+		        "id": "show_heading",
+		        "label": "Show heading",
+		        "default": true
+		      },
+		      {
+		        "type": "page",
+		        "id": "page",
+		        "label": "Page"
+		      }
+		    ]
+	    }
+    ],
+    "presets": [
+      {
+        "name": "Rich text",
+        "category": "Text",
+        "blocks": [
+          {
+            "type": "text"
+          }
+        ]
+      }
+    ]
+  }
+{{/schema}}

@@ -1,0 +1,34 @@
+<div class="page-width">
+  <div class="grid">
+
+    <div class="grid__item medium-up--one-half medium-up--push-one-quarter">
+      <div class="content-block text-center">
+        <h1>{{t 'customer.register.title'}}</h1>
+
+        <div class="form-vertical text-center">
+          {{#form 'create_customer'}}
+
+            {{default_errors form.errors}}
+
+            <label for="FirstName" class="label--hidden">{{t 'customer.register.first_name'}}</label>
+            <input type="text" name="customer[first_name]" id="FirstName" placeholder="{{t 'customer.register.first_name'}}" {{#if form.first_name}}value="{{ form.first_name }}"{{/if}} autofocus>
+
+            <label for="LastName" class="label--hidden">{{t 'customer.register.last_name'}}</label>
+            <input type="text" name="customer[last_name]" id="LastName" placeholder="{{t 'customer.register.last_name'}}" {{#if form.last_name}}value="{{ form.last_name }}"{{/if}}>
+
+            <label for="Email" class="label--hidden">{{t 'customer.register.email'}}</label>
+            <input type="email" name="customer[email]" id="Email" class="{{#if (contains form.errors 'email')}} input--error{{/if}}" placeholder="{{t 'customer.register.email'}}" {{#if form.email}} value="{{ form.email }}"{{/if}} autocorrect="off" autocapitalize="off">
+
+            <label for="CreatePassword" class="label--hidden">{{t 'customer.register.password'}}</label>
+            <input type="password" name="customer[password]" id="CreatePassword" class="{{#if (contains form.errors 'password')}} input--error{{/if}}" placeholder="{{t 'customer.register.password'}}">
+
+            <p>
+              <input type="submit" value="{{t 'customer.register.submit'}}" class="btn">
+            </p>
+
+          {{/form}}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

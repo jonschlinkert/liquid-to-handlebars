@@ -1,0 +1,28 @@
+<div class="form-vertical small--hide">
+  {{#form 'customer'}}
+    {{default_errors form.errors}}
+    {{#if form.posted_successfully}}
+      <p class="note form-success">{{t 'general.newsletter_form.confirmation'}}</p>
+    {{else}}
+      <input type="hidden" name="contact[tags]" value="newsletter">
+      <input type="email" value="{{#if customer}}{{ customer.email }}{{/if}}" placeholder="{{t 'general.newsletter_form.newsletter_email'}}" name="contact[email]" id="Email" class="input-group-field" aria-label="{{t 'general.newsletter_form.newsletter_email'}}" autocorrect="off" autocapitalize="off">
+      <input type="submit" class="btn" name="subscribe" id="subscribe" value="{{t 'general.newsletter_form.submit'}}">
+    {{/if}}
+  {{/form}}
+</div>
+<div class="form-vertical post-large--hide large--hide medium--hide">
+  {{#form 'customer'}}
+    {{default_errors form.errors}}
+    {{#if form.posted_successfully}}
+      <p class="note form-success">{{t 'general.newsletter_form.confirmation'}}</p>
+    {{else}}
+      <input type="hidden" name="contact[tags]" value="newsletter">
+      <div class="input-group">
+        <input type="email" value="{{#if customer}}{{ customer.email }}{{/if}}" placeholder="{{t 'general.newsletter_form.newsletter_email'}}" name="contact[email]" id="Email" class="input-group-field" aria-label="{{t 'general.newsletter_form.newsletter_email'}}" autocorrect="off" autocapitalize="off">
+        <span class="input-group-btn">
+          <button type="submit" class="btn" name="commit" id="subscribe">{{t 'general.newsletter_form.submit'}}</button>
+        </span>
+      </div>
+    {{/if}}
+  {{/form}}
+</div>

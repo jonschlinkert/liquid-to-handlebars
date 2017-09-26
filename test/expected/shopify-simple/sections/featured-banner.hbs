@@ -1,0 +1,71 @@
+<div class="grid banner-wrapper">
+  <div class="grid__item banner slide-up-animation animated">
+    {{#if (isnt section.settings.title blank)}}
+      <h2 class="small--text-center">{{escape section.settings.title}}</h2>
+    {{/if}}
+    {{#unless (is section.settings.banner_url blank)}}
+      <a href="{{ section.settings.banner_url }}">
+    {{/unless}}
+    {{#if (isnt section.settings.banner blank)}}
+      {{assign 'img_url' (replace (img_url section.settings.banner '1x1') '_1x1.' '_{width}x.')}}
+      {{#capture 'image_size'}}970x{{/capture}}
+
+      <div class="supports-js" style="max-width: {{round (times 2048 section.settings.banner.aspect_ratio)}}px;">
+        <div class="banner__image-wrapper" style="padding-top:{{times (divided_by 1 section.settings.banner.aspect_ratio) 100}}%;">
+          <img class="banner__image lazyload"
+               src="{{img_url section.settings.banner '300x300'}}"
+               data-src="{{ img_url }}"
+               data-widths="[180, 360, 540, 720, 900, 1080, 1296, 1512, 1728, 2048]"
+               data-aspectratio="{{ section.settings.banner.aspect_ratio }}"
+               data-sizes="auto"
+               style="max-width: {{round (times 2048 section.settings.banner.aspect_ratio)}}px;"
+               alt="{{default section.settings.banner.alt shop.name}}"
+               itemprop="image">
+        </div>
+      </div>
+
+      <noscript>
+        <img class="banner__image" src="{{img_url section.settings.banner image_size}}"
+        srcset="{{img_url section.settings.banner image_size}} 1x, {{img_url section.settings.banner image_size scale 2}} 2x"
+        alt="{{default section.settings.banner.alt shop.name}}"
+        itemprop="image">
+      </noscript>
+    {{else}}
+      <div class="placeholder-background">
+        {{placeholder_svg_tag 'lifestyle-1' 'placeholder-svg'}}
+      </div>
+    {{/if}}
+    {{#unless (is section.settings.banner_url blank)}}
+      </a>
+    {{/unless}}
+  </div>
+</div>
+
+{{#schema}}
+  {
+    "name": "Featured banner",
+    "settings": [
+      {
+        "type": "text",
+        "id": "title",
+        "label": "Heading"
+      },
+      {
+        "type": "image_picker",
+        "id": "banner",
+        "label": "Image",
+        "info": "970px wide minimum"
+      },
+      {
+        "type": "url",
+        "id": "banner_url",
+        "label": "Image link"
+      }
+    ],
+    "presets": [{
+      "name": "Featured banner",
+      "category": "Image"
+    }],
+    "blocks" : []
+  }
+{{/schema}}

@@ -1,0 +1,57 @@
+{{#if (is template.name 'article')}}
+
+  {{#capture 'share_link'}}{{ shop.url }}{{ article.url }}{{/capture}}
+  {{#capture 'share_title'}}{{url_param_escape article.title}}{{/capture}}
+  {{#if article.image}}
+    {{#capture 'share_img'}}{{img_url article.image.src '1024x1024'}}{{/capture}}
+  {{/if}}
+
+{{else if (is template.name 'product')}}
+
+  {{#capture 'share_link'}}{{ shop.url }}{{ product.url }}{{/capture}}
+  {{#capture 'share_title'}}{{url_param_escape product.title}}{{/capture}}
+  {{#capture 'share_img'}}{{product_img_url product.featured_image '1024x1024'}}{{/capture}}
+
+{{else if (is template.name 'password')}}
+
+  {{#capture 'share_link'}}{{ shop.url }}{{/capture}}
+  {{#capture 'share_title'}}{{#unless (is shop.metafields.global.description_tag blank)}}{{url_param_escape shop.metafields.global.description_tag}}{{else}}{{url_param_escape shop.name}}{{/unless}}{{/capture}}
+  {{assign 'share_img' ''}}
+
+{{/if}}
+
+<ul class="page__sharing">
+
+  <li class="label">{{t 'general.sharing.social_sharing.title'}}</li>
+
+  <li>
+    <a class="share-on-facebook" target="_blank" href="//www.facebook.com/sharer.php?u={{ share_link }}">
+      <span aria-hidden="true">{{include 'asset_svg' 'facebook'}}</span>
+      <span class="fallback-text">{{t 'general.sharing.social_sharing.facebook'}}</span>
+    </a>
+  </li>
+
+  <li>
+    <a class="share-on-twitter" target="_blank" href="//twitter.com/share?text={{ share_title }}&amp;url={{ share_link }}">
+      <span aria-hidden="true">{{include 'asset_svg' 'twitter'}}</span>
+      <span class="fallback-text">{{t 'general.sharing.social_sharing.twitter'}}</span>
+    </a>
+  </li>
+
+  <li>
+    <a class="share-on-google" target="_blank" href="//plus.google.com/share?url={{ share_link }}">
+      <span aria-hidden="true">{{include 'asset_svg' 'google_plus'}}</span>
+      <span class="fallback-text">{{t 'general.sharing.social_sharing.google'}}</span>
+    </a>
+  </li>
+
+  {{#unless (is share_img blank)}}
+    <li>
+      <a class="share-on-pinterest" target="_blank" href="http://pinterest.com/pin/create/button/?url={{ share_link }}&amp;media={{ share_img }}&amp;description={{ share_title }}">
+        <span aria-hidden="true">{{include 'asset_svg' 'pinterest'}}</span>
+        <span class="fallback-text">{{t 'general.sharing.social_sharing.pinterest'}}</span>
+      </a>
+    </li>
+  {{/unless}}
+
+</ul>

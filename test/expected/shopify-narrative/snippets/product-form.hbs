@@ -1,0 +1,55 @@
+<form class="product-form" action="/cart/add" method="post" enctype="multipart/form-data">
+  {{#unless (and (is product.variants.size 1) (is product.options.size 1) (is product.options.first 'Title') (is product.variants.first.title 'Default Title'))}}
+    {{#each product.options_with_values as |option|}}
+      <div class="product-form__item supports-js">
+
+        {{#if (isnt option.name 'default')}}
+          <label class="single-option-selector__label{{#unless section.settings.show_variant_labels}} single-option-selector__label--hidden{{/unless}}" for="{{ option.name }}">{{ option.name }}</label>
+        {{/if}}
+
+        <select id="{{ option.name }}" name="{{ option.name }}" class="single-option-selector" data-option-input>
+          {{#each option.values as |value|}}
+            {{assign 'safeValue' (replace value '"' '&quot;')}}
+            <option value="{{ safeValue }}" {{#if (is option.selected_value value)}}selected{{/if}}>{{ value }}</option>
+          {{/each}}
+        </select>
+      </div>
+    {{/each}}
+  {{/unless}}
+
+  <select name="id" class="product-form__master-select supports-no-js" data-master-select>
+    {{#each product.variants as |variant|}}
+      {{#if variant.available}}
+
+        {{#comment}}
+        Note: if you use option_selection.js, your select tag will be overwritten, meaning what you have inside <option> will not reflect what you coded below.
+        {{/comment}}
+        <option {{#if (is variant product.selected_or_first_available_variant)}} selected="selected" {{/if}} data-sku="{{ variant.sku }}" value="{{ variant.id }}">{{ variant.title }} - {{money_with_currency variant.price}}</option>
+
+      {{else}}
+        <option disabled="disabled">
+          {{ variant.title }} - {{t 'products.product.sold_out'}}
+        </option>
+      {{/if}}
+    {{/each}}
+  </select>
+
+  {{#if section.settings.show_quantity_selector}}
+    <div class="product-form__item product-form__quantity-selector">
+      <label class="product-form__quantity-label{{#unless section.settings.show_variant_labels}} product-form__quantity-label--hidden{{/unless}}" for="Quantity-{{ section.id }}">{{t 'products.product.quantity'}}</label>
+      <input class="product-form__quantity-input" type="number" id="Quantity-{{ section.id }}" name="quantity" value="1" min="1" pattern="[0-9]*">
+    </div>
+  {{/if}}
+
+  <button class="btn btn--to-secondary btn--full product__add-to-cart-button" data-cart-submit type="submit" name="add" aria-live="polite"{{#unless current_variant.available}} disabled="true"{{/unless}} aria-live="polite">
+    <span class="primary-text" aria-hidden=false data-cart-primary-submit-text>
+      {{#unless current_variant.available}}
+        {{t 'products.product.sold_out'}}
+      {{else}}
+        {{t 'products.product.add_to_cart'}}
+      {{/unless}}
+    </span>
+    <span class="secondary-text" aria-hidden=true data-cart-secondary-submit-text>{{t 'products.product.view_cart'}}</span>
+  </button>
+  <p class="product__notification text-small text-center" data-cart-notification></p>
+</form>

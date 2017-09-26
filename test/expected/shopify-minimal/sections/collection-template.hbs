@@ -1,0 +1,119 @@
+{{#paginate collection.products by=20}}
+
+<div id="CollectionSection" data-section-id="{{ section.id }}" data-section-type="collection-template" data-sort-enabled="{{ section.settings.sort_enable }}" data-tags-enabled="{{ section.settings.tags_enable }}">
+  <div class="section-header section-header--breadcrumb">
+    {{include 'breadcrumb'}}
+  </div>
+
+  <header class="section-header section-header--large">
+    <h1 class="section-header__title{{#if (or section.settings.tags_enable section.settings.sort_enable)}} section-header__title--left{{/if}}">{{ collection.title }}</h1>
+    {{#if (or section.settings.tags_enable section.settings.sort_enable)}}
+    <div class="section-header__link--right">
+      {{#if section.settings.tags_enable}}
+        {{include 'collection-tags'}}
+      {{/if}}
+      {{#if section.settings.sort_enable}}
+        {{include 'collection-sorting'}}
+      {{/if}}
+    </div>
+    {{/if}}
+  </header>
+
+  {{#if (isnt collection.description blank)}}
+    <div class="rte rte--header">
+      {{ collection.description }}
+    </div>
+    <hr class="hr--clear hr--small">
+  {{/if}}
+
+  <div class="grid-uniform grid-link__container">
+    {{assign 'grid_item_width' 'wide--one-fifth large--one-quarter medium-down--one-half'}}
+    {{assign 'product_width' 335}}
+
+    {{#each collection.products as |product|}}
+      {{assign 'featured' product}}
+      <div class="grid__item {{ grid_item_width }}">
+        {{include 'product-grid-item'}}
+      </div>
+    {{else}}
+
+      {{#if (is shop.products_count 0)}}
+        <div class="grid__item">
+          <div class="helper-section">
+            <div class="grid-uniform helper-content{{#if section.settings.center_grid_link}} text-center{{/if}}">
+              {{#each (range 1 8) as |i|}}
+                <div class="grid__item one-half post-large--one-quarter">
+                  <a href="/admin/products" class="grid-link">
+                    <span class="grid-link__image grid-link__image--product">
+                      <span class="grid-link__image-centered">
+                        {{#capture 'current'}}{{cycle 1 2 3 4 5 6}}{{/capture}}
+                        {{placeholder_svg_tag (append 'product-' current) 'placeholder-svg'}}
+                      </span>
+                    </span>
+                    <p class="grid-link__title">{{t 'home_page.onboarding.product_title'}}</p>
+                    <p class="grid-link__meta">
+                      <strong>$19.99</strong>
+                    </p>
+                  </a>
+                </div>
+              {{/each}}
+            </div>
+          </div>
+        </div>
+      {{else}}
+        <div class="grid__item">
+          <p><em>{{t 'collections.general.no_matches'}}</em></p>
+        </div>
+      {{/if}}
+
+    {{/each}}
+
+  </div>
+
+  {{#if (gt paginate.pages 1)}}
+    <hr class="hr--clear">
+
+    <div class="text-center">
+      {{include 'pagination-custom'}}
+    </div>
+  {{/if}}
+</div>
+{{/paginate}}
+
+{{#schema}}
+  {
+    "name": "Collection pages",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "vendor_enable",
+        "label": "Show product vendor"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_sale_circle",
+        "label": "Show product sale circle"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_sold_out_circle",
+        "label": "Show product sold out circle"
+      },
+      {
+        "type": "checkbox",
+        "id": "sort_enable",
+        "label": "Enable collection sorting"
+      },
+      {
+        "type": "checkbox",
+        "id": "tags_enable",
+        "label": "Enable filtering by product tag"
+      },
+      {
+        "type": "checkbox",
+        "id": "center_grid_link",
+        "label": "Center text below product images"
+      }
+    ]
+  }
+{{/schema}}

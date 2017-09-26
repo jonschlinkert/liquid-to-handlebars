@@ -1,0 +1,83 @@
+<div data-section-id="{{ section.id }}" data-section-type="collection-list-section">
+
+  {{#if (isnt section.settings.title blank)}}
+  <div class="section-header section-header--small">
+    <h2 class="section-header__title">{{escape section.settings.title}}</h2>
+  </div>
+  {{/if}}
+
+  <div class="grid-uniform">
+    {{#is section.blocks.size 1}}
+        {{assign 'collection_item_width' 'one-half'}}
+        {{assign 'collection_width' 625}}
+      {{else is section.blocks.size 2}}
+        {{assign 'collection_item_width' 'one-half'}}
+        {{assign 'collection_width' 625}}
+      {{else is section.blocks.size 3}}
+        {{assign 'collection_item_width' 'medium-down--one-half one-third'}}
+        {{assign 'collection_width' 410}}
+      {{else is section.blocks.size 4}}
+        {{assign 'collection_item_width' 'medium-down--one-half one-quarter'}}
+        {{assign 'collection_width' 330}}
+      {{else is section.blocks.size 5}}
+        {{assign 'collection_item_width' 'small--one-half medium--one-third post-large--one-fifth'}}
+        {{assign 'collection_width' 235}}
+    {{/is}}
+
+    {{#each (limit section.blocks undefined) as |block|}}
+      {{assign 'featured' block.settings.collection}}
+      <div class="grid__item {{ collection_item_width }} text-center" {{ block.shopify_attributes }}>
+        {{include 'collection-grid-item' collection_width: collection_width}}
+      </div>
+    {{/each}}
+  </div>
+</div>
+
+{{#schema}}
+  {
+    "name": "Collection list",
+    "class": "index-section",
+    "max_blocks": 5,
+    "settings": [
+      {
+        "type": "text",
+        "id": "title",
+        "label": "Heading",
+        "default": "Collection list"
+      }
+    ],
+    "blocks": [
+      {
+        "type": "collection",
+        "name": "Collection",
+        "settings": [
+          {
+            "type": "collection",
+            "id": "collection",
+            "label": "Collection"
+          }
+        ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "Collection list",
+        "category": "Collection",
+        "blocks": [
+          {
+            "type": "collection"
+          },
+          {
+            "type": "collection"
+          },
+          {
+            "type": "collection"
+          },
+          {
+            "type": "collection"
+          }
+        ]
+      }
+    ]
+  }
+{{/schema}}

@@ -1,0 +1,155 @@
+<div data-section-id="{{ section.id }}" data-section-type="list-collection-template">
+
+{{assign 'header_title' page_title}}
+{{include 'page_header' header_title}}
+
+<div class="wrapper wrapper--margins">
+
+  <div class="collection-list grid-uniform small-gutter">
+    {{#is section.settings.grid '2'}}
+        {{assign 'grid_item_width' 'small--one-whole medium--one-half large--one-half'}}
+      {{else is section.settings.grid '3'}}
+        {{assign 'grid_item_width' 'small--one-whole medium--one-third large--one-third'}}
+      {{else is section.settings.grid '4'}}
+        {{assign 'grid_item_width' 'small--one-half medium--one-quarter large--one-quarter'}}
+      {{else is section.settings.grid '5'}}
+        {{assign 'grid_item_width' 'small--one-half medium--one-third large--one-fifth'}}
+    {{/is}}
+
+    {{#unless grid_item_width}}
+      {{assign 'grid_item_width' 'one-third medium--one-half small--one-whole'}}
+    {{/unless}}
+
+    {{#if (is section.settings.display_type 'all')}}
+      {{#is section.settings.sort 'products_high" or "products_low'}}
+          {{assign 'list_collections' (sort collections 'all_products_count')}}
+        {{else is section.settings.sort 'date" or "date_reversed'}}
+          {{assign 'list_collections' (sort collections 'published_at')}}
+        {{else}}
+          {{assign 'list_collections' collections}}
+      {{/is}}
+      {{#if (or (is section.settings.sort 'products_low') (is section.settings.sort 'date') (is section.settings.sort 'alphabetical'))}}
+        {{#each list_collections as |collection|}}
+        {{#unless (is collection.handle 'frontpage')}}
+          {{include 'collection-grid-item'}}
+        {{/unless}}
+        {{/each}}
+      {{else}}
+        {{#each list_collections as |collection|}}
+          {{#unless (is collection.handle 'frontpage')}}
+            {{include 'collection-grid-item'}}
+          {{/unless}}
+        {{/each}}
+      {{/if}}
+    {{else}}
+      {{#each section.blocks as |block|}}
+        {{assign 'collection' (get collections block.settings.collection)}}
+        {{#unless (is collection.handle 'frontpage')}}
+          {{include 'collection-grid-item'}}
+        {{/unless}}
+      {{/each}}
+    {{/if}}
+
+  </div>
+
+</div>
+
+</div>
+
+{{#schema}}
+  {
+    "name": "Collections list page",
+    "settings": [
+      {
+        "type": "paragraph",
+        "content": "All of your collections are listed by default. To customize your list, choose 'Selected' and add collections."
+      },
+      {
+        "type": "radio",
+        "id": "display_type",
+        "label": "Select collections to show",
+        "default": "all",
+        "options": [
+          {
+            "value": "all",
+            "label": "All"
+          },
+          {
+            "value": "selected",
+            "label": "Selected"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "sort",
+        "label": "Sort collections by:",
+        "info": "Sorting only applies when 'All' is selected",
+        "default": "alphabetical",
+        "options": [
+          {
+            "value": "products_high",
+            "label": "Product count, high to low"
+          },
+          {
+            "value": "products_low",
+            "label": "Product count, low to high"
+          },
+          {
+            "value": "alphabetical",
+            "label": "Alphabetically, A-Z"
+          },
+          {
+            "value": "alphabetical_reversed",
+            "label": "Alphabetically, Z-A"
+          },
+          {
+            "value": "date",
+            "label": "Date, old to new"
+          },
+          {
+            "value": "date_reversed",
+            "label": "Date, new to old"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "grid",
+        "label": "Collections per row",
+        "default": "3",
+        "options": [
+          {
+            "value": "2",
+            "label": "2"
+          },
+          {
+            "value": "3",
+            "label": "3"
+          },
+          {
+            "value": "4",
+            "label": "4"
+          },
+          {
+            "value": "5",
+            "label": "5"
+          }
+        ]
+      }
+    ],
+    "blocks": [
+      {
+        "type": "collection",
+        "name": "Collection",
+        "settings": [
+          {
+            "label": "Collection",
+            "id": "collection",
+            "type": "collection"
+          }
+        ]
+      }
+    ]
+  }
+{{/schema}}

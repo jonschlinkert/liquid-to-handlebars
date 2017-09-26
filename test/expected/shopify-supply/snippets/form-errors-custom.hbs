@@ -1,0 +1,28 @@
+{{#comment}}
+  We want control over our error text, so we'll loop through them.
+
+  Alternatively, you can use the default layout to generate a
+  <ul> wrapped with <div class="errors">
+    - {{default_errors form.errors}}
+{{/comment}}
+{{#if form.errors}}
+  <div class="note form-error">
+    <ul class="disc">
+      {{assign 'message' (t 'contact.form.message')}}
+      {{#each form.errors as |field|}}
+
+        {{#if (is field 'form')}}
+          <li>
+            {{get form.errors.messages field}}
+          </li>
+        {{else}}
+          <li>
+            {{assign 'field_name' (replace field 'body' message)}}
+            {{t 'general.forms.post_field_error_html' field field_name error 'form.errors.messages[field]'}}
+          </li>
+        {{/if}}
+
+      {{/each}}
+     </ul>
+  </div>
+{{/if}}

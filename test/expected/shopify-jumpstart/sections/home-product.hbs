@@ -1,0 +1,197 @@
+<div class="index-section home-product home-section" id="ProductSection-{{ section.id }}" data-section-id="{{ section.id }}" data-section-type="product">
+
+  <div class="wrapper wrapper--margins">
+    <div class="product grid">
+
+      {{assign 'product' (get all_products section.settings.featured_product)}}
+
+      {{#if (isnt product blank)}}
+
+        {{assign 'current_variant' product.selected_or_first_available_variant}}
+        {{assign 'featured_image' (default current_variant.featured_image product.featured_image)}}
+
+        <meta itemprop="url" content="{{ shop.url }}{{ product.url }}">
+        <meta itemprop="image" content="{{img_url product.featured_image.src 'grande'}}">
+
+        <div class="product__image grid__item one-half medium-down--one-whole">
+          <div id="slider-{{ section.id }}" class="regular-slider flexslider">
+            <ul class="slides">
+              {{#if (gt product.images.size 0)}}
+              {{assign 'img_url' (replace (img_url featured_image '1x1') '_1x1.' '_{width}x.')}}
+                <li class="slide" data-index="0" data-variant-img="{{ featured_image.id }}">
+                  <a class="image-popup">
+                  <div class="lazyload__image-wrapper supports-no-js" style="padding-top:{{times (divided_by 1 featured_image.aspect_ratio) 100}}%;">
+                    <img class="no-js lazyload {{#unless (is forloop.first true)}} lazypreload{{/unless}}"
+                    {{#if (is forloop.first true)}}
+                     src="{{img_url featured_image '300x'}}"
+                    {{/if}}
+                    data-src="{{ img_url }}"
+                    data-widths="[320, 360, 375, 414, 568, 684, 720, 732, 736, 768, 1024, 1200, 1296, 1512, 1728, 1944, 2048, 4472]"
+                    data-aspectratio="{{ featured_image.aspect_ratio }}"
+                    data-sizes="auto"
+                    data-parent-fit="width"                    
+                    alt="{{escape featured_image.alt}}">
+                    </div>
+                    <noscript>
+                      <img src="{{img_url featured_image '1024x1024'}}"
+                        srcset="{{img_url featured_image '1024x1024'}} 1x, {{img_url featured_image '1024x1024' scale 2}} 2x"
+                        alt="{{ featured_image.alt }}" style="opacity:1;">
+                        <style>
+                          .flexslider .slides li {
+                            display: block;
+                          }
+                        </style>
+                    </noscript>
+                  </a>
+                </li>
+                {{#if (gt product.images.size 1)}}
+                  {{assign 'index' 0}}
+                  {{#each product.images as |image|}}
+                  {{assign 'img_url' (replace (img_url image '1x1') '_1x1.' '_{width}x.')}}
+                    {{#unless (contains image featured_image)}}
+                      {{assign 'index' (plus index 1)}}
+                      <li class="slide" data-index="{{ index }}" data-variant-img="{{ image.id }}">
+                        <a class="image-popup">
+                        <div class="lazyload__image-wrapper supports-no-js" style="padding-top:{{times (divided_by 1 image.aspect_ratio) 100}}%;">
+                          <img class="no-js lazyload lazypreload"
+                          data-src="{{ img_url }}"
+                          data-widths="[320, 360, 375, 414, 568, 684, 720, 732, 736, 768, 1024, 1200, 1296, 1512, 1728, 1944, 2048, 4472]"
+                          data-aspectratio="{{ image.aspect_ratio }}"
+                          data-sizes="auto"
+                          data-parent-fit="width"
+                          alt="{{escape image.alt}}">
+                          </div> 
+                        </a>
+                      </li>
+                    {{/unless}}
+                  {{/each}}
+                {{/if}}
+              {{else}}
+                <li class="slide">
+                {{#capture 'current'}}{{cycle 1 2 3 4}}{{/capture}}
+                {{placeholder_svg_tag (append 'product-' current) 'placeholder-svg'}}
+                </li>
+              {{/if}}
+            </ul>
+          </div>
+        </div>
+
+        <div class="product__content grid__item one-half">
+          <h3 class="home-section-title" itemprop="name">{{t 'homepage.other.buy_button'}} {{ product.title }}</h3>
+          <div itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+
+            <meta itemprop="priceCurrency" content="{{ shop.currency }}">
+
+            <link itemprop="availability" href="http://schema.org/{{#if product.available}}InStock{{else}}OutOfStock{{/if}}">
+
+            <form action="/cart/add" method="post" enctype="multipart/form-data" id="AddToCartForm">
+
+              <span id="ProductPrice-{{ section.id }}" class="h1 price" itemprop="price">
+                {{money current_variant.price}}
+              </span>
+
+              {{#if (gt product.compare_at_price_max product.price)}}
+                <p id="ComparePrice-{{ section.id }}" class="h3 price compare-price">
+                  {{money current_variant.compare_at_price}}
+                </p>
+              {{/if}}
+
+              <div class="form__row">
+
+                  <select name="id" id="productSelect-{{ section.id }}" class="product-single__variants">
+                    {{#each product.variants as |variant|}}
+                      {{#if variant.available}}
+
+                        <option {{#if (is variant current_variant)}} selected="selected" {{/if}} data-sku="{{ variant.sku }}" value="{{ variant.id }}">{{ variant.title }} - {{money_with_currency variant.price}}</option>
+
+                      {{else}}
+                        <option disabled="disabled">
+                          {{ variant.title }} - {{t 'products.product.sold_out'}}
+                        </option>
+                      {{/if}}
+                    {{/each}}
+                  </select>
+
+                  <div id="quantity-selector-{{ section.id }}" class="form__column quantity-selector">
+                    <label for="Quantity" class="quantity-selector">{{t 'products.product.quantity'}}</label>
+                    <input type="number" id="Quantity" name="quantity" value="1" min="1" class="qty-remove-defaults quantity-selector">
+                  </div>
+
+                  <div class="form__column">
+                  <label>&nbsp;</label>
+                    <button type="submit" name="add" id="AddToCart-{{ section.id }}" class="btn btn--fill btn--regular btn--color">
+                      <span id="AddToCartText-{{ section.id }}">{{t 'products.product.add_to_cart'}}</span>
+                    </button>
+                  </div>
+
+              </div>
+
+            </form>
+
+          </div>
+
+        </div>
+
+
+      {{else}}
+          <div class="grid helper-section">
+
+            <!-- onboarding -->
+            <div class="product__image grid__item one-half">
+              <h3 class="home-section-title" itemprop="name">{{t 'homepage.other.buy_button'}} {{t 'homepage.onboarding.product_title'}}</h3>
+              {{#capture 'current'}}{{cycle 1 2 3 4}}{{/capture}}
+              <div class="text-center">{{placeholder_svg_tag (append 'product-' current) 'placeholder-svg'}}</div>
+            </div>
+
+            <div class="product__content grid__item one-half">
+              <h3 class="home-section-title" itemprop="name">{{t 'homepage.other.buy_button'}} {{ product.title }}</h3>
+              <div itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+                 <form>
+                  <span id="ProductPrice-{{ section.id }}" class="h1 price" itemprop="price">{{money '9999'}}</span>
+                  <div class="form__row">
+                    <div id="quantity-selector-{{ section.id }}" class="form__column">
+                      <label for="Quantity" class="quantity-selector-{{ section.id }}">{{t 'products.product.quantity'}}</label>
+                      <input type="number" id="Quantity" name="quantity" value="1" min="1" class="qty-remove-defaults quantity-selector">
+                    </div>
+                    <div class="form__column">
+                      <label>&nbsp;</label>
+                      <button type="submit" name="add" id="AddToCart-{{ section.id }}" class="btn btn--fill btn--regular btn--color">
+                        <span id="AddToCartText-{{ section.id }}">{{t 'products.product.add_to_cart'}}</span>
+                      </button>
+                    </div>
+                  </div>
+                 </form>
+              </div>
+            </div>
+
+          </div>
+
+      {{/if}}
+      </div>
+    </div>
+  </div>
+
+{{#unless (is product empty)}}
+  <script type="application/json" id="ProductJson-{{ section.id }}">
+    {{json product}}
+  </script>
+{{/unless}}
+
+{{#schema}}
+  {
+    "name": "Featured product",
+    "settings": [
+      {
+        "type": "product",
+        "id": "featured_product",
+        "label": "Product"
+      }
+  ],
+    "presets": [
+      {
+        "name": "Featured product",
+        "category": "Product"
+      }
+    ]
+  }
+{{/schema}}

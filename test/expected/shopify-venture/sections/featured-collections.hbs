@@ -1,0 +1,77 @@
+<div class="page-width">
+  {{assign 'blocks_count' section.blocks.size}}
+
+  {{#is blocks_count 1}}
+      {{assign 'grid_item_width' 'medium-up--one-half'}}
+    {{else is blocks_count 2}}
+      {{assign 'grid_item_width' 'one-half'}}
+    {{else is blocks_count 3}}
+      {{assign 'grid_item_width' 'medium-up--one-third'}}
+    {{else is blocks_count 4}}
+      {{assign 'grid_item_width' 'one-half medium-up--one-quarter'}}
+    {{else is blocks_count 5}}
+      {{assign 'grid_item_width' 'medium-up--one-third'}}
+    {{else is blocks_count 6}}
+      {{assign 'grid_item_width' 'medium-up--one-third'}}
+  {{/is}}
+
+  <div class="grid grid--no-gutters">
+    {{#each section.blocks as |block|}}
+      {{#if (and (is blocks_count 5) (gt forloop.index 3))}}
+        {{assign 'grid_item_width' 'medium-up--one-half'}}
+      {{/if}}
+
+      {{assign 'featured_collection' (get collections block.settings.collection)}}
+      {{include 'collection-grid-item' stretch_collection_image: section.settings.stretch_collection_image}}
+    {{/each}}
+  </div>
+
+  {{#if (is section.blocks.size 0)}}
+    {{include 'no-blocks'}}
+  {{/if}}
+</div>
+
+{{#schema}}
+  {
+    "name": "Collection list",
+    "class": "index-section",
+    "max_blocks": 6,
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "stretch_collection_image",
+        "label": "Use secondary image layout"
+      }
+    ],
+    "blocks": [
+      {
+        "type": "collection",
+        "name": "Collection",
+        "settings": [
+          {
+            "id": "collection",
+            "type": "collection",
+            "label": "Collection"
+          }
+        ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "Collection list",
+        "category": "Collection",
+        "blocks": [
+          {
+            "type": "collection"
+          },
+          {
+            "type": "collection"
+          },
+          {
+            "type": "collection"
+          }
+        ]
+      }
+    ]
+  }
+{{/schema}}

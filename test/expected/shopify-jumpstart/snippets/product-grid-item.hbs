@@ -1,0 +1,64 @@
+{{assign 'on_sale' false}}
+{{#if (gt product.compare_at_price product.price)}}
+  {{assign 'on_sale' true}}
+{{/if}}
+
+{{assign 'sold_out' true}}
+{{#if product.available}}
+  {{assign 'sold_out' false}}
+{{/if}}
+
+{{#unless grid_item_width}}
+  {{assign 'grid_item_width' 'one-third medium--one-half small--one-whole'}}
+{{/unless}}
+<div class="product grid__item {{ grid_item_width }} text-center">
+
+  <a href="{{within product.url collection}}" class="grid__image sale-{{ on_sale }} sold-{{ sold_out }}">
+    {{#if product.featured_image}}
+    <div class="product__image-wrapper supports-no-js" style="padding-top:{{times (divided_by 1 product.featured_image.aspect_ratio) 100}}%;">
+    {{assign 'img_url' (replace (img_url product.featured_image '1x1') '_1x1.' '_{width}x.')}}
+      <img 
+        class="no-js lazyload"
+        data-src="{{ img_url }}"
+        data-widths="[108, 360, 375, 414, 568, 684, 720, 732, 736, 768, 1024, 1200, 1296, 1512, 1728, 1944, 2048]"
+        data-aspectratio="{{ product.featured_image.aspect_ratio }}"
+        data-sizes="auto"
+        data-parent-fit="width"
+        alt="{{escape product.featured_image.alt}}">       
+    </div>
+    <noscript>
+      <img src="{{img_url product.featured_image '580x'}}"
+        srcset="{{img_url product.featured_image '580x'}} 1x, {{img_url product.featured_image '580x' scale 2}} 2x"
+        alt="{{ product.featured_image.alt }}" style="opacity:1;">
+    </noscript>
+    {{else}}
+    {{#capture 'current'}}{{cycle 1 2 3 4 5 6}}{{/capture}}
+      {{placeholder_svg_tag (append 'product-' current) 'placeholder-svg'}}
+    {{/if}}
+    {{#if sold_out}}
+      <span class="badge badge--sold-out">{{t 'products.product.sold_out'}}</span>
+    {{else if on_sale}}
+      <span class="badge badge--on-sale">{{t 'products.product.on_sale'}}</span>
+    {{/if}}
+  </a>
+
+  <p class="h3"><a href="{{within product.url collection}}">{{ product.title }}</a></p>
+
+  <p class="price">
+
+    {{#if product.price_varies}} {{t 'products.product.on_sale_from'}} {{/if}}
+    {{#if on_sale}}
+      <span class="visually-hidden">{{t 'products.product.sale_price'}}</span>
+    {{else}}
+      <span class="visually-hidden">{{t 'products.product.regular_price'}}</span>
+    {{/if}}
+    {{money product.price}}
+
+    {{#if on_sale}}
+      <span class="visually-hidden">{{t 'products.product.regular_price'}}</span>
+      <span class="compare-price">{{money product.compare_at_price}}</span>
+    {{/if}}
+
+  </p>
+
+</div>

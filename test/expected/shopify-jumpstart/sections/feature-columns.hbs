@@ -1,0 +1,130 @@
+<div id="home-features" class="index-section home-section">
+  <div class="wrapper wrapper--margins">
+    <div class="home-features">
+      {{#if (isnt section.settings.title blank)}}
+        <h2 class="home-section-title">{{escape section.settings.title}}</h2>
+      {{/if}}
+
+      <ul class="features-list grid grid-margins">
+
+	  {{#each section.blocks as |block|}}
+
+        {{#is block.settings.width '25%'}}
+            {{assign 'grid_class' 'grid__item large--one-quarter medium--one-half small--text-center'}}
+          {{else is block.settings.width '33%'}}
+            {{assign 'grid_class' 'grid__item large--one-third medium-down--text-center'}}
+          {{else is block.settings.width '50%'}}
+            {{assign 'grid_class' 'grid__item large--one-half medium--one-half small--text-center'}}
+          {{else is block.settings.width '66%'}}
+            {{assign 'grid_class' 'grid__item large--two-thirds medium-down--text-center'}}
+          {{else is block.settings.width '75%'}}
+            {{assign 'grid_class' 'grid__item large--three-quarters medium-down--text-center'}}
+          {{else is block.settings.width '100%'}}
+            {{assign 'grid_class' 'grid__item one-whole--text-center'}}
+        {{/is}}
+
+
+			<li class="{{ grid_class }}" {{ block.shopify_attributes }}>
+				<i class="fa fa-{{escape block.settings.home-features-icon}} fa-3x"></i>
+				<h3 class="h4">{{escape block.settings.home-features-title}}</h3>
+				{{ block.settings.home-features-content }}
+			</li>
+
+      {{/each}}
+
+      </ul>
+
+    </div>
+</div>
+</div>
+
+{{#schema}}
+  {
+  	"name": "Text columns with icons",
+  	"settings": [
+  		{
+  			"type": "text",
+  			"id": "title",
+  			"label": "Heading",
+  			"default": "Text columns with icons"
+  		}
+  	],
+  	"presets": [
+  		{
+  			"name": "Text columns with icons",
+  			"category": "Text",
+  			"blocks": [
+  				{
+  					"type": "text"
+  				},
+  				{
+  					"type": "text"
+  				},
+  				{
+  					"type": "text"
+  				}
+  			]
+  		}
+  	],
+  	"blocks" : [
+  		{
+  			"type": "text",
+  			"name": "Describe a feature",
+  			"settings": [
+  				{
+  					"type": "text",
+  					"id": "home-features-icon",
+  					"label": "Icon name",
+  					"default":"bell-o",
+  					"info": "[View the list of available icons](https://fortawesome.github.io/Font-Awesome/icons/)  Example: bluetooth"
+  				},
+  				{
+  						"type": "text",
+  						"id": "home-features-title",
+  						"default":"Describe a feature",
+  						"label": "Title"
+  				},
+  				{
+  					"type": "richtext",
+  					"id": "home-features-content",
+  					"label": "Text",
+  					"default":"<p>This section doesn’t currently include any content. <b>Add content to this section using the sidebar.</b></p>",
+  					"info": "Use basic HTML to format text"
+  				},
+  				{
+  					"type": "select",
+  					"id": "width",
+  					"label": "Container width",
+  					"default": "33%",
+  					"options": [
+  						{
+  							"value": "25%",
+  							"label": "25%"
+  						},
+  						{
+  							"value": "33%",
+  							"label": "33%"
+  						},
+  						{
+  							"value": "50%",
+  							"label": "50%"
+  						},
+  						{
+  							"value": "66%",
+  							"label": "66%"
+  						},
+  						{
+  							"value": "75%",
+  							"label": "75%"
+  						},
+  						{
+  							"value": "100%",
+  							"label": "100%"
+  						}
+  					]
+  				}
+  			]
+  		}
+  	]
+  }
+{{/schema}}

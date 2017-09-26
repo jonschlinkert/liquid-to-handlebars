@@ -1,0 +1,80 @@
+<div data-section-id="{{ section.id }}" data-section-type="featured-content-section">
+  {{#if (isnt section.settings.title blank)}}
+    <h2 class="small--text-center">{{escape section.settings.title}}</h2>
+  {{/if}}
+  {{#each section.blocks as |block|}}
+    <div class="rte" {{ block.shopify_attributes }}>
+      {{#is block.type 'page'}}
+          {{#if (isnt block.settings.title blank)}}
+            <h2 class="small--text-center">{{escape block.settings.title}}</h2>
+          {{/if}}
+          {{#if (isnt block.settings.home_page_content blank)}}
+            {{get pages (toPath block.settings.home_page_content "content")}}
+          {{else}}
+            <p>{{t 'homepage.onboarding.no_content'}}</p>
+          {{/if}}
+        {{else is block.type 'text'}}
+          {{#if (isnt block.settings.home_page_richtext blank)}}
+            {{ block.settings.home_page_richtext }}
+          {{else}}
+            <p>{{t 'homepage.onboarding.no_content'}}</p>
+          {{/if}}
+        {{else}}
+      {{/is}}
+    </div>
+  {{/each}}
+  {{#if (is section.blocks.size 0)}}
+    <div class="rte">
+      {{t 'homepage.onboarding.no_content'}}
+    </div>
+  {{/if}}
+</div>
+
+{{#schema}}
+  {
+    "name": "Rich text",
+    "max_blocks": 9,
+    "settings": [
+      {
+        "type": "text",
+        "id": "title",
+        "label": "Heading",
+        "default": "Talk about your brand"
+      }
+    ],
+    "presets": [{
+      "name": "Rich text",
+      "category": "Text",
+      "blocks": [
+        {
+          "type": "text"
+        }
+      ]
+    }],
+    "blocks" : [
+      {
+        "type": "text",
+        "name": "Text",
+        "settings": [
+          {
+            "id": "home_page_richtext",
+            "type": "richtext",
+            "label": "Text",
+            "default": "<p>Use this text to share information about your brand with your customers. Describe a product, share announcements, or welcome customers to your store.</p>"
+          }
+        ]
+      },
+      {
+        "type": "page",
+        "name": "Page",
+        "settings": [
+          {
+            "id": "home_page_content",
+            "type": "page",
+            "label": "Choose page"
+          }
+        ]
+      }
+    ]
+  }
+{{/schema}}

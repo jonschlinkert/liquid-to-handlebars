@@ -1,0 +1,81 @@
+{{#comment}}
+
+  This template will be automatically generated for you if the file doesn't exist,
+  but where's the fun in having no control? Define your layout below.
+
+  The 'layout settings.customer_layout' line is inserted at the top of every customer account template.
+  Your theme's settings determine to use the 'default' or 'theme' customer templates.
+  More info:
+    - http://www.tetchi.ca/shopify-theme-from-scratch-part-11/
+
+  Template note:
+    - All IDs on this template are required to make the form(s) submit properly
+
+  For all available customer liquid tags:
+    - http://docs.shopify.com/themes/liquid-variables/customer
+
+{{/comment}}
+
+
+<h1 class="text-center">{{t 'customer.account.title'}}</h1>
+
+<hr class="hr--small">
+
+<div class="grid">
+
+  <div class="grid-item customer-orders two-thirds medium-down--one-whole">
+    <h2 class="h4">{{t 'customer.orders.title'}}</h2>
+
+    {{#comment}}
+      If we have past orders, loop through each one
+    {{/comment}}
+    {{#paginate customer.orders by=20}}
+    {{#if (isnt customer.orders.size 0)}}
+
+      <table class="full">
+        <thead>
+          <tr>
+            <th>{{t 'customer.orders.order_number'}}</th>
+            <th>{{t 'customer.orders.date'}}</th>
+            <th>{{t 'customer.orders.payment_status'}}</th>
+            <th>{{t 'customer.orders.fulfillment_status'}}</th>
+            <th>{{t 'customer.orders.total'}}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#each customer.orders as |order|}}
+            <tr>
+              <td>{{link_to order.name order.customer_url}}</td>
+              <td>{{date order.created_at '%b %d, %Y'}}</td>
+              <td>{{ order.financial_status_label }}</td>
+              <td>{{ order.fulfillment_status_label }}</td>
+              <td>{{money order.total_price}}</td>
+            </tr>
+          {{/each}}
+        </tbody>
+      </table>
+
+    {{else}}
+
+      <p>{{t 'customer.orders.none'}}</p>
+
+    {{/if}}
+
+    {{#if (gt paginate.pages 1)}}
+      <div class="text-center">
+        {{include 'pagination-custom'}}
+      </div>
+    {{/if}}
+
+    {{/paginate}}
+  </div>
+
+  <div class="grid-item one-third medium-down--one-whole">
+    <h2 class="h4">{{t 'customer.account.details'}}</h2>
+
+    {{format_address customer.default_address}}
+
+    <p><a href="/account/addresses">{{t 'customer.account.view_addresses'}} ({{ customer.addresses_count }})</a></p>
+  </div>
+
+</div>

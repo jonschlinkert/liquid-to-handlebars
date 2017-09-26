@@ -1,0 +1,13 @@
+<div class="navigation__search{{#if animate}} navigation__entrance-animation{{/if}}">
+  <form action="/search" method="get" role="search">
+    <div class="input-group--underline">
+      <input class="input-group__field" type="search" name="q" value="{{escape search.terms}}" placeholder="{{t 'general.search.placeholder'}}" aria-label="{{t 'general.search.placeholder'}}"{{#if disableTab}} tabindex="-1"{{/if}}>
+      <div class="input-group__btn">
+        <button type="submit" class="btn btn--clear btn--square"{{#if disableTab}} tabindex="-1"{{/if}}>
+          {{include 'icon-search'}}
+          <span class="icon__fallback-text">{{t 'general.search.submit'}}</span>
+        </button>
+      </div>
+    </div>
+  </form>
+</div>

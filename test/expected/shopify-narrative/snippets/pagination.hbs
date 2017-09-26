@@ -1,0 +1,35 @@
+<div class="pagination">
+  {{#if paginate.previous}}
+    <a href="{{ paginate.previous.url }}" class="btn--secondary pagination__btn">
+      {{include 'icon-arrow-left'}}
+      <span class="icon__fallback-text">{{t 'general.pagination.previous'}}</span>
+    </a>
+  {{else}}
+    <button class="btn--secondary pagination__btn" disabled>
+      {{include 'icon-arrow-left'}}
+      <span class="icon__fallback-text">{{t 'general.pagination.previous'}}</span>
+    </button>
+  {{/if}}
+
+  <div class="pagination__pages">
+    {{#each paginate.parts as |part|}}
+      {{#if part.is_link}}
+        <a href="{{ part.url }}" class="pagination__page">{{ part.title }}</a>
+      {{else}}
+        <span class="pagination__page pagination__page--current">{{ part.title }}</span>
+      {{/if}}
+    {{/each}}
+  </div>
+
+  {{#if paginate.next}}
+    <a href="{{ paginate.next.url }}" class="btn--secondary pagination__btn">
+      {{include 'icon-arrow-right'}}
+      <span class="icon__fallback-text">{{t 'general.pagination.next'}}</span>
+    </a>
+  {{else}}
+    <button class="btn--secondary pagination__btn" disabled>
+      {{include 'icon-arrow-right'}}
+      <span class="icon__fallback-text">{{t 'general.pagination.next'}}</span>
+    </button>
+  {{/if}}
+</div>

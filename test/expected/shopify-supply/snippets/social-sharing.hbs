@@ -1,0 +1,47 @@
+{{#if (or (is template.name 'article') (is template.name 'blog'))}}
+  {{#capture 'permalinkURL'}}{{ shop.url }}{{ article.url }}{{/capture}}
+  {{#capture 'shareTitle'}}{{url_param_escape article.title}}{{/capture}}
+
+{{else if (is template.name 'product')}}
+  {{#capture 'permalinkURL'}}{{ shop.url }}{{ product.url }}{{/capture}}
+  {{#capture 'shareTitle'}}{{url_param_escape product.title}}{{/capture}}
+
+{{else if (is template.name 'password')}}
+  {{#capture 'permalinkURL'}}{{ shop.url }}{{/capture}}
+  {{#capture 'shareTitle'}}{{#unless (is shop.description blank)}}{{url_param_escape shop.description}}{{else}}{{url_param_escape shop.name}}{{/unless}}{{/capture}}
+
+{{/if}}
+
+{{assign 'shareButtonStyle' settings.social_sharing_style}}
+
+<div class="social-sharing {{ shareButtonStyle }}" data-permalink="{{ permalinkURL }}">
+
+  {{#if settings.share_facebook}}
+    <a target="_blank" href="//www.facebook.com/sharer.php?u={{ permalinkURL }}" class="share-facebook" title="{{t 'general.social.alt_text.share_on_facebook'}}">
+      <span class="icon icon-facebook" aria-hidden="true"></span>
+      <span class="share-title" aria-hidden="true">{{t 'general.social.share_on_facebook'}}</span>
+      <span class="visually-hidden">{{t 'general.social.alt_text.share_on_facebook'}}</span>
+    </a>
+  {{/if}}
+
+  {{#if settings.share_twitter}}
+    <a target="_blank" href="//twitter.com/share?text={{ shareTitle }}&amp;url={{ permalinkURL }}&amp;source=webclient" class="share-twitter" title="{{t 'general.social.alt_text.share_on_twitter'}}">
+      <span class="icon icon-twitter" aria-hidden="true"></span>
+      <span class="share-title" aria-hidden="true">{{t 'general.social.share_on_twitter'}}</span>
+      <span class="visually-hidden">{{t 'general.social.alt_text.share_on_twitter'}}</span>
+    </a>
+  {{/if}}
+
+  {{#if (or product.featured_image article.image)}}
+
+    {{#if settings.share_pinterest}}
+      <a target="_blank" href="//pinterest.com/pin/create/button/?url={{ permalinkURL }}&amp;media=http:{{#if (contains template 'product')}}{{img_url product '1024x1024'}}{{else}}{{img_url article '1024x1024'}}{{/if}}&amp;description={{ shareTitle }}" class="share-pinterest" title="{{t 'general.social.alt_text.share_on_pinterest'}}">
+        <span class="icon icon-pinterest" aria-hidden="true"></span>
+        <span class="share-title" aria-hidden="true">{{t 'general.social.share_on_pinterest'}}</span>
+        <span class="visually-hidden">{{t 'general.social.alt_text.share_on_pinterest'}}</span>
+      </a>
+    {{/if}}
+
+  {{/if}}
+
+</div>

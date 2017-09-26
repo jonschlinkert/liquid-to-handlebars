@@ -1,0 +1,142 @@
+<div class="wrapper">
+  <div class="custom-content">
+  {{#if (isnt section.settings.title blank)}}
+    <div class="grid__item">
+      <h2 class="small--text-center">{{escape section.settings.title}}</h2>
+    </div>
+  {{/if}}
+  {{#each section.blocks as |block|}}
+    {{#is block.settings.width '25%'}}
+        {{assign 'block_width' 'small--one-whole one-quarter'}}
+      {{else is block.settings.width '33%'}}
+        {{assign 'block_width' 'small--one-whole one-third'}}
+      {{else is block.settings.width '50%'}}
+        {{assign 'block_width' 'small--one-whole one-half'}}
+      {{else is block.settings.width '66%'}}
+        {{assign 'block_width' 'small--one-whole two-thirds'}}
+      {{else is block.settings.width '75%'}}
+        {{assign 'block_width' 'small--one-whole three-quarters'}}
+      {{else is block.settings.width '100%'}}
+        {{assign 'block_width' 'one-whole'}}
+    {{/is}}
+    <div class="custom__item {{ block_width }} {{#if block.settings.alignment}}align--{{ block.settings.alignment }}{{/if}}" {{ block.shopify_attributes }}>
+      <div class="custom__item-inner custom__item-inner--{{ block.type }}">
+        {{#is block.type 'html'}}
+            {{#if (isnt block.settings.code blank)}}
+              <div class="rte" data-section-id="{{ section.id }}" data-section-type="featured-content-section">
+                <p class="textarea">{{ block.settings.code }}</p>
+              </div>
+            {{else}}
+              <div class="rte">
+                {{t 'homepage.onboarding.no_content'}}
+              </div>
+            {{/if}}
+        {{/is}}
+      </div>
+    </div>
+  {{/each}}
+  {{#if (is section.blocks.size 0)}}
+    <div class="wrapper">
+      <div class="grid">
+        <div class="grid__item">
+          <div class="rte">
+            {{t 'homepage.onboarding.no_content'}}
+          </div>
+        </div>
+      </div>
+   </div>
+  {{/if}}
+  </div>
+</div>
+
+{{#schema}}
+  {
+    "name": "Custom HTML",
+    "max_blocks": 9,
+    "settings": [
+      {
+        "type": "text",
+        "id": "title",
+        "label": "Heading",
+        "default": "Talk about your brand"
+      }
+    ],
+    "blocks": [
+      {
+        "type": "html",
+        "name": "Custom HTML",
+        "settings": [
+          {
+            "type": "html",
+            "id": "code",
+            "label": "HTML",
+            "default": "<strong>Use HTML to format your text so it can be easily read.</strong> This text can be used to share information about your brand with customers."
+          },
+          {
+            "type": "select",
+            "id": "width",
+            "label": "Container width",
+            "default": "100%",
+            "options": [
+              {
+                "value": "25%",
+                "label": "25%"
+              },
+              {
+                "value": "33%",
+                "label": "33%"
+              },
+              {
+                "value": "50%",
+                "label": "50%"
+              },
+              {
+                "value": "66%",
+                "label": "66%"
+              },
+              {
+                "value": "75%",
+                "label": "75%"
+              },
+              {
+                "value": "100%",
+                "label": "100%"
+              }
+            ]
+          },
+          {
+            "type": "select",
+            "id": "alignment",
+            "label": "Vertical alignment",
+            "default": "top-middle",
+            "options": [
+              {
+                "value": "top-middle",
+                "label": "Top"
+              },
+              {
+                "value": "center",
+                "label": "Middle"
+              },
+              {
+                "value": "bottom-middle",
+                "label": "Bottom"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "Custom HTML",
+        "category": "Advanced layout",
+        "blocks": [
+          {
+            "type": "html"
+          }
+        ]
+      }
+    ]
+  }
+{{/schema}}

@@ -1,0 +1,41 @@
+<!doctype html>
+<!--[if IE 9]> <html class="ie9 no-js" lang="{{ shop.locale }}"> <![endif]-->
+<!--[if (gt IE 9)|!(IE)]><!--> <html class="no-js" lang="{{ shop.locale }}"> <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="{{ settings.color_primary }}">
+  <link rel="canonical" href="{{ canonical_url }}">
+
+  {{#if settings.favicon_enable}}
+    <link rel="shortcut icon" href="{{asset_url 'favicon.png'}}" type="image/png">
+  {{/if}}
+
+  {{assign 'formatted_initial_value' (money_without_trailing_zeros gift_card.initial_value gift_card.currency)}}
+  {{assign 'formatted_initial_value_stripped' (strip_html formatted_initial_value)}}
+  <title>{{t 'gift_cards.issued.title' value formatted_initial_value_stripped shop shop.name}}</title>
+
+  <meta name="description" content="{{t 'gift_cards.issued.subtext'}}">
+
+  {{stylesheet_tag (asset_url 'theme.scss.css')}}
+
+  <script>
+    var theme = {};
+  </script>
+
+  <!--[if (gt IE 9)|!(IE)]><!--><script src="{{shopify_asset_url 'vendor/qrcode.js'}}" defer="defer"></script><!--<![endif]-->
+  <!--[if lt IE 9]><script src="{{shopify_asset_url 'vendor/qrcode.js'}}"></script><![endif]-->
+
+  <!--[if (gt IE 9)|!(IE)]><!--><script src="{{asset_url 'theme.js'}}" defer="defer"></script><!--<![endif]-->
+  <!--[if lt IE 9]><script src="{{asset_url 'theme.js'}}"></script><![endif]-->
+
+  {{ content_for_header }}
+</head>
+
+<body class="template-giftcard">
+  <main role="main" id="MainContent">
+    {% body %}
+  </main>
+</body>
+</html>

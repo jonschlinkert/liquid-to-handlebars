@@ -1,0 +1,91 @@
+<div class="collection-list collection-list--{{ section.id }}" data-section-id="{{ section.id }}">
+
+  {{#if (isnt section.settings.title blank)}}
+    <h2 class="small--text-center">{{escape section.settings.title}}</h2>
+  {{/if}}
+
+  {{#is section.settings.grid 2}}
+      {{assign 'grid_item_width' 'medium-up--one-half'}}
+    {{else is section.settings.grid 3}}
+      {{assign 'grid_item_width' 'small--one-half medium-up--one-third'}}
+    {{else is section.settings.grid 4}}
+      {{assign 'grid_item_width' 'small--one-half medium-up--one-quarter'}}
+    {{else is section.settings.grid 5}}
+      {{assign 'grid_item_width' 'small--one-half medium-up--one-fifth'}}
+    {{else}}
+      {{assign 'grid_item_width' 'small--one-half medium-up--one-third'}}
+  {{/is}}
+
+  <div class="collection-grid">
+    <div class="grid grid--uniform">
+      {{#each (limit section.blocks undefined) as |block|}}
+        <div class="grid__item {{ grid_item_width }} slide-up-animation animated" {{ block.shopify_attributes }} role="listitem">
+          {{assign 'collection' (get collections block.settings.collection)}}
+          {{include 'collection-grid-item'}}
+        </div>
+      {{/each}}
+    </div>
+  </div>
+
+  {{#if (is section.blocks.size 0)}}
+    <div class="rte">
+      {{t 'homepage.onboarding.no_content'}}
+    </div>
+  {{/if}}
+
+</div>
+
+{{#schema}}
+  {
+    "name": "Collection list",
+    "class": "index-section",
+    "max_blocks": 12,
+    "settings": [
+      {
+        "type": "text",
+        "id": "title",
+        "label": "Heading",
+        "default": "Collection list"
+      },
+      {
+        "type": "range",
+        "id": "grid",
+        "label": "Collections per row",
+        "min": 2,
+        "max": 5,
+        "step": 1,
+        "default": 3
+      }
+    ],
+    "blocks": [
+      {
+        "type": "collection",
+        "name": "Collection",
+        "settings": [
+          {
+            "type": "collection",
+            "id": "collection",
+            "label": "Collection"
+          }
+        ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "Collection list",
+        "category": "Collection",
+        "blocks": [
+          {
+            "type": "collection"
+          },
+          {
+            "type": "collection"
+          },
+          {
+            "type": "collection"
+          }
+        ]
+      }
+    ]
+  }
+{{/schema}}

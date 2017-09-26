@@ -1,0 +1,34 @@
+{{#unless (is heading blank)}}
+  <div class="section-header">
+    <h2 class="section-header__title">
+      {{escape heading}}
+    </h2>
+  </div>
+  {{#unless (is subheading blank)}}
+    <p>{{escape subheading}}</p>
+  {{/unless}}
+{{else}}
+  <label class="form-label--hidden">
+    <span class="visuallyhidden">{{t 'general.newsletter_form.newsletter_label'}}</span>
+  </label>
+{{/unless}}
+
+<div class="form-vertical">
+  {{#form 'customer'}}
+    {{default_errors form.errors}}
+    {{#if form.posted_successfully}}
+      <p class="note form-success">{{t 'general.newsletter_form.confirmation'}}</p>
+    {{else}}
+      <input type="hidden" name="contact[tags]" value="newsletter">
+      <div class="input-group">
+        <input type="email" value="{{#if customer}}{{ customer.email }}{{/if}}" placeholder="{{t 'general.newsletter_form.newsletter_email'}}" name="contact[email]" id="Email" class="input-group-field" aria-label="{{t 'general.newsletter_form.newsletter_email'}}" autocorrect="off" autocapitalize="off">
+        <span class="input-group-btn">
+          <button type="submit" class="btn icon-fallback-text" name="commit" id="subscribe">
+            <span class="icon icon-chevron-right" aria-hidden="true"></span>
+            <span class="fallback-text">{{t 'general.newsletter_form.submit'}}</span>
+          </button>
+        </span>
+      </div>
+    {{/if}}
+  {{/form}}
+</div>

@@ -1,0 +1,22 @@
+<h2 class="h3"><a href="{{ article.url }}">{{ article.title }} &rarr;</a></h2>
+{{#if (or section.settings.blog_show_date section.settings.blog_show_author)}}
+  <div class="featured-blog__meta">
+    {{#if section.settings.blog_show_date}}
+      <span class="featured-blog__date">
+        <time datetime="{{date article.published_at '%Y-%m-%d'}}">{{date article.published_at format 'month_day_year'}}</time>
+      </span>
+    {{/if}}
+    {{#if (and section.settings.blog_show_date section.settings.blog_show_author)}}
+      <span class="meta-sep">•</span>
+    {{/if}}
+    {{#if section.settings.blog_show_author}}
+      <span class="featured-blog__author">{{ article.author }}</span>
+    {{/if}}
+  </div>
+{{/if}}
+
+{{#if section.settings.blog_show_excerpt}}
+  <div class="rte rte--indented-images">
+    {{truncatewords (strip_html article.excerpt_or_content) 30}}
+  </div>
+{{/if}}

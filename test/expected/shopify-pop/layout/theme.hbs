@@ -1,0 +1,145 @@
+<!doctype html>
+<!--[if lt IE 7]><html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
+<!--[if IE 7]><html class="no-js lt-ie9 lt-ie8" lang="en"> <![endif]-->
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en"> <![endif]-->
+<!--[if IE 9 ]><html class="ie9 no-js"> <![endif]-->
+<!--[if (gt IE 9)|!(IE)]><!--> <html class="no-js"> <!--<![endif]-->
+<head>
+
+  <!-- Basic page needs ================================================== -->
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+  {{#if settings.favicon}}
+  <link rel="shortcut icon" href="{{img_url settings.favicon '32x32'}}" type="image/png" />
+  {{/if}}
+
+  <!-- Title and description ================================================== -->
+  <title>
+  {{{ page_title }}}{{#if current_tags}}{{assign 'meta_tags' (join current_tags ', ')}} &ndash; {{t 'general.meta.tags' tags meta_tags}}{{/if}}{{#if (isnt current_page 1)}} &ndash; {{t 'general.meta.page' page current_page}}{{/if}}{{#unless (contains page_title shop.name)}} &ndash; {{ shop.name }}{{/unless}}
+  </title>
+
+  {{#if page_description}}
+  <meta name="description" content="{{escape page_description}}">
+  {{/if}}
+
+  <!-- Social meta ================================================== -->
+  {{include 'social-meta-tags'}}
+
+  <!-- Helpers ================================================== -->
+  <link rel="canonical" href="{{ canonical_url }}">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  {{#if (is settings.ajax_cart_method 'drawer')}}
+    <!-- Ajaxify Cart Plugin ================================================== -->
+    {{stylesheet_tag (asset_url 'ajaxify.scss.css')}}
+  {{/if}}
+
+  <!-- CSS ================================================== -->
+  {{stylesheet_tag (asset_url 'timber.scss.css')}}
+  {{include 'google-fonts'}}
+
+  <script>
+    window.theme = window.theme || {};
+
+    var theme = {
+      cartType: '{{ settings.ajax_cart_method }}',
+      moneyFormat: {{json shop.money_format}},
+      currentTemplate: '{{ template }}',
+      variables: {
+        mediaQuerySmall: 'screen and (max-width: 480px)',
+        bpSmall: false
+      }
+    }
+
+    document.documentElement.className = document.documentElement.className.replace('no-js', 'js');
+  </script>
+
+  <!-- Header hook for plugins ================================================== -->
+  {{ content_for_header }}
+
+  {{include 'oldIE-js'}}
+
+  {{#comment}}
+    If you store has customers disabled, you can remove the following JS file
+  {{/comment}}
+  {{#if (is template.directory 'customers')}}
+    {{script_tag (shopify_asset_url 'shopify_common.js')}}
+    {{script_tag (shopify_asset_url 'customer_area.js')}}
+  {{/if}}
+
+  {{#comment}}
+    Theme dependent JS is loaded at the very bottom of this file for performance reasons.
+    However, jQuery is included here so that it can be used inside the templates, e.g. in product.liquid.
+  {{/comment}}
+  {{script_tag '//ajax.googleapis.com/ajax/libs/jquery/2.2.3/jquery.min.js'}}
+  {{script_tag (asset_url 'modernizr.min.js')}}
+
+  <!--[if (gt IE 9)|!(IE)]><!--><script src="{{asset_url 'lazysizes.min.js'}}" async="async"></script><!--<![endif]-->
+  <!--[if lte IE 9]><script src="{{asset_url 'lazysizes.min.js'}}"></script><![endif]-->
+
+  <!--[if (gt IE 9)|!(IE)]><!--><script src="{{asset_url 'theme.js'}}" defer="defer"></script><!--<![endif]-->
+  <!--[if lte IE 9]><script src="{{asset_url 'theme.js'}}"></script><![endif]-->
+
+</head>
+
+{{#comment}}
+  Add the page template as a class for easy page or template specific styling.
+{{/comment}}
+<body id="{{handle page_title}}" class="{{#if customer}}customer-logged-in {{/if}}template-{{handle (truncatewords (replace template '.' ' ') 1 '')}}" >
+
+  {{section 'header'}}
+
+  <div class="page-wrapper page-element">
+
+    {{section 'announcement-bar'}}
+
+    <main class="main-content" role="main">
+      <div class="wrapper">
+
+        {% body %}
+
+      </div>
+
+      {{section 'footer'}}
+
+    </main>
+
+    {{#comment}}
+      Ajaxify your cart with this plugin. Adding a product will reveal a drawer, modal, or confirmation button. Enabled by default in theme settings.
+
+      Ajaxify Cart Documentation:
+        - http://shopify.com/timber#ajax-cart
+    {{/comment}}
+    {{#if (is settings.ajax_cart_method 'drawer')}}
+      {{script_tag (asset_url 'handlebars.min.js')}}
+      {{include 'ajax-cart-template'}}
+      {{script_tag (asset_url 'ajaxify.js')}}
+    {{/if}}
+
+    {{#if (or (is template.name 'product') (is template.name 'index'))}}
+      {{script_tag (asset_url 'jquery.zoom.min.js')}}
+      {{script_tag (shopify_asset_url 'option_selection.js')}}
+
+      <script>
+        // Override default values of shop.strings for each template.
+        // Alternate product templates can change values of
+        // add to cart button, sold out, and unavailable states here.
+        theme.productStrings = {
+          addToCart: {{json (t 'products.product.add_to_cart')}},
+          soldOut: {{json (t 'products.product.sold_out')}},
+          unavailable: {{json (t 'products.product.unavailable')}}
+        };
+        theme.mapStrings = {
+          addressError: {{json (t 'map.errors.address_error')}},
+          addressNoResults: {{json (t 'map.errors.address_no_results')}},
+          addressQueryLimit: {{json (t 'map.errors.address_query_limit_html')}},
+          authError: {{json (t 'map.errors.auth_error_html')}}
+        };
+      </script>
+    {{/if}}
+
+  </div>
+
+</body>
+</html>

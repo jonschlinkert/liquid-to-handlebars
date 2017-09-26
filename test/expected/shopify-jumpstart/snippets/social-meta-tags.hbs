@@ -1,0 +1,44 @@
+<!-- /snippets/social-meta-tags.liquid -->
+{{assign 'og_title' page_title}}
+{{assign 'og_url' canonical_url}}
+{{assign 'og_type' 'website'}}
+{{assign 'og_description' (default (default page_description shop.description) shop.name)}}
+
+{{#comment}} Template specific overides {{/comment}}
+{{#if (is template.name 'product')}}
+  {{assign 'og_title' (strip_html product.title)}}
+  {{assign 'og_type' 'product'}}
+  {{#capture 'og_image_tags'}}{{#each (limit product.images 3) as |image|}}<meta property="og:image" content="http:{{product_img_url image.src '1024x1024'}}">{{/each}}{{/capture}}
+  {{#capture 'og_image_secure_url_tags'}}{{#each (limit product.images 3) as |image|}}<meta property="og:image:secure_url" content="https:{{product_img_url image.src '1024x1024'}}">{{/each}}{{/capture}}
+
+{{else if (is template.name 'article')}}
+  {{assign 'og_title' (strip_html article.title)}}
+  {{assign 'og_type' 'article'}}
+  {{assign 'og_description' (strip_html article.excerpt_or_content)}}
+  {{#if article.image}}
+    {{#capture 'og_image_tags'}}<meta property="og:image" content="http:{{img_url article.image '1024x1024'}}">{{/capture}}
+    {{#capture 'og_image_secure_url_tags'}}<meta property="og:image:secure_url" content="https:{{img_url article.image '1024x1024'}}">{{/capture}}
+  {{/if}}
+
+{{else if (is template.name 'password')}}
+  {{assign 'og_title' shop.name}}
+  {{assign 'og_url' shop.url}}
+  {{assign 'og_description' (default shop.description shop.name)}}
+{{/if}}
+
+<meta property="og:site_name" content="{{ shop.name }}">
+<meta property="og:url" content="{{ og_url }}">
+<meta property="og:title" content="{{ og_title }}">
+<meta property="og:type" content="{{ og_type }}">
+<meta property="og:description" content="{{ og_description }}">
+{{#if (is template.name 'product')}}
+  <meta property="og:price:amount" content="{{strip_html (money_without_currency product.price)}}">
+  <meta property="og:price:currency" content="{{ shop.currency }}">
+{{/if}}
+{{ og_image_tags }}
+{{ og_image_secure_url_tags }}
+
+<meta name="twitter:site" content="{{prepend (last (split (escape settings.social_twitter) 'twitter.com/')) '@'}}">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{{ og_title }}">
+<meta name="twitter:description" content="{{ og_description }}">

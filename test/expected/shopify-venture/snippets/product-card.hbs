@@ -1,0 +1,71 @@
+<!-- /snippets/product-card.liquid -->
+
+{{#comment}}
+  The product card snippet is passed a liquid object, used in this file
+  as "product". The object is either "product" or "item", the latter if
+  it is from search results.
+{{/comment}}
+
+<a href="{{within product.url collection}}" class="product-card">
+  <div class="product-card__image-wrapper">
+    <img src="{{img_url product.featured_image.src '480x480'}}" alt="{{escape product.featured_image.alt}}" class="product-card__image">
+  </div>
+  <div class="product-card__info">
+    {{#if settings.product_vendor_enable}}
+      <div class="product-card__brand">{{ product.vendor }}</div>
+    {{/if}}
+
+    <div class="product-card__name">{{ product.title }}</div>
+
+    {{#if product.available}}
+      <div class="product-card__price">
+        {{#if (gt product.compare_at_price product.price)}}
+          {{#comment}}
+            Product is on sale
+          {{/comment}}
+          {{#if product.price_varies}}
+            {{assign 'sale_price' (money_without_trailing_zeros product.price)}}
+            {{t 'products.product.on_sale_from_html' price sale_price}}
+          {{else}}
+            <span class="visually-hidden">{{t 'products.product.regular_price'}}</span>
+            <s class="product-card__regular-price">{{money_without_trailing_zeros product.compare_at_price}}</s>
+
+            <span class="visually-hidden">{{t 'products.product.sale_price'}}</span>
+            {{money_without_trailing_zeros product.price}}
+          {{/if}}
+
+        {{else}}
+          {{#comment}}
+            Not on sale, but could still have varying prices
+          {{/comment}}
+          {{#if product.price_varies}}
+            {{assign 'price' (money_without_trailing_zeros product.price)}}
+            {{t 'products.product.from_text_html' price price}}
+          {{else}}
+            <span class="visually-hidden">{{t 'products.product.regular_price'}}</span>
+            {{money_without_trailing_zeros product.price}}
+          {{/if}}
+
+        {{/if}}
+      </div>
+    {{else}}
+      <div class="product-card__availability">
+        {{t 'products.product.sold_out'}}
+      </div>
+    {{/if}}
+  </div>
+
+  {{#if (gt product.compare_at_price product.price)}}
+    {{#comment}}
+      A visually-hidden label before regular/sale prices clarifies
+      prices for screen readers, so hide the sale tag from them.
+    {{/comment}}
+    <div class="product-tag product-tag--absolute" aria-hidden="true">
+      {{t 'products.product.on_sale'}}
+    </div>
+  {{/if}}
+  <div class="product-card__overlay">
+    {{assign 'view_string_length' (size (t 'products.product.view'))}}
+    <span class="btn product-card__overlay-btn {{#if (gt view_string_length 8)}} btn--narrow{{/if}}">{{t 'products.product.view'}}</span>
+  </div>
+</a>

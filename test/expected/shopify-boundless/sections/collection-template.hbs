@@ -1,0 +1,211 @@
+
+{{#paginate collection.products by=24}}
+
+{{#if (isnt collection.description blank)}}
+  <div class="rte rte--description">
+    {{ collection.description }}
+  </div>
+{{/if}}
+
+
+{{#if (or section.settings.collection_sort_enable section.settings.collection_tags_enable)}}
+  <div class="action-bar-secondary">
+    {{#if (and section.settings.collection_tags_enable (gt collection.all_tags.size 1))}}
+      <div class="action-bar-secondary__dropdown action-bar-secondary--left">
+        <label for="SortTags" class="label--hidden">{{t 'collections.general.tags'}}</label>
+        <select name="SortTags" id="SortTags">
+          {{#if current_tags}}
+            {{#if collection.handle}}
+              <option value="/collections/{{ collection.handle }}">{{t 'collections.general.all_tags'}}</option>
+            {{else if collection.current_type}}
+              <option value="{{url_for_type collection.current_type}}">{{t 'collections.general.all_tags'}}</option>
+            {{else if collection.current_vendor}}
+              <option value="{{url_for_vendor collection.current_vendor}}">{{t 'collections.general.all_tags'}}</option>
+            {{/if}}
+          {{else}}
+            <option value="">{{t 'collections.general.tags'}}</option>
+          {{/if}}
+          {{#each collection.all_tags as |tag|}}
+            <option value="/collections/{{#if (isnt collection.handle blank)}}{{ collection.handle }}{{else}}all{{/if}}/{{handleize tag}}"{{#if (contains current_tags tag)}} selected="selected"{{/if}}>{{ tag }}</option>
+          {{/each}}
+        </select>
+      </div>
+    {{/if}}
+    {{#if (and section.settings.collection_sort_enable (gt collection.products.size 1))}}
+      <div class="action-bar-secondary__dropdown action-bar-secondary--right">
+        <label for="SortBy" class="label--hidden">{{t 'collections.sorting.title'}}</label>
+        <select name="SortBy" id="SortBy" data-value="{{escape (default collection.sort_by collection.default_sort_by)}}">
+          <option value="manual">{{t 'collections.sorting.featured'}}</option>
+          <option value="best-selling">{{t 'collections.sorting.best_selling'}}</option>
+          <option value="title-ascending">{{t 'collections.sorting.az'}}</option>
+          <option value="title-descending">{{t 'collections.sorting.za'}}</option>
+          <option value="price-ascending">{{t 'collections.sorting.price_ascending'}}</option>
+          <option value="price-descending">{{t 'collections.sorting.price_descending'}}</option>
+          <option value="created-descending">{{t 'collections.sorting.date_descending'}}</option>
+          <option value="created-ascending">{{t 'collections.sorting.date_ascending'}}</option>
+        </select>
+      </div>
+    {{/if}}
+  </div>
+{{/if}}
+
+{{#comment}}
+  Set grid item widths based on settings
+{{/comment}}
+
+{{include 'product-grid-width' product_image_type: section.settings.product_image_type, product_image_size: section.settings.product_image_size}}
+
+<div class="grid collection-grid grid--uniform grid--no-gutters" data-section-id="{{ section.id }}" data-section-type="collection-template-section" data-sort-enabled="{{ section.settings.collection_sort_enable }}" data-tags-enabled="{{ section.settings.collection_tags_enable }}">
+  {{#each collection.products as |product|}}
+    {{assign 'price' (money_without_trailing_zeros product.price)}}
+    {{include 'product-grid-item' product_image_spacing: section.settings.product_image_spacing, vendor_enable: section.settings.vendor_enable}}
+  {{else}}
+    {{#comment}}
+      Add default products to help with onboarding for collections/all only.
+
+      The onboarding styles and products are only loaded if the
+      store has no products.
+    {{/comment}}
+    {{#if (is collection.handle 'all')}}
+      <div class="grid__item">
+        <div class="helper-section">
+          <div class="grid grid--uniform grid--no-gutters helper-content">
+            {{assign 'collection_onboarding_index' 1}}
+            {{#each (range 1 8) as |i|}}
+              {{#is i 7}}
+                  {{assign 'collection_onboarding_index' 1}}
+                {{else is i 8}}
+                  {{assign 'collection_onboarding_index' 2}}
+              {{/is}}
+              <div class="product-item grid__item {{ grid_item_width }}">
+                <a class="product-item__link" href="/admin/products">
+                  {{placeholder_svg_tag (append 'product-' collection_onboarding_index) 'product-item__image icon icon--placeholder'}}
+                  <span class="product-item__meta">
+                    <span class="product-item__meta__inner">
+                      <p class="product-item__title">{{t 'homepage.onboarding.product_title'}}</p>
+                      <p>$19.99</p>
+                    </span>
+                  </span>
+                </a>
+              </div>
+              {{assign 'collection_onboarding_index' (plus collection_onboarding_index 1)}}
+            {{/each}}
+          </div>
+        </div>
+      </div>
+    {{else}}
+      {{#comment}}
+        If collection exists but is empty, display message
+      {{/comment}}
+      <div class="grid__item text-center">
+        <p>{{t 'collections.general.no_matches'}}</p>
+      </div>
+    {{/if}}
+  {{/each}}
+</div>
+
+{{#if (gt paginate.pages 1)}}
+  {{#if (is section.settings.pagination_type 'numbers')}}
+    {{include 'pagination'}}
+  {{else}}
+    <div class="pagination--infinite">
+      <a href="{{ paginate.next.url }}" class="btn js-show-more">{{t 'collections.general.show_more'}}</a>
+    </div>
+  {{/if}}
+{{/if}}
+
+{{/paginate}}
+
+{{#schema}}
+  {
+    "name": "Collection",
+    "class": "collection-template-section",
+    "settings": [{
+        "type": "header",
+        "content": "Appearance"
+      },
+      {
+        "type": "select",
+        "id": "product_image_type",
+        "label": "Image style",
+        "options": [
+          {
+            "value": "portrait",
+            "label": "Tall/square"
+          },
+          {
+            "value": "landscape",
+            "label": "Wide"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "product_image_size",
+        "label": "Image size",
+        "default": "medium",
+        "options": [
+          {
+            "value": "small",
+            "label": "Small"
+          },
+          {
+            "value": "medium",
+            "label": "Medium"
+          },
+          {
+            "value": "large",
+            "label": "Large"
+          },
+          {
+            "value": "xlarge",
+            "label": "Extra large"
+          }
+        ]
+      },
+      {
+        "type": "checkbox",
+        "id": "product_image_spacing",
+        "label": "Add spacing between images"
+      },
+      {
+        "type": "checkbox",
+        "id": "vendor_enable",
+        "label": "Show product vendor"
+      },
+      {
+        "type": "header",
+        "content": "Sorting & filtering"
+      },
+      {
+        "type": "checkbox",
+        "id": "collection_sort_enable",
+        "label": "Show sorting options"
+      },
+      {
+        "type": "checkbox",
+        "id": "collection_tags_enable",
+        "label": "Show tag filtering"
+      },
+      {
+        "type": "header",
+        "content": "Pagination"
+      },
+      {
+        "type": "select",
+        "id": "pagination_type",
+        "label": "Pagination Type",
+        "default": "numbers",
+        "options": [
+          {
+            "value": "numbers",
+            "label": "Numbered pages"
+          },
+          {
+            "value": "show_more",
+            "label": "\"View more\" button"
+          }
+        ]
+      }]
+  }
+{{/schema}}

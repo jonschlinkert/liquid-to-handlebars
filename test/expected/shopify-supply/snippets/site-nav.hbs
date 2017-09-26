@@ -1,0 +1,39 @@
+<ul class="site-nav" id="accessibleNav">
+  {{#unless (is (get linklists (toPath section.settings.menu 'links.first.url')) '/')}}
+  <li class="large--hide">
+    <a href="/">{{t 'general.breadcrumbs.home'}}</a>
+  </li>
+  {{/unless}}
+  {{#each (get linklists (toPath section.settings.menu 'links')) as |link|}}
+    {{assign 'child_list_handle' (handleize link.title)}}
+    {{#if (isnt (get linklists (toPath child_list_handle 'links')) blank)}}
+      <li class="site-nav--has-dropdown{{#if link.active}} site-nav--active{{/if}}" aria-haspopup="true">
+        <a href="{{ link.url }}">
+          {{ link.title }}
+          <span class="icon-fallback-text">
+            <span class="icon icon-arrow-down" aria-hidden="true"></span>
+          </span>
+        </a>
+        <ul class="site-nav--dropdown">
+          {{#each (get linklists (toPath child_list_handle 'links')) as |childlink|}}
+            <li {{#if childlink.active}}class="site-nav--active"{{/if}}><a href="{{ childlink.url }}">{{escape childlink.title}}</a></li>
+          {{/each}}
+        </ul>
+      </li>
+    {{else}}
+      <li {{#if link.active}}class="site-nav--active"{{/if}}>
+        <a href="{{ link.url }}">{{ link.title }}</a>
+      </li>
+    {{/if}}
+  {{/each}}
+
+  {{#if shop.customer_accounts_enabled}}
+    {{#if customer}}
+      <li class="customer-navlink large--hide"><a href="/account">{{t 'layout.customer.view_account'}}</a></li>
+      <li class="customer-navlink large--hide">{{customer_logout_link (t 'layout.customer.log_out')}}</li>
+    {{else}}
+      <li class="customer-navlink large--hide">{{customer_login_link (t 'layout.customer.sign_in')}}</li>
+      <li class="customer-navlink large--hide">{{customer_register_link (t 'layout.customer.create_account')}}</li>
+    {{/if}}
+  {{/if}}
+</ul>

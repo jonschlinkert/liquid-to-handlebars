@@ -1,0 +1,79 @@
+<div data-section-id="{{ section.id }}" data-section-type="featured-content-section">
+  {{#each section.blocks as |block|}}
+    <div class="wrapper" {{ block.shopify_attributes }}>
+      <div class="grid">
+        <div class="grid__item">
+          <div class="rte text-center">
+            {{#is block.type 'page'}}
+                {{#if (isnt block.settings.home_page_content blank)}}
+                  {{get pages (toPath block.settings.home_page_content "content")}}
+                {{else}}
+                  {{t 'home_page.onboarding.no_content'}}
+                {{/if}}
+              {{else is block.type 'text'}}
+                {{#if (isnt block.settings.home_page_richtext blank)}}
+                  {{ block.settings.home_page_richtext }}
+                {{else}}
+                  {{t 'home_page.onboarding.no_content'}}
+                {{/if}}
+              {{else}}
+            {{/is}}
+          </div>
+        </div>
+      </div>
+    </div>
+  {{/each}}
+  {{#if (is section.blocks.size 0)}}
+    <div class="wrapper">
+      <div class="grid">
+        <div class="grid__item">
+          <div class="rte text-center">
+            {{t 'home_page.onboarding.no_content'}}
+          </div>
+        </div>
+      </div>
+    </div>
+  {{/if}}
+</div>
+
+{{#schema}}
+  {
+    "name": "Rich text",
+    "max_blocks": 9,
+    "settings": [],
+    "presets": [{
+      "name": "Rich text",
+      "category": "Text",
+      "blocks": [
+        {
+          "type": "text"
+        }
+      ]
+    }],
+    "blocks" : [
+      {
+        "type": "text",
+        "name": "Rich text",
+        "settings": [
+          {
+            "id": "home_page_richtext",
+            "type": "richtext",
+            "label": "Text",
+            "default": "<p>Use this text to share information about your brand with your customers. Describe a product, share announcements, or welcome customers to your store.</p>"
+          }
+        ]
+      },
+      {
+        "type": "page",
+        "name": "Page",
+        "settings": [
+          {
+            "id": "home_page_content",
+            "type": "page",
+            "label": "Page"
+          }
+        ]
+      }
+    ]
+  }
+{{/schema}}

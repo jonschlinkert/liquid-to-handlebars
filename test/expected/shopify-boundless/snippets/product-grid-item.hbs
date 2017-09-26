@@ -1,0 +1,77 @@
+<div class="product-item grid__item {{ grid_item_width }}">
+  <div class="product-item__link-wrapper">
+    <a class="product-item__link {{#if product_image_spacing}} product-item__image--margins{{/if}}" href="{{within product.url collection}}">
+
+    <span class="image-wrapper">
+      {{#if (is product.featured_image.src blank)}}
+        <img src="{{img_url product.featured_image.src '1024x'}}" alt="{{escape product.featured_image.alt}}">
+      {{else}}
+        <noscript>
+          <img class="product-item__image-no-js" src="{{img_url product.featured_image.src '1024x'}}" alt="{{escape product.featured_image.alt}}">
+        </noscript>
+        <div class="product-item__image-container" style="max-width: {{round (times 600 product.featured_image.aspect_ratio)}}px;">
+          <div class="product-item__image-wrapper" style="padding-top:{{times (divided_by 1 product.featured_image.aspect_ratio) 100}}%">
+            {{assign 'img_url' (replace (img_url product.featured_image '1x1') '_1x1.' '_{width}x.')}}
+            <img class="product-item__image lazyload"
+              src="{{img_url product.featured_image '300x300'}}"
+              data-src="{{ img_url }}"
+              data-widths="[360, 540, 720, 900, 1080, 1296, 1512, 1728, 1944, 2048, 4472]"
+              data-aspectratio="{{ product.featured_image.aspect_ratio }}"
+              data-sizes="auto"
+              alt="{{escape product.featured_image.alt}}">
+          </div>
+        </div>
+      {{/if}}
+
+        <span class="product-item__meta">
+          <span class="product-item__meta__inner">
+
+            {{#if vendor_enable}}
+              <p class="product-item__vendor">{{ product.vendor }}</p>
+            {{/if}}
+            <p class="product-item__title">{{ product.title }}</p>
+            <p class="product-item__price-wrapper">
+              {{#comment}}
+                You can show a leading 'from' or 'up to' by checking 'product.price_varies'
+                if your variants have different prices.
+              {{/comment}}
+              {{#if (gt product.compare_at_price product.price)}}
+                <span class="visually-hidden">{{t 'products.general.regular_price'}}</span>
+                <s class="product-item__price--reg">{{money_without_trailing_zeros product.compare_at_price}}</s>
+                <span class="product-item__price--sale">{{t 'products.general.now_price_html' price price}}</span>
+              {{else}}
+                {{#if product.price_varies}}
+                  {{t 'products.general.from_text_html' price price}}
+                {{else}}
+                  {{#if (gt product.compare_at_price product.price)}}
+                    <span class="visually-hidden">{{t 'products.general.sale_price'}}</span>
+                  {{else}}
+                    <span class="visually-hidden">{{t 'products.general.regular_price'}}</span>
+                  {{/if}}
+                  {{money_without_trailing_zeros product.price}}
+                {{/if}}
+              {{/if}}
+            </p>
+
+            {{#comment}}
+              Check if the product is sold out.
+            {{/comment}}
+            {{#unless product.available}}
+              <p class="product-item__sold-out">{{t 'products.product.sold_out'}}</p>
+            {{/unless}}
+          </span>
+        </span>
+
+        {{#comment}}
+          If on sale, add a badge
+        {{/comment}}
+        {{#if (gt product.compare_at_price product.price)}}
+          {{assign 'sale_text_length' (size (t 'products.product.on_sale'))}}
+          <span class="product-item__badge {{#if (gt sale_text_length 6)}}product-item__badge--large{{/if}}">
+            {{t 'products.product.on_sale'}}
+          </span>
+        {{/if}}
+      </span>
+    </a>
+  </div>
+</div>

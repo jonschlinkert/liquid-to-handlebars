@@ -1,0 +1,37 @@
+{{assign 'number_of_products' 4}}
+{{assign 'product_size' 460}}
+{{assign 'number_of_products_to_fetch' (plus number_of_products 1)}}
+
+{{#if (or (is collection null) (is collection.handle 'frontpage') (is collection.handle 'all'))}}
+  {{assign 'found_a_collection' false}}
+  {{#each product.collections as |c|}}
+    {{#if (and (is found_a_collection false) (isnt c.handle 'frontpage') (isnt c.handle 'all') (gt c.all_products_count 1))}}
+      {{assign 'found_a_collection' true}}
+      {{assign 'collection' c}}
+    {{/if}}
+  {{/each}}
+{{/if}}
+
+{{#if (and collection (gt collection.products_count 1))}}
+  <div class="section-header text-center">
+    <h2 class="section-header__title">{{t 'products.general.related_products_title'}}</h2>
+    <hr class="hr--small">
+  </div>
+  <div class="grid-uniform product-grid">
+    {{assign 'current_product' product}}
+    {{assign 'current_product_found' false}}
+    {{assign 'grid_item_width' 'medium-down--one-half large--one-quarter'}}
+    {{#each (limit collection.products undefined) as |product|}}
+      {{#if (is product.handle current_product.handle)}}
+        {{assign 'current_product_found' true}}
+      {{else}}
+        {{#unless (and (is current_product_found false) forloop.last)}}
+          {{assign 'featured' product}}
+          <div class="grid-item {{ grid_item_width }}">
+            {{include 'product-grid-item' product_size: product_size}}
+          </div>
+        {{/unless}}
+      {{/if}}
+    {{/each}}
+  </div>
+{{/if}}

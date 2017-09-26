@@ -1,0 +1,295 @@
+<div data-section-id="{{ section.id }}" data-section-type="header-section">
+  {{#if section.settings.show_announcement}}
+    {{#if (or (is section.settings.home_page_only false) (is template.name 'index'))}}
+      <style>
+        .announcement-bar {
+          background-color: {{ section.settings.announcement_color_bg }};
+        }
+
+        .announcement-bar--link:hover {
+          {{assign 'brightness' (color_brightness section.settings.announcement_color_bg)}}
+
+          {{#if (lte brightness 192)}}
+            {{assign 'lightenAmount' (times (divided_by (minus 255 brightness) 255) 16)}}
+            background-color: {{color_lighten section.settings.announcement_color_bg lightenAmount}};
+          {{else}}
+            {{assign 'darkenAmount' (times (divided_by 255 brightness) 8)}}
+            background-color: {{color_darken section.settings.announcement_color_bg darkenAmount}};
+          {{/if}}
+        }
+
+        .announcement-bar__message {
+          color: {{ section.settings.announcement_color_text }};
+        }
+      </style>
+
+      {{#if (is section.settings.announcement_link blank)}}
+        <div class="announcement-bar">
+      {{else}}
+        <a href="{{ section.settings.announcement_link }}" class="announcement-bar announcement-bar--link">
+      {{/if}}
+
+        <p class="announcement-bar__message">{{escape section.settings.announcement_text}}</p>
+
+      {{#if (is section.settings.announcement_link blank)}}
+        </div>
+      {{else}}
+        </a>
+      {{/if}}
+
+    {{/if}}
+  {{/if}}
+
+  <header class="site-header site-header--{{ section.settings.menu_style }} {{#if section.settings.menu_text_color}}{{ section.settings.menu_text_color }}{{/if}}" role="banner">
+    <div class="wrapper">
+      {{#if (and (isnt section.settings.logo_max_width empty) (isnt section.settings.logo blank))}}
+        {{#capture 'image_size'}}{{escape section.settings.logo_max_width}}x{{/capture}}
+      <style>
+        .site-header__logo {
+          max-width:{{escape section.settings.logo_max_width}}px;
+        }
+      </style>
+      {{else}}
+        {{assign 'image_size' '200x'}}
+        <style>
+        .site-header__logo {
+          max-width: {{slice image_size -1}}px;
+        }
+      </style>
+      {{/if}}
+
+        {{#if (is template.name 'index')}}
+          <h1 class="site-header__logo {{#if section.settings.logo}} display-table use-image" style="max-width:{{slice image_size -1}}px;"{{/if}} itemscope itemtype="http://schema.org/Organization">
+        {{else}}
+          <div class="h1 site-header__logo {{#if section.settings.logo}} display-table use-image" style="max-width:{{slice image_size -1}}px;"{{/if}} itemscope itemtype="http://schema.org/Organization">
+        {{/if}}
+          {{#if section.settings.logo}}
+            {{assign 'img_url' (replace (img_url section.settings.logo '1x1') '_1x1.' '_{width}x.')}}
+            {{assign 'logo_inverted_url' (img_url section.settings.logo-inverted image_size)}}
+            {{#if (and section.settings.logo_use_inverted (isnt section.settings.logo-inverted blank))}}
+              {{assign 'img_url_alt' (replace (img_url section.settings.logo-inverted '1x1') '_1x1.' '_{width}x.')}}
+                <a href="/" itemprop="url" class="site-header__logo-link display-table-cell">
+                  <img class="no-js lazyload supports-js"
+                    data-src="{{ img_url_alt }}"
+                    data-widths="[90, 180, 360, 540, 720, 900, 1080, 1296, 1512, 1728, 2048]"
+                    data-aspectratio="{{ section.settings.logo-inverted.aspect_ratio }}"
+                    data-sizes="auto"
+                    alt="{{escape logo_alt}}">
+                <noscript>
+                  <img src="{{img_url section.settings.logo-inverted image_size}}"
+                    srcset="{{img_url section.settings.logo-inverted image_size}} 1x, {{img_url section.settings.logo-inverted image_size scale 2}} 2x"
+                    alt="{{default section.settings.logo.alt shop.name}}"
+                    itemprop="logo">
+                </noscript>
+                </a>
+            {{else}}
+                <a href="/" itemprop="url" class="site-header__logo-link display-table-cell{{#if section.settings.logo_use_inverted}} logo--has-inverted{{/if}}">
+                  {{#capture 'logo_alt'}}{{default section.settings.logo.alt shop.name}}{{/capture}}
+                  <img class="no-js lazyload supports-js"
+                      data-src="{{ img_url }}"
+                      data-widths="[90, 180, 360, 540, 720, 900, 1080, 1296, 1512, 1728, 2048]"
+                      data-aspectratio="{{ section.settings.logo.aspect_ratio }}"
+                      data-sizes="auto"
+                      alt="{{escape logo_alt}}">
+                  <noscript>
+                    <img src="{{img_url section.settings.logo image_size}}"
+                      srcset="{{img_url section.settings.logo image_size}} 1x, {{img_url section.settings.logo image_size scale 2}} 2x"
+                      alt="{{default section.settings.logo.alt shop.name}}"
+                      itemprop="logo">
+                  </noscript>
+                </a>
+            {{/if}}
+          {{else}}
+            <a href="/" itemprop="url" class="site-header__logo-text">{{ shop.name }}</a>
+          {{/if}}
+        
+      {{#if (is template.name 'index')}}
+        </h1>
+      {{else}}
+        </div>
+      {{/if}}
+
+      <nav class="nav-bar" role="navigation">
+        <ul class="site-nav" id="AccessibleNav">
+          {{#each (get linklists (toPath section.settings.main_linklist 'links')) as |link|}}
+                {{assign 'child_list_handle' (handleize link.title)}}
+            {{#if (isnt (get linklists (toPath child_list_handle 'links')) blank)}}
+              <li class="site-nav--has-dropdown{{#if link.active}} site-nav--active{{/if}}" aria-haspopup="true">
+                <a href="{{ link.url }}" class="site-nav__link">
+                  {{ link.title }}
+                  <span class="icon icon-arrow-down" aria-hidden="true"></span>
+                </a>
+                <ul class="site-nav__dropdown">
+                  <div>
+                    {{#each (get linklists (toPath child_list_handle 'links')) as |childlink|}}
+                      <li>
+                        <a href="{{ childlink.url }}" class="site-nav__link {{#if childlink.active}} site-nav--active {{/if}}">{{escape childlink.title}}</a>
+                      </li>
+                    {{/each}}
+                  </div>
+                  <span class="arrow">&nbsp;</span>
+                </ul>
+              </li>
+            {{else}}
+              <li>
+                <a href="{{ link.url }}" class="site-nav__link {{#if link.active}} site-nav--active {{/if}}">{{ link.title }}</a>
+              </li>
+            {{/if}}
+          {{/each}}
+
+          {{#unless (is section.settings.menu_product blank)}}
+            <li class="btn__buy"><a href="{{get all_products (toPath section.settings.menu_product "url")}}" class="btn btn--outline {{#if (is section.settings.menu_style 'classic')}} btn--small btn--dark {{else}} btn--regular btn--light {{/if}}">{{t 'layout.navigation.buy_button'}} {{money_without_trailing_zeros 'get all_products (toPath section.settings.menu_product "price")'}}</a></li>
+          {{/unless}}
+
+          {{#if (gt cart.item_count 0)}}
+            <li class="btn__cart">
+              <a href="/cart">
+                <span class="icon" aria-hidden="true">{{#unless (gt cart.item_count 99)}}{{ cart.item_count }}{{/unless}}{{include 'asset_svg' 'cart'}}</span>
+                <span class="text">{{t 'layout.navigation.shopping_cart'}}</span>
+              </a>
+            </li>
+          {{/if}}
+
+          {{#if shop.customer_accounts_enabled}}
+            <li class="btn__account">
+              <a href="/account{{#unless customer}}/login{{/unless}}">
+                <span class="icon" aria-hidden="true">{{include 'asset_svg' 'account'}}</span>
+                <span class="text">{{t 'layout.navigation.my_account'}}</span>
+              </a>
+            </li>
+          {{/if}}
+
+        </ul>
+
+      </nav>
+
+      <button id="menu-opener" class="lines-button">
+        <span class="fallback-text">{{t 'layout.navigation.open_menu'}}</span>
+        <span class="lines" aria-hidden="true"></span>
+      </button>
+
+    </div>
+  </header>
+</div>
+
+{{#schema}}
+  {
+  	"name": "Header",
+  	"settings": [
+  		{
+  			"type": "header",
+  			"content": "Logo"
+  		},
+  		{
+  			"type": "image_picker",
+  			"id": "logo",
+  			"label": "Logo image",
+  			"info": "200px wide .png recommended"
+  		},
+  		{
+  			"type": "checkbox",
+  			"id": "logo_use_inverted",
+  			"label": "Use an inverted logo"
+  		},
+  		{
+  			"type": "image_picker",
+  			"id": "logo-inverted",
+  			"label": "Inverted logo",
+  			"info": "Use this with dark slideshow images for better visibility"
+  		},
+  		{
+  			"type": "text",
+  			"id": "logo_max_width",
+  			"label": "Custom logo width (in pixels)",
+  			"default": "250",
+  			"info": "Do not add the 'px' unit"
+  		},
+  		{
+  			"type": "header",
+  			"content": "Navigation"
+  		},
+  		{
+  			"type": "link_list",
+  			"id": "main_linklist",
+  			"label": "Menu",
+  			"default": "main-menu"
+  		},
+  		{
+  			"type": "select",
+  			"id": "menu_style",
+  			"label": "Menu style",
+  			"options": [
+  				{
+  					"value": "classic",
+  					"label": "Classic"
+  				},
+  				{
+  					"value": "drawer",
+  					"label": "Drawer"
+  				}
+  			]
+  		},
+  		{
+  			"type": "select",
+  			"id": "menu_text_color",
+  			"label": "Classic menu color",
+  			"options": [
+  				{
+  					"value": "is-dark",
+  					"label": "Dark"
+  				},
+  				{
+  					"value": "is-light",
+  					"label": "Light"
+  				}
+  			],
+  			"info": "Use this when the menu is over dark sections for better visibility"
+  		},
+  		{
+  			"type": "product",
+  			"id": "menu_product",
+  			"label": "Product for \"buy now\" button"
+  		},
+      {
+        "type": "header",
+        "content": "Announcement bar"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_announcement",
+        "label": "Show announcement",
+        "default": false
+      },
+      {
+        "type": "checkbox",
+        "id": "home_page_only",
+        "label": "Home page only",
+        "default": true
+      },
+      {
+        "type": "text",
+        "id": "announcement_text",
+        "label": "Announcement text",
+        "default": "Announce something here"
+      },
+      {
+        "type": "url",
+        "id": "announcement_link",
+        "label": "Announcement link",
+        "info": "Optional"
+      },
+      {
+        "type": "color",
+        "id": "announcement_color_bg",
+        "label": "Bar",
+        "default": "#429c80"
+      },
+      {
+        "type": "color",
+        "id": "announcement_color_text",
+        "label": "Text",
+        "default": "#fff"
+      }
+  	]
+  }
+{{/schema}}

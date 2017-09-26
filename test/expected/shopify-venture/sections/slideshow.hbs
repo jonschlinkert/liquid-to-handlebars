@@ -1,0 +1,126 @@
+{{#if (gt section.blocks.size 0)}}
+  <div class="hero-wrapper">
+    <button type="button" class="visually-hidden hero__pause" aria-live="polite">
+      <span class="hero__pause-stop">
+        {{include 'icon-pause'}}
+        <span class="icon__fallback-text">{{t 'homepage.hero.pause_slideshow'}}</span>
+      </span>
+      <span class="hero__pause-play">
+        {{include 'icon-play'}}
+        <span class="icon__fallback-text">{{t 'homepage.hero.play_slideshow'}}</span>
+      </span>
+    </button>
+    <div class="hero" id="Slideshow-{{ section.id }}" data-section-id="{{ section.id }}" data-section-type="slideshow" data-autoplay="true" data-speed="7000">
+      {{#each section.blocks as |block|}}
+        <div class="hero__slide hero__slide--{{ block.id }}" {{ block.shopify_attributes }}>
+          <div class="hero__slide">
+            {{#if (isnt block.settings.image blank)}}
+              <noscript>
+                <div class="hero__image hero__image--{{ block.id }}"{{#if block.settings.image}} style="background-image: url('{{img_url block.settings.image '2048x'}}');"{{/if}}></div>
+              </noscript>
+              {{assign 'img_url' (replace (img_url block.settings.image '1x1') '_1x1.' '_{width}x.')}}
+              <img class="hero__image hero__image--{{ block.id }} lazyload {{#unless (is forloop.first true)}} lazypreload{{/unless}}"
+                {{#if (is forloop.first true)}}
+                  src="{{img_url block.settings.image '300x'}}"
+                {{/if}}
+                data-src="{{ img_url }}"
+                data-widths="[540, 720, 900, 1080, 1296, 1512, 1728, 1944, 2048, 4472]"
+                data-aspectratio="{{ block.settings.image.aspect_ratio }}"
+                data-sizes="auto"
+                data-parent-fit="cover"
+                alt="{{escape block.settings.image.alt}}">
+            {{else}}
+              {{#if (is block.settings.image blank)}}
+                <div class="placeholder-background">
+                  {{placeholder_svg_tag 'lifestyle-1' 'placeholder-svg'}}
+                </div>
+              {{/if}}
+            {{/if}}
+            <div class="hero__text-wrap">
+              <div class="page-width">
+                <div class="hero__text-content">
+                  {{#unless (is block.settings.title blank)}}
+                    <div class="hero__title-wrap">
+                      <h1 class="hero__title{{#if (isnt block.settings.link blank)}} hero__title--has-link{{/if}}">
+                        {{#if (isnt block.settings.link blank)}}
+                          <a href="{{ block.settings.link }}" class="hero__link">
+                        {{/if}}
+                        {{escape block.settings.title}}
+                        {{#if (isnt block.settings.link blank)}}
+                          </a>
+                        {{/if}}
+                      </h1>
+                    </div>
+                  {{/unless}}
+                  <div class="hero__arrows small--hide" aria-controls="Hero">
+                    <a href="#" class="hero__arrow hero__arrow--prev">
+                      {{include 'icon-arrow-left'}}
+                      <span class="icon__fallback-text">{{t 'homepage.hero.previous_slide'}}</span>
+                    </a>
+                    <a href="#" class="hero__arrow hero__arrow--next">
+                      {{include 'icon-arrow-right'}}
+                      <span class="icon__fallback-text">{{t 'homepage.hero.next_slide'}}</span>
+                    </a>
+                  </div>
+
+                  {{#unless (is block.settings.subheading blank)}}
+                    {{#if (isnt block.settings.link blank)}}
+                      <a href="{{ block.settings.link }}" class="hero__subtitle hero__link">
+                        {{escape block.settings.subheading}}
+                      </a>
+                    {{else}}
+                      <span class="hero__subtitle">
+                        {{escape block.settings.subheading}}
+                      </span>
+                    {{/if}}
+                  {{/unless}}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      {{/each}}
+    </div>
+  </div>
+{{/if}}
+
+{{#if (is section.blocks.size 0)}}
+  {{include 'no-blocks'}}
+{{/if}}
+
+{{#schema}}
+  {
+    "name": "Slideshow",
+    "max_blocks": 4,
+    "blocks": [
+      {
+        "type": "slide",
+        "name": "Slide",
+        "settings": [
+          {
+            "type": "image_picker",
+            "id": "image",
+            "label": "Image"
+          },
+          {
+            "type": "text",
+            "id": "title",
+            "label": "Heading",
+            "default": "Slide"
+          },
+          {
+            "type": "text",
+            "id": "subheading",
+            "label": "Subheading",
+            "default": "View all products"
+          },
+          {
+            "type": "url",
+            "id": "link",
+            "label": "Slide link"
+          }
+        ]
+      }
+    ]
+  }
+{{/schema}}

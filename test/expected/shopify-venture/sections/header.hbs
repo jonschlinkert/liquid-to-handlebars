@@ -1,0 +1,288 @@
+<style>
+.site-header__logo img {
+  max-width: {{escape (append (remove (default section.settings.logo_max_width '450') 'px') 'px')}};
+}
+</style>
+
+<div id="NavDrawer" class="drawer drawer--left">
+  <div class="drawer__inner">
+    <form action="/search" method="get" class="drawer__search" role="search">
+      <input type="search" name="q" placeholder="{{t 'general.search.placeholder'}}" aria-label="{{t 'general.search.placeholder'}}" class="drawer__search-input">
+
+      <button type="submit" class="text-link drawer__search-submit">
+        {{include 'icon-search'}}
+        <span class="icon__fallback-text">{{t 'general.search.submit'}}</span>
+      </button>
+    </form>
+    <ul class="drawer__nav">
+      {{#each (get linklists (toPath section.settings.main_linklist 'links')) as |link|}}
+        {{assign 'child_list_handle' (handleize link.title)}}
+        {{#if (isnt (get linklists (toPath child_list_handle 'links')) blank)}}
+          <li class="drawer__nav-item">
+            <div class="drawer__nav-has-sublist">
+              <a href="{{ link.url }}" class="drawer__nav-link" id="DrawerLabel-{{ child_list_handle }}">{{ link.title }}</a>
+              <div class="drawer__nav-toggle">
+                <button type="button" data-aria-controls="DrawerLinklist-{{ child_list_handle }}" class="text-link drawer__nav-toggle-btn drawer__meganav-toggle">
+                  <span class="drawer__nav-toggle--open">
+                    {{include 'icon-plus'}}
+                    <span class="icon__fallback-text">{{t 'general.drawers.expand_sub_menu'}}</span>
+                  </span>
+                  <span class="drawer__nav-toggle--close">
+                    {{include 'icon-minus'}}
+                    <span class="icon__fallback-text">{{t 'general.drawers.collapse_sub_menu'}}</span>
+                  </span>
+                </button>
+              </div>
+            </div>
+
+            <div class="meganav meganav--drawer" id="DrawerLinklist-{{ child_list_handle }}" aria-labelledby="DrawerLabel-{{ child_list_handle }}" role="navigation">
+              <ul class="meganav__nav">
+                {{include 'meganav",' fixed_width: true, show_title: false, show_links: true, show_products: false}}
+              </ul>
+            </div>
+          </li>
+        {{else}}
+          <li class="drawer__nav-item">
+            <a href="{{ link.url }}" class="drawer__nav-link">{{ link.title }}</a>
+          </li>
+        {{/if}}
+      {{/each}}
+
+      {{#if shop.customer_accounts_enabled}}
+        {{#if customer}}
+          <li class="drawer__nav-item">
+            <a href="/account" class="drawer__nav-link">
+              {{t 'layout.customer.account'}}
+            </a>
+          </li>
+          <li class="drawer__nav-item">
+            <a href="/account/logout" class="drawer__nav-link">
+              {{t 'layout.customer.log_out'}}
+            </a>
+          </li>
+        {{else}}
+          <li class="drawer__nav-item">
+            <a href="/account/login" class="drawer__nav-link">
+              {{t 'layout.customer.account'}}
+            </a>
+          </li>
+        {{/if}}
+      {{/if}}
+    </ul>
+  </div>
+</div>
+
+<header class="site-header page-element is-moved-by-drawer" role="banner" data-section-id="{{ section.id }}" data-section-type="header">
+  <div class="site-header__upper page-width">
+    <div class="grid grid--table">
+      <div class="grid__item small--one-quarter medium-up--hide">
+        <button type="button" class="text-link site-header__link js-drawer-open-left">
+          <span class="site-header__menu-toggle--open">
+            {{include 'icon-hamburger'}}
+          </span>
+          <span class="site-header__menu-toggle--close">
+            {{include 'icon-close'}}
+          </span>
+          <span class="icon__fallback-text">{{t 'general.drawers.navigation'}}</span>
+        </button>
+      </div>
+      <div class="grid__item small--one-half medium-up--two-thirds small--text-center">
+        {{#if (is template.name 'index')}}
+          <h1 class="site-header__logo" itemscope itemtype="http://schema.org/Organization">
+        {{else}}
+          <div class="site-header__logo h1" itemscope itemtype="http://schema.org/Organization">
+        {{/if}}
+          {{#if (isnt section.settings.logo blank)}}
+            {{#capture 'image_size'}}{{ section.settings.logo_max_width }}x{{/capture}}
+            <a href="/" itemprop="url" class="site-header__logo-link">
+              <img src="{{img_url section.settings.logo image_size}}"
+                   srcset="{{img_url section.settings.logo image_size}} 1x, {{img_url section.settings.logo image_size scale 2}} 2x"
+                   alt="{{default section.settings.logo.alt shop.name}}"
+                   itemprop="logo">
+            </a>
+          {{else}}
+            {{assign 'shop_name_length' shop.name.size}}
+            <a href="/" itemprop="url" {{#if (gt shop_name_length 10)}} class="site-header__shop-name--small"{{/if}}>{{ shop.name }}</a>
+          {{/if}}
+        {{#if (is template.name 'index')}}
+          </h1>
+        {{else}}
+          </div>
+        {{/if}}
+      </div>
+
+      <div class="grid__item small--one-quarter medium-up--one-third text-right">
+        <div id="SiteNavSearchCart">
+          <form action="/search" method="get" class="site-header__search small--hide" role="search">
+            {{#comment}}<input type="hidden" name="type" value="product">{{/comment}}
+            <div class="site-header__search-inner">
+              <label for="SiteNavSearch" class="visually-hidden">{{t 'general.search.placeholder'}}</label>
+              <input type="search" name="q" id="SiteNavSearch" placeholder="{{t 'general.search.placeholder'}}" aria-label="{{t 'general.search.placeholder'}}" class="site-header__search-input">
+            </div>
+
+            <button type="submit" class="text-link site-header__link site-header__search-submit">
+              {{include 'icon-search'}}
+              <span class="icon__fallback-text">{{t 'general.search.submit'}}</span>
+            </button>
+          </form>
+
+          <a href="/cart" class="site-header__link site-header__cart">
+            {{include 'icon-cart'}}
+            <span class="icon__fallback-text">{{t 'layout.cart.title'}}</span>
+            <span class="site-header__cart-indicator {{#if (is cart.item_count 0)}}hide{{/if}}"></span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="StickNavWrapper">
+    <div id="StickyBar" class="sticky">
+      <nav class="nav-bar small--hide" role="navigation" id="StickyNav">
+        <div class="page-width">
+          <div class="grid grid--table">
+            <div class="grid__item {{#if shop.customer_accounts_enabled}}four-fifths{{else}}seven-eighths{{/if}}" id="SiteNavParent">
+              <button type="button" class="hide text-link site-nav__link site-nav__link--compressed js-drawer-open-left" id="SiteNavCompressed">
+                {{include 'icon-hamburger'}}
+                <span class="site-nav__link-menu-label">{{t 'general.drawers.menu'}}</span>
+                <span class="icon__fallback-text">{{t 'general.drawers.navigation'}}</span>
+              </button>
+              <ul class="site-nav list--inline" id="SiteNav">
+                {{#each (get linklists (toPath section.settings.main_linklist 'links')) as |link|}}
+                  {{assign 'child_list_handle' (handleize link.title)}}
+                  {{#comment}}
+                    Use full width layout if there are 7+ links or parent has products
+                  {{/comment}}
+                  {{assign 'meganav_use_columns' false}}
+                  {{assign 'nav_parent_product_count' link.object.products_count}}
+                  {{#unless (or (is nav_parent_product_count blank) (is nav_parent_product_count 0))}}
+                    {{assign 'meganav_use_columns' true}}
+                  {{/unless}}
+                  {{#if (gt (get linklists (toPath child_list_handle 'links.size')) 7)}}
+                    {{assign 'meganav_use_columns' true}}
+                  {{/if}}
+
+                  {{#if (isnt (get linklists (toPath child_list_handle 'links')) blank)}}
+                    <li class="site-nav__item{{#if link.active}} site-nav--active{{/if}}{{#unless meganav_use_columns}} site-nav__item--no-columns{{/unless}}" aria-haspopup="true">
+                      <a href="{{ link.url }}" class="site-nav__link site-nav__meganav-toggle" id="SiteNavLabel-{{ child_list_handle }}" data-aria-controls="SiteNavLinklist-{{ child_list_handle }}">{{ link.title }}
+                        {{include 'icon-arrow-down'}}
+                      </a>
+
+                      <div class="site-nav__dropdown meganav" id="SiteNavLinklist-{{ child_list_handle }}" aria-labelledby="SiteNavLabel-{{ child_list_handle }}" role="navigation">
+                        <ul class="meganav__nav page-width">
+                          {{include 'meganav",' fixed_width: false, show_title: true, show_links: true, show_products: true}}
+                        </ul>
+                      </div>
+                    </li>
+                  {{else}}
+                    <li class="site-nav__item{{#if link.active}} site-nav--active{{/if}}">
+                      <a href="{{ link.url }}" class="site-nav__link">{{ link.title }}</a>
+                    </li>
+                  {{/if}}
+                {{/each}}
+              </ul>
+            </div>
+            <div class="grid__item {{#if shop.customer_accounts_enabled}}one-fifth{{else}}one-eighth{{/if}} text-right">
+              <div class="sticky-only" id="StickyNavSearchCart"></div>
+              {{#if shop.customer_accounts_enabled}}
+                <div class="customer-login-links sticky-hidden">
+                  {{#if customer}}
+                    <a href="/account">
+                      {{t 'layout.customer.account'}}
+                    </a>
+                    {{customer_logout_link (t 'layout.customer.log_out')}}
+                  {{else}}
+                    {{customer_login_link (t 'layout.customer.account')}}
+                  {{/if}}
+                </div>
+              {{/if}}
+            </div>
+          </div>
+        </div>
+      </nav>
+      <div id="NotificationSuccess" class="notification notification--success" aria-hidden="true">
+        <div class="page-width notification__inner notification__inner--has-link">
+          <a href="/cart" class="notification__link">
+            <span class="notification__message">{{t 'products.product.product_added_to_cart_html'}}</span>
+          </a>
+          <button type="button" class="text-link notification__close">
+            {{include 'icon-close'}}
+            <span class="icon__fallback-text">{{t 'cart.general.close_notification'}}</span>
+          </button>
+        </div>
+      </div>
+      <div id="NotificationError" class="notification notification--error" aria-hidden="true">
+        <div class="page-width notification__inner">
+          <span class="notification__message notification__message--error" aria-live="assertive" aria-atomic="true"></span>
+          <button type="button" class="text-link notification__close">
+            {{include 'icon-close'}}
+            <span class="icon__fallback-text">{{t 'cart.general.close_notification'}}</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {{#if section.settings.promo_bar_enable}}
+    <div id="NotificationPromo" class="notification notification--promo" data-text="{{handle (strip_html section.settings.promo_bar_text)}}">
+      <div class="page-width notification__inner {{#if (isnt section.settings.promo_bar_link blank)}} notification__inner--has-link{{/if}}">
+        {{#if (isnt section.settings.promo_bar_link blank)}}
+          <a href="{{ section.settings.promo_bar_link }}" class="notification__link">
+            <span class="notification__message">{{escape section.settings.promo_bar_text}}</span>
+          </a>
+        {{else}}
+          <span class="notification__message">{{escape section.settings.promo_bar_text}}</span>
+        {{/if}}
+        <button type="button" class="text-link notification__close" id="NotificationPromoClose">
+          {{include 'icon-close'}}
+          <span class="icon__fallback-text">{{t 'cart.general.close_notification'}}</span>
+        </button>
+      </div>
+    </div>
+  {{/if}}
+</header>
+
+{{#schema}}
+  {
+    "name": "Header",
+    "settings": [
+      {
+        "type": "image_picker",
+        "id": "logo",
+        "label": "Logo image"
+      },
+      {
+        "type": "text",
+        "id": "logo_max_width",
+        "label": "Custom logo width (in pixels)",
+        "default": "450"
+      },
+      {
+        "type": "link_list",
+        "id": "main_linklist",
+        "label": "Menu",
+        "default": "main-menu"
+      },
+      {
+        "type": "header",
+        "content": "Announcement bar"
+      },
+      {
+        "type": "checkbox",
+        "id": "promo_bar_enable",
+        "label": "Show announcement"
+      },
+      {
+        "type": "text",
+        "id": "promo_bar_text",
+        "label": "Announcement text"
+      },
+      {
+        "type": "url",
+        "id": "promo_bar_link",
+        "label": "Announcement link",
+        "info": "Optional"
+      }
+    ]
+  }
+{{/schema}}

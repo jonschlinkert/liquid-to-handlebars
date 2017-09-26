@@ -1,0 +1,52 @@
+<ul id="MobileNav" class="mobile-nav post-large--hide">
+  
+  {{#each mobile-nav.links as |link|}}
+  {{assign 'child_list_handle' (handleize link.title)}}
+  <li class="mobile-nav__link" aria-haspopup="true">
+    {{#if (isnt (get linklists (toPath child_list_handle 'links')) blank)}}
+      <a href="{{ link.url }}" class="mobile-nav__sublist-trigger">
+        {{ link.title }}
+        {{include 'mobile-nav-icons'}}
+      </a>
+      <ul class="mobile-nav__sublist">  
+        {{#each (get linklists (toPath child_list_handle 'links')) as |link|}}
+          <li class="mobile-nav__sublist-link">
+            <a href="{{ link.url }}">{{ link.title }}</a>
+          </li>
+        {{/each}}
+      </ul>
+    {{else}}
+      <a href="{{ link.url }}" class="mobile-nav">
+        {{ link.title }}
+      </a>
+    {{/if}}
+  </li>
+  {{/each}}
+
+  {{#if shop.customer_accounts_enabled}}
+    {{#if customer}}
+      <li class="mobile-nav__link">
+        <a href="/account">{{t 'layout.customer.account'}}</a>
+      </li>
+      <li class="mobile-nav__link">
+        {{customer_logout_link (t 'layout.customer.log_out')}}
+      </li>
+    {{else}}
+      <li class="mobile-nav__link">
+        {{customer_login_link (t 'layout.customer.log_in')}}
+      </li>
+      <li class="mobile-nav__link">
+        {{customer_register_link (t 'layout.customer.create_account')}}
+      </li>
+    {{/if}}
+  {{/if}}
+  
+  <li class="mobile-nav__link">
+    {{#if section.settings.header_search_enable}}
+      <div class="header-bar__module header-bar__search">
+        {{include 'search-bar' 'header'}}
+      </div>
+    {{/if}}
+  </li>
+  
+</ul>

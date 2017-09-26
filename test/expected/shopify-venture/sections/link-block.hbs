@@ -1,0 +1,108 @@
+<div class="page-width">
+  <div class="flex flex--grid flex--no-gutter">
+    {{assign 'image_size' '680x'}}
+    {{#is section.blocks.size 1}}
+        {{assign 'flex_size' ''}}
+        {{assign 'image_size' '1140x'}}
+      {{else is section.blocks.size 2}}
+        {{assign 'flex_size' 'medium-up--one-half'}}
+      {{else is section.blocks.size 3}}
+        {{assign 'flex_size' 'medium-up--one-third'}}
+      {{else}}
+        {{assign 'flex_size' 'medium-up--one-quarter'}}
+    {{/is}}
+    {{#each section.blocks as |block|}}
+      <div class="flex__item flex {{ flex_size }}" {{ block.shopify_attributes }}>
+        <noscript class="link-block-no-js">
+          <a href="{{ block.settings.link }}" class="link-block" {{#if (isnt block.settings.image blank)}}style="background-image: url({{format (img_url block.settings.image image_size) 'jpg'}});"{{/if}}>
+          {{#if (is block.settings.image blank)}}
+            {{#capture 'current'}}{{cycle 1 2}}{{/capture}}
+            <div class="placeholder-background">
+              {{placeholder_svg_tag (append 'lifestyle-' current) 'placeholder-svg'}}
+            </div>
+          {{/if}}
+            <div class="flex flex--center-vertical">
+              <div class="flex__item">
+                <span class="emphasized-title h1 link-block__cta">
+                  {{escape block.settings.cta_label}}
+                </span>
+              </div>
+            </div>
+          </a>
+        </noscript>
+          <a href="{{ block.settings.link }}" class="link-block lazyload"
+           {{#if (isnt block.settings.image blank)}}
+              style="background-position: {{ block.settings.image_align }};
+                     background-image: url('{{img_url block.settings.image '300x300'}});"
+            {{/if}}
+            data-bgset="{{include 'bgset",' image: block.settings.image}}"
+            data-sizes="auto"
+            data-parent-fit="cover">
+          {{#if (is block.settings.image blank)}}
+            {{#capture 'current'}}{{cycle 1 2}}{{/capture}}
+            <div class="placeholder-background">
+              {{placeholder_svg_tag (append 'lifestyle-' current) 'placeholder-svg'}}
+            </div>
+          {{/if}}
+          <div class="flex flex--center-vertical">
+            <div class="flex__item">
+              <span class="emphasized-title h1 link-block__cta">
+                {{escape block.settings.cta_label}}
+              </span>
+            </div>
+          </div>
+        </a>
+      </div>
+    {{/each}}
+  </div>
+
+  {{#if (is section.blocks.size 0)}}
+    {{include 'no-blocks'}}
+  {{/if}}
+</div>
+
+{{#schema}}
+  {
+    "name": "Multiple link blocks",
+    "class": "index-section",
+    "max_blocks": 10,
+    "blocks": [
+      {
+        "type": "link_block",
+        "name": "Link block",
+        "settings": [
+          {
+            "type": "image_picker",
+            "id": "image",
+            "label": "Image"
+          },
+          {
+            "type": "url",
+            "id": "link",
+            "label": "Link"
+          },
+          {
+            "type": "text",
+            "id": "cta_label",
+            "label": "Link label",
+            "default": "Link label"
+          }
+        ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "Multiple link blocks",
+        "category": "Image",
+        "blocks": [
+          {
+            "type": "link_block"
+          },
+          {
+            "type": "link_block"
+          }
+        ]
+      }
+    ]
+  }
+{{/schema}}

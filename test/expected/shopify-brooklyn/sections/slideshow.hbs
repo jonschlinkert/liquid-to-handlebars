@@ -1,0 +1,182 @@
+{{#comment}}
+  Set hero as enabled so JS is loaded at end of index.liquid.
+  Also set variables to control JS settings and appearance.
+
+  hero_full_height variable is also available in Header section.
+{{/comment}}
+{{assign 'hero_full_height' true}}
+{{assign 'hero_parallax' true}}
+
+{{#comment}}
+  If hero is first section on homepage, add class that sets
+  negative top-margin for alignment and force full height.
+{{/comment}}
+
+<div data-section-id="{{ section.id }}" data-section-type="slideshow-section">
+  {{#if (gt section.blocks.size 0)}}
+    <div class="hero-{{ section.id }} hero{{#if hero_full_height}} hero--full-height{{/if}} hero--first" id="Hero"{{#if hero_full_height}} data-fullscreen="true"{{/if}}{{#if hero_parallax}}data-parallax="true"{{/if}} data-autoplay="{{ section.settings.hero_home_auto }}" data-autoplayspeed="{{ section.settings.home_hero_auto_speed }}">
+      {{#each section.blocks as |block|}}
+
+          <div class="hero__slide {{ block.settings.slide_text_color }} slide--{{ block.id }}{{#if (is block.settings.image blank)}} slide--placeholder{{/if}}" data-color="{{ block.settings.slide_text_color }}" {{ block.shopify_attributes }}>
+            {{#if hero_full_height}}
+              {{#if (is block.settings.image blank)}}
+                <div class="placeholder-background">
+                  {{#capture 'current'}}{{cycle 1 2}}{{/capture}}
+                  {{placeholder_svg_tag (append 'lifestyle-' current) 'placeholder-svg'}}
+                </div>
+              {{else}}
+                <noscript>
+                  {{#if (is forloop.first true)}}
+                    <div class="hero__image-no-js"{{#if block.settings.image}} style="background-image: url('{{img_url block.settings.image '2048x'}}');"{{/if}}></div>
+                  {{/if}}
+                </noscript>
+                {{assign 'img_url' (replace (img_url block.settings.image '1x1') '_1x1.' '_{width}x.')}}
+                <img class="hero__image hero__image--{{ block.id }} lazyload fade-in{{#unless (is forloop.first true)}} lazypreload{{/unless}}"
+                  {{#if (is forloop.first true)}}
+                    src="{{img_url block.settings.image '300x'}}"
+                  {{/if}}
+                  data-src="{{ img_url }}"
+                  data-widths="[540, 720, 900, 1080, 1296, 1512, 1728, 1944, 2048, 4472]"
+                  data-aspectratio="{{ block.settings.image.aspect_ratio }}"
+                  data-sizes="auto"
+                  data-parent-fit="cover"
+                  alt="{{escape block.settings.image.alt}}">
+              {{/if}}
+            {{else}}
+              {{#if (isnt block.settings.image blank)}}
+                <noscript>
+                  {{#if (is forloop.first true)}}
+                    <div class="hero__image-no-js"{{#if block.settings.image}} style="background-image: url('{{img_url block.settings.image '2048x'}}');"{{/if}}></div>
+                  {{/if}}
+                </noscript>
+                <div class="hero__image">
+                  {{assign 'img_url' (replace (img_url block.settings.image '1x1') '_1x1.' '_{width}x.')}}
+                  <img class="hero__image lazyload fade-in"
+                    src="{{img_url block.settings.image '300x'}}"
+                    data-src="{{ img_url }}"
+                    data-widths="[540, 720, 900, 1080, 1296, 1512, 1728, 1944, 2048]"
+                    data-aspectratio="{{ block.settings.image.aspect_ratio }}"
+                    data-sizes="auto"
+                    data-parent-fit="contain"
+                    alt="{{escape block.settings.image.alt}}">
+                </div>
+              {{else}}
+                <div class="hero__image">
+                  {{#capture 'current'}}{{cycle 1 2}}{{/capture}}
+                  {{placeholder_svg_tag (append 'lifestyle-' current) 'placeholder-svg'}}
+                </div>
+              {{/if}}
+            {{/if}}
+            <div class="hero__text-wrap">
+              <div class="hero__text-align">
+                <div class="hero__text-content">
+                  {{#unless (is block.settings.slide_subheading blank)}}
+                    <p class="hero__subtitle">
+                      {{escape block.settings.slide_subheading}}
+                    </p>
+                  {{/unless}}
+                  {{#unless (is block.settings.slide_heading blank)}}
+                    <h2 class="h1 hero__title">
+                      {{escape block.settings.slide_heading}}
+                    </h2>
+                  {{/unless}}
+                  {{#unless (is block.settings.slide_cta blank)}}
+                    <a href="{{ block.settings.slide_link }}" class="btn hero__cta">
+                      {{escape block.settings.slide_cta}} <span class="icon icon-arrow-right" aria-hidden="true"></span>
+                    </a>
+                  {{/unless}}
+                </div>
+              </div>
+            </div>
+          </div>
+
+      {{/each}}
+    </div>
+  {{/if}}
+</div>
+
+{{#schema}}
+  {
+    "name": "Slideshow",
+    "max_blocks": 6,
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "hero_home_auto",
+        "label": "Auto rotate between slides",
+        "default": true
+      },
+      {
+        "type": "select",
+        "id": "home_hero_auto_speed",
+        "label": "Slide changes every",
+        "options": [
+          {
+            "value": "5000",
+            "label": "5 seconds"
+          },
+          {
+            "value": "7000",
+            "label": "7 seconds"
+          },
+          {
+            "value": "10000",
+            "label": "10 seconds"
+          }
+        ]
+      }
+    ],
+    "blocks" : [
+      {
+        "type": "slide",
+        "name": "Slide",
+        "settings": [
+          {
+            "type": "image_picker",
+            "id": "image",
+            "label": "Image"
+          },
+          {
+            "type": "select",
+            "id": "slide_text_color",
+            "label": "Text color",
+            "default": "is-dark",
+            "options": [
+              {
+                "value": "is-light",
+                "label": "Light"
+              },
+              {
+                "value": "is-dark",
+                "label": "Dark"
+              }
+            ]
+          },
+          {
+            "type": "text",
+            "id": "slide_subheading",
+            "label": "Subheading text",
+            "default": "An introductory"
+          },
+          {
+            "type": "text",
+            "id": "slide_heading",
+            "label": "Heading text",
+            "default": "Hero Banner"
+          },
+          {
+            "type": "text",
+            "id": "slide_cta",
+            "label": "Button text",
+            "default": "Shop now"
+          },
+          {
+            "type": "url",
+            "id": "slide_link",
+            "label": "Slide link"
+          }
+        ]
+      }
+    ]
+  }
+{{/schema}}

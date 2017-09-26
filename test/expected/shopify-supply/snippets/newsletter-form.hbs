@@ -1,0 +1,17 @@
+<div class="form-vertical">
+  {{#form 'customer'}}
+    {{default_errors form.errors}}
+    {{#if form.posted_successfully}}
+      <p class="note form-success">{{t 'layout.footer.newsletter_confirmation'}}</p>
+    {{else}}
+      <input type="hidden" name="contact[tags]" value="newsletter">
+      <div class="input-group">
+        <label for="Email" class="visually-hidden">E-mail</label>
+        <input type="email" value="{{#if customer}}{{ customer.email }}{{/if}}" placeholder="{{t 'layout.footer.newsletter_email_placeholder'}}" name="contact[email]" id="Email" class="input-group-field" aria-label="{{t 'layout.footer.newsletter_email_placeholder'}}" autocorrect="off" autocapitalize="off">
+        <span class="input-group-btn">
+          <button type="submit" class="btn-secondary btn--small" name="commit" id="subscribe">{{t 'layout.footer.newsletter_sign_up'}}</button>
+        </span>
+      </div>
+    {{/if}}
+  {{/form}}
+</div>

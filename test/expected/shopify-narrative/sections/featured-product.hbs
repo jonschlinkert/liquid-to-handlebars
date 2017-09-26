@@ -1,0 +1,211 @@
+{{assign 'product' (get all_products section.settings.featured_product)}}
+{{assign 'current_variant' product.selected_or_first_available_variant}}
+{{assign 'current_variant_sale' false}}
+
+{{#if (is product empty)}}
+  {{assign 'section_onboarding' true}}
+  {{assign 'vendor' (t 'homepage.onboarding.product_vendor')}}
+  {{assign 'title' (t 'homepage.onboarding.product_title')}}
+  {{assign 'compare_at_price' 2999}}
+  {{assign 'price' 1999}}
+{{else}}
+  {{assign 'section_onboarding' false}}
+  {{assign 'vendor' product.vendor}}
+  {{assign 'title' product.title}}
+  {{assign 'compare_at_price' current_variant.compare_at_price}}
+  {{assign 'price' current_variant.price}}
+{{/if}}
+
+<div id="FeaturedProduct-{{ section.id }}" class="featured-product" data-section-id="{{ section.id }}" data-section-type="featured-product" data-variant-id="{{ current_variant.id }}" {{#if section_onboarding}}data-onboarding{{/if}}>
+  <div class="featured-product__wrapper{{#if (is section.settings.layout 'full')}} featured-product__wrapper--full-width{{/if}}">
+
+    <div class="featured-product__image-column">
+
+      {{#unless section_onboarding}}
+        {{assign 'featured_image' (default current_variant.featured_image product.featured_image)}}
+        {{#each product.images as |image|}}
+          {{#if (or image.attached_to_variant (is image featured_image))}}
+            <div class="featured-product__image-container {{#unless (is featured_image image)}} hide{{/unless}}" data-id="{{ image.id }}" data-variant-image-toggle-hide>
+              <div class="feature-product__image-padding"></div>
+              {{assign 'img_url' (replace (img_url image '1x1') '_1x1.' '_{width}x.')}}
+
+              {{#if (is section.settings.image_size 'contain')}}
+                {{assign 'parentFit' 'data-parent-fit="contain"'}}
+
+                <style>
+                  #FeaturedProduct-{{ section.id }} .featured-product__image.lazyloaded {
+                    object-fit: contain;
+                    font-family: "object-fit: contain";
+                    background-color: {{ section.settings.background_color }};
+                  }
+                </style>
+
+              {{else}}
+                {{assign 'parentFit' 'data-parent-fit="cover"'}}
+
+                <style>
+                  #FeaturedProduct-{{ section.id }} .featured-product__image.lazyloaded {
+                    object-fit: cover;
+                    font-family: "object-fit: cover";
+                    background-color: {{ section.settings.background_color }};
+                  }
+                </style>
+              {{/if}}
+
+              <img class="featured-product__image lazyload"
+                  {{#if (is featured_image image)}}src="{{img_url image '300x'}}"{{/if}}
+                  data-src="{{ img_url }}"
+                  data-widths="[360, 540, 720, 900, 1080, 1296, 1512, 1728, 2048]"
+                  data-aspectratio="{{ image.aspect_ratio }}"
+                  data-sizes="auto"
+                  data-parent-fit="contain"
+                  alt="{{escape image.alt}}"
+                  data-variant-image>
+            </div>
+          {{/if}}
+        {{/each}}
+      {{else}}
+        {{placeholder_svg_tag 'product-1' 'placeholder-svg'}}
+      {{/unless}}
+    </div>
+
+    <div class="featured-product__content-column">
+      <div class="featured-product__content-wrapper">
+        <div class="featured-product__content-header {{#if section.settings.show_share_buttons}}featured-product__content-header--sharing{{/if}}">
+
+          {{#if section.settings.show_vendor}}
+            <p class="product__vendor text-small text-center" itemprop="brand">{{ vendor }}</p>
+          {{/if}}
+
+          <h2 class="product__title text-center" itemprop="name">{{ title }}</h2>
+
+          <p class="product__price text-center">
+            {{#if (gt compare_at_price price)}}
+              {{assign 'current_variant_sale' true}}
+            {{/if}}
+
+            <p class="product__price text-center {{#if current_variant_sale}}product__price--sale{{/if}}" data-product-price aria-live="polite">
+
+                <span class="product__sale-price-label visually-hidden"> {{t 'products.product.sale_price'}} </span>
+                <span class="product__regular-price-label visually-hidden"> {{t 'products.product.price'}} </span>
+                <span class="product__current-price" data-regular-price>{{money price}}</span>
+
+                <span class="product__compare-price-label visually-hidden"> {{t 'products.product.regular_price'}} </span>
+                <s class="product__compare-price" data-compare-price>{{money compare_at_price}}</s>
+            </p>
+          </p>
+        </div>
+
+        {{include 'product-form'}}
+
+        <div class="featured-product__share-wrapper">
+          <a class="product__more-details btn btn--secondary btn--primary-color btn--clear" {{#unless section_onboarding}}href="{{ product.url }}?variant={{ current_variant.id }}"{{/unless}}>
+            <span class="product__more-details-icon">{{include 'icon-details'}}</span>
+            <span>{{t 'sections.featured_product.full_details'}}</span>
+          </a>
+          {{#if section.settings.show_share_buttons}}
+            {{#if (or settings.share_facebook settings.share_twitter settings.share_pinterest)}}
+              {{include 'social-sharing",' type: "product", links: 'bottom' share_title: product.title, share_permalink: product.url, share_image: product}}
+            {{/if}}
+          {{/if}}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {{#unless section_onboarding}}
+    <script type="application/json" data-product-json>
+      {{json product}}
+    </script>
+
+    <script type="application/json" data-variant-json>
+      {{json current_variant}}
+    </script>
+  {{/unless}}
+</div>
+
+{{#schema}}
+{
+    "name": "Featured product",
+    "class": "index-section index-section--featured-product",
+    "settings": [
+      {
+        "type": "product",
+        "id": "featured_product",
+        "label": "Product"
+      },
+      {
+        "type": "select",
+        "id": "layout",
+        "label": "Layout",
+        "default": "square",
+        "options": [
+          {
+            "value": "square",
+            "label": "Square"
+          },
+          {
+            "value": "full",
+            "label": "Full-width"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "image_size",
+        "label": "Image layout",
+        "default": "cover",
+        "options": [
+          {
+            "value": "cover",
+            "label": "Fill"
+          },
+          {
+            "value": "contain",
+            "label": "Contain"
+          }
+        ]
+      },
+      {
+        "type": "color",
+        "id": "background_color",
+        "label": "Image background",
+        "default": "transparent"
+      },
+      {
+        "type": "header",
+        "content": "Text"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_quantity_selector",
+        "label": "Show quantity selector",
+        "default": false
+      },
+      {
+        "type": "checkbox",
+        "id": "show_variant_labels",
+        "label": "Show variant labels",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "show_vendor",
+        "label": "Show vendor",
+        "default": false
+      },
+      {
+        "type": "checkbox",
+        "id": "show_share_buttons",
+        "label": "Show social sharing buttons",
+        "default": true
+      }
+    ],
+    "presets": [
+      {
+        "name": "Featured product",
+        "category": "Product"
+      }
+    ]
+  }
+{{/schema}}

@@ -1,0 +1,38 @@
+{{#comment}}
+  List out your main-menu linklist (default)
+
+  More info on linklists:
+    - http://docs.shopify.com/themes/liquid-variables/linklists
+{{/comment}}
+<ul class="site-nav" role="navigation" id="AccessibleNav">
+  {{#each site-nav.links as |link|}}
+    {{#comment}}
+      Create a dropdown menu by naming a linklist the same as a link in the parent nav
+
+      More info on dropdowns:
+        - http://docs.shopify.com/manual/your-website/navigation/create-drop-down-menu
+    {{/comment}}
+    {{assign 'child_list_handle' (handleize link.title)}}
+    {{#if (isnt (get linklists (toPath child_list_handle 'links')) blank)}}
+      <li class="site-nav--has-dropdown{{#if link.active}} site-nav--active{{/if}}" aria-haspopup="true">
+        <a href="{{ link.url }}" class="site-nav__link">
+          {{ link.title }}
+          <span class="icon-fallback-text">
+            <span class="icon icon-arrow-down" aria-hidden="true"></span>
+          </span>
+        </a>
+        <ul class="site-nav__dropdown">
+          {{#each (get linklists (toPath child_list_handle 'links')) as |childlink|}}
+            <li{{#if childlink.active}} class="site-nav--active"{{/if}}>
+              <a href="{{ childlink.url }}" class="site-nav__link">{{escape childlink.title}}</a>
+            </li>
+          {{/each}}
+        </ul>
+      </li>
+    {{else}}
+      <li {{#if link.active}}class="site-nav--active"{{/if}}>
+        <a href="{{ link.url }}" class="site-nav__link">{{ link.title }}</a>
+      </li>
+    {{/if}}
+  {{/each}}
+</ul>

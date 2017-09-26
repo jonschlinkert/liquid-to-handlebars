@@ -1,0 +1,5 @@
+{{#comment}}
+  When snippets/date is used, {{ date }} is returned as a formatted `time` element
+{{/comment}}
+{{assign 'date_format' (default date_format 'month_day_year')}}
+{{#capture 'date'}}<time datetime="{{date date_time '%Y-%m-%d'}}">{{date date_time format date_format}}</time>{{/capture}}

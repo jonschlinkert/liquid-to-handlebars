@@ -1,0 +1,109 @@
+{{#paginate blog.articles by=5}}
+
+<div class="grid">
+
+  <div class="grid__item post-large--four-fifths">
+
+    <div class="grid">
+      <div class="grid__item post-large--ten-twelfths">
+
+        {{#comment}}{{include 'breadcrumb'}}{{/comment}}
+        <header class="section-header">
+          <h1 class="section-header__title h3">
+            {{#if current_tags}}
+              {{link_to blog.title blog.url}} &mdash; {{ current_tags.first }}
+            {{else}}
+              {{ blog.title }}
+            {{/if}}
+          </h1>
+        </header>
+
+        {{#each blog.articles as |article|}}
+
+          <h2><a href="{{ article.url }}">{{ article.title }}</a></h2>
+          <p class="blog-date">
+            <time datetime="{{date article.published_at '%Y-%m-%d'}}">{{date article.published_at format 'month_day_year'}}</time>
+            {{#if section.settings.blog_author_enable}}
+              <span class="meta-sep">&#8226;</span>
+              {{ article.author }}
+            {{/if}}
+            {{#if (gt article.tags.size 0)}}
+              <span class="meta-sep">&#8226;</span>
+              {{#each article.tags as |tag|}}
+                <a href="{{ blog.url }}/tagged/{{handle tag}}">{{ tag }}</a>{{#unless forloop.last}} <span class="meta-sep">&#8226;</span> {{/unless}}
+              {{/each}}
+            {{/if}}
+          </p>
+
+          {{#comment}}
+            Add a surrounding div with class 'rte' to anything that will come from the rich text editor.
+            Since this is just a listing page, you can either use the excerpt or truncate the full article.
+          {{/comment}}
+          <div class="rte">
+            {{#if article.image}}
+              {{#capture 'img_id'}}ArticleImage-{{ section.id }}--{{ article.image.id }}{{/capture}}
+              {{#capture 'wrapper_id'}}ArticleImageWrapper-{{ section.id }}--{{ article.image.id }}{{/capture}}
+              {{assign 'img_url' (replace (img_url article.image '1x1') '_1x1.' '_{width}x.')}}
+              {{assign 'image_alt' (escape article.title)}}
+              {{include 'image-style' image: article.image, width: 845, height: 1024, wrapper_id: wrapper_id, img_id: img_id}}
+              <p>
+                <div id="{{ wrapper_id }}" class="article__image-wrapper supports-js">
+                  <div style="padding-top:{{times (divided_by 1 article.image.aspect_ratio) 100}}%;">
+                    <img id="{{ img_id }}"
+                         class="article__image lazyload"
+                         src="{{img_url article.image '300x300'}}"
+                         data-src="{{ img_url }}"
+                         data-widths="[90, 120, 150, 180, 360, 480, 600, 750, 940, 1080, 1296]"
+                         data-aspectratio="{{ article.image.aspect_ratio }}"
+                         data-sizes="auto"
+                         alt="{{ image_alt }}">
+                  </div>
+                </div>
+              </p>
+
+              <noscript>
+                <p>{{link_to (img_tag (img_url article '1024x1024') image_alt 'article__image') article.url}}</p>
+              </noscript>
+            {{/if}}
+            {{#if (gt article.excerpt.size 0)}}
+              {{ article.excerpt }}
+            {{else}}
+              <p>{{truncatewords (strip_html article.content) 100}}</p>
+            {{/if}}
+          </div>
+
+          <p><a href="{{ article.url }}">{{t 'blogs.article.read_more'}} &rarr;</a></p>
+
+          {{#unless forloop.last}}<hr>{{/unless}}
+
+        {{/each}}
+
+        {{#if (gt paginate.pages 1)}}
+          <div class="text-center">
+            {{include 'pagination-custom'}}
+          </div>
+        {{/if}}
+      </div>
+    </div>
+  </div>
+
+  <aside class="sidebar grid__item post-large--one-fifth">
+    {{include 'blog-sidebar'}}
+  </aside>
+
+</div>
+
+{{/paginate}}
+
+{{#schema}}
+  {
+    "name": "Blog",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "blog_author_enable",
+        "label": "Show blog post author"
+      }
+    ]
+  }
+{{/schema}}

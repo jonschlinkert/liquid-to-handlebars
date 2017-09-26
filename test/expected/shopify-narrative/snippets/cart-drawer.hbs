@@ -1,0 +1,166 @@
+{{#if (and settings.show_cart_drawer (isnt template.name 'cart'))}}
+<div class="drawer-cover"></div>
+<div class="drawer critical-hide" tabindex="-1" data-section-id="cart-drawer" data-section-type="cart-drawer" data-cart-token="{{ cart.id }}" data-drawer-push aria-hidden="true">
+
+  <form action="/cart" method="post" novalidate class="cart-drawer{{#if (is cart.items.size 0)}} cart-drawer--empty{{/if}}">
+
+    <div class="cart-drawer__header">
+      <div class="cart-drawer__header-container">
+        <button type="button" class="cart-drawer__close-button btn btn--clear btn--square">
+          {{include 'icon-close'}}
+          <span class="icon__fallback-text">{{t 'cart.general.close_cart'}}</span>
+        </button>
+        <p class="cart-drawer__header-title text-title text-center">{{t 'cart.general.title'}}</p>
+      </div>
+    </div>
+
+    <div class="cart-drawer__content">
+      <div class="cart-drawer__content-container">
+
+        {{#comment}}
+        Cart empty state
+        {{/comment}}
+        <div class="cart-drawer__empty-text">
+          <p class="text-center">{{t 'cart.general.empty'}}</p>
+        </div>
+
+        {{#comment}}
+        Cart no cookies state
+        {{/comment}}
+        <div class="cart-drawer__no-cookies">
+          <p class="text-center">{{t 'cart.general.cookies_required'}}</p>
+        </div>
+
+        <div class="cart-drawer__item-list" data-cart-item-list>
+          {{#comment}}
+          If the cart has no items, then include a item element with a template class
+          so that it is hidden but still available for use client-side by ajax-cart.js
+          {{/comment}}
+
+          {{assign 'cartItems' (split 'template ' ' ')}}
+          {{#if (gt cart.items.size 0)}}
+            {{assign 'cartItems' cart.items}}
+          {{/if}}
+
+          {{#each cartItems as |item|}}
+            <div class="cart-drawer__item{{#if (is item 'template')}} ajax-cart__template{{/if}}" data-cart-item data-cart-item-id="{{ item.key }}" aria-live="polite">
+
+              {{assign 'itemImage' true}}
+              {{#if (and (is item.image blank) (is item.product.featured_image blank))}}
+                {{assign 'itemImage' false}}
+              {{/if}}
+              <a href="{{ item.url }}" class="cart-drawer__item-image" style="background-image: {{#if itemImage}}url('{{img_url item 'medium'}}'){{else}}none{{/if}};" data-cart-item-background-image data-cart-item-href></a>
+
+              <div class="cart-drawer__item-content">
+                <a href="{{ item.url }}" class="h4 cart-drawer__item-title" data-cart-item-href data-cart-item-title>{{ item.product.title }}</a>
+                <p class="cart-drawer__item-subtitle" data-cart-item-variant-title>
+                  {{#unless (and (is item.product.variants.size 1) (is item.product.options.size 1) (is item.product.options.first 'Title') (is item.variant.title 'Default Title'))}}
+                    {{ item.variant.title }}
+                  {{/unless}}
+                </p>
+
+                <ul class="cart-drawer__item-properties" data-cart-item-property-list>
+                  {{#comment}}
+                  If the item has no properties, then include a property element with a template class
+                  so that it is hidden but still available for use client-side by ajax-cart.js
+                  {{/comment}}
+
+                  {{assign 'itemProperties' (split 'template ' ' ')}}
+                  {{assign 'property_size' (size item.properties)}}
+
+                  {{#if (gt property_size 0)}}
+                    {{assign 'itemProperties' item.properties}}
+                  {{/if}}
+
+                  {{#each itemProperties as |property|}}
+                    {{#each itemProperties as |p|}}
+                    <li class="cart-drawer__item-property{{#if (is property 'template')}} ajax-cart__template{{/if}}{{#if (is p.last blank)}} visually-hidden{{/if}}" data-cart-item-property>
+                        {{ p.first }}:
+
+                        {{#comment}}
+                        Check if there was an uploaded file associated
+                        {{/comment}}
+                        {{#if (contains p.last '/uploads/')}}
+                          <a href="{{ p.last }}">{{last (split p.last '/')}}</a>
+                        {{else}}
+                          {{ p.last }}
+                        {{/if}}
+                      </li>
+                    {{/each}}
+                  {{/each}}
+                </ul>
+
+                <p class="cart-drawer__item-price-container">
+                  <span class="cart-drawer__item-price" data-cart-item-price>{{money item.price}}</span>
+                  <s data-cart-item-original-price>{{#if (isnt item.price item.original_price)}}{{money item.original_price}}{{/if}}</s>
+                </p>
+
+                <div class="cart-drawer__item-discount-container" data-cart-item-discount-list>
+                  {{#comment}}
+                  If the item has no properties, then include a property element with a template class
+                  so that it is hidden but still available for use client-side by ajax-cart.js
+                  {{/comment}}
+
+                  {{assign 'itemDiscounts' (split 'template ' ' ')}}
+                  {{#if (gt item.discounts.size 0)}}
+                    {{assign 'itemDiscounts' item.discounts}}
+                  {{/if}}
+
+                  {{#each itemDiscounts as |discount|}}
+                    <p class="cart-drawer__item-discount text-small{{#if (is discount 'template')}} ajax-cart__template{{/if}}" data-cart-item-discount>{{ discount.title }}</p>
+                  {{/each}}
+                </div>
+
+                <label for="quantity_{{ item.key }}" class="label--hidden" data-cart-item-label-quantity>{{t 'cart.general.item_quantity'}}</label>
+                <input id="quantity_{{ item.key }}" class="cart-drawer__item-quantity" value="{{ item.quantity }}" type="number" pattern="\d*" min="1" aria-label="{{t 'cart.general.item_quantity'}}" data-cart-item-input-quantity>
+
+                <button class="cart-drawer__item-delete btn-link" type="button" data-cart-item-delete>{{t 'cart.general.remove'}}</button>
+              </div>
+            </div>
+          {{/each}}
+
+          {{#if settings.show_cart_note}}
+            <div class="cart-drawer__item cart-drawer__note-container" data-cart-note-container>
+              <label for="CartSpecialInstructions">{{t 'cart.general.note'}}</label>
+              <textarea name="note" class="cart-drawer__note" data-cart-note>{{ cart.note }}</textarea>
+            </div>
+          {{/if}}
+        </div>
+      </div>
+    </div>
+
+
+    <div class="cart-drawer__footer">
+      <div class="cart-drawer__footer-container">
+        <div class="cart-drawer__message-container">
+          <div class="cart-drawer__message" data-cart-message></div>
+        </div>
+
+        <div class="cart-drawer__subtotal" aria-live="polite">
+          <div class="cart-drawer__subtotal-label">
+            <span class="h4">{{t 'cart.general.subtotal'}}</span>
+          </div>
+          <div class="cart-drawer__subtotal-price">
+            <span class="cart-drawer__subtotal-number" data-cart-subtotal>{{money cart.total_price}}</span>
+          </div>
+        </div>
+
+        <div class="cart-drawer__discount-container{{#if (isnt cart.total_discount 0)}} ajax-cart__discount-container--active{{/if}}" data-cart-total-discount-container>
+          <p class="cart-drawer__discount">
+            <span>{{t 'cart.general.savings'}}</span>
+            <span data-cart-total-discount>{{money cart.total_discount}}</span>
+          </p>
+        </div>
+
+        <p class="cart-drawer__disclaimer">{{t 'cart.general.shipping_at_checkout'}}</p>
+
+        <button type="submit" class="btn btn--loader cart-drawer__checkout" name="checkout" data-cart-submit{{#if (is cart.items.size 0)}} disabled{{/if}}>
+          {{t 'cart.general.checkout'}}
+          <span class="btn--loader-balls"></span>
+        </button>
+      </div>
+    </div>
+
+  </form>
+</div>
+{{/if}}

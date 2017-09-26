@@ -1,0 +1,160 @@
+<header class="site-header" role="banner" data-section-id="{{ section.id }}" data-section-type="header-section">
+  <div class="wrapper">
+
+    <div class="grid--full">
+      <div class="grid-item large--one-half">
+        {{#if (is template.name 'index')}}
+          <h1 class="header-logo" itemscope itemtype="http://schema.org/Organization">
+        {{else}}
+          <div class="h1 header-logo" itemscope itemtype="http://schema.org/Organization">
+        {{/if}}
+          {{#if section.settings.logo}}
+          {{#capture 'image_size'}}{{escape section.settings.logo_max_width}}x{{/capture}}
+          {{assign 'img_url' (replace (img_url section.settings.logo '1x1') '_1x1.' '_{width}x.')}}
+          {{#capture 'logo_alt'}}{{default section.settings.logo.alt shop.name}}{{/capture}}
+          <a href="/" itemprop="url">
+            <div class="lazyload__image-wrapper no-js" style="max-width:{{ section.settings.logo_max_width }}px;">
+              <div style="padding-top:{{times (divided_by 1 section.settings.logo.aspect_ratio) 100}}%;">
+                <img class="lazyload js"
+                  data-src="{{ img_url }}"
+                  data-widths="[180, 360, 540, 720, 900, 1080, 1296, 1512, 1728, 2048]"
+                  data-aspectratio="{{ section.settings.logo.aspect_ratio }}"
+                  data-sizes="auto"
+                  alt="{{escape logo_alt}}"
+                  style="width:{{ section.settings.logo_max_width }}px;">
+              </div>
+            </div>
+            <noscript>
+              {{#capture 'image_size'}}{{escape section.settings.logo_max_width}}x{{/capture}}
+              <img src="{{img_url section.settings.logo image_size}}"
+                srcset="{{img_url section.settings.logo image_size}} 1x, {{img_url section.settings.logo image_size scale 2}} 2x"
+                alt="{{escape logo_alt}}"
+                itemprop="logo"
+                style="max-width:{{ section.settings.logo_max_width }}px;">
+            </noscript>
+          </a>
+          {{else}}
+            <a href="/" itemprop="url">{{ shop.name }}</a>
+          {{/if}}
+        {{#if (is template.name 'index')}}
+          </h1>
+        {{else}}
+          </div>
+        {{/if}}
+      </div>
+
+      <div class="grid-item large--one-half text-center large--text-right">
+        {{#if (or section.settings.show_announcement shop.customer_accounts_enabled)}}
+          <div class="site-header--text-links{{#if (is section.settings.announcement_text blank)}} medium-down--hide{{/if}}">
+            {{#if section.settings.show_announcement}}
+              {{#if (isnt section.settings.announcement_link blank)}}
+                <a href="{{ section.settings.announcement_link }}">
+              {{/if}}
+
+                <p>{{escape section.settings.announcement_text}}</p>
+
+              {{#if (isnt section.settings.announcement_link blank)}}
+                </a>
+              {{/if}}
+            {{/if}}
+
+            {{#if shop.customer_accounts_enabled}}
+              <span class="site-header--meta-links medium-down--hide">
+                {{#if customer}}
+                  {{#capture 'first_name'}}<a href="/account">{{ customer.first_name }}</a>{{/capture}}
+                  {{t 'layout.customer.logged_in_as_html' first_name first_name}} &middot; {{customer_logout_link (t 'layout.customer.log_out')}}
+                {{else}}
+                  {{customer_login_link (t 'layout.customer.sign_in')}}
+                  <span class="site-header--spacer">{{t 'layout.customer.or'}}</span>
+                  {{customer_register_link (t 'layout.customer.create_account')}}
+                {{/if}}
+              </span>
+            {{/if}}
+          </div>
+
+          <br class="medium-down--hide">
+        {{/if}}
+
+        {{include 'search-bar'}}
+
+        <a href="/cart" class="header-cart-btn cart-toggle">
+          <span class="icon icon-cart"></span>
+          {{t 'layout.cart.cart'}} <span class="cart-count cart-badge--desktop {{#if (is cart.item_count 0)}}hidden-count{{/if}}">{{ cart.item_count }}</span>
+        </a>
+      </div>
+    </div>
+
+  </div>
+</header>
+
+<nav class="nav-bar" role="navigation">
+  <div class="wrapper">
+    {{include 'search-bar'}}
+    {{include 'site-nav'}}
+  </div>
+</nav>
+
+<div id="mobileNavBar">
+  <div class="display-table-cell">
+    <a class="menu-toggle mobileNavBar-link"><span class="icon icon-hamburger"></span>{{t 'layout.navigation.mobile_menu'}}</a>
+  </div>
+  <div class="display-table-cell">
+    <a href="/cart" class="cart-toggle mobileNavBar-link">
+      <span class="icon icon-cart"></span>
+      {{t 'layout.cart.cart'}} <span class="cart-count {{#if (is cart.item_count 0)}}hidden-count{{/if}}">{{ cart.item_count }}</span>
+    </a>
+  </div>
+</div>
+
+{{#schema}}
+  {
+    "name": "Header",
+    "class": "header-section",
+    "settings": [
+      {
+        "type": "link_list",
+        "id": "menu",
+        "label": "Menu",
+        "default": "main-menu"
+      },
+      {
+        "type": "header",
+        "content": "Logo"
+      },
+      {
+        "type": "image_picker",
+        "id": "logo",
+        "label": "Custom logo",
+        "info": "400px wide .png recommended"
+      },
+      {
+        "type": "text",
+        "id": "logo_max_width",
+        "label": "Custom logo width",
+        "default": "305"
+      },
+      {
+        "type": "header",
+        "content": "Announcement bar"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_announcement",
+        "label": "Show announcement",
+        "default": false
+      },
+      {
+        "type": "text",
+        "id": "announcement_text",
+        "label": "Announcement text",
+        "default": "Announce something here"
+      },
+      {
+        "type": "url",
+        "id": "announcement_link",
+        "label": "Announcement link",
+        "info": "Optional"
+      }
+    ]
+  }
+{{/schema}}

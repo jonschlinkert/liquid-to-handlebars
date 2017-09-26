@@ -1,0 +1,91 @@
+{{#unless (is section.settings.title blank)}}
+  <h2 class="section-header__title text-center">{{escape section.settings.title}}</h2>
+{{/unless}}
+
+<div class="grid-uniform text-center collection-grid" data-section-id="{{ section.id }}">
+  {{#is section.blocks.size 1}}
+      {{assign 'featured_collection_width' 'one-whole'}}
+      {{assign 'featured_collection_size' 1000}}
+    {{else is section.blocks.size 2}}
+      {{assign 'featured_collection_width' 'small--one-whole medium--one-half large--one-half'}}
+      {{assign 'featured_collection_size' 480}}
+    {{else is section.blocks.size 3}}
+      {{assign 'featured_collection_width' 'small--one-whole one-third'}}
+      {{assign 'featured_collection_size' 240}}
+    {{else is section.blocks.size 4}}
+      {{assign 'featured_collection_width' 'small--one-whole medium--one-half large--one-half'}}
+      {{assign 'featured_collection_size' 480}}
+    {{else is section.blocks.size 5}}
+      {{assign 'featured_collection_width' 'small--one-whole medium--one-third large--one-third'}}
+      {{assign 'featured_collection_size' 240}}
+    {{else is section.blocks.size 6}}
+      {{assign 'featured_collection_width' 'small--one-whole medium--one-third large--one-third'}}
+      {{assign 'featured_collection_size' 240}}
+    {{else}}
+      {{assign 'dividable_by_3' (modulo section.blocks.size 3)}}
+      {{assign 'dividable_by_2' (modulo section.blocks.size 2)}}
+      {{#if (is dividable_by_3 0)}}
+        {{assign 'featured_collection_width' 'small--one-whole medium--one-third large--one-third'}}
+        {{assign 'featured_collection_size' 240}}
+      {{else if (is dividable_by_2 0)}}
+        {{assign 'featured_collection_width' 'small--one-whole medium--one-half large--one-half'}}
+        {{assign 'featured_collection_size' 480}}
+      {{else}}
+        {{assign 'featured_collection_width' 'small--one-whole medium--one-third large--one-third'}}
+        {{assign 'featured_collection_size' 240}}
+      {{/if}}
+  {{/is}}
+
+  {{#each (limit section.blocks undefined) as |block|}}
+    {{assign 'featured' block.settings.collection}}
+    <div class="grid-item {{ featured_collection_width }}" {{ block.shopify_attributes }}>
+      {{include 'featured-collection'}}
+    </div>
+  {{/each}}
+</div>
+
+{{#schema}}
+  {
+    "name": "Collection list",
+    "class": "index-section",
+    "max_blocks": 6,
+    "settings": [
+      {
+        "type": "text",
+        "id": "title",
+        "label": "Heading",
+        "default": "Collection list"
+      }
+    ],
+    "blocks" : [
+      {
+        "type": "featured_collection",
+        "name": "Collection",
+        "settings": [
+          {
+            "label": "Collection",
+            "id": "collection",
+            "type": "collection"
+          }
+        ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "Collection list",
+        "category": "Collection",
+        "blocks": [
+          {
+            "type": "featured_collection"
+          },
+          {
+            "type": "featured_collection"
+          },
+          {
+            "type": "featured_collection"
+          }
+        ]
+      }
+    ]
+  }
+{{/schema}}

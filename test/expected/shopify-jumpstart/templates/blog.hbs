@@ -1,0 +1,24 @@
+{{#capture 'header_title'}}{{ blog.title }}{{#if current_tags}} - {{ current_tags.first }}{{/if}}{{/capture}}
+{{include 'page_header' header_title}}
+
+<div class="wrapper wrapper--margins">
+
+  {{#if settings.blog_rss_enabled}}
+    <div class="subscribe-link"><span class="label">{{t 'general.sharing.rss_subscribe'}}</span><a href="{{ blog.url }}.atom" target="_blank">{{include 'asset_svg' 'rss'}}</a></div>
+  {{/if}}
+
+  {{#paginate blog.articles by=5}}
+
+    <div class="blog-list">
+      {{#each blog.articles as |article|}}
+        {{include 'blog_item' blog.comments_enabled}}
+      {{/each}}
+    </div>
+
+    {{#if paginate.next.is_link}}
+      <div id="infinite-link"><a class="btn btn--large btn--outline btn--dark" href="{{ paginate.next.url }}">More posts</a></div>
+    {{/if}}
+
+  {{/paginate}}
+
+</div>

@@ -1,0 +1,163 @@
+<div class="featured-blog featured-blog--{{ section.id }}">
+
+  {{assign 'blog' (get blogs section.settings.blog)}}
+
+  {{#is section.settings.post_limit 3}}
+      {{assign 'width' 'small--one-whole medium-up--one-third'}}
+    {{else is section.settings.post_limit 2}}
+      {{assign 'width' 'small--one-whole medium-up--one-half'}}
+    {{else is section.settings.post_limit 1}}
+      {{assign 'width' 'one-whole'}}
+    {{else}}
+      {{assign 'width' 'small--one-whole medium-up--one-third'}}
+  {{/is}}
+
+  {{#if (isnt section.settings.title blank)}}
+    <div class="section-title text-center">
+      <h2>{{escape section.settings.title}}</h2>
+    </div>
+  {{/if}}
+
+  {{#unless (is blog.articles_count 0)}}
+    <div class="{{#if (or (is section.settings.post_limit 1) (is blog.articles_count 1))}}page-width{{else}}grid grid--uniform{{/if}}">
+      {{#each (limit blog.articles undefined) as |article|}}
+        <div class="{{#unless (or (is section.settings.post_limit 1) (is blog.articles_count 1))}}grid__item {{/unless}}{{ width }}">
+          <div class="featured-blog__post{{#if (and (is section.settings.post_limit 1) (is section.settings.blog_show_image false))}} text-center{{/if}}">
+
+            {{#if section.settings.blog_show_image}}
+              {{#unless (is article.image blank)}}
+                <a class="article__featured-link" href="{{ article.url }}">
+                  <noscript>
+                    {{escape (img_tag (img_url article.image '2048x2048') article.title)}}
+                  </noscript>
+                  <div class="article__featured-image-wrapper" style="padding-top:{{times (divided_by 1 article.image.aspect_ratio) 100}}%;">
+                    {{assign 'img_url' (replace (img_url article.image '1x1') '_1x1.' '_{width}x.')}}
+                    <img class="article__featured-image lazyload"
+                      src="{{img_url article.image '300x300'}}"
+                      data-src="{{ img_url }}"
+                      data-widths="[310, 360, 480, 540, 720, 900, 1080, 1296, 1512, 1728, 2048]"
+                      data-aspectratio="{{ article.image.aspect_ratio }}"
+                      data-sizes="auto"
+                      alt="{{escape article.title}}">
+                  </div>
+                </a>
+              {{/unless}}
+            {{/if}}
+
+            <div class="featured-blog__post-inner">
+              <h2 class="h3 featured-blog__title{{#if (and (is section.settings.post_limit 1) (is section.settings.blog_show_image false))}} title--one-post{{/if}}"><a href="{{ article.url }}">{{ article.title }} &rarr;</a></h2>
+              {{#if (or section.settings.blog_show_author section.settings.blog_show_date)}}
+                <div class="featured-blog__meta">
+                  {{#if section.settings.blog_show_author}}
+                    <span class="featured-blog__meta-list">
+                      {{ article.author }}
+                    </span>
+                  {{/if}}
+                  {{#if (and section.settings.blog_show_author section.settings.blog_show_date)}}
+                    <span class="featured-blog__meta-dot"></span>
+                  {{/if}}
+                  {{#if section.settings.blog_show_date}}
+                    <div class="featured-blog__meta-list">
+                      <time datetime="{{date article.published_at '%Y-%m-%d'}}" class="date">{{date article.published_at format 'month_day_year'}}</time>
+                    </div>
+                  {{/if}}
+                </div>
+              {{/if}}
+              {{#if section.settings.blog_show_excerpt}}
+                <div class="rte rte--indented-images{{#unless section.settings.blog_show_date}} featured-blog__rte{{/unless}}">
+                  {{truncatewords (strip_html article.excerpt_or_content) 30}}
+                </div>
+              {{/if}}
+            </div>
+
+          </div>
+        </div>
+
+      {{/each}}
+    </div>
+
+  {{else}}
+    {{include 'onboarding-featured-blog'}}
+  {{/unless}}
+
+  {{#if (is blog empty)}}
+    {{include 'onboarding-featured-blog'}}
+  {{/if}}
+
+  {{#if section.settings.show_view_all}}
+    <div class="section-header text-center">
+      <a href="{{ blog.url }}" class="btn">
+        {{t 'blogs.article.view_all'}}
+      </a>
+    </div>
+  {{/if}}
+
+</div>
+
+{{#schema}}
+  {
+    "name": "Blog posts",
+    "class": "index-section",
+    "settings": [
+      {
+        "type": "text",
+        "id": "title",
+        "label": "Heading",
+        "default": "Blog"
+      },
+      {
+        "id": "blog",
+        "type": "blog",
+        "label": "Blog"
+      },
+      {
+        "type": "range",
+        "id": "post_limit",
+        "label": "Posts",
+        "min": 1,
+        "max": 3,
+        "step": 1,
+        "default": 3
+      },
+      {
+        "type": "checkbox",
+        "id": "blog_show_date",
+        "label": "Show date",
+        "default": true
+      },
+      {
+       "type": "checkbox",
+        "id": "blog_show_author",
+        "label": "Show author",
+        "default": false
+      },
+      {
+        "type": "checkbox",
+        "id": "blog_show_image",
+        "label": "Show cover image",
+        "default": false
+      },
+      {
+        "type": "checkbox",
+        "id": "blog_show_excerpt",
+        "label": "Show excerpt",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "show_view_all",
+        "label": "Show 'View all' button",
+        "default": false
+      }
+    ],
+    "presets": [
+      {
+        "name": "Blog posts",
+        "category": "Blog",
+        "settings": {
+          "blog": "News"
+        }
+      }
+    ]
+  }
+{{/schema}}

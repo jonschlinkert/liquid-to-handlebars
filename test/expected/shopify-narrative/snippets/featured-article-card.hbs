@@ -1,0 +1,60 @@
+<div class="card critical-clear" data-animate>
+  <a href="{{ article.url }}" class="card__wrapper card--article">
+    {{#if article.image}}
+      {{assign 'article_image' article.image}}
+    {{else}}
+      {{assign 'article_image' article.products.first}}
+    {{/if}}
+
+    {{#if (and (isnt article_image blank) section.settings.blog_show_image)}}
+      {{#if (or (is blog.articles.size 1) (is section.settings.post_limit 1))}}
+        <div class="medium-up--one-half card-list__column--half-left">
+      {{/if}}
+
+      {{include 'card-image",' type: article_image}}
+
+      {{#if (or (is blog.articles.size 1) (is section.settings.post_limit 1))}}
+        </div>
+      {{/if}}
+    {{/if}}
+
+    {{#if section.settings.blog_show_image}}
+      {{#if (or (is blog.articles.size 1) (is section.settings.post_limit 1))}}
+        <div class="medium-up--one-half card-list__column--half-right">
+      {{/if}}
+    {{/if}}
+
+    <div class="card__info">
+      {{#if section.settings.blog_show_date}}
+        <span class="article__date text-small--uppercase">
+          {{time_tag article.published_at format 'month_day_year'}}
+        </span>
+      {{/if}}
+      {{#if section.settings.blog_show_author}}
+        <span class="article__author text-small--uppercase">
+          {{ article.author }}
+        </span>
+      {{/if}}
+      <h2 class="card__name h4">{{ article.title }}</h2>
+      {{#if section.settings.blog_show_excerpt}}
+        <div class="card__excerpt rte">
+          {{#if (gt article.excerpt.size 0)}}
+            {{ article.excerpt }}
+          {{else}}
+            {{truncatewords (strip_html article.content) 30}}
+          {{/if}}
+        </div>
+      {{/if}}
+      <span class="card__read-more">
+        {{t 'blogs.article.read_more'}}
+        {{include 'icon-arrow-right'}}
+      </span>
+    </div>
+
+    {{#if section.settings.blog_show_image}}
+      {{#if (or (is blog.articles.size 1) (is section.settings.post_limit 1))}}
+        </div>
+      {{/if}}
+    {{/if}}
+  </a>
+</div>

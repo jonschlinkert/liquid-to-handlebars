@@ -1,0 +1,108 @@
+{{assign 'limit' (times section.settings.results section.settings.rows)}}
+
+{{#paginate search.results by=limit}}
+
+<div class="page-width" data-section-id="{{ section.id }}" data-section-type="search-template">
+  <header class="section-header section-header--small text-center">
+    {{#if search.performed}}
+      <h1 class="section-header__title h2">{{t 'general.search.search_results_title'}}</h1>
+      <div class="section-header__description">
+        {{t 'general.search.results_count_html' count search.results_count terms search.terms}}
+      </div>
+    {{else}}
+      <h1 class="section-header__title h2">{{t 'general.search.title'}}</h1>
+      <div class="search-template__search-bar">
+        {{include 'search-bar'}}
+      </div>
+    {{/if}}
+  </header>
+
+  {{#if search.performed}}
+
+    {{assign 'desktopColumns' section.settings.results}}
+    {{assign 'mobileColumns' '1'}}
+
+    {{#capture 'gridClasses'}}
+      {{#if (is desktopColumns '3')}}medium-up--one-third {{else}}medium-up--one-half {{/if}}
+      {{#if (is mobileColumns '2')}}small--one-half {{/if}}
+    {{/capture}}
+
+    <div class="card-list grid" data-desktop-columns="{{ desktopColumns }}" data-mobile-columns="{{ mobileColumns }}">
+      <div class="card-list__column grid__item {{#if (is search.results.size 1)}} card-list__column--center{{/if}} {{ gridClasses }}">
+        {{#each search.results as |item|}}
+          {{#if (is item.object_type 'article')}}
+            {{include 'article-card",' article: item}}
+          {{else if (is item.object_type 'page')}}
+            {{include 'page-card",' page: item}}
+          {{else}}
+            {{include 'product-card",' product: item}}
+          {{/if}}
+        {{/each}}
+      </div>
+    </div>
+
+    {{#if (gt paginate.pages 1)}}
+      <div class="card-list__sub-actions">
+        {{include 'pagination'}}
+      </div>
+    {{/if}}
+
+    <div class="text-center card-list__sub-actions{{#if (is product_count 0)}} card-list__sub-actions--no-results{{/if}}">
+      {{include 'search-bar'}}
+    </div>
+  {{/if}}
+</div>
+
+{{/paginate}}
+
+{{#schema}}
+{
+  "name": "Search",
+  "settings": [
+    {
+      "type": "select",
+      "id": "results",
+      "label": "Results per row",
+      "default": "2",
+      "options": [
+        {
+          "value": "2",
+          "label": "2"
+        },
+        {
+          "value": "3",
+          "label": "3"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "rows",
+      "label": "Rows per page",
+      "default": "4",
+      "options": [
+        {
+          "value": "2",
+          "label": "2"
+        },
+        {
+          "value": "3",
+          "label": "3"
+        },
+        {
+          "value": "4",
+          "label": "4"
+        },
+        {
+          "value": "5",
+          "label": "5"
+        },
+        {
+          "value": "6",
+          "label": "6"
+        }
+      ]
+    }
+  ]
+}
+{{/schema}}

@@ -1,0 +1,37 @@
+{{assign 'blog_comments' blog_item}}
+
+<a class="article {{#unless article.image}} no-image {{/unless}}" href="{{ article.url }}">
+
+  <div class="article__content display-table">
+
+    <div class="display-table-cell">
+
+      <h2 class="h3 article__title">{{ article.title }}</h2>
+
+      {{#if article.image}}
+        <figure class="article__img lazyload no-js"
+          data-bgset="{{include 'bgset",' image: article.image}}"
+          data-widths="[220,440,880]"
+          data-sizes="auto"
+          data-parent-fit="cover">
+        </figure>  
+        <noscript>
+        <figure class="article__img" style="background-image:url('{{img_url article.image '440x440' scale 2}}')">
+          <img src="{{img_url article.image '440x440'}}"
+            srcset="{{img_url article.image '440x440'}} 1x, {{img_url article.image '440x440' scale 2}} 2x"
+            alt="{{ article.image.alt }}">
+          </figure>
+        </noscript>
+      {{/if}}
+
+      {{include 'blog_meta' blog_comments}}
+
+      <div class="article__excerpt rte">
+        <p>{{truncatewords (strip_html article.excerpt_or_content) 25}}</p>
+      </div>
+
+    </div>
+
+  </div>
+
+</a>

@@ -1,0 +1,30 @@
+<!-- /snippets/social-sharing.liquid -->
+<div class="social-sharing grid medium-up--grid--table">
+  {{#unless center_icons}}
+    <div class="grid__item medium-up--one-third medium-up--text-left">
+      <span class="social-sharing__title">{{t 'general.social.share_title'}}</span>
+    </div>
+  {{/unless}}
+  <div class="grid__item {{#if center_icons}}text-center{{else}}medium-up--two-thirds medium-up--text-right{{/if}}">
+    {{#if settings.share_facebook}}
+      <a target="_blank" href="//www.facebook.com/sharer.php?u={{append shop.url share_permalink}}" class="social-sharing__link share-facebook" title="{{t 'general.social.alt_text.share_on_facebook'}}">
+        {{include 'icon-facebook'}}
+        <span class="share-title visually-hidden">{{t 'general.social.alt_text.share_on_facebook'}}</span>
+      </a>
+    {{/if}}
+
+    {{#if settings.share_twitter}}
+      <a target="_blank" href="//twitter.com/share?text={{url_param_escape share_title}}&amp;url={{append shop.url share_permalink}}" class="social-sharing__link share-twitter" title="{{t 'general.social.alt_text.share_on_twitter'}}">
+        {{include 'icon-twitter'}}
+        <span class="share-title visually-hidden">{{t 'general.social.alt_text.share_on_twitter'}}</span>
+      </a>
+    {{/if}}
+
+    {{#if settings.share_pinterest}}
+      <a target="_blank" href="//pinterest.com/pin/create/button/?url={{append shop.url share_permalink}}&amp;media={{img_url share_image '1024x1024'}}&amp;description={{url_param_escape share_title}}" class="social-sharing__link share-pinterest" title="{{t 'general.social.alt_text.share_on_pinterest'}}">
+        {{include 'icon-pinterest'}}
+        <span class="share-title visually-hidden">{{t 'general.social.alt_text.share_on_pinterest'}}</span>
+      </a>
+    {{/if}}
+  </div>
+</div>

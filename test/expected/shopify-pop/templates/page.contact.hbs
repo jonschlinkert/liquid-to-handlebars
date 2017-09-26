@@ -1,0 +1,80 @@
+{{#comment}}
+
+  This page template is a requirement if you are submitting your theme to the Shopify Theme Store.
+  Be sure to select page.contact as the template from the admin page to have this template take effect.
+
+  For information on adding more fields, visit:
+    - http://docs.shopify.com/support/configuration/store-customization/adding-fields-to-the-liquid-contact-form
+
+{{/comment}}
+
+<div class="grid">
+
+  <div class="grid-item large--two-thirds push--large--one-sixth">
+
+    <h1 class="text-center">{{{ page.title }}}</h1>
+
+    {{#comment}}
+      Regular page content goes here.
+    {{/comment}}
+    <div class="rte">
+      {{{ page.content }}}
+    </div>
+
+    {{#comment}}
+      Contact form starts here
+    {{/comment}}
+    <div>
+      {{#form 'contact'}}
+
+        {{#comment}}
+          Successful message
+        {{/comment}}
+        {{#if form.posted_successfully}}
+          <p class="note form-success">
+            {{t 'contact.form.post_success'}}
+          </p>
+        {{/if}}
+
+        {{default_errors form.errors}}
+
+        <div id="contactFormWrapper">
+          {{assign 'name_attr' (handle (t 'contact.form.name'))}}
+          <label for="contactFormName" class="form-label--hidden">
+            <span class="visuallyhidden">
+              {{t 'contact.form.name'}}
+            </span>
+          </label>
+          <input type="text" id="contactFormName" name="contact[{{ name_attr }}]" placeholder="{{t 'contact.form.name'}}" autocapitalize="words" value="{{#if get form name_attr}}{{get form name_attr}}{{else if customer}}{{ customer.name }}{{/if}}">
+
+          <label for="contactFormEmail" class="form-label--hidden">
+            <span class="visuallyhidden">
+              {{t 'contact.form.email'}}
+            </span>
+          </label>
+          <input type="email" id="contactFormEmail" name="contact[email]" placeholder="{{t 'contact.form.email'}}" autocorrect="off" autocapitalize="off" value="{{#if form.email}}{{ form.email }}{{else if customer}}{{ customer.email }}{{/if}}">
+
+          {{assign 'name_attr' (handle (t 'contact.form.phone'))}}
+          <label for="contactFormPhone" class="form-label--hidden">
+            <span class="visuallyhidden">
+              {{t 'contact.form.phone'}}
+            </span>
+          </label>
+          <input type="tel" id="contactFormPhone" name="contact[{{ name_attr }}]" placeholder="{{t 'contact.form.phone'}}" pattern="[0-9\-]*" value="{{#if get form name_attr}}{{get form name_attr}}{{else if customer}}{{ customer.phone }}{{/if}}">
+
+          <label for="contactFormMessage" class="form-label--hidden">
+            <span class="visuallyhidden">
+              {{t 'contact.form.message'}}
+            </span>
+          </label>
+          <textarea rows="10" id="contactFormMessage" name="contact[body]" placeholder="{{t 'contact.form.message'}}">{{#if form.body}}{{ form.body }}{{/if}}</textarea>
+
+          <input type="submit" class="btn right" value="{{t 'contact.form.send'}}">
+        </div>
+
+      {{/form}}
+    </div>
+
+  </div>
+
+</div>

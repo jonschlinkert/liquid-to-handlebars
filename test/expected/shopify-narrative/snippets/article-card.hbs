@@ -1,0 +1,33 @@
+<div class="card critical-clear" data-animate>
+  <a href="{{ article.url }}" class="card__wrapper card--article">
+    {{#if article.image}}
+      {{assign 'article_image' article.image}}
+    {{else}}
+      {{assign 'article_image' article.products.first}}
+    {{/if}}
+
+    {{#if (isnt article_image blank)}}
+      {{include 'card-image",' type: article_image}}
+    {{/if}}
+
+    <div class="card__info">
+      {{#if section.settings.blog_show_date}}
+        <span class="card__date text-small--uppercase">
+          {{time_tag article.published_at format 'month_day_year'}}
+        </span>
+      {{/if}}
+      <h3 class="card__name">{{ article.title }}</h3>
+      <div class="card__excerpt rte">
+        {{#if (gt article.excerpt.size 0)}}
+          {{ article.excerpt }}
+        {{else}}
+          {{truncatewords (strip_html article.content) 30}}
+        {{/if}}
+      </div>
+      <span class="card__read-more">
+        {{t 'blogs.article.read_more'}}
+        {{include 'icon-arrow-right'}}
+      </span>
+    </div>
+  </a>
+</div>

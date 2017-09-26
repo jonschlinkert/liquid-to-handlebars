@@ -1,0 +1,90 @@
+{{assign 'index' section.blocks.size}}
+
+{{#is index 1}}
+    {{assign 'featured_image_width' 'one-whole'}}
+  {{else is index 2}}
+    {{assign 'featured_image_width' 'one-half'}}
+  {{else is index 3}}
+    {{assign 'featured_image_width' 'small--one-whole one-third'}}
+  {{else is index 4}}
+    {{assign 'featured_image_width' 'small--one-whole medium--one-half one-quarter'}}
+{{/is}}
+
+{{#unless (is index 0)}}
+<div class="grid-uniform featured-images">
+
+  {{#each (limit section.blocks undefined) as |block|}}
+
+    {{#if (isnt block.settings.image blank)}}
+      <div class="grid__item {{ featured_image_width }}" {{ block.shopify_attributes }}>
+        {{#if (isnt block.settings.link blank)}}<a href="{{ block.settings.link }}">{{/if}}
+          <noscript>
+            {{img_tag (img_url block.settings.image '1024x') block.settings.image.alt}}
+          </noscript>
+          <div class="gallery__image-container">
+            <div class="gallery__image-wrapper" style="padding-top:{{times (divided_by 1 block.settings.image.aspect_ratio) 100}}%;">
+              {{assign 'img_url' (replace (img_url block.settings.image '1x1') '_1x1.' '_{width}x.')}}
+              <img class="gallery__image lazyload"
+                src="{{img_url block.settings.image '300x300'}}"
+                data-src="{{ img_url }}"
+                data-widths="[180, 360, 540, 720, 900, 1080, 1296, 1512, 1728, 1944, 2048]"
+                data-aspectratio="{{ block.settings.image.aspect_ratio }}"
+                data-sizes="auto"
+                alt="{{escape block.settings.image.alt}}">
+            </div>
+          </div>
+        {{#if (isnt block.settings.link blank)}}</a>{{/if}}
+      </div>
+    {{else}}
+      <div class="grid__item {{ featured_image_width }}" {{ block.shopify_attributes }}>
+        {{placeholder_svg_tag 'image' 'icon icon--placeholder'}}
+      </div>
+    {{/if}}
+
+  {{/each}}
+</div>
+
+{{/unless}}
+
+{{#schema}}
+  {
+    "name": "Gallery",
+    "class": "index-section",
+    "max_blocks": 4,
+    "blocks": [
+      {
+        "type": "image",
+        "name": "Image",
+        "settings": [
+          {
+            "type": "image_picker",
+            "id": "image",
+            "label": "Image"
+          },
+          {
+            "type": "url",
+            "id": "link",
+            "label": "Image link"
+          }
+        ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "Gallery",
+        "category": "Image",
+        "blocks": [
+          {
+            "type": "image"
+          },
+          {
+            "type": "image"
+          },
+          {
+            "type": "image"
+          }
+        ]
+      }
+    ]
+  }
+{{/schema}}

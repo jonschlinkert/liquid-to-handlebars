@@ -1,0 +1,69 @@
+<div class="section-header section-header--large">
+  <h1 class="section-header__title">{{t 'customer.account.title'}}</h1>
+</div>
+
+<div class="grid">
+
+  <div class="grid__item two-thirds medium-down--one-whole">
+    <h2 class="h4">{{t 'customer.orders.title'}}</h2>
+
+    {{#comment}}
+      If we have past orders, loop through each one
+    {{/comment}}
+
+    {{#paginate customer.orders by=20}}
+
+    {{#if (isnt customer.orders.size 0)}}
+
+      <div class="table-wrap">
+        <table class="full">
+          <thead>
+            <tr>
+              <th>{{t 'customer.orders.order_number'}}</th>
+              <th>{{t 'customer.orders.date'}}</th>
+              <th>{{t 'customer.orders.payment_status'}}</th>
+              <th>{{t 'customer.orders.fulfillment_status'}}</th>
+              <th>{{t 'customer.orders.total'}}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{#each customer.orders as |order|}}
+              <tr>
+                <td>{{link_to order.name order.customer_url}}</td>
+                <td>{{date order.created_at '%b %d, %Y'}}</td>
+                <td>{{ order.financial_status_label }}</td>
+                <td>{{ order.fulfillment_status_label }}</td>
+                <td>{{money order.total_price}}</td>
+              </tr>
+            {{/each}}
+          </tbody>
+        </table>
+      </div>
+
+    {{else}}
+
+      <p>{{t 'customer.orders.none'}}</p>
+
+    {{/if}}
+
+    {{#if (gt paginate.pages 1)}}
+      <div class="text-center">
+        {{include 'pagination-custom'}}
+      </div>
+    {{/if}}
+
+    {{/paginate}}
+
+  </div>
+
+  <div class="grid__item one-third medium-down--one-whole">
+    <h2 class="h4">{{t 'customer.account.details'}}</h2>
+
+    <span class="h5">{{ customer.name }}</span>
+
+    {{format_address customer.default_address}}
+
+    <p><a href="/account/addresses">{{t 'customer.account.view_addresses'}} ({{ customer.addresses_count }})</a></p>
+  </div>
+
+</div>

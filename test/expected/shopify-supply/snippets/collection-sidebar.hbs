@@ -1,0 +1,138 @@
+{{#comment}}
+  The code below relies on the advanced-tag-loop snippet.
+  The snippet is already included in snippets/breadrumbs.liquid
+  because it is needed there too, but if you remove
+  breadcrumbs you need to include this:
+
+  {{include 'advanced-tag-loop'}}
+{{/comment}}
+
+{{#if (is section.settings.collection_sidebar_filters 'groups')}}
+  {{#if (gt collection.all_tags.size 0)}}
+
+    <div class="grid-uniform">
+      {{#comment}}
+        Loop through tag categories
+      {{/comment}}
+      {{#each cat_array as |cat_item|}}
+        <div class="grid-item small--one-half medium--one-third">
+          <h2 class="h3">{{ cat_item }}</h2>
+          <ul class="advanced-filters">
+            {{#comment}}
+              Loop through collection tags
+            {{/comment}}
+            {{#each collection.all_tags as |tag|}}
+              {{assign 'cat' (first (split tag '_'))}}
+              {{#if (and (isnt cat tag) (is cat_item cat))}}
+                {{#comment}}
+                  Strip out tag category prefix and add/remove link for tag filtering
+                {{/comment}}
+                {{#if (contains current_tags tag)}}
+                  <li class="advanced-filter active-filter" data-group="{{ cat_item }}" data-handle="{{handle tag}}">{{link_to_remove_tag (remove_first (remove_first tag cat_item) '_') tag}}</li>
+                {{else}}
+                  <li class="advanced-filter" data-group="{{ cat_item }}" data-handle="{{handle tag}}">{{link_to_add_tag (remove_first (remove_first tag cat_item) '_') tag}}</li>
+                {{/if}}
+              {{/if}}
+            {{/each}}
+          </ul>
+        </div>
+      {{/each}}
+    </div>
+
+    <script>
+    $(function() {
+      var filters = $('.advanced-filter'),
+        el,
+        elGroup,
+        elHandle,
+        activeTagInGroup;
+
+      filters.on('click', function(e) {
+        el = $(this);
+        elGroup = el.data('group');
+        elHandle = el.data('handle');
+        activeTagInGroup = $('.active-filter[data-group="'+ elGroup +'"]');
+        // If the tag clicked is not already active and its group contains an active tag, we will swap tag within the group.
+        if ( !el.hasClass('active-filter')  && activeTagInGroup.size() ) {
+          e.preventDefault();
+          location.href = location.href
+            // swap tag
+            .replace(activeTagInGroup.data('handle'), elHandle)
+            // go back to page 1
+            .replace(/(&page=\d+)|(page=\d+&)|(\?page=\d+$)/, '');
+        }
+      });
+    });
+    </script>
+
+  {{/if}}
+{{else}}
+  <h2 class="h3">{{t 'collections.sidebar.shop_by'}}</h2>
+  {{#if (and (is template.name 'collection') (gt collection.all_tags.size 0))}}
+
+    {{#comment}}
+      Provide a 'catch-all' link at the top of the list,
+      we'd check against the collection.handle, product type, and vendor.
+    {{/comment}}
+    <ul>
+      {{#if current_tags}}
+        <li class="active-filter">
+          {{#comment}}
+            Good for /collections/all collection and regular collections
+          {{/comment}}
+          {{#if collection.handle}}
+            <a href="/collections/{{ collection.handle }}">
+              {{t 'collections.sidebar.all'}}
+              {{#unless (is collection.title 'Products')}}
+              {{ collection.title }}
+              {{/unless}}
+            </a>
+
+          {{#comment}}
+            Good for automatic type collections
+          {{/comment}}
+          {{else if collection.current_type}}
+            <a href="{{url_for_type collection.current_type}}">{{t 'collections.sidebar.all_collection' collection_title collection.title}}</a>
+
+          {{#comment}}
+            Good for automatic vendor collections
+          {{/comment}}
+          {{else if collection.current_vendor}}
+            <a href="{{url_for_vendor collection.current_vendor}}">{{t 'collections.sidebar.all_collection' collection_title collection.title}}</a>
+          {{/if}}
+        </li>
+      {{/if}}
+
+      {{#comment}}
+        And for the good stuff, loop through the tags themselves.
+        Strip the prepended categories if they happen to exist.
+      {{/comment}}
+      {{#each collection.all_tags as |tag|}}
+        {{assign 'is_advanced_tag' false}}
+        {{assign 'cat' (first (split tag '_'))}}
+        {{#unless (is cat tag)}}
+          {{#if (contains cat_array cat)}}
+            {{assign 'is_advanced_tag' true}}
+            {{#if (contains current_tags tag)}}
+              <li class="active-filter">{{remove_first (remove_first tag cat) '_'}}</li>
+            {{else}}
+              <li>{{link_to_tag (remove_first (remove_first tag cat) '_') tag}}</li>
+            {{/if}}
+          {{/if}}
+        {{/unless}}
+
+        {{#if (is is_advanced_tag false)}}
+          {{#if (contains current_tags tag)}}
+            <li class="active-filter">{{ tag }}</li>
+          {{else}}
+            <li>{{link_to_tag tag tag}}</li>
+          {{/if}}
+        {{/if}}
+      {{/each}}
+
+    </ul>
+
+  {{else}}
+    <p>{{t 'collections.sidebar.no_tags'}}</p>
+  {{/if}}
+{{/if}}

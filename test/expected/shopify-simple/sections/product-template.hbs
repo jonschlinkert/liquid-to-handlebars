@@ -1,0 +1,253 @@
+<!-- /templates/product.liquid -->
+<div itemscope itemtype="http://schema.org/Product" id="ProductSection" data-section-id="{{ section.id }}" data-section-type="product-template" data-image-zoom-type="{{ section.settings.product_image_zoom_type }}" data-show-extra-tab="{{ section.settings.show_extra_tab }}" data-extra-tab-content="{{ section.settings.extra_tab_content }}" data-cart-enable-ajax="{{ settings.cart_enable_ajax }}" data-enable-history-state="true">
+
+  <meta itemprop="name" content="{{ product.title }}">
+  <meta itemprop="url" content="{{ shop.url }}{{ product.url }}">
+  <meta itemprop="image" content="{{img_url product.featured_image.src 'grande'}}">
+
+  {{#comment}}
+    Get first variant in stock, or deep linked one
+  {{/comment}}
+  {{assign 'current_variant' product.selected_or_first_available_variant}}
+  {{assign 'featured_image' (default current_variant.featured_image product.featured_image)}}
+
+  <div class="grid product-single">
+
+    <div class="grid__item medium-up--one-half">
+      {{#each product.images as |image|}}
+        {{#capture 'img_id'}}ProductImage-{{ image.id }}{{/capture}}
+        {{#capture 'wrapper_id'}}ProductImageWrapper-{{ image.id }}{{/capture}}
+        {{assign 'img_url' (replace (img_url image '1x1') '_1x1.' '_{width}x.')}}
+
+        {{include 'image-style' image: image, width: 720, height: 600, small_style: true, wrapper_id: wrapper_id, img_id: img_id}}
+
+        <div id="{{ wrapper_id }}" class="product-single__featured-image-wrapper supports-js{{#unless (is featured_image image)}} hidden{{/unless}}" data-image-id="{{ image.id }}">
+          <div class="product-single__photos" data-image-id="{{ image.id }}" style="padding-top:{{times (divided_by 1 image.aspect_ratio) 100}}%;">
+            <img id="{{ img_id }}"
+                 class="product-single__photo lazyload{{#unless (is featured_image image)}} lazypreload{{/unless}}{{#if (is section.settings.product_image_zoom_type 'lightbox')}} lightbox{{/if}}"
+                 {{#if (is section.settings.product_image_zoom_type 'zoom-in')}} data-zoom="{{img_url image '1024x1024'}}"{{/if}}
+                 src="{{img_url image '200x200'}}"
+                 data-src="{{ img_url }}"
+                 data-widths="[180, 360, 470, 600, 750, 940, 1080, 1296, 1512, 1728, 2048]"
+                 data-aspectratio="{{ image.aspect_ratio }}"
+                 data-sizes="auto"
+                 alt="{{escape image.alt}}">
+          </div>
+          {{#if (gt product.compare_at_price_max product.price)}}
+            <span class="badge badge--sale"><span>{{t 'products.product.on_sale'}}</span></span>
+          {{/if}}
+        </div>
+      {{/each}}
+
+      <noscript>
+        <img src="{{img_url featured_image 'grande'}}" alt="{{escape featured_image.alt}}">
+      </noscript>
+
+      {{#if (gt product.images.size 1)}}
+        <ul class="product-single__thumbnails grid grid--uniform" id="ProductThumbs">
+
+          {{#is product.images.size 2}}
+              {{assign 'thumbnail_width' 'small--one-half medium-up--push-one-sixth medium-up--one-third'}}
+            {{else is product.images.size 4}}
+              {{assign 'thumbnail_width' 'small--one-half medium-up--one-quarter'}}
+            {{else}}
+              {{assign 'thumbnail_width' 'small--one-third medium-up--one-third'}}
+          {{/is}}
+
+          {{#each product.images as |image|}}
+            <li class="grid__item {{ thumbnail_width }}">
+              <a href="{{img_url image.src 'grande'}}" class="product-single__thumbnail" data-image-id="{{ image.id }}">
+                <img src="{{img_url image.src 'compact'}}" alt="{{escape image.alt}}">
+              </a>
+            </li>
+          {{/each}}
+
+        </ul>
+      {{/if}}
+
+      {{#if (is section.settings.product_image_zoom_type 'lightbox')}}
+        <ul class="gallery hidden">
+          {{#each product.images as |image|}}
+            <li data-image-id="{{ image.id }}" class="gallery__item" data-mfp-src="{{img_url image '2048x2048'}}"></li>
+          {{/each}}
+        </ul>
+      {{/if}}
+    </div>
+
+    <div class="grid__item medium-up--one-half{{#if (is product.images.size 0)}} medium-up--push-one-half{{/if}}">
+      <div class="product-single__meta small--text-center">
+        <h1 class="product-single__title" itemprop="name">{{ product.title }}</h1>
+
+        {{#if section.settings.vendor_show}}
+          <p class="product-single__vendor" itemprop="brand">{{ product.vendor }}</p>
+        {{/if}}
+
+        <p class="product-single__prices">
+          {{#if (gt product.compare_at_price_max product.price)}}
+            <span id="ComparePriceA11y" class="visually-hidden">{{t 'products.product.sale_price'}}</span>
+          {{else}}
+            <span class="visually-hidden">{{t 'products.product.regular_price'}}</span>
+          {{/if}}
+          <span id="ProductPrice" class="product-single__price" itemprop="price" content="{{divided_by current_variant.price 100.00}}">
+            {{money current_variant.price}}
+          </span>
+
+          {{#if (gt product.compare_at_price_max product.price)}}
+            <span id="PriceA11y" class="visually-hidden">{{t 'products.product.regular_price'}}</span>
+            <s class="product-single__price--compare" id="ComparePrice">
+              {{money current_variant.compare_at_price}}
+            </s>
+          {{/if}}
+        </p>
+
+        <div itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+          <meta itemprop="priceCurrency" content="{{ shop.currency }}">
+
+          <link itemprop="availability" href="http://schema.org/{{#if current_variant.available}}InStock{{else}}OutOfStock{{/if}}">
+
+          <form action="/cart/add" method="post" enctype="multipart/form-data" class="product-form">
+            <select name="id" id="ProductSelect-{{ section.id }}" class="product-single__variants">
+              {{#each product.variants as |variant|}}
+                {{#if variant.available}}
+                  <option {{#if (is variant product.selected_or_first_available_variant)}} selected="selected" {{/if}} data-sku="{{ variant.sku }}" value="{{ variant.id }}">{{ variant.title }} - {{money_with_currency variant.price}}</option>
+                {{else}}
+                  <option disabled="disabled">
+                    {{ variant.title }} - {{t 'products.product.sold_out'}}
+                  </option>
+                {{/if}}
+              {{/each}}
+            </select>
+
+            {{#if section.settings.product_quantity_enable}}
+              <div class="product-single__quantity">
+                <label for="Quantity">{{t 'products.product.quantity'}}</label>
+                <input type="number" id="Quantity" name="quantity" value="1" min="1">
+              </div>
+            {{/if}}
+
+            <div class="product-single__cart-submit-wrapper">
+              <button type="submit" name="add" id="AddToCart" class="btn product-single__cart-submit btn--secondary">
+                <span id="AddToCartText">{{t 'products.product.add_to_cart'}}</span>
+              </button>
+            </div>
+
+          </form>
+
+        </div>
+
+        {{#if (is section.settings.product_description_position 'right')}}
+          {{assign 'position' 'right'}}
+          {{include 'product-description'}}
+        {{/if}}
+
+        {{#if section.settings.social_sharing_products}}
+          {{include 'social-sharing",' share_title: product.title, share_permalink: product.url, share_image: product}}
+        {{/if}}
+      </div>
+    </div>
+
+  </div>
+
+  {{#if (is section.settings.product_description_position 'below')}}
+    {{assign 'position' 'below'}}
+    {{include 'product-description'}}
+  {{/if}}
+
+  {{include 'related-products'}}
+</div>
+
+{{#unless (is product empty)}}
+  <script type="application/json" id="ProductJson-{{ section.id }}">
+    {{json product}}
+  </script>
+{{/unless}}
+
+<script>
+  // Override default values of shop.strings for each template.
+  // Alternate product templates can change values of
+  // add to cart button, sold out, and unavailable states here.
+  window.productStrings = {
+    addToCart: {{json (t 'products.product.add_to_cart')}},
+    soldOut: {{json (t 'products.product.sold_out')}},
+    unavailable: {{json (t 'products.product.unavailable')}}
+  }
+</script>
+
+{{#schema}}
+  {
+    "name": "Product pages",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "product_quantity_enable",
+        "label": "Show quantity selector"
+      },
+      {
+        "type": "checkbox",
+        "id": "vendor_show",
+        "label": "Show product vendor"
+      },
+      {
+        "type": "checkbox",
+        "id": "social_sharing_products",
+        "label": "Enable sharing for products",
+        "default": true
+      },
+      {
+        "type": "header",
+        "content": "Description"
+      },
+      {
+        "type": "select",
+        "id": "product_description_position",
+        "label": "Position",
+        "default": "below",
+        "options": [
+          {
+            "value": "right",
+            "label": "Right of images"
+          },
+          {
+            "value": "below",
+            "label": "Below images"
+          }
+        ]
+      },
+      {
+        "type": "checkbox",
+        "id": "show_extra_tab",
+        "label": "Show a tab next to your product description",
+        "default": false
+      },
+      {
+        "type": "page",
+        "id": "extra_tab_content",
+        "label": "Tab content",
+        "info": "This page content will appear in the extra tab."
+      },
+      {
+        "type": "header",
+        "content": "Featured image"
+      },
+      {
+        "type": "select",
+        "id": "product_image_zoom_type",
+        "label": "Zoom type",
+        "options": [
+          {
+            "value": "lightbox",
+            "label": "Lightbox"
+          },
+          {
+            "value": "zoom-in",
+            "label": "Zoom-in"
+          },
+          {
+            "value": "",
+            "label": "No zoom"
+          }
+        ]
+      }
+    ]
+  }
+{{/schema}}

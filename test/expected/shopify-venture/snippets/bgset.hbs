@@ -1,0 +1,12 @@
+{{#if (isnt image blank)}}
+  {{#if (gt image.width 180)}}{{img_url image '180x'}} 180w {{round (divided_by 180 image.aspect_ratio)}}h,{{/if}}
+  {{#if (gt image.width 360)}}{{img_url image '360x'}} 360w {{round (divided_by 360 image.aspect_ratio)}}h,{{/if}}
+  {{#if (gt image.width 540)}}{{img_url image '540x'}} 540w {{round (divided_by 540 image.aspect_ratio)}}h,{{/if}}
+  {{#if (gt image.width 720)}}{{img_url image '720x'}} 720w {{round (divided_by 720 image.aspect_ratio)}}h,{{/if}}
+  {{#if (gt image.width 900)}}{{img_url image '900x'}} 900w {{round (divided_by 900 image.aspect_ratio)}}h,{{/if}}
+  {{#if (gt image.width 1080)}}{{img_url image '1080x'}} 1080w {{round (divided_by 1080 image.aspect_ratio)}}h,{{/if}}
+  {{#if (gt image.width 1296)}}{{img_url image '1296x'}} 1296w {{round (divided_by 1296 image.aspect_ratio)}}h,{{/if}}
+  {{#if (gt image.width 1512)}}{{img_url image '1512x'}} 1512w {{round (divided_by 1512 image.aspect_ratio)}}h,{{/if}}
+  {{#if (gt image.width 1728)}}{{img_url image '1728x'}} 1728w {{round (divided_by 1728 image.aspect_ratio)}}h,{{/if}}
+  {{img_url image 'master'}} {{ image.width }}w {{ image.height }}h
+{{/if}}

@@ -1,0 +1,255 @@
+<div id="ProductSection" data-section-id="{{ section.id }}" data-section-type="product-template" data-zoom-toggle="zoom-in" data-zoom-enabled="{{ section.settings.product_image_zoom_enable }}" data-related-enabled="{{ section.settings.product_related_enable }}" data-social-sharing="{{ section.settings.social_sharing }}" data-show-compare-at-price="{{ section.settings.product_show_compare_at_price }}" data-stock="{{ section.settings.product_quantity_message }}" data-incoming-transfer="{{ section.settings.product_incoming_message }}" data-ajax-cart-method="{{ settings.ajax_cart_method }}">
+{{include 'breadcrumb'}}
+
+<div class="grid" itemscope itemtype="http://schema.org/Product">
+  <meta itemprop="url" content="{{ shop.url }}{{ product.url }}">
+  <meta itemprop="image" content="{{img_url product.featured_image.src 'grande'}}">
+
+  <div class="grid-item large--two-fifths">
+    <div class="grid">
+      <div class="grid-item large--eleven-twelfths text-center">
+        <div class="product-photo-container" id="productPhotoContainer-{{ section.id }}">
+          {{assign 'featured_image' (default product.selected_or_first_available_variant.featured_image product.featured_image)}}
+          {{#each product.images as |image|}}
+            {{#capture 'img_wrapper_id'}}productPhotoWrapper-{{ section.id }}-{{ image.id }}{{/capture}}
+            {{#capture 'img_id'}}productPhotoImg-{{ section.id }}-{{ image.id }}{{/capture}}
+
+            <div class="lazyload__image-wrapper no-js product__image-wrapper{{#unless (is image featured_image)}} hide{{/unless}}" id="{{ img_wrapper_id }}" style="padding-top:{{times (divided_by 1 image.aspect_ratio) 100}}%;" data-image-id="{{ image.id }}">
+              {{assign 'img_url' (replace (img_url image '1x1') '_1x1.' '_{width}x.')}}
+                <img id="{{ img_id }}"
+                  {{#if (is forloop.first true)}}
+                  src="{{img_url featured_image '300x300'}}"
+                  {{/if}}
+                  class="lazyload no-js lazypreload"
+                  data-src="{{ img_url }}"
+                  data-widths="[180, 360, 540, 720, 900, 1080, 1296, 1512, 1728, 2048]"
+                  data-aspectratio="{{ image.aspect_ratio }}"
+                  data-sizes="auto"
+                  alt="{{escape image.alt}}"
+                  {{#if section.settings.product_image_zoom_enable}} data-zoom="{{img_url image '1024x1024' scale 2}}"{{/if}}>
+            </div>
+            {{#if (is forloop.first true)}}
+              <noscript>
+                <img src="{{img_url image '580x'}}"
+                  srcset="{{img_url image '580x'}} 1x, {{img_url image '580x' scale 2}} 2x"
+                  alt="{{ image.alt }}" style="opacity:1;">
+              </noscript>
+            {{/if}}
+          {{/each}}
+        </div>
+
+        {{#if (gt product.images.size 1)}}
+          <ul class="product-photo-thumbs grid-uniform" id="productThumbs-{{ section.id }}">
+
+            {{#each product.images as |image|}}
+              <li class="grid-item medium-down--one-quarter large--one-quarter">
+                <a href="{{img_url image.src '1024x1024' scale 2}}" class="product-photo-thumb product-photo-thumb-{{ section.id }}" data-image-id="{{ image.id }}">
+                  <img src="{{img_url image.src 'compact'}}" alt="{{escape image.alt}}">
+                </a>
+              </li>
+            {{/each}}
+
+          </ul>
+        {{/if}}
+
+      </div>
+    </div>
+  </div>
+
+  <div class="grid-item large--three-fifths">
+
+    <h1 class="h2" itemprop="name">{{ product.title }}</h1>
+
+    {{#if section.settings.product_vendor_enable}}
+      <p class="product-meta" itemprop="brand">{{ product.vendor }}</p>
+    {{/if}}
+
+    <div itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+
+      {{assign 'variant' product.selected_or_first_available_variant}}
+
+      <meta itemprop="priceCurrency" content="{{ shop.currency }}">
+      <meta itemprop="price" content="{{divided_by variant.price 100.00}}">
+
+      <ul class="inline-list product-meta">
+        <li>
+          <span id="productPrice-{{ section.id }}" class="h1">
+            {{include 'price' variant.price}}
+          </span>
+        </li>
+        {{#if (and (gt product.compare_at_price_max product.price) section.settings.product_show_saved_amount)}}
+        <li>
+          <span id="comparePrice-{{ section.id }}" class="sale-tag large">
+            {{assign 'compare_price' variant.compare_at_price}}
+            {{assign 'product_price' variant.price}}
+            {{include 'price-sale'}}
+          </span>
+        </li>
+        {{/if}}
+        {{#if section.settings.product_reviews_enable}}
+          <li class="product-meta--review">
+            <span class="shopify-product-reviews-badge" data-id="{{ product.id }}"></span>
+          </li>
+        {{/if}}
+      </ul>
+
+      <hr id="variantBreak" class="hr--clear hr--small">
+
+      <link itemprop="availability" href="http://schema.org/{{#if product.available}}InStock{{else}}OutOfStock{{/if}}">
+
+      <form action="/cart/add" method="post" enctype="multipart/form-data" id="addToCartForm-{{ section.id }}">
+        <select name="id" id="productSelect-{{ section.id }}" class="product-variants product-variants-{{ section.id }}">
+          {{#each product.variants as |variant|}}
+            {{#if variant.available}}
+
+              <option {{#if (is variant product.selected_or_first_available_variant)}} selected="selected" {{/if}} data-sku="{{ variant.sku }}" value="{{ variant.id }}">{{ variant.title }} - {{money_with_currency variant.price}}</option>
+
+            {{else}}
+              <option disabled="disabled">
+                {{ variant.title }} - {{t 'products.product.sold_out'}}
+              </option>
+            {{/if}}
+          {{/each}}
+        </select>
+
+        {{#if section.settings.product_quantity_enable}}
+          <label for="quantity" class="quantity-selector quantity-selector-{{ section.id }}">{{t 'products.product.quantity'}}</label>
+          <input type="number" id="quantity" name="quantity" value="1" min="1" class="quantity-selector">
+        {{/if}}
+
+        <button type="submit" name="add" id="addToCart-{{ section.id }}" class="btn">
+          <span class="icon icon-cart"></span>
+          <span id="addToCartText-{{ section.id }}">{{t 'products.product.add_to_cart'}}</span>
+        </button>
+
+        {{#if section.settings.product_quantity_message}}
+          <span id="variantQuantity-{{ section.id }}" class="variant-quantity {{#if (and variant.inventory_management (lt variant.inventory_quantity 10) (gt variant.inventory_quantity 0))}} is-visible{{/if}}">
+           {{#if (and variant.inventory_management (lt variant.inventory_quantity 10) (gt variant.inventory_quantity 0))}}
+              {{assign 'qty' variant.inventory_quantity}}
+              {{t 'products.product.only_left' count qty}}
+            {{/if}}
+          </span>
+        {{/if}}
+
+        {{#if section.settings.product_incoming_message}}
+          <span id="variantIncoming-{{ section.id }}" class="variant-quantity {{#if (and variant.inventory_management (lte variant.inventory_quantity 0) variant.incoming)}} is-visible{{/if}}">
+            {{#if (and variant.inventory_management (or (is variant.inventory_quantity 0) (lt variant.inventory_quantity 0)) current_variant.incoming)}}
+              {{#if variant.available}}
+                {{assign 'date' (date variant.next_incoming_date 'month_day_year')}}
+                {{t 'products.product.will_not_ship_until' date date}}
+              {{else}}
+                {{assign 'date' (date variant.next_incoming_date 'month_day_year')}}
+                {{t 'products.product.will_be_in_stock_after' date date}}
+              {{/if}}
+            {{/if}}
+          </span>
+        {{/if}}
+
+      </form>
+
+      <hr>
+
+    </div>
+
+    <div class="product-description rte" itemprop="description">
+      {{ product.description }}
+    </div>
+
+    {{#if section.settings.social_sharing_products}}
+      {{include 'social-sharing'}}
+    {{/if}}
+
+  </div>
+</div>
+
+{{#if section.settings.related_products_enable}}
+  {{assign 'grid_item_width' 'large--one-fifth medium--one-third small--one-half'}}
+  {{include 'related-products'}}
+{{/if}}
+
+{{#if section.settings.product_reviews_enable}}
+  <hr>
+  <div id="shopify-product-reviews" data-id="{{ product.id }}">{{ product.metafields.spr.reviews }}</div>
+{{/if}}
+
+{{#unless (is product empty)}}
+  <script type="application/json" id="ProductJson-{{ section.id }}">
+    {{json product}}
+  </script>
+  {{#if (or section.settings.product_quantity_message section.settings.product_incoming_message)}}
+    <script type="application/json" id="VariantJson-{{ section.id }}">
+      [
+        {{#each product.variants as |variant|}}
+          {
+             "incoming": {{#if (or (is variant.incoming 'null') (is variant.next_incoming_date null))}}false{{else}}{{json (default variant.incoming false)}}{{/if}},
+             "next_incoming_date": {{json (date variant.next_incoming_date format 'month_day_year')}}
+          }{{#unless forloop.last}},{{/unless}}
+        {{/each}}
+      ]
+    </script>
+  {{/if}}
+{{/unless}}
+</div>
+
+{{#schema}}
+  {
+    "name": "Product",
+    "class": "product-template-section",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "product_image_zoom_enable",
+        "label": "Enable image zoom"
+      },
+      {
+        "type": "checkbox",
+        "id": "product_quantity_enable",
+        "label": "Show quantity selector"
+      },
+      {
+        "type": "checkbox",
+        "id": "product_quantity_message",
+        "label": "Show remaining quantity message"
+      },
+      {
+        "type": "checkbox",
+        "id": "product_incoming_message",
+        "label": "Show incoming stock transfer message when sold out"
+      },
+      {
+        "type": "checkbox",
+        "id": "product_vendor_enable",
+        "label": "Show product vendor"
+      },
+      {
+        "type": "checkbox",
+        "id": "product_show_saved_amount",
+        "label": "Show saved amount",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "product_show_compare_at_price",
+        "label": "Show compare at price",
+        "default": false
+      },
+      {
+        "type": "checkbox",
+        "id": "related_products_enable",
+        "label": "Show related products"
+      },
+      {
+        "type": "checkbox",
+        "id": "social_sharing_products",
+        "label": "Enable product sharing",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "product_reviews_enable",
+        "label": "Enable product reviews",
+        "info": "Install the free Shopify [Product Reviews](https:\/\/apps.shopify.com\/product-reviews) app to add product reviews."
+      }
+    ]
+  }
+{{/schema}}

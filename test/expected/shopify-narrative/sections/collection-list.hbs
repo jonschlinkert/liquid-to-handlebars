@@ -1,0 +1,139 @@
+<div class="collection-list collection-list--{{ section.id }}">
+
+  <div class="page-width">
+    {{#if (isnt section.settings.title blank)}}
+      <div class="featured-collection__heading grid text-center">
+        <div class="grid__item medium-up--ten-twelfths medium-up--push-one-twelfth">
+          <h2>{{escape section.settings.title}}</h2>
+        </div>
+      </div>
+    {{/if}}
+
+    <div class="grid grid--uniform">
+
+      {{#each (limit section.blocks undefined) as |block|}}
+
+        {{#is section.settings.grid 1}}
+            {{assign 'grid_item_width' 'one-whole'}}
+          {{else is section.settings.grid 2}}
+            {{assign 'grid_item_width' 'small--one-half medium-up--one-half'}}
+          {{else is section.settings.grid 3}}
+            {{assign 'grid_item_width' 'small--one-half medium-up--one-third'}}
+          {{else is section.settings.grid 4}}
+            {{assign 'grid_item_width' 'small--one-half medium-up--one-quarter'}}
+          {{else}}
+            {{assign 'grid_item_width' 'small--one-half medium-up--one-third'}}
+        {{/is}}
+
+        {{assign 'collection' (get collections block.settings.collection)}}
+
+        {{#if (is collection empty)}}
+          {{#comment}}add default state for collection block in storefront editor{{/comment}}
+          {{#capture 'collection_title'}}{{t 'homepage.onboarding.collection_title'}}{{/capture}}
+        {{else}}
+          {{#capture 'collection_title'}}{{escape collection.title}}{{/capture}}
+        {{/if}}
+
+        {{#if collection.image}}
+          {{assign 'no_collection_image' false}}
+          {{assign 'collection_image' collection.image}}
+        {{else if (and collection.products.first (isnt collection.products.first.images empty))}}
+          {{assign 'collection_image' collection.products.first.featured_image}}
+        {{else}}
+          {{assign 'collection_image' blank}}
+        {{/if}}
+
+        <div class="grid__item {{ grid_item_width }}" {{ block.shopify_attributes }}>
+          <div class="collection-list-grid__image-item">
+            <div class="collection-list-grid__image-container">
+              <a href="{{ collection.url }}" class="collection-list-grid__link">
+                <div class="collection-list-grid__image-wrapper">
+                  {{#unless (is collection_image blank)}}
+                    <noscript>
+                      <div class="collection-grid-item__image" style="background-image: url({{img_url collection_image '1024x1024'}})"></div>
+                    </noscript>
+                    <div class="collection-grid-item__image lazyload"
+                      data-bgset="{{include 'bgset",' image: collection_image}}"
+                      data-sizes="auto"
+                      data-parent-fit="cover"
+                      style="background-image: url('{{img_url collection_image '300x300'}});">
+                    </div>
+                  {{else}}
+                    {{#if (is collection empty)}}
+                      <div class="collection-grid-item__image">
+                        {{#capture 'current'}}{{cycle 1 2 3}}{{/capture}}
+                        {{placeholder_svg_tag (append 'collection-' current) 'placeholder-svg'}}
+                      </div>
+                    {{else}}
+                      <div class="collection-grid-item__image" style="background-image: url({{img_url collection_image '1024x1024'}})"></div>
+                    {{/if}}
+                  {{/unless}}
+                </div>
+              </a>
+            </div>
+            <div class="collection-grid-item__title">
+              <h3 class="h2 text-title text-center">{{ collection_title }}</h3>
+            </div>
+          </div>
+        </div>
+
+      {{/each}}
+
+    </div>
+
+  </div>
+
+</div>
+{{#schema}}
+{
+    "name": "Collection list",
+    "class": "index-section",
+    "max_blocks": 12,
+    "settings": [
+      {
+        "type": "text",
+        "id": "title",
+        "label": "Heading",
+        "default": "Collection list"
+      },
+      {
+        "type": "range",
+        "id": "grid",
+        "label": "Collections per row",
+        "min": 2,
+        "max": 4,
+        "step": 1,
+        "default": 3
+      }
+    ],
+    "blocks": [
+      {
+        "type": "collection",
+        "name": "Collection",
+        "settings": [
+          {
+            "type": "collection",
+            "id": "collection",
+            "label": "Collection"
+          }
+        ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "Collection list",
+        "category": "Collection",
+        "blocks": [
+          {
+            "type": "collection"
+          },
+          {
+            "type": "collection"
+          },
+          {
+            "type": "collection"
+          }
+        ]
+      }
+    ]
+  }{{/schema}}

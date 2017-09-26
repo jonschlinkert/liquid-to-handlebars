@@ -1,0 +1,90 @@
+{{#comment}}
+  Add Facebook and Pinterest Open Graph meta tags to various templates
+  for friendly Facebook sharing and Pinterest pinning.
+
+  More info Open Graph meta tags
+    - https://developers.facebook.com/docs/opengraph/using-objects/
+    - https://developers.pinterest.com/rich_pins/
+
+  Use the Facebook Open Graph Debugger for validation (and cache clearing)
+    - http://developers.facebook.com/tools/debug
+
+  Validate your Pinterest rich pins
+    - https://developers.pinterest.com/rich_pins/validator/
+{{/comment}}
+<meta property="og:site_name" content="{{ shop.name }}">
+{{#if (is template.name 'index')}}
+  <!-- Index -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="{{{ page_title }}}">
+  <meta property="og:description" content="{{{ page_description }}}">
+{{else if (is template.name 'product')}}
+  <!-- Product  -->
+  <meta property="og:type" content="product">
+  <meta property="og:title" content="{{escape (strip_html product.title)}}">
+  <meta property="og:description" content="{{escape (strip_html product.description)}}">
+  {{#each (limit product.images 3) as |image|}}
+    <meta property="og:image" content="http:{{img_url image.src 'grande'}}">
+    <meta property="og:image:secure_url" content="https:{{img_url image.src 'grande'}}">
+  {{/each}}
+  <meta property="og:price:amount" content="{{escape (strip_html (money_without_currency product.price))}}">
+  <meta property="og:price:currency" content="{{ shop.currency }}">
+{{else if (is template.name 'article')}}
+  <!-- Article   -->
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="{{escape (strip_html article.title)}}">
+  <meta property="og:description" content="{{escape (strip_html article.excerpt_or_content)}}">
+  {{#if article.image}}
+    <meta property="og:image" content="http:{{img_url article '1024x1024'}}">
+    <meta property="og:image:secure_url" content="https:{{img_url article '1024x1024'}}">
+  {{/if}}
+{{else if (is template.name 'password')}}
+  <!-- Password -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="{{ shop.name }}">
+  <meta property="og:description" content="{{#unless (is shop.description blank)}}{{escape shop.description}}{{else}}{{escape shop.name}}{{/unless}}">
+{{else}}
+  <!-- Everything else   -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="{{{ page_title }}}">
+  <meta property="og:description" content="{{{ page_description }}}">
+{{/if}}
+
+{{#if (is template.name 'password')}}
+  <meta property="og:url" content="{{ shop.url }}">
+{{else}}
+  <meta property="og:url" content="{{ canonical_url }}">
+{{/if}}
+
+
+{{#comment}}
+
+  This snippet renders meta data needed to create a Twitter card
+  for products and articles.
+
+  Your cards must be approved by Twitter to be activated
+    - https://dev.twitter.com/docs/cards/validation/validator
+
+  More information:
+   - https://dev.twitter.com/docs/cards/types/summary-card
+
+{{/comment}}
+
+{{#if (and (is template.name 'article') article.image)}}
+  <meta name="twitter:card" content="summary_large_image">
+{{else}}
+  <meta name="twitter:card" content="summary">
+{{/if}}
+{{#unless (is settings.social_twitter_link blank)}}
+  <meta name="twitter:site" content="@{{last (split (escape settings.social_twitter_link) 'twitter.com/')}}">
+{{/unless}}
+{{#if (is template.name 'index')}}
+  <meta name="twitter:title" content="{{{ page_title }}}">
+  <meta name="twitter:description" content="{{escape page_description}}">
+{{else if (is template.name 'product')}}
+  <meta name="twitter:title" content="{{escape (strip_html product.title)}}">
+  <meta name="twitter:description" content="{{escape (truncate (strip_html product.description) 200 '')}}">
+{{else if (is template.name 'article')}}
+  <meta name="twitter:title" content="{{escape (strip_html article.title)}}">
+  <meta name="twitter:description" content="{{escape (truncate (strip_html article.content) 200 '')}}">
+{{/if}}

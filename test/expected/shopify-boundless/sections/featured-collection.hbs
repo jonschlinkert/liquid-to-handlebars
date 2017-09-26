@@ -1,0 +1,108 @@
+<div class="featured-collection" data-section-id="{{ section.id }}" data-section-type="featured-collection-section">
+  {{#comment}}
+    By default, featured products come from your Frontpage collection.
+    This collection is empty by default and must have products added to it
+  {{/comment}}
+  {{#if (is section.settings.home_featured_products blank)}}
+    {{assign 'featured_collection' 'frontpage'}}
+  {{else}}
+    {{assign 'featured_collection' section.settings.home_featured_products}}
+  {{/if}}
+
+  {{#comment}}Heading for screen readers{{/comment}}
+  <h2 class="visually-hidden">{{ featured_collection }}</h2>
+
+  <div class="grid grid--no-gutters grid--uniform collection-grid">
+    {{#comment}}
+      Set grid item widths based on settings
+    {{/comment}}
+    {{include 'product-grid-width' product_image_type: section.settings.product_image_type, product_image_size: section.settings.product_image_size}}
+
+    {{#unless (is section.settings.home_featured_products blank)}}
+      {{#each (get collections (toPath featured_collection 'products')) as |product|}}
+        {{assign 'price' (money_without_trailing_zeros product.price)}}
+        {{include 'product-grid-item' product_image_spacing: section.settings.product_image_spacing, vendor_enable: section.settings.vendor_enable}}
+      {{else}}
+        {{#comment}}
+          If collection is empty, show onboarding state
+          For onboarding new users to your theme, we add some default products and onboarding tutorials to help populate their store
+        {{/comment}}
+        {{include 'onboarding-featured-collection' product_image_spacing: section.settings.product_image_spacing}}
+
+      {{/each}}
+    {{else}}
+      {{include 'onboarding-featured-collection' product_image_spacing: section.settings.product_image_spacing}}
+    {{/unless}}
+  </div>
+</div>
+
+{{#schema}}
+  {
+    "name": "Featured collection",
+    "class": "index-section featured-collection-section",
+    "settings": [{
+        "type": "header",
+        "content": "Collection"
+      },{
+        "type": "collection",
+        "id": "home_featured_products",
+        "label": "Collection"
+      }, {
+        "type": "header",
+        "content": "Image"
+      },
+      {
+        "type": "select",
+        "id": "product_image_type",
+        "label": "Image style",
+        "options": [
+          {
+            "value": "portrait",
+            "label": "Tall/square"
+          },
+          {
+            "value": "landscape",
+            "label": "Wide"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "product_image_size",
+        "label": "Image size",
+        "default": "medium",
+        "options": [
+          {
+            "value": "small",
+            "label": "Small"
+          },
+          {
+            "value": "medium",
+            "label": "Medium"
+          },
+          {
+            "value": "large",
+            "label": "Large"
+          },
+          {
+            "value": "xlarge",
+            "label": "Extra large"
+          }
+        ]
+      },
+      {
+        "type": "checkbox",
+        "id": "product_image_spacing",
+        "label": "Enable image spacing"
+      },
+      {
+        "type": "checkbox",
+        "id": "vendor_enable",
+        "label": "Show product vendor"
+      }],
+    "presets": [{
+      "name": "Featured collection",
+      "category": "Collection"
+    }]
+  }
+{{/schema}}

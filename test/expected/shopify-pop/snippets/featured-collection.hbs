@@ -1,0 +1,69 @@
+<!-- snippets/featured-collection.liquid -->
+{{#unless featured_collection_width}}
+  {{assign 'featured_collection_width' 'medium--one-third large--one-sixth'}}
+{{/unless}}
+
+{{#unless featured_collection_size}}
+  {{assign 'featured_collection_size' 480}}
+{{/unless}}
+
+{{assign 'featured_collection' (get collections featured)}}
+
+{{#if (is featured_collection empty)}}
+  {{#comment}}add default state for collection block in storefront editor{{/comment}}
+  {{#capture 'collection_title'}}{{t 'home_page.onboarding.collection_title'}}{{/capture}}
+{{else}}
+  {{#capture 'collection_title'}}{{escape featured_collection.title}}{{/capture}}
+{{/if}}
+
+<a href="{{ featured_collection.url }}" title="{{t 'collections.general.link_title' title collection_title}}" class="featured-box">
+  {{#if (is featured_collection empty)}}
+    {{#capture 'current'}}{{cycle 1 2 3 4 5 6}}{{/capture}}
+    {{placeholder_svg_tag (append 'collection-' current) 'placeholder-svg'}}
+  {{else}}
+    {{#if featured_collection.image}}
+      {{assign 'collection_image' featured_collection.image}}
+    {{else}}
+      {{assign 'collection_image' featured_collection.products.first.featured_image}}
+    {{/if}}
+
+    {{#unless (is collection_image blank)}}
+      {{#capture 'img_id'}}CollectionImage-{{ collection_image.id }}--{{ featured_collection_size }}{{/capture}}
+      {{#capture 'img_wrapper_id'}}CollectionImageWrapper-{{ collection_image.id }}--{{ featured_collection_size }}{{/capture}}
+      {{assign 'img_url' (replace (img_url collection_image '1x1') '_1x1.' '_{width}x.')}}
+      {{include 'image-style' image: collection_image, small_style: true, width: featured_collection_size, height: featured_collection_size, wrapper_id: img_wrapper_id, img_id: img_id}}
+      <div id="{{ img_wrapper_id }}" class="collection__grid-image-wrapper js">
+        <div style="padding-top:{{times (divided_by 1 collection_image.aspect_ratio) 100}}%;">
+          <img id="{{ img_id }}"
+               class="collection__grid-image lazyload"
+               data-src="{{ img_url }}"
+               data-widths="[180, 360, 540, 720, 900, 1080, 1296, 1512, 1728, 2048]"
+               data-aspectratio="{{ collection_image.aspect_ratio }}"
+               data-sizes="auto"
+               alt="{{escape collection_image.alt}}">
+        </div>
+      </div>
+    {{else}}
+      <div class="js">
+        {{#capture 'image_size'}}{{ featured_collection_size }}x{{ featured_collection_size }}{{/capture}}
+        {{img_tag (img_url collection_image image_size) collection_title}}
+      </div>
+    {{/unless}}
+
+    <noscript>
+      {{#capture 'image_size'}}{{ featured_collection_size }}x{{ featured_collection_size }}{{/capture}}
+      {{img_tag (img_url collection_image image_size scale 2) collection_title}}
+    </noscript>
+  {{/if}}
+  <div class="featured-box__body">
+    <p class="h2 featured-box__title">{{ collection_title }}</p>
+
+    <hr class="hr--small">
+
+    <div class="grid">
+      <div class="grid-item large--four-sixths push--large--one-sixth">
+        <p class="btn--large">{{t 'home_page.sections.view_collection'}}</p>
+      </div>
+    </div>
+  </div>
+</a>

@@ -1,0 +1,86 @@
+<!-- /templates/customers/login.liquid -->
+
+<div class="page-width page-container">
+
+  <div class="customer__account-form text-center">
+    {{#comment}}
+      If a user has successfully requested a new password, the form.posted_successfully? variable
+      is set to true within the 'recover_customer_password' form only. Within that form you'll see a hidden <span>, which is used to initialize ShopifyCanvas.resetPasswordSuccess().
+    {{/comment}}
+    <div class="note form-success hide" id="ResetSuccess">
+      {{t 'customer.recover_password.success'}}
+    </div>
+
+    <div id="CustomerLoginForm" class="form-vertical">
+      {{#form 'customer_login'}}
+
+        <h1 class="h2">{{t 'customer.login.title'}}</h1>
+
+        {{default_errors form.errors}}
+
+        <label for="CustomerEmail" class="label--hidden">{{t 'customer.login.email'}}</label>
+        <input type="email" name="customer[email]" id="CustomerEmail" class="input-full {{#if (contains form.errors 'email')}} input--error{{/if}}" placeholder="{{t 'customer.login.email'}}" autocorrect="off" autocapitalize="off" autofocus>
+
+        {{#if form.password_needed}}
+          <label for="CustomerPassword" class="label--hidden">{{t 'customer.login.password'}}</label>
+          <input type="password" value="" name="customer[password]" id="CustomerPassword" class="input-full {{#if (contains form.errors 'password')}} input--error{{/if}}" placeholder="{{t 'customer.login.password'}}">
+        {{/if}}
+
+        <p>
+          <input type="submit" class="btn" value="{{t 'customer.login.sign_in'}}">
+        </p>
+        <p><a href="{{ shop.url }}">{{t 'customer.login.cancel'}}</a></p>
+        {{#if form.password_needed}}
+          <p><a href="#recover" id="RecoverPassword">{{t 'customer.login.forgot_password'}}</a></p>
+        {{/if}}
+        <p>{{customer_register_link (t 'customer.login.create_account')}}</p>
+
+      {{/form}}
+    </div>
+
+    {{#comment}}
+      JS shows/hides this form in ShopifyCanvas.loginForms()
+    {{/comment}}
+    <div id="RecoverPasswordForm" class="form-vertical hide">
+
+      <h2>{{t 'customer.recover_password.title'}}</h2>
+      <p>{{t 'customer.recover_password.subtext'}}</p>
+
+      <div>
+        {{#form 'recover_customer_password'}}
+
+          {{default_errors form.errors}}
+
+          {{#comment}}
+            Add a hidden span to indicate the form was submitted succesfully.
+          {{/comment}}
+          {{#if form.posted_successfully}}
+            <span class="hide reset-password-success"></span>
+          {{/if}}
+
+          <label for="RecoverEmail" class="label--hidden">{{t 'customer.recover_password.email'}}</label>
+          <input type="email" value="" name="email" id="RecoverEmail" class="input-full" placeholder="{{t 'customer.recover_password.email'}}" autocorrect="off" autocapitalize="off">
+
+          <p>
+            <input type="submit" class="btn" value="{{t 'customer.recover_password.submit'}}">
+          </p>
+
+          <button type="button" id="HideRecoverPasswordLink" class="btn--link">{{t 'customer.recover_password.cancel'}}</button>
+        {{/form}}
+      </div>
+
+    </div>
+
+    {{#comment}}
+      If accounts are set as optional, the following will be shown as an option
+      during checkout, not on the default /login page.
+    {{/comment}}
+    {{#if shop.checkout.guest_login}}
+      <h2>{{t 'customer.login.guest_title'}}</h2>
+
+      {{#form 'guest_login'}}
+        <input type="submit" class="btn" value="{{t 'customer.login.guest_continue'}}">
+      {{/form}}
+    {{/if}}
+  </div>
+</div>

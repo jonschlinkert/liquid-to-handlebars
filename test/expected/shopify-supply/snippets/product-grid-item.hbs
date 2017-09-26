@@ -1,0 +1,95 @@
+{{#unless grid_item_width}}
+  {{assign 'grid_item_width' 'large--one-quarter medium-down--one-half'}}
+{{/unless}}
+
+{{#unless image_size}}
+  {{assign 'image_size' '600x600'}}
+{{/unless}}
+
+{{#unless current_collection}}
+  {{assign 'current_collection' collection}}
+{{/unless}}
+
+{{assign 'on_sale' false}}
+{{#if (gt product.compare_at_price product.price)}}
+  {{assign 'on_sale' true}}
+{{/if}}
+
+{{assign 'sold_out' true}}
+{{#if product.available}}
+  {{assign 'sold_out' false}}
+{{/if}}
+
+<div class="grid-item {{ grid_item_width }}{{#if sold_out}} sold-out{{/if}}{{#if on_sale}} on-sale{{/if}}">
+
+  <a href="{{within product.url current_collection}}" class="product-grid-item">
+    <div class="product-grid-image">
+      <div class="product-grid-image--centered">
+        {{#if sold_out}}
+          <div class="badge badge--sold-out"><span class="badge-label">{{t 'products.product.sold_out'}}</span></div>
+        {{/if}}
+        {{#if product.featured_image}}
+        {{#capture 'img_id'}}productFeaturedImage-{{ section.id }}--{{ product.featured_image.id }}{{/capture}}
+        {{#capture 'img_id_class'}}productImage--{{ product.featured_image.id }}{{/capture}}
+        {{#capture 'wrapper_id'}}productImageWrapper-{{ product.featured_image.id }}{{/capture}}
+          {{assign 'img_url' (replace (img_url product.featured_image '1x1') '_1x1.' '_{width}x.')}}
+          <div id="{{ wrapper_id }}" class="lazyload__image-wrapper no-js" style="padding-top:{{times (divided_by 1 product.featured_image.aspect_ratio) 100}}%;">
+            <img id="{{ img_id }}"
+              class="lazyload no-js {{ img_id_class }}"
+              data-src="{{ img_url }}"
+              data-widths="[125, 180, 360, 540, 720, 900, 1080, 1296, 1512, 1728, 2048]"
+              data-aspectratio="{{ product.featured_image.aspect_ratio }}"
+              data-sizes="auto"
+              alt="{{escape product.featured_image.alt}}"
+              {{#comment}}style="max-height: {{ height }}px;">{{/comment}}>
+          </div>
+          <noscript>
+           <img src="{{img_url product.featured_image '580x'}}"
+             srcset="{{img_url product.featured_image '580x'}} 1x, {{img_url product.featured_image '580x' scale 2}} 2x"
+             alt="{{ product.featured_image.alt }}" style="opacity:1;">
+         </noscript>
+        
+        {{else}}
+        {{#capture 'current'}}{{cycle 1 2 3 4}}{{/capture}}
+        <div>
+        {{placeholder_svg_tag (append 'product-' current) 'placeholder-svg'}}
+        </div>
+      {{/if}}
+      </div>
+    </div>
+
+    <p>{{ product.title }}</p>
+
+    <div class="product-item--price">
+      <span class="h1 medium--left">
+        {{#if on_sale}}
+          <span class="visually-hidden">{{t 'products.general.sale_price'}}</span>
+        {{else}}
+          <span class="visually-hidden">{{t 'products.general.regular_price'}}</span>
+        {{/if}}
+        {{include 'price' product.price}}
+        {{#if (and on_sale section.settings.product_show_compare_at_price)}}
+          <small>
+            <s>
+              <span class="visually-hidden">{{t 'products.general.regular_price'}}</span>
+              {{include 'price' product.compare_at_price}}
+            </s>
+          </small>
+        {{/if}}
+      </span>
+
+      {{#if (and on_sale section.settings.product_show_saved_amount)}}
+        <span class="sale-tag{{#unless section.settings.show_compare_at_price}} medium--right{{/unless}}{{#if section.settings.product_reviews_enable}} has-reviews{{/if}}">
+          {{assign 'compare_price' product.compare_at_price}}
+          {{assign 'product_price' product.price}}
+          {{include 'price-sale'}}
+        </span>
+      {{/if}}
+    </div>
+
+    {{#if section.settings.product_reviews_enable}}
+      <span class="shopify-product-reviews-badge" data-id="{{ product.id }}"></span>
+    {{/if}}
+  </a>
+
+</div>

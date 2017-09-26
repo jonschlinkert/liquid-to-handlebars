@@ -1,0 +1,117 @@
+<div class="page-width">
+  <div class="section-block section-block--padding">
+    <div class="flex flex--grid flex--no-gutter">
+      {{#is section.blocks.size 1}}
+          {{assign 'flex_size' ''}}
+        {{else is section.blocks.size 2}}
+          {{assign 'flex_size' 'medium-up--one-half'}}
+        {{else is section.blocks.size 3}}
+          {{assign 'flex_size' 'medium-up--one-third'}}
+        {{else}}
+          {{assign 'flex_size' 'medium-up--one-half'}}
+      {{/is}}
+      {{#each section.blocks as |block|}}
+        <div class="flex__item flex flex--center-vertical {{ flex_size }}" {{ block.shopify_attributes }}>
+          {{#is block.type 'image_block'}}
+              <div class="flex__item">
+                {{#if (isnt block.settings.image blank)}}
+                  <noscript>
+                    <img src="{{img_url block.settings.image '600x'}}" alt="{{ block.settings.image.alt }}" class="image-content__image">
+                  </noscript>
+                  <div class="image-content__image-container">
+                    <div class="image-content__image-wrapper" style="padding-top:{{times (divided_by 1 block.settings.image.aspect_ratio) 100}}%;">
+                      {{assign 'img_url' (replace (img_url block.settings.image '1x1') '_1x1.' '_{width}x.')}}
+                      <img class="image-content__image lazyload"
+                        src="{{img_url block.settings.image '300x300'}}"
+                        data-src="{{ img_url }}"
+                        data-widths="[180, 360, 540, 720, 900, 1080, 1296, 1512, 1728, 1944, 2048]"
+                        data-aspectratio="{{ block.settings.image.aspect_ratio }}"
+                        data-sizes="auto"
+                        alt="{{escape block.settings.image.alt}}">
+                    </div>
+                  </div>
+                {{else}}
+                  <div class="image-content__image">
+                    {{placeholder_svg_tag 'image' 'placeholder-svg'}}
+                  </div>
+                {{/if}}
+              </div>
+            {{else is block.type 'text_block'}}
+              <div class="flex__item image-content__text text-{{ block.settings.align }}">
+                <p class="h5">{{escape block.settings.title}}</p>
+                <div class="rte-setting">{{ block.settings.text }}</div>
+              </div>
+          {{/is}}
+        </div>
+      {{/each}}
+    </div>
+
+    {{#if (is section.blocks.size 0)}}
+      {{include 'no-blocks'}}
+    {{/if}}
+  </div>
+</div>
+
+{{#schema}}
+  {
+    "name": "Image with text",
+    "class": "index-section",
+    "max_blocks": 4,
+    "blocks": [
+      {
+        "type": "text_block",
+        "name": "Text",
+        "settings": [
+          {
+            "type": "text",
+            "id": "title",
+            "label": "Heading",
+            "default": "Image with text"
+          },
+          {
+            "type": "richtext",
+            "id": "text",
+            "label": "Text",
+            "default": "<p>Pair large text with an image to give focus to your chosen product, collection, or blog post. Add details on availability, style, or even provide a review.</p>"
+          },
+          {
+            "type": "select",
+            "id": "align",
+            "label": "Text alignment",
+            "options": [
+              { "value": "left", "label": "Left" },
+              { "value": "center", "label": "Center" },
+              { "value": "right", "label": "Right" }
+            ],
+            "default": "left"
+          }
+        ]
+      },
+      {
+        "type": "image_block",
+        "name": "Image",
+        "settings": [
+          {
+            "type": "image_picker",
+            "id": "image",
+            "label": "Image"
+          }
+        ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "Image with text",
+        "category": "Image",
+        "blocks": [
+          {
+            "type": "image_block"
+          },
+          {
+            "type": "text_block"
+          }
+        ]
+      }
+    ]
+  }
+{{/schema}}

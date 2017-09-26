@@ -1,0 +1,130 @@
+<footer class="site-footer" role="contentinfo">
+
+  <div class="grid">
+
+    {{#is section.blocks.size 0}}
+      {{else is section.blocks.size 1}}
+        {{assign 'column_width' 'text-left'}}
+      {{else is section.blocks.size 2}}
+        {{assign 'column_width' 'medium-up--one-half small--one-whole'}}
+      {{else is section.blocks.size 3}}
+        {{assign 'column_width' 'medium-up--one-third small--one-whole'}}
+      {{else is section.blocks.size 4}}
+        {{assign 'column_width' 'medium-up--one-quarter small--one-whole'}}
+    {{/is}}
+
+    {{#each section.blocks as |block|}}
+      {{#is block.type 'menu'}}
+          <div class="grid__item {{ column_width }}">
+            {{#if block.settings.title}}
+              <h3 class="site-footer__section-title">{{escape block.settings.title}}</h3>
+            {{/if}}
+            <ul class="site-footer__menu">
+              {{#each (get linklists (toPath block.settings.menu 'links')) as |link|}}
+                <li><a href="{{ link.url }}">{{ link.title }}</a></li>
+              {{/each}}
+            </ul>
+          </div>
+
+        {{else is block.type 'text'}}
+          <div class="grid__item {{ column_width }}">
+            {{#if block.settings.title}}
+              <h3 class="site-footer__section-title">{{escape block.settings.title}}</h3>
+            {{/if}}
+            <div class="rte">{{ block.settings.richtext }}</div>
+          </div>
+
+        {{else is block.type 'newsletter'}}
+          <div class="grid__item {{ column_width }}">
+            {{#if block.settings.title}}
+              <h3 class="site-footer__section-title">{{escape block.settings.title}}</h3>
+            {{/if}}
+            <h3 class="site-footer__section-title">{{t 'general.newsletter_form.newsletter_heading'}}</h3>
+            {{include 'newsletter'}}
+          </div>
+
+      {{/is}}
+    {{/each}}
+
+    </div>
+
+  {{#if (gt section.blocks.size 0)}}
+    <hr>
+  {{/if}}
+
+  <div class="grid medium-up--grid--table sub-footer small--text-center">
+    <div class="grid__item medium-up--one-half">
+      <small>{{t 'layout.footer.copyright'}} &copy; {{date 'now' '%Y'}}, {{link_to shop.name '/'}}. {{ powered_by_link }}</small>
+    </div>
+    {{#unless (is shop.enabled_payment_types empty)}}
+      {{assign 'payment_icons_available' (split 'amazon_payments,american_express,apple_pay,bitcoin,cirrus,dankort,diners_club,discover,dogecoin,dwolla,forbrugsforeningen,interac,jcb,litecoin,maestro,master,paypal,visa' ',')}}
+      <div class="grid__item medium-up--one-half medium-up--text-right">
+        <ul class="list--inline payment-icons">
+          {{#each shop.enabled_payment_types as |type|}}
+            {{#if (contains payment_icons_available type)}}
+              <li>
+                {{assign 'icon_name' (prepend type 'icon-')}}
+                {{include 'icon_name'}}
+              </li>
+            {{/if}}
+          {{/each}}
+        </ul>
+      </div>
+    {{/unless}}
+  </div>
+</footer>
+
+{{#schema}}
+  {
+    "name": "Footer",
+    "max_blocks": 4,
+    "blocks": [
+      {
+        "type": "menu",
+        "name": "Menu",
+        "settings": [
+          {
+            "type": "text",
+            "id": "title",
+            "label": "Heading",
+            "default": "Links"
+          },
+          {
+            "type": "link_list",
+            "id": "menu",
+            "label": "Menu"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "name": "Text",
+        "settings": [
+          {
+            "type": "text",
+            "id": "title",
+            "label": "Heading",
+            "default": "Contact us"
+          },
+          {
+            "type": "richtext",
+            "id": "richtext",
+            "label": "Text",
+            "default": "<p>Use this text to share information about your brand with your customers.</p>"
+          }
+        ]
+      },
+      {
+        "type": "newsletter",
+        "name": "Newsletter signup",
+        "limit": 1,
+        "settings": [
+          {
+            "type": "paragraph",
+            "content": "Any customers who sign up will have an account created for them in Shopify. [View customers](/admin/customers?query=&accepts_marketing=1)"
+          }
+        ]
+      }
+    ]
+  }
+{{/schema}}

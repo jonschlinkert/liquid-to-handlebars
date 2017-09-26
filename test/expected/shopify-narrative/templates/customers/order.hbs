@@ -1,0 +1,160 @@
+<!-- /templates/customers/order.liquid -->
+<div class="page-width">
+  <header class="section-header section-header--small text-center">
+    <h1 class="section-header__title h2">{{t 'customer.account.title'}}</h1>
+    <div class="section-header__btn">
+      <a class="btn-link" href="/account">{{t 'customer.account.return'}}</a>
+    </div>
+  </header>
+  
+  <div class="grid">
+    <div class="grid__item medium-up--four-fifths medium-up--push-one-tenth">
+
+      <h2 class="h4">{{t 'customer.order.title' name order.name}}</h2>
+
+      <p>{{date (t 'customer.order.date' date order.created_at) '%B %d, %Y %I:%M%p'}}</p>
+
+      {{#if order.cancelled}}
+        {{assign 'cancelled_at' (date order.cancelled_at '%B %d, %Y %I:%M%p')}}
+        <p>{{t 'customer.order.cancelled' date cancelled_at}}</p>
+        <p>{{t 'customer.order.cancelled_reason' reason order.cancel_reason}}</p>
+      {{/if}}
+
+      <table class="responsive-table">
+        <thead>
+        <tr>
+          <th>{{t 'customer.order.product'}}</th>
+          <th>{{t 'customer.order.sku'}}</th>
+          <th>{{t 'customer.order.price'}}</th>
+          <th>{{t 'customer.order.quantity'}}</th>
+          <th>{{t 'customer.order.total'}}</th>
+        </tr>
+        </thead>
+        <tbody>
+        {{#each order.line_items as |line_item|}}
+          <tr id="{{ line_item.id }}" class="order-item responsive-table__row" >
+            <td data-label="{{t 'customer.order.product'}}">
+              <a class="order-item__product" href="{{ line_item.url }}" data-cart-item-href data-cart-item-title>{{ line_item.product.title }}</a>
+              <p class="order-item__variant" data-cart-item-variant-title>{{ line_item.variant.title }}</p>
+              {{#if line_item.fulfillment}}
+                <div>
+                  {{assign 'created_at' (date line_item.fulfillment.created_at format 'month_day_year')}}
+                  {{t 'customer.order.fulfilled_at' date created_at}}
+                  <div>
+                    {{#if line_item.fulfillment.tracking_url}}
+                      <a href="{{ line_item.fulfillment.tracking_url }}">
+                        {{t 'customer.order.track_shipment'}}
+                      </a>
+                    {{/if}}
+                    <div>
+                      {{ line_item.fulfillment.tracking_company }}
+                      {{#if line_item.fulfillment.tracking_number}} #{{ line_item.fulfillment.tracking_number }} {{/if}}
+                    </div>
+                  </div>
+                </div>
+              {{/if}}
+            </td>
+            <td data-label="{{t 'customer.order.sku'}}">{{ line_item.sku }}</td>
+            <td data-label="{{t 'customer.order.price'}}">{{money line_item.price}}</td>
+            <td data-label="{{t 'customer.order.quantity'}}">{{ line_item.quantity }}</td>
+            <td data-label="{{t 'customer.order.total'}}">{{money (times line_item.quantity line_item.price)}}</td>
+          </tr>
+        {{/each}}
+        </tbody>
+        <tfoot>
+        <tr class="responsive-table__row">
+          <td colspan="4" class="small--hide">{{t 'customer.order.subtotal'}}</td>
+          <td data-label="{{t 'customer.order.subtotal'}}">{{money order.subtotal_price}}</td>
+        </tr>
+
+        {{#each order.discounts as |discount|}}
+          <tr>
+            <td colspan="4" class="small--hide">{{ discount.code }} {{t 'customer.order.discount'}}</td>
+            <td data-label="{{t 'customer.order.discount'}}">{{money discount.savings}}</td>
+          </tr>
+        {{/each}}
+
+        {{#each order.shipping_methods as |shipping_method|}}
+          <tr>
+            <td colspan="4" class="small--hide">{{t 'customer.order.shipping'}} ({{ shipping_method.title }})</td>
+            <td data-label="{{t 'customer.order.shipping'}} ({{ shipping_method.title }})">{{money shipping_method.price}}</td>
+          </tr>
+        {{/each}}
+
+        {{#each order.tax_lines as |tax_line|}}
+          <tr>
+            <td colspan="4" class="small--hide">{{t 'customer.order.tax'}} ({{ tax_line.title }} {{times tax_line.rate 100}}%)</td>
+            <td data-label="{{t 'customer.order.tax'}} ({{ tax_line.title }} {{times tax_line.rate 100}}%)">{{money tax_line.price}}</td>
+          </tr>
+        {{/each}}
+
+        <tr>
+          <td colspan="4" class="small--hide"><strong>{{t 'customer.order.total'}}</strong></td>
+          <td data-label="{{t 'customer.order.total'}}"><strong>{{money order.total_price}} {{ order.currency }}</strong></td>
+        </tr>
+        </tfoot>
+      </table>
+
+      <hr>
+
+      <h3 class="h4">{{t 'customer.order.billing_address'}}</h3>
+
+      <p><strong>{{t 'customer.order.payment_status'}}:</strong> {{ order.financial_status_label }}</p>
+
+      <p>{{ order.billing_address.name }}</p>
+      <p>
+        {{#if (isnt order.billing_address.company blank)}}
+          {{ order.billing_address.company }}<br>
+        {{/if}}
+        {{#if (isnt order.billing_address.street blank)}}
+          {{ order.billing_address.street }}<br>
+        {{/if}}
+        {{#if (isnt order.billing_address.city blank)}}
+          {{ order.billing_address.city }}<br>
+        {{/if}}
+        {{#if (isnt order.billing_address.province blank)}}
+          {{ order.billing_address.province }}<br>
+        {{/if}}
+        {{#if (isnt order.billing_address.zip blank)}}
+          {{upcase order.billing_address.zip}}<br>
+        {{/if}}
+        {{#if (isnt order.billing_address.country blank)}}
+          {{ order.billing_address.country }}<br>
+        {{/if}}
+        {{#if (isnt order.billing_address.phone blank)}}
+          {{ order.billing_address.phone }}
+        {{/if}}
+      </p>
+
+      <h3 class="h4">{{t 'customer.order.shipping_address'}}</h3>
+
+      <p><strong>{{t 'customer.order.fulfillment_status'}}:</strong> {{ order.fulfillment_status_label }}</p>
+
+      <p>{{ order.shipping_address.name }}</p>
+      <p>
+        {{#if (isnt order.shipping_address.company blank)}}
+          {{ order.shipping_address.company }}<br>
+        {{/if}}
+        {{#if (isnt order.shipping_address.street blank)}}
+          {{ order.shipping_address.street }}<br>
+        {{/if}}
+        {{#if (isnt order.shipping_address.city blank)}}
+          {{ order.shipping_address.city }}<br>
+        {{/if}}
+        {{#if (isnt order.shipping_address.province blank)}}
+          {{ order.shipping_address.province }}<br>
+        {{/if}}
+        {{#if (isnt order.shipping_address.zip blank)}}
+          {{upcase order.shipping_address.zip}}<br>
+        {{/if}}
+        {{#if (isnt order.shipping_address.country blank)}}
+          {{ order.shipping_address.country }}<br>
+        {{/if}}
+        {{#if (isnt order.shipping_address.phone blank)}}
+          {{ order.shipping_address.phone }}
+        {{/if}}
+      </p>
+
+    </div>
+  </div>
+</div>

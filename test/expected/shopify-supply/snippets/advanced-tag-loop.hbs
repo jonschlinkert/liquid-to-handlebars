@@ -1,0 +1,14 @@
+{{#comment}}
+  A loop to catch and filter out the different tag categories.
+  This is mainly for advanced tagging, but will also help us strip
+  out any tag categories from our tags (E.g. remove BRAND_ from BRAND_tag)
+{{/comment}}
+{{#if (and (is template.name 'collection') (gt collection.all_tags.size 0))}}
+  {{assign 'categories' ''}}
+  {{#each collection.all_tags as |tag|}}
+    {{#if (contains tag '_')}}
+      {{#capture 'categories'}}{{#unless (is categories blank)}}{{ categories }}|{{/unless}}{{first (split tag '_')}}{{/capture}}
+    {{/if}}
+  {{/each}}
+  {{assign 'cat_array' (uniq (split categories '|'))}}
+{{/if}}

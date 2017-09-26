@@ -1,0 +1,103 @@
+<!-- snippets/action-bar.liquid -->
+{{#comment}}
+  Action Bar
+    - Only appears on pages which contain a link that is in the action bar
+    - Exceptions: always on for collections. Always off for product.
+
+    To remove the action bar, remove or comment out `{{include 'action-bar'}}
+    anythwere it appears.
+{{/comment}}
+
+{{assign 'action_bar_main_active' true}}
+{{#each (get linklists (toPath section.settings.action_bar_link_list 'links')) as |link|}}
+  {{#if (or link.active (is template.name 'index') (is template.name 'collection'))}}
+    {{assign 'child_list_handle' (handleize link.title)}}
+    {{#if (and (is (get linklists (toPath child_list_handle 'links')) blank) link.active)}}
+      {{assign 'action_bar_active_url' link.url}}
+    {{/if}}
+
+    {{#if (isnt (get linklists (toPath child_list_handle 'links')) blank)}}
+      {{#each (get linklists (toPath child_list_handle 'links')) as |childlink|}}
+        {{#if (or childlink.active link.active)}}
+          {{assign 'active_child_link' true}}
+          {{assign 'active_child_link_handle' child_list_handle}}
+
+          {{#comment}}
+            make sure we're handling duplicate links in the action bar and
+            sub action bar menus.
+          {{/comment}}
+          {{#if (is childlink.active.url action_bar_active_url)}}
+            {{assign 'action_bar_main_active' false}}
+          {{else}}
+          {{/if}}
+        {{/if}}
+      {{/each}}
+    {{/if}}
+  {{/if}}
+{{/each}}
+
+
+  {{#comment}}
+    If on index, it should be at the bottom of the hero area
+  {{/comment}}
+  <div class="action-bar-wrapper {{#if (is template.name 'index')}} action-bar--hero{{/if}} {{#if (is section.settings.action_bar_link_list blank)}} hide {{/if}}" data-section-id="{{ section.id }}" data-section-type="action-bar-section">
+
+
+    <nav class="action-bar action-bar--has-menu" role="presentation">
+      <ul class="action-bar__menu--main action-bar__menu list--inline {{#if action_bar_main_active}} action-bar--show{{/if}}" id="SiteNav" role="navigation">
+        {{#comment}}
+          Assign which child linklist is associated with the action bar
+          link
+        {{/comment}}
+        {{#each (get linklists (toPath section.settings.action_bar_link_list 'links')) as |link|}}
+          {{assign 'child_list_handle' (handleize link.title)}}
+          {{#if (isnt (get linklists (toPath child_list_handle 'links')) blank)}}
+            {{#if (is child_list_handle active_child_link_handle)}}
+              {{assign 'active_children' true}}
+            {{else}}
+              {{assign 'active_children' false}}
+            {{/if}}
+            <li class="action-bar__menu-item action-bar--has-dropdown{{#if (or link.active active_children)}} action-bar--active{{/if}}{{#if active_children}} action-bar--disabled{{/if}}" data-child-list-handle="{{ child_list_handle }}" >
+              <a href="{{ link.url }}" class="action-bar__link" aria-controls="{{capitalize child_list_handle}}">{{ link.title }}</a>
+            </li>
+          {{else}}
+            <li class="action-bar__menu-item {{#if link.active}}action-bar--active{{/if}}">
+              <a href="{{ link.url }}" class="action-bar__link">{{ link.title }}</a>
+            </li>
+          {{/if}}
+        {{/each}}
+      </ul>
+
+      {{#each (get linklists (toPath section.settings.action_bar_link_list 'links')) as |link|}}
+        {{assign 'child_list_handle' (handleize link.title)}}
+        {{#if (isnt (get linklists (toPath child_list_handle 'links')) blank)}}
+          <ul class="action-bar__menu--sub action-bar__menu list--inline  {{#if (is child_list_handle active_child_link_handle)}} action-bar--show{{/if}}" id="{{capitalize child_list_handle}}" data-child-list-handle="{{ child_list_handle }}" role="navigation">
+            <li>
+              <button type="button" class="btn action-bar__back action-bar__link" aria-controls="SiteNav">
+                <span class="icon icon-arrow-left" aria-hidden="true"></span>
+                <span class="icon__fallback-text">{{t 'layout.navigation.action_bar_back'}}</span>
+              </button>
+            </li>
+            {{#each (get linklists (toPath child_list_handle 'links')) as |childlink|}}
+              <li class="action-bar__menu-item {{#if childlink.active}}action-bar--active{{/if}}">
+                <a href="{{ childlink.url }}" class="action-bar__link">{{escape childlink.title}}</a>
+              </li>
+            {{/each}}
+          </ul>
+        {{/if}}
+      {{/each}}
+    </nav>
+  </div>
+
+{{#schema}}
+  {
+    "name": "Action bar",
+    "class": "action-bar-section",
+    "settings": [  {
+        "type": "link_list",
+        "id": "action_bar_link_list",
+        "label": "Menu",
+        "default": "main-menu"
+      }]
+  }
+{{/schema}}

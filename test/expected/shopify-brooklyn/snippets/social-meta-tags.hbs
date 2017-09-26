@@ -1,0 +1,61 @@
+<!-- /snippets/social-meta-tags.liquid -->
+{{#comment}}
+  Open graph tags.
+{{/comment}}
+{{#if (is template.name 'index')}}
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="{{{ page_title }}}">
+  <meta property="og:url" content="{{ canonical_url }}">
+  <meta property="og:description" content="{{{ page_description }}}">
+{{else if (is template.name 'product')}}
+  <meta property="og:type" content="product">
+  <meta property="og:title" content="{{escape (strip_html product.title)}}">
+  <meta property="og:url" content="{{ canonical_url }}">
+  <meta property="og:description" content="{{escape (strip_html product.description)}}">
+  {{#each (limit product.images 3) as |image|}}
+    <meta property="og:image" content="http:{{img_url image.src 'grande'}}">
+    <meta property="og:image:secure_url" content="https:{{img_url image.src 'grande'}}">
+  {{/each}}
+  <meta property="og:price:amount" content="{{escape (strip_html (money_without_currency product.price))}}">
+  <meta property="og:price:currency" content="{{ shop.currency }}">
+{{else if (is template.name 'article')}}
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="{{escape (strip_html article.title)}}">
+  <meta property="og:url" content="{{ canonical_url }}">
+  <meta property="og:description" content="{{escape (strip_html article.excerpt_or_content)}}">
+  {{#if article.image}}
+    <meta property="og:image" content="http:{{img_url article '1024x1024'}}">
+    <meta property="og:image:secure_url" content="https:{{img_url article '1024x1024'}}">
+  {{/if}}
+{{else if (is template.name 'password')}}
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="{{escape shop.name}}">
+  <meta property="og:url" content="{{ shop.url }}">
+  <meta property="og:description" content="{{#unless (is shop.description blank)}}{{escape shop.description}}{{else}}{{escape shop.name}}{{/unless}}">
+{{else}}
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="{{escape page_title}}">
+  <meta property="og:url" content="{{ canonical_url }}">
+  {{#if page_description}}
+    <meta property="og:description" content="{{escape page_description}}">
+  {{/if}}
+{{/if}}
+<meta property="og:site_name" content="{{ shop.name }}">
+
+{{#comment}}
+  This snippet renders meta data needed to create a Twitter card.
+{{/comment}}
+<meta name="twitter:card" content="summary_large_image">
+{{#unless (is settings.social_twitter_link blank)}}
+  <meta name="twitter:site" content="@{{last (split (escape settings.social_twitter_link) 'twitter.com/')}}">
+{{/unless}}
+{{#if (is template.name 'index')}}
+  <meta name="twitter:title" content="{{{ page_title }}}">
+  <meta name="twitter:description" content="{{escape page_description}}">
+{{else if (is template.name 'product')}}
+  <meta name="twitter:title" content="{{escape (strip_html product.title)}}">
+  <meta name="twitter:description" content="{{escape (truncate (strip_html product.description) 200 '')}}">
+{{else if (is template.name 'article')}}
+  <meta name="twitter:title" content="{{escape (strip_html article.title)}}">
+  <meta name="twitter:description" content="{{escape (truncate (strip_html article.excerpt_or_content) 200 '')}}">
+{{/if}}

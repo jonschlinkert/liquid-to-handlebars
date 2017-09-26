@@ -1,0 +1,277 @@
+<!doctype html>
+<!--[if IE 9]> <html class="ie9 no-js" lang="{{ shop.locale }}"> <![endif]-->
+<!--[if (gt IE 9)|!(IE)]><!--> <html class="no-js" lang="{{ shop.locale }}"> <!--<![endif]-->
+<head>
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+
+  <meta name="theme-color" content="{{ settings.color_nav_bg }}">
+
+  {{#if settings.favicon}}
+    <link rel="shortcut icon" href="{{img_url settings.favicon '32x32'}}" type="image/png" />
+  {{/if}}
+
+  <link rel="canonical" href="{{ canonical_url }}">
+
+  <title>
+  {{{ page_title }}}{{#if current_tags}}{{assign 'meta_tags' (join current_tags ', ')}} &ndash; {{t 'general.meta.tags' tags meta_tags}}{{/if}}{{#if (isnt current_page 1)}} &ndash; {{t 'general.meta.page' page current_page}}{{/if}}{{#unless (contains page_title shop.name)}} &ndash; {{ shop.name }}{{/unless}}
+  </title>
+
+  {{#if page_description}}
+    <meta name="description" content="{{escape page_description}}">
+  {{/if}}
+
+  {{include 'social-meta-tags'}}
+
+  {{stylesheet_tag (asset_url 'theme.scss.css')}}
+
+  <!-- Google Fonts | from theme settings ================================================== -->
+  {{#if (contains settings.type_base_family 'Google')}}
+    {{assign 'type_base_parts' (split settings.type_base_family '_')}}
+    {{#capture 'base_google_url'}}{{get type_base_parts 1}}:{{get type_base_parts 2}}{{/capture}}
+    {{stylesheet_tag (append '//fonts.googleapis.com/css?family=' base_google_url)}}
+  {{/if}}
+  {{#if (contains settings.type_header_family 'Google')}}
+    {{#unless (contains settings.type_header_family (get type_base_parts 1))}}
+      {{assign 'type_header_parts' (split settings.type_header_family '_')}}
+      {{#capture 'header_google_url'}}{{get type_header_parts 1}}:{{get type_header_parts 2}}{{/capture}}
+      {{stylesheet_tag (append '//fonts.googleapis.com/css?family=' header_google_url)}}
+    {{/unless}}
+  {{/if}}
+
+  <script>
+    window.theme = window.theme || {};
+    theme.strings = {
+      cartEmpty: {{json (t 'cart.general.empty')}},
+      savingHtml: {{json (t 'cart.general.savings_html' price '[savings]')}},
+      addToCart: {{json (t 'products.product.add_to_cart')}},
+      soldOut: {{json (t 'products.product.sold_out')}},
+      unavailable: {{json (t 'products.product.unavailable')}},
+      addressError: {{json (t 'map.address_error')}},
+      addressNoResults: {{json (t 'map.address_no_results')}},
+      addressQueryLimit: {{json (t 'map.address_query_limit_html')}},
+      authError: {{json (t 'map.auth_error_html')}}
+    };
+    theme.settings = {
+      cartType: {{json settings.cart_type}},
+      moneyFormat: {{json shop.money_format}}
+    };
+  </script>
+
+  <!--[if (gt IE 9)|!(IE)]><!--><script src="{{asset_url 'lazysizes.min.js'}}" async="async"></script><!--<![endif]-->
+  <!--[if lte IE 9]><script src="{{asset_url 'lazysizes.min.js'}}"></script><![endif]-->
+
+  {{#if (is template.directory 'customers')}}
+    <!--[if (gt IE 9)|!(IE)]><!--><script src="{{shopify_asset_url 'shopify_common.js'}}" defer="defer"></script><!--<![endif]-->
+    <!--[if lte IE 9]><script src="{{shopify_asset_url 'shopify_common.js'}}"></script><![endif]-->
+  {{/if}}
+
+  <!--[if (gt IE 9)|!(IE)]><!--><script src="{{asset_url 'vendor.js'}}" defer="defer"></script><!--<![endif]-->
+  <!--[if lte IE 9]><script src="{{asset_url 'vendor.js'}}"></script><![endif]-->
+
+  {{#if (or (is template.name 'product') (is template.name 'cart') (is settings.cart_type 'drawer'))}}
+    <!--[if (gt IE 9)|!(IE)]><!--><script src="{{shopify_asset_url 'option_selection.js'}}" defer="defer"></script><!--<![endif]-->
+    <!--[if lte IE 9]><script src="{{shopify_asset_url 'option_selection.js'}}"></script><![endif]-->
+  {{/if}}
+
+  <!--[if (gt IE 9)|!(IE)]><!--><script src="{{asset_url 'theme.js'}}" defer="defer"></script><!--<![endif]-->
+  <!--[if lte IE 9]><script src="{{asset_url 'theme.js'}}"></script><![endif]-->
+
+  {{ content_for_header }}
+
+</head>
+
+<body id="{{handle page_title}}" class="{{#if customer}}customer-logged-in {{/if}}template-{{handle (truncatewords (replace template '.' ' ') 1 '')}}" >
+  <div id="SearchDrawer" class="search-bar drawer drawer--top">
+    <div class="search-bar__table">
+      <form action="/search" method="get" class="search-bar__table-cell search-bar__form" role="search">
+        <div class="search-bar__table">
+          <div class="search-bar__table-cell search-bar__icon-cell">
+            <button type="submit" class="search-bar__icon-button search-bar__submit">
+              <span class="icon icon-search" aria-hidden="true"></span>
+              <span class="icon__fallback-text">{{t 'general.search.submit'}}</span>
+            </button>
+          </div>
+          <div class="search-bar__table-cell">
+            <input type="search" id="SearchInput" name="q" value="{{escape search.terms}}" placeholder="{{t 'general.search.placeholder'}}" aria-label="{{t 'general.search.placeholder'}}" class="search-bar__input">
+          </div>
+        </div>
+      </form>
+      <div class="search-bar__table-cell text-right">
+        <button type="button" class="search-bar__icon-button search-bar__close js-drawer-close">
+          <span class="icon icon-x" aria-hidden="true"></span>
+          <span class="icon__fallback-text">{{t 'general.search.close_search'}}</span>
+        </button>
+      </div>
+    </div>
+  </div>
+  <div id="NavDrawer" class="drawer drawer--left">
+  {{section 'sidebar-menu'}}
+  </div>
+  <div id="CartDrawer" class="drawer drawer--right drawer--has-fixed-footer">
+    <div class="drawer__header">
+      <div class="drawer__close">
+        <button type="button" class="drawer__close-button js-drawer-close">
+          <span class="icon icon-x" aria-hidden="true"></span>
+          <span class="icon__fallback-text">{{t 'cart.general.close_cart'}}</span>
+        </button>
+      </div>
+    </div>
+    <div class="drawer__inner">
+      <div id="CartContainer">
+      </div>
+    </div>
+  </div>
+
+  <div id="PageContainer">
+    {{section 'announcement-bar'}}
+
+    {{#unless (is template.name 'index')}}
+      <div class="site-header-wrapper">
+        <div class="site-header-container">
+          {{section 'header'}}
+
+          <div class="action-area">
+            {{#unless (or (is template.name 'product') (is template.name 'search') (is template.name 'index'))}}
+              {{include 'action-bar'}}
+            {{/unless}}
+
+            {{#if (and (is template.name 'search') search.performed)}}
+              <div class="action-bar">
+                <div class="search__results-count">
+                  {{t 'general.search.results_with_count' count search.results_count term search.terms}}
+                </div>
+              </div>
+            {{/if}}
+          </div>
+        </div>
+      </div>
+    {{/unless}}
+
+    <main class="main-content" role="main">
+      {% body %}
+    </main>
+
+    {{section 'footer'}}
+
+  </div>
+
+  {{#comment}}
+    Enable ajax cart drawer
+  {{/comment}}
+  {{#if (is settings.cart_type 'drawer')}}
+    <script id="CartTemplate" type="text/template">
+      {{#raw}}
+        <form action="/cart" method="post" novalidate class="cart ajaxcart">
+          <div class="ajaxcart__inner ajaxcart__inner--has-fixed-footer">
+            {{#items}}
+            <div class="ajaxcart__row">
+              <div class="ajaxcart__product" data-line="{{ line }}">
+                <div class="grid grid--half-gutters">
+                  <div class="grid__item one-quarter">
+                    <a href="{{ url }}" class="ajaxcart__product-image"><img src="{{ img }}" alt="{{ name }}"></a>
+                  </div>
+                  <div class="grid__item three-quarters">
+                    <div class="ajaxcart__product-name-wrapper">
+                      <a href="{{ url }}" class="ajaxcart__product-name h4">{{ name }}</a>
+                      {{#if variation}}
+                        <span class="ajaxcart__product-meta">{{ variation }}</span>
+                      {{/if}}
+                      {{#properties}}
+                        {{#each this}}
+                          {{#if this}}
+                            <span class="ajaxcart__product-meta">{{ @key }}: {{ this }}</span>
+                          {{/if}}
+                        {{/each}}
+                      {{/properties}}
+                    </div>
+
+                    <div class="grid grid--table">
+                      <div class="grid__item one-half">
+                        <div class="ajaxcart__qty">
+                          <button type="button" class="ajaxcart__qty-adjust ajaxcart__qty--minus" data-id="{{ key }}" data-qty="{{ itemMinus }}" data-line="{{ line }}" aria-label="{{/raw}}{{t 'cart.label.reduce_quantity'}}{{#raw}}">
+                            <span class="icon icon-minus" aria-hidden="true"></span>
+                            <span class="icon__fallback-text" aria-hidden="true">&minus;</span>
+                          </button>
+                          <input type="text" name="updates[]" class="ajaxcart__qty-num" value="{{ itemQty }}" min="0" data-id="{{ key }}" data-line="{{ line }}" aria-label="quantity" pattern="[0-9]*">
+                          <button type="button" class="ajaxcart__qty-adjust ajaxcart__qty--plus" data-id="{{ key }}" data-line="{{ line }}" data-qty="{{ itemAdd }}" aria-label="{{/raw}}{{t 'cart.label.increase_quantity'}}{{#raw}}">
+                            <span class="icon icon-plus" aria-hidden="true"></span>
+                            <span class="icon__fallback-text" aria-hidden="true">+</span>
+                          </button>
+                        </div>
+                      </div>
+                      <div class="grid__item one-half text-right">
+                      {{#if discountsApplied}}
+                        <small class="ajaxcart-item__price-strikethrough"><s>{{{ originalLinePrice }}}</s></small>
+                        <br><span>{{{ linePrice }}}</span>
+                      {{else}}
+                         <span>{{{ linePrice }}}</span>
+                      {{/if}}
+                      </div>
+                    </div>
+                    {{#if discountsApplied}}
+                      <div class="grid grid--table">
+                        <div class="grid__item text-right">
+                          {{#each discounts}}
+                            <small class="ajaxcart-item__discount">{{ this.title }}</small><br>
+                          {{/each}}
+                        </div>
+                      </div>
+                    {{/if}}
+                  </div>
+                </div>
+              </div>
+            </div>
+            {{/items}}
+
+            {{/raw}}{{#if settings.cart_notes_enable}}{{#raw}}
+              <div class="ajaxcart__row">
+                <label for="CartSpecialInstructions" class="ajaxcart__note txt--minor">{{/raw}}{{t 'cart.general.note'}}{{#raw}}</label>
+                <textarea name="note" class="input-full" id="CartSpecialInstructions">{{ note }}</textarea>
+              </div>
+            {{/raw}}{{/if}}{{#raw}}
+          </div>
+          <div class="ajaxcart__footer ajaxcart__footer--fixed">
+            <div class="ajaxcart__subtotal">
+              <div class="grid grid--table">
+                <div class="grid__item two-thirds">
+                  <span class="ajaxcart__subtotal-title h3">{{/raw}}{{t 'cart.general.subtotal'}}{{#raw}}</span>
+                </div>
+                <div class="grid__item one-third text-right">
+                  <span>{{{ totalPrice }}}</span>
+                </div>
+              </div>
+              {{#if totalCartDiscountApplied}}
+                <p class="ajaxcart__savings text-center"><em>{{{ totalCartDiscount }}}</em></p>
+              {{/if}}
+            </div>
+            <p class="text-center ajaxcart__note txt--minor">{{/raw}}{{t 'cart.general.shipping_at_checkout'}}{{#raw}}</p>
+            <button type="submit" class="btn btn--full cart__checkout" name="checkout">
+              {{/raw}}{{t 'cart.general.checkout'}}{{#raw}}
+            </button>
+          </div>
+        </form>
+      {{/raw}}
+    </script>
+    <script id="JsQty" type="text/template">
+      {{#raw}}
+        <div class="js-qty">
+          <button type="button" class="js-qty__adjust js-qty__adjust--minus" data-id="{{ key }}" data-qty="{{ itemMinus }}" aria-label="{{/raw}}{{t 'cart.label.reduce_quantity'}}{{#raw}}">
+            <span class="icon icon-minus" aria-hidden="true"></span>
+            <span class="icon__fallback-text" aria-hidden="true">&minus;</span>
+          </button>
+          <input type="text" class="js-qty__num" value="{{ itemQty }}" min="1" data-id="{{ key }}" aria-label="quantity" pattern="[0-9]*" name="{{ inputName }}" id="{{ inputId }}">
+          <button type="button" class="js-qty__adjust js-qty__adjust--plus" data-id="{{ key }}" data-qty="{{ itemAdd }}" aria-label="{{/raw}}{{t 'cart.label.increase_quantity'}}{{#raw}}">
+            <span class="icon icon-plus" aria-hidden="true"></span>
+            <span class="icon__fallback-text" aria-hidden="true">+</span>
+          </button>
+        </div>
+      {{/raw}}
+    </script>
+
+  {{/if}}
+
+</body>
+</html>

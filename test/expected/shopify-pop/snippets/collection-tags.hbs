@@ -1,0 +1,36 @@
+{{#comment}}
+
+  Sorts collection by tags
+
+  For more information on collection tags:
+    - http://docs.shopify.com/themes/liquid-variables/collection
+
+{{/comment}}
+
+{{#if (gt collection.all_tags.size 0)}}
+  <div class="filter-dropdown__wrapper text-center collection-tags">
+    <div class="filter-dropdown">
+
+      <label class="filter-dropdown__label" for="sortTags">
+        <span class="filter-dropdown__label--title">{{t 'collections.sorting.title_tags'}}</span>
+        <span class="filter-dropdown__label--active"></span>
+      </label>
+
+      <select name="sortTags" id="sortTags" class="filter-dropdown__select">
+
+        {{#if collection.handle}}
+          <option value="/collections/{{ collection.handle }}">{{t 'collections.sorting.all_of_collection' collection collection.title}}</option>
+        {{else if collection.current_type}}
+          <option value="{{url_for_type collection.current_type}}">{{t 'collections.sorting.all_of_collection' collection collection.title}}</option>
+        {{else if collection.current_vendor}}
+          <option value="{{url_for_vendor collection.current_vendor}}">{{t 'collections.sorting.all_of_collection' collection collection.title}}</option>
+        {{/if}}
+        {{#each collection.all_tags as |tag|}}
+          <option value="/collections/{{#if (isnt collection.handle blank)}}{{ collection.handle }}{{else}}all{{/if}}/{{handleize tag}}"{{#if (contains current_tags tag)}} selected="selected"{{/if}}>{{ tag }}</option>
+        {{/each}}
+
+      </select>
+
+    </div>
+  </div>
+{{/if}}

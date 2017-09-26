@@ -1,0 +1,172 @@
+{{#comment}}
+
+  Comments will not appear right after they are submitted, either to be checked for spam
+  or to await moderation. When a comment is submitted, the browser is redirected to a page
+  that includes the new comment id in its URL.
+    Example: http://shopname.myshopify.com/blogs/news/2022072-my-post?comment=3721372
+
+  More information:
+    - http://docs.shopify.com/themes/liquid-variables/comment
+
+{{/comment}}
+
+{{assign 'new_comment' false}}
+{{#if (and comment comment.created_at)}}
+  {{assign 'new_comment' true}}
+  {{assign 'new_comment_id' comment.id}}
+{{/if}}
+
+{{#if new_comment}}
+  {{assign 'duplicate_comment' false}}
+  {{#each article.comments as |comment|}}
+    {{#if (is comment.id new_comment_id)}}
+      {{assign 'duplicate_comment' true}}
+      {{break}}
+    {{/if}}
+  {{/each}}
+
+  {{#if duplicate_comment}}
+    {{assign 'number_of_comments' article.comments_count}}
+  {{else}}
+    {{assign 'number_of_comments' (plus article.comments_count 1)}}
+  {{/if}}
+{{else}}
+  {{assign 'number_of_comments' article.comments_count}}
+{{/if}}
+
+<div class="page-width page-container" itemscope itemtype="http://schema.org/Article">
+  <header class="section-header">
+    <h1 class="h2">{{ article.title }}</h1>
+    <ul class="list--inline article-meta txt--minor">
+      <li>{{ article.author }}</li>
+      {{#if (gt article.tags.size 0)}}
+        <li class="list--inline__separator">
+          {{#each article.tags as |tag|}}
+            <a href="{{ blog.url }}/tagged/{{handle tag}}">{{ tag }}</a>{{#unless forloop.last}}, {{/unless}}
+          {{/each}}
+        </li>
+      {{/if}}
+      <li class="list--inline__separator"><time datetime="{{date article.published_at '%Y-%m-%d'}}">{{date article.published_at format 'month_day_year'}}</time></li>
+    </ul>
+  </header>
+
+  <article class="rte rte--indented-images" itemprop="articleBody">
+    {{ article.content }}
+  </article>
+
+  {{#if section.settings.social_sharing_blog}}
+    <hr class="hr--clear">
+    <h3 class="h2">{{t 'blogs.article.share_this_post'}}</h3>
+    {{include 'social-sharing",' share_title: article.title, share_permalink: article.url, share_image: article.image}}
+  {{/if}}
+
+  {{#if blog.comments_enabled}}
+    <hr class="hr--clear">
+    <div class="comments-wrapper grid">
+      <div class="grid__item large-up--one-half">
+        {{#comment}}
+          Comment submission form
+        {{/comment}}
+        <div class="form-vertical">
+          {{#form 'new_comment' article}}
+
+            {{#comment}}
+              #AddCommentTitle is used simply as an anchor link when a comment error exists
+            {{/comment}}
+            <h3 id="AddCommentTitle" class="h2">{{t 'blogs.comments.title'}}</h3>
+
+            {{default_errors form.errors}}
+
+            <label for="CommentAuthor" class="label--hidden">{{t 'blogs.comments.name'}}</label>
+            <input type="text" name="comment[author]" id="CommentAuthor" class="input-full{{#if (contains form.errors 'author')}} input--error{{/if}}" placeholder="{{t 'blogs.comments.name'}}" value="{{ form.author }}" autocapitalize="words">
+
+            <label for="CommentEmail" class="label--hidden">{{t 'blogs.comments.email'}}</label>
+            <input type="email" name="comment[email]" id="CommentEmail" class="input-full{{#if (contains form.errors 'email')}} input--error{{/if}}" placeholder="{{t 'blogs.comments.email'}}" value="{{ form.email }}" autocorrect="off" autocapitalize="off">
+
+            <label for="CommentBody" class="label--hidden">{{t 'blogs.comments.message'}}</label>
+            <textarea name="comment[body]" id="CommentBody" class="input-full comment__textarea{{#if (contains form.errors 'body')}} input--error{{/if}}" placeholder="{{t 'blogs.comments.message'}}">{{ form.body }}</textarea>
+
+            {{#if blog.moderated}}
+              <p><span class="txt--minor txt--emphasis">{{t 'blogs.comments.moderated'}}</span></p>
+            {{/if}}
+
+            <input type="submit" class="btn" value="{{t 'blogs.comments.post'}}">
+          {{/form}}
+        </div>
+      </div>
+      <div class="grid__item large-up--one-half">
+        {{#if (gt number_of_comments 0)}}
+          <h3 class="h2">{{t 'blogs.comments.with_count' count number_of_comments}}</h3>
+        {{/if}}
+        {{#paginate article.comments by=5}}
+
+          {{#comment}}
+            #comments is required, it is used as an anchor link by Shopify.
+          {{/comment}}
+          <div id="comments">
+
+            {{#if new_comment}}
+              <p class="note form--success">
+                {{#if blog.moderated}}
+                  {{t 'blogs.comments.success_moderated'}}
+                {{else}}
+                  {{t 'blogs.comments.success'}}
+                {{/if}}
+              </p>
+            {{/if}}
+
+            {{#if (gt number_of_comments 0)}}
+              <ul class="comment-list">
+                {{#comment}}
+                  If a comment was just submitted with no blank field, show it.
+                {{/comment}}
+                {{#if new_comment}}
+                  {{#unless (gt paginate.current_page 1)}}
+                    <li id="{{ comment.id }}" class="comment">
+                      {{include 'comment'}}
+                    </li>
+                  {{/unless}}
+                {{/if}}
+
+                {{#comment}}
+                  Showing the rest of the comments.
+                {{/comment}}
+                {{#each article.comments as |comment|}}
+                  {{#unless (is comment.id new_comment_id)}}
+                    <li id="{{ comment.id }}" class="comment">
+                      {{include 'comment'}}
+                    </li>
+                  {{/unless}}
+                {{/each}}
+              </ul>
+
+              {{#if (gt paginate.pages 1)}}
+                {{include 'pagination'}}
+              {{/if}}
+            {{/if}}
+
+          </div>
+        {{/paginate}}
+      </div>
+    </div>
+  {{/if}}
+
+  <hr class="hr--clear">
+  <p class="text-center action-link">
+    <a href="{{ blog.url }}"><span class="icon icon-arrow-left action-link__icon" aria-hidden="true"></span> {{t 'blogs.article.back_to_blog' title blog.title}}</a>
+  </p>
+</div>
+
+{{#schema}}
+  {
+    "name": "Article",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "social_sharing_blog",
+        "label": "Show social sharing buttons",
+        "default": true
+      }
+    ]
+  }
+{{/schema}}

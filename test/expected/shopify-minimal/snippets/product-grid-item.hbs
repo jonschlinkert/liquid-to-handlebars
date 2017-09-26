@@ -1,0 +1,93 @@
+{{#unless (is current_collection blank)}}
+  {{assign 'current_collection' collection}}
+{{/unless}}
+
+{{assign 'on_sale' false}}
+{{assign 'sale_text' (t 'products.product.sale')}}
+{{#if (gt featured.compare_at_price featured.price)}}
+  {{assign 'on_sale' true}}
+{{/if}}
+
+{{assign 'sold_out' true}}
+{{assign 'sold_out_text' (t 'products.product.sold_out')}}
+{{#if featured.available}}
+  {{assign 'sold_out' false}}
+{{/if}}
+
+{{#if (is featured.title '')}}
+  {{#comment}}add default state for product block in storefront editor{{/comment}}
+  {{#capture 'product_title'}}{{t 'home_page.onboarding.product_title'}}{{/capture}}
+{{else}}
+  {{#capture 'product_title'}}{{escape featured.title}}{{/capture}}
+{{/if}}
+
+<div class="{{#if sold_out}} sold-out{{/if}}{{#if on_sale}} on-sale{{/if}}">
+  <a href="{{within featured.url collection}}" class="grid-link{{#if section.settings.center_grid_link}} text-center{{/if}}">
+    <span class="grid-link__image{{#if section.settings.show_sold_out_circle}} grid-link__image-sold-out{{/if}} grid-link__image--product">
+      {{#if (and on_sale section.settings.show_sale_circle)}}
+        <span class="badge badge--sale">
+          <span class="badge__text{{#if (gt sale_text.size 7)}} badge__text--small{{/if}}">{{t 'products.product.sale'}}</span>
+        </span>
+      {{/if}}
+      {{#if (and sold_out section.settings.show_sold_out_circle)}}
+        <span class="badge badge--sold-out">
+          <span class="badge__text{{#if (gt sold_out_text.size 9)}} badge__text--small{{/if}}">{{t 'products.product.sold_out'}}</span>
+        </span>
+      {{/if}}
+      <span class="grid-link__image-centered">
+        {{#if (isnt featured.title '')}}
+          {{#unless (is featured.featured_image blank)}}
+            {{#capture 'img_id'}}ProductImage-{{ featured.featured_image.id }}{{/capture}}
+            {{#capture 'wrapper_id'}}ProductImageWrapper-{{ featured.featured_image.id }}{{/capture}}
+            {{assign 'img_url' (replace (img_url featured.featured_image '1x1') '_1x1.' '_{width}x.')}}
+
+            {{include 'image-style' image: featured.featured_image, width: product_width, height: 480, wrapper_id: wrapper_id, img_id: img_id}}
+            <div id="{{ wrapper_id }}" class="product__img-wrapper supports-js">
+              <div style="padding-top:{{times (divided_by 1 featured.featured_image.aspect_ratio) 100}}%;">
+                <img id="{{ img_id }}"
+                     class="product__img lazyload"
+                     src="{{img_url featured.featured_image '300x300'}}"
+                     data-src="{{ img_url }}"
+                     data-widths="[150, 220, 360, 470, 600, 750, 940, 1080, 1296, 1512, 1728, 2048]"
+                     data-aspectratio="{{ featured.featured_image.aspect_ratio }}"
+                     data-sizes="auto"
+                     alt="{{escape featured.featured_image.alt}}">
+              </div>
+            </div>
+          {{else}}
+            <img src="{{img_url featured.featured_image.src 'large'}}" alt="{{escape featured.featured_image.alt}}" class="product__img">
+          {{/unless}}
+          <noscript>
+            <img src="{{img_url featured.featured_image.src 'large'}}" alt="{{escape featured.featured_image.alt}}" class="product__img">
+          </noscript>
+        {{else}}
+          {{#capture 'current'}}{{cycle 1 2 3 4 5 6}}{{/capture}}
+          {{placeholder_svg_tag (append 'product-' current) 'placeholder-svg'}}
+        {{/if}}
+      </span>
+    </span>
+    <p class="grid-link__title">{{ product_title }}</p>
+    {{#if section.settings.vendor_enable}}
+      <p class="grid-link__title grid-link__vendor">{{ featured.vendor }}</p>
+    {{/if}}
+    {{#if (isnt featured.title '')}}
+      <p class="grid-link__meta">
+        {{#capture 'price'}}{{money featured.price}}{{/capture}}
+        {{#if on_sale}}
+        <span class="visually-hidden">{{t 'products.product.regular_price'}}</span>
+        <s class="grid-link__sale_price">{{money featured.compare_at_price}}</s>
+        {{/if}}
+        {{#if featured.price_varies}}
+          {{t 'products.general.from_html' price price}}
+        {{else}}
+          {{#if on_sale}}
+            <span class="visually-hidden">{{t 'products.product.sale_price'}}</span>
+          {{else}}
+            <span class="visually-hidden">{{t 'products.product.regular_price'}}</span>
+          {{/if}}
+          {{ price }}
+        {{/if}}
+      </p>
+    {{/if}}
+  </a>
+</div>

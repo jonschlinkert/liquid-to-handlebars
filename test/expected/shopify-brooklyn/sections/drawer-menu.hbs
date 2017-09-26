@@ -1,0 +1,116 @@
+<div data-section-id="{{ section.id }}" data-section-type="drawer-menu-section">
+  <div class="drawer__fixed-header">
+    <div class="drawer__header">
+      <div class="drawer__close drawer__close--left">
+        <button type="button" class="icon-fallback-text drawer__close-button js-drawer-close">
+          <span class="icon icon-x" aria-hidden="true"></span>
+          <span class="fallback-text">{{t 'general.drawers.close_menu'}}</span>
+        </button>
+      </div>
+    </div>
+  </div>
+  <div class="drawer__inner">
+
+    {{#if section.settings.drawer_search_enable}}
+      {{include 'search-bar",' search_btn_style: 'btn--secondary', search_bar_location: 'search-bar--drawer'}}
+    {{/if}}
+
+    <!-- begin mobile-nav -->
+    <ul class="mobile-nav">
+      {{#each (get linklists (toPath section.settings.drawer_top_link_list 'links')) as |link|}}
+        {{#comment}}
+          Create a dropdown menu by naming a linklist the same as a link in the parent nav
+
+          More info on dropdowns:
+            - http://docs.shopify.com/manual/your-website/navigation/create-drop-down-menu
+        {{/comment}}
+        {{assign 'child_list_handle' (handleize link.title)}}
+        {{#if (isnt (get linklists (toPath child_list_handle 'links')) blank)}}
+          <li class="mobile-nav__item{{#unless (is template.name 'index')}}{{#if link.active}} mobile-nav__item--active{{/if}}{{/unless}}">
+            <div class="mobile-nav__has-sublist">
+              <a href="{{ link.url }}" class="mobile-nav__link" id="Label-{{ child_list_handle }}">{{ link.title }}</a>
+              <div class="mobile-nav__toggle">
+                <button type="button" class="mobile-nav__toggle-btn icon-fallback-text" data-aria-controls="Linklist-{{ child_list_handle }}">
+                  <span class="icon-fallback-text mobile-nav__toggle-open">
+                    <span class="icon icon-plus" aria-hidden="true"></span>
+                    <span class="fallback-text">{{t 'general.drawers.expand_submenu'}}</span>
+                  </span>
+                  <span class="icon-fallback-text mobile-nav__toggle-close">
+                    <span class="icon icon-minus" aria-hidden="true"></span>
+                    <span class="fallback-text">{{t 'general.drawers.collapse_submenu'}}</span>
+                  </span>
+                </button>
+              </div>
+            </div>
+            <ul class="mobile-nav__sublist" id="Linklist-{{ child_list_handle }}" aria-labelledby="Label-{{ child_list_handle }}" role="navigation">
+              {{#each (get linklists (toPath child_list_handle 'links')) as |childlink|}}
+                <li class="mobile-nav__item{{#unless (is template.name 'index')}}{{#if childlink.active}} mobile-nav__item--active{{/if}}{{/unless}}">
+                  <a href="{{ childlink.url }}" class="mobile-nav__link">{{escape childlink.title}}</a>
+                </li>
+              {{/each}}
+            </ul>
+          </li>
+        {{else}}
+          <li class="mobile-nav__item{{#unless (is template.name 'index')}}{{#if link.active}} mobile-nav__item--active{{/if}}{{/unless}}">
+            <a href="{{ link.url }}" class="mobile-nav__link">{{ link.title }}</a>
+          </li>
+        {{/if}}
+      {{/each}}
+
+      {{#comment}}
+        Spacer element
+      {{/comment}}
+      <li class="mobile-nav__spacer"></li>
+
+      {{#comment}}
+        If customer accounts are enabled, provide login and create account links
+      {{/comment}}
+      {{#if shop.customer_accounts_enabled}}
+        {{#if customer}}
+          <li class="mobile-nav__item mobile-nav__item--secondary">
+            <a href="/account">{{t 'layout.customer.account'}}</a>
+          </li>
+          <li class="mobile-nav__item mobile-nav__item--secondary">
+            {{customer_logout_link (t 'layout.customer.log_out')}}
+          </li>
+        {{else}}
+          <li class="mobile-nav__item mobile-nav__item--secondary">
+            {{customer_login_link (t 'layout.customer.log_in')}}
+          </li>
+          <li class="mobile-nav__item mobile-nav__item--secondary">
+            {{customer_register_link (t 'layout.customer.create_account')}}
+          </li>
+        {{/if}}
+      {{/if}}
+      {{#each (get linklists (toPath section.settings.drawer_bottom_link_list 'links')) as |link|}}
+        <li class="mobile-nav__item mobile-nav__item--secondary"><a href="{{ link.url }}">{{ link.title }}</a></li>
+      {{/each}}
+    </ul>
+    <!-- //mobile-nav -->
+  </div>
+</div>
+
+{{#schema}}
+  {
+    "name": "Sidebar menu",
+    "settings": [
+      {
+        "type": "link_list",
+        "id": "drawer_top_link_list",
+        "label": "Primary menu",
+        "default": "main-menu"
+      },
+      {
+        "type": "link_list",
+        "id": "drawer_bottom_link_list",
+        "label": "Additional menu",
+        "default": "footer"
+      },
+      {
+        "type": "checkbox",
+        "id": "drawer_search_enable",
+        "label": "Enable search"
+      }
+    ]
+  }
+{{/schema}}

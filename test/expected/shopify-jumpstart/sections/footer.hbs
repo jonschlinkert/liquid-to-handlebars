@@ -1,0 +1,129 @@
+{{assign 'social_icons' false}}
+
+{{#if (or (isnt settings.social_twitter blank) (isnt settings.social_facebook blank) (isnt settings.social_pinterest blank) (isnt settings.social_instagram blank) (isnt settings.social_snapchat blank) (isnt settings.social_tumblr blank) (isnt settings.social_youtube blank) (isnt settings.social_vimeo blank) (isnt settings.social_flickr blank) (isnt settings.social_email blank) (isnt settings.social_linkedin blank) (isnt settings.social_google blank))}}
+  {{assign 'social_icons' true}}
+{{/if}}
+{{#if social_icons}}
+      <aside class="social-footer">
+        <div class="wrapper display-table">
+          <div class="display-table-cell">
+            <ul class="inline-list social-icons">
+              {{include 'footer_social-icons'}}
+            </ul>
+          </div>
+        </div>
+      </aside>
+    {{/if}}
+
+    <footer class="site-footer small--text-center" role="contentinfo">
+
+      <div class="wrapper text-center">
+
+        <div class="h1 footer__logo" itemscope itemtype="http://schema.org/Organization">
+          {{#if (isnt section.settings.footer_logo blank)}}
+          {{assign 'img_url' (replace (img_url section.settings.footer_logo '1x1') '_1x1.' '_{width}x.')}}
+           {{#if (isnt section.settings.footer_logo_max_width empty)}}
+            {{#capture 'image_size'}}{{escape section.settings.footer_logo_max_width}}x{{/capture}}
+            <style>
+              .footer__logo {
+                max-width:{{escape section.settings.footer_logo_max_width}}px;
+                margin: 0 auto;
+              }
+            </style>
+           {{else}}
+            {{assign 'image_size' '150x'}}
+            <style>
+              .footer__logo {
+                max-width: {{slice image_size -1}}px;
+              }
+            </style>
+           {{/if}}
+
+            <a href="/" itemprop="url" class="footer__logo-link">
+              {{#comment}}<img src="{{img_url section.settings.footer_logo image_size}}" alt="{{ shop.name }}" itemprop="logo">{{/comment}}
+              <img class="no-js lazyload supports-js"
+                data-src="{{ img_url }}"
+                data-widths="[90, 180, 360, 540, 720, 900, 1080, 1296, 1512, 1728, 2048]"
+                data-aspectratio="{{ section.settings.footer_logo.aspect_ratio }}"
+                data-sizes="auto"
+                alt="{{default (escape section.settings.footer_logo.alt) shop.name}}">
+              <noscript>
+                <img src="{{img_url section.settings.footer_logo image_size}}"
+                  srcset="{{img_url section.settings.footer_logo image_size}} 1x, {{img_url section.settings.footer_logo image_size scale 2}} 2x"
+                  alt="{{default section.settings.footer_logo.alt shop.name}}"
+                  itemprop="logo">
+              </noscript>
+            </a>
+          {{else}}
+            <a href="/" itemprop="url" class="site-header__logo-text">{{ shop.name }}</a>
+          {{/if}}
+        </div>
+
+        {{include 'newsletter'}}
+
+        {{#if section.settings.footer_linklist}}
+          <div class="link-list">
+            {{#each (get linklists (toPath section.settings.footer_linklist 'links')) as |link|}}
+              <a class="footer-link" href="{{ link.url }}">{{ link.title }}</a>
+            {{/each}}
+          </div>
+          <hr>
+        {{/if}}
+
+        <div class="copy">
+          <p class="text">{{t 'layout.footer.copyright'}} &copy; {{date 'now' '%Y'}} <a href="/">{{ shop.name }}</a></p>
+          <p class="powered">{{ powered_by_link }}</p>
+        </div>
+
+        {{assign 'payment_icons_available' (split 'amazon_payments,american_express,bitcoin,cirrus,dankort,diners_club,discover,dogecoin,dwolla,forbrugsforeningen,interac,jcb,litecoin,maestro,master,paypal,visa,apple_pay' ',')}}
+        {{#if (and section.settings.footer_payment_enable (isnt shop.enabled_payment_types empty))}}
+          <div class="pay-icons">
+            {{#each shop.enabled_payment_types as |type|}}
+              {{#if (contains payment_icons_available type)}}
+                {{include 'asset_svg' type}}
+              {{/if}}
+            {{/each}}
+          </div>
+        {{/if}}
+
+      </div>
+
+    </footer>
+
+{{#schema}}
+  {
+  	"name": "Footer",
+  	"settings": [
+  		{
+  			"type": "image_picker",
+  			"id": "footer_logo",
+  			"label": "Logo image",
+  			"info": "200px wide .png recommended"
+  		},
+  		{
+  			"type": "text",
+  			"id": "footer_logo_max_width",
+  			"label": "Custom logo width (in pixels)",
+  			"default": "50",
+  			"info": "Do not add the 'px' unit"
+  		},
+  		{
+  			"type": "checkbox",
+  			"id": "footer_newsletter_enable",
+  			"label": "Show newsletter",
+  			"default": false
+  		},
+  		{
+  			"type": "link_list",
+  			"id": "footer_linklist",
+  			"label": "Menu",
+  			"default": "footer"
+  		},
+  		{
+  			"type": "checkbox",
+  			"id": "footer_payment_enable",
+  			"label": "Show payment methods"
+  		}
+  	]
+  }
+{{/schema}}

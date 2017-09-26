@@ -1,0 +1,60 @@
+<div class="page-width">
+  <div class="section-block section-block--padding">
+    {{assign 'product' (get all_products section.settings.product)}}
+    {{#if (isnt product empty)}}
+      {{assign 'product_title' product.title}}
+      {{assign 'product_url' product.url}}
+      {{assign 'current_variant' product.selected_or_first_available_variant}}
+      {{assign 'featured_image' (default current_variant.featured_image product.featured_image)}}
+    {{else}}
+      {{#capture 'product_title'}}{{t 'homepage.onboarding.product_title'}}{{/capture}}
+      {{assign 'product_url' '#'}}
+    {{/if}}
+    <div class="grid featured-product">
+      <div class="grid__item medium-up--three-quarters medium-up--push-one-eighth">
+        <div class="flex flex--grid flex--center-vertical featured-product__image">
+          <div class="flex__item medium-up--two-fifths">
+            <a href="{{ product.url }}">
+              {{#if (isnt product empty)}}
+                <img src="{{img_url featured_image '480x480'}}" alt="{{escape featured_image.alt}}">
+              {{else}}
+                {{#capture 'current'}}{{cycle 1 2 3 4 5 6}}{{/capture}}
+                {{placeholder_svg_tag (append 'product-' current) 'placeholder-svg'}}
+              {{/if}}
+            </a>
+          </div>
+          <div class="flex__item medium-up--three-fifths featured-product__text">
+            <div class="emphasized-title-wrapper">
+              <a href="{{ product.url }}" class="emphasized-title emphasized-title--link emphasized-title--large h1">
+                {{ product_title }}
+              </a>
+            </div>
+            <a href="{{ product.url }}" class="emphasized-subtitle">
+              {{t 'products.product.view'}}
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{{#schema}}
+  {
+    "name": "Featured product",
+    "class": "index-section",
+    "settings": [
+      {
+        "type": "product",
+        "id": "product",
+        "label": "Product"
+      }
+    ],
+    "presets": [
+      {
+        "name": "Featured product",
+        "category": "Product"
+      }
+    ]
+  }
+{{/schema}}

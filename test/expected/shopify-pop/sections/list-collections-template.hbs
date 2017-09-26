@@ -1,0 +1,192 @@
+{{#comment}}
+
+  This page represents the /collections and /products pages.
+  It is an optional, but highly recommended, template for your theme.
+
+  More info:
+    - http://docs.shopify.com/manual/configuration/store-customization/taking-control-of-collections-listing
+
+{{/comment}}
+
+{{#comment}}
+  Loop through each collection, except 'frontpage'
+{{/comment}}
+{{#if (is section.settings.layout 'grid')}}
+  {{#if (is section.settings.display_type 'all')}}
+    {{assign 'collection_count' 0}}
+    {{#each collections as |collection|}}
+      {{#unless (is collection.handle 'frontpage')}}
+        {{assign 'collection_count' (plus collection_count 1)}}
+      {{/unless}}
+    {{/each}}
+  {{else}}
+    {{assign 'collection_count' section.blocks.size}}
+  {{/if}}
+  {{#is collection_count 1}}
+      {{assign 'featured_collection_width' 'one-whole'}}
+    {{else is collection_count (or 2 4)}}
+      {{assign 'featured_collection_width' 'small--one-whole medium--one-half large--one-half'}}
+    {{else}}
+      {{assign 'featured_collection_width' 'small--one-whole medium--one-half large--one-third'}}
+  {{/is}}
+{{/if}}
+
+{{#if (is section.settings.display_type 'all')}}
+  {{#is section.settings.sort 'products_high" or "products_low'}}
+      {{assign 'list_collections' (sort collections 'all_products_count')}}
+    {{else is section.settings.sort 'date" or "date_reversed'}}
+      {{assign 'list_collections' (sort collections 'published_at')}}
+    {{else}}
+      {{assign 'list_collections' collections}}
+  {{/is}}
+  {{#if (or (is section.settings.sort 'products_low') (is section.settings.sort 'date') (is section.settings.sort 'alphabetical'))}}
+    {{#if (is section.settings.layout 'grid')}}
+      <div class="grid-uniform text-center collection-grid">
+    {{/if}}
+    {{#each list_collections as |collection|}}
+      {{#unless (is collection.handle 'frontpage')}}
+        {{#if (is section.settings.layout 'list')}}
+          {{include 'collection-list-item'}}
+          {{#unless forloop.last}}<hr>{{/unless}}
+        {{else}}
+          {{assign 'featured' collection.handle}}
+          <div class="grid-item {{ featured_collection_width }}">
+            {{include 'featured-collection'}}
+          </div>
+        {{/if}}
+      {{/unless}}
+    {{/each}}
+    {{#if (is section.settings.layout 'grid')}}
+      </div>
+    {{/if}}
+  {{else}}
+    {{#if (is section.settings.layout 'grid')}}
+      <div class="grid-uniform text-center collection-grid">
+    {{/if}}
+    {{#each list_collections as |collection|}}
+      {{#unless (is collection.handle 'frontpage')}}
+        {{#if (is section.settings.layout 'list')}}
+          {{include 'collection-list-item'}}
+          {{#unless forloop.last}}<hr>{{/unless}}
+        {{else}}
+          {{assign 'featured' collection.handle}}
+          <div class="grid-item {{ featured_collection_width }}">
+            {{include 'featured-collection'}}
+          </div>
+        {{/if}}
+      {{/unless}}
+    {{/each}}
+    {{#if (is section.settings.layout 'grid')}}
+      </div>
+    {{/if}}
+  {{/if}}
+{{else}}
+  {{#if (is section.settings.layout 'grid')}}
+    <div class="grid-uniform text-center collection-grid">
+  {{/if}}
+  {{#each section.blocks as |block|}}
+    {{#if (is section.settings.layout 'list')}}
+      {{assign 'collection' (get collections block.settings.collection)}}
+      {{include 'collection-list-item'}}
+      {{#unless forloop.last}}<hr>{{/unless}}
+    {{else}}
+      {{assign 'featured' block.settings.collection}}
+      <div class="grid-item {{ featured_collection_width }}">
+        {{include 'featured-collection'}}
+      </div>
+    {{/if}}
+  {{/each}}
+  {{#if (is section.settings.layout 'grid')}}
+    </div>
+  {{/if}}
+{{/if}}
+
+{{#schema}}
+  {
+    "name": "Collections list page",
+    "settings": [
+      {
+        "type": "paragraph",
+        "content": "All of your collections are listed by default. To customize your list, choose 'Selected' and add collections."
+      },
+      {
+        "type": "radio",
+        "id": "display_type",
+        "label": "Select collections to show",
+        "default": "all",
+        "options": [
+          {
+            "value": "all",
+            "label": "All"
+          },
+          {
+            "value": "selected",
+            "label": "Selected"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "layout",
+        "label": "Select layout",
+        "default": "grid",
+        "options": [
+          {
+            "value": "grid",
+            "label": "Grid"
+          },
+          {
+            "value": "list",
+            "label": "List"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "sort",
+        "label": "Sort collections by:",
+        "info": "Sorting only applies when 'All' is selected",
+        "default": "alphabetical",
+        "options": [
+          {
+            "value": "products_high",
+            "label": "Product count, high to low"
+          },
+          {
+            "value": "products_low",
+            "label": "Product count, low to high"
+          },
+          {
+            "value": "alphabetical",
+            "label": "Alphabetically, A-Z"
+          },
+          {
+            "value": "alphabetical_reversed",
+            "label": "Alphabetically, Z-A"
+          },
+          {
+            "value": "date",
+            "label": "Date, old to new"
+          },
+          {
+            "value": "date_reversed",
+            "label": "Date, new to old"
+          }
+        ]
+      }
+    ],
+    "blocks": [
+      {
+        "type": "collection",
+        "name": "Collection",
+        "settings": [
+          {
+            "label": "Collection",
+            "id": "collection",
+            "type": "collection"
+          }
+        ]
+      }
+    ]
+  }
+{{/schema}}

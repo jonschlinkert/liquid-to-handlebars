@@ -1,0 +1,86 @@
+<div id="home-video" class="index-section home-section">
+  <div class="home-video {{#if section.settings.video_text_color}}{{ section.settings.video_text_color }}{{/if}}">
+
+    {{#if (is section.settings.cover_image blank)}}
+      <div class="placeholder-background">
+        {{#capture 'current'}}{{cycle 1 2}}{{/capture}}
+        {{placeholder_svg_tag (append 'lifestyle-' current) 'placeholder-svg'}}
+      </div>
+    {{/if}}
+
+  <div class="wrapper wrapper--margins">
+
+    <div class="content push-up">
+      <div class="display-table">
+        <h2 class="display-table-cell huge-title {{#if section.settings.video_text_color}}{{ section.settings.video_text_color }}{{/if}}">
+         {{escape section.settings.heading}}
+        </h2>
+      </div>
+    </div>
+
+     <a href="{{#if (is section.settings.video_url.url blank)}}https://www.youtube.com/watch?v=_9VUPq3SxOc{{else}}{{ section.settings.video_url.url }}{{/if}}" class="video-overlay video-overlay-{{ section.id }}"><span class="video-button">{{include 'asset_svg' 'play_arrow'}}</span></a>
+   </div>
+    {{#if (isnt section.settings.cover_image blank)}}
+    <span class="prlx-bg prlx-bg--{{ section.id }} no-js lazyload"
+        style="background-image: url('{{img_url section.settings.cover_image '300x300'}}')"
+        data-bgset="{{include 'bgset",' image: section.settings.cover_image}}"
+        data-sizes="auto"
+        data-parent-fit="cover"></span>
+	<noscript>
+		<span class="prlx-bg prlx-bg--{{ section.id }}" style="background-image: url('{{img_url section.settings.cover_image '2048x2048'}}')"></span>
+	</noscript>
+    {{/if}}
+ </div>
+</div>
+
+{{#schema}}
+  {
+    "name": "Video",
+    "settings": [
+      {
+        "type": "text",
+        "id": "heading",
+        "label": "Heading",
+        "default": "Video"
+      },
+      {
+        "type": "video_url",
+        "id": "video_url",
+        "label": "Video link",
+        "accept": ["youtube", "vimeo"]
+      },
+      {
+        "type": "select",
+        "id": "video_text_color",
+        "label": "Text color",
+        "default": "video-text-dark",
+        "options": [
+          {
+            "value": "video-text-light",
+            "label": "Light"
+          },
+          {
+            "value": "video-text-dark",
+            "label": "Dark"
+          }
+        ]
+      },
+      {
+        "type": "header",
+        "content": "Cover"
+      },
+      {
+        "type": "image_picker",
+        "id": "cover_image",
+        "label": "Image",
+        "info": "1920 x 840px recommended"
+      }
+    ],
+    "presets": [
+      {
+        "name": "Video",
+        "category": "Video"
+      }
+    ]
+  }
+{{/schema}}

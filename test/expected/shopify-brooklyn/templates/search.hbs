@@ -1,0 +1,81 @@
+<!-- /templates/search.liquid -->
+{{#comment}}
+
+  To return only products or pages in results:
+    - http://docs.shopify.com/manual/configuration/store-customization/return-only-product-in-storefront-search-results
+    - Or manually add type=product or type=page to the search URL as a parameter
+
+{{/comment}}
+
+{{#comment}}
+  Check to enforce respond.js
+{{/comment}}
+{{assign 'respond_js_secret_key' (md5 shop.domain)}}
+{{#unless (is search.terms respond_js_secret_key)}}
+
+{{#comment}}
+  Avoid accessing search.results before the opening paginate tag.
+  If you do, the pagination of results will be broken.
+{{/comment}}
+{{#paginate search.results by=12}}
+
+  <div class="grid">
+    <div class="grid__item">
+      <header class="section-header text-center">
+        {{#if search.performed}}
+          {{#if (is search.results_count 0)}}
+            <h1 class="text-center">{{t 'general.search.no_results_html' terms search.terms}}</h1>
+          {{else}}
+            <h1 class="text-center">{{t 'general.search.results_for_html' terms search.terms}}</h1>
+          {{/if}}
+        {{else}}
+          <h1 class="text-center">{{t 'general.search.title'}}</h1>
+        {{/if}}
+        <hr class="hr--small">
+      </header>
+
+      {{include 'search-bar",' search_btn_style: 'btn', search_bar_location: 'search-bar--page'}}
+
+      {{#if search.performed}}
+
+        <hr class="hr--medium hr--clear">
+
+        <div class="grid-uniform">
+          {{#each search.results as |item|}}
+
+            {{#if (is item.object_type 'product')}}
+              {{assign 'product' item}}
+              {{include 'product-grid-item'}}
+            {{else}}
+              <div class="grid__item grid-search large--one-third medium--one-half">
+                <div class="grid-search__page">
+                  <a href="{{ item.url }}" class="grid-search__page-link">
+                    <span class="grid-search__page-content">
+                      <span class="h4 text-center">{{ item.title }}</span>
+                      {{truncatewords (strip_html item.content) 60}}
+                    </span>
+                  </a>
+                </div>
+              </div>
+            {{/if}}
+
+          {{/each}}
+        </div>
+
+        {{#if (gt paginate.pages 1)}}
+          {{include 'pagination'}}
+        {{/if}}
+
+      {{/if}}
+
+    </div>
+  </div>
+
+{{/paginate}}
+
+{{else}}
+  {{include 'respond'}}
+---
+layout: none
+---
+{{/unless}}

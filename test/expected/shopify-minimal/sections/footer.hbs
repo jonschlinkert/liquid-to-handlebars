@@ -1,0 +1,220 @@
+<footer class="site-footer small--text-center" role="contentinfo">
+
+<div class="wrapper">
+
+  <div class="grid-uniform">
+
+    {{#if (or (isnt settings.social_twitter_link blank) (isnt settings.social_facebook_link blank) (isnt settings.social_pinterest_link blank) (isnt settings.social_google_plus_link blank) (isnt settings.social_instagram_link blank) (isnt settings.social_snapchat_link blank) (isnt settings.social_tumblr_link blank) (isnt settings.social_youtube_link blank) (isnt settings.social_vimeo_link blank) (isnt settings.social_fancy_link blank) (isnt settings.social_rss_link blank))}}
+      {{assign 'show_social_icons' true}}
+    {{else}}
+      {{assign 'show_social_icons' false}}
+    {{/if}}
+
+    {{#is section.blocks.size 0}}
+      {{else is section.blocks.size 1}}
+        {{assign 'column_width' 'text-center'}}
+        {{assign 'article_width' 480}}
+      {{else is section.blocks.size 2}}
+        {{assign 'column_width' 'post-large--one-half medium--one-half'}}
+        {{assign 'article_width' 480}}
+      {{else is section.blocks.size 3}}
+        {{assign 'column_width' 'post-large--one-third medium--one-third'}}
+        {{assign 'article_width' 435}}
+      {{else is section.blocks.size 4}}
+        {{assign 'column_width' 'post-large--one-quarter medium--one-half'}}
+        {{assign 'article_width' 410}}
+      {{else is section.blocks.size 5}}
+        {{assign 'column_width' 'post-large--one-fifth medium--one-half'}}
+        {{assign 'article_width' 335}}
+      {{else is section.blocks.size 6}}
+        {{assign 'column_width' 'post-large--one-sixth medium--one-half'}}
+        {{assign 'article_width' 335}}
+    {{/is}}
+
+    {{#each section.blocks as |block|}}
+      {{#is block.type 'blog'}}
+          <div class="grid__item {{ column_width }} site-footer__links">
+            <h3 class="h4"><a href="/blogs/{{ block.settings.blog }}">{{t 'layout.footer.blog_title'}}</a></h3>
+            {{assign 'article' (get blogs (toPath block.settings.blog 'articles.first'))}}
+            <p class="h5">{{link_to article.title article.url}}</p>
+            {{#if article.image}}
+              {{#capture 'img_id'}}ArticleImage-{{ section.id }}--{{ article.image.id }}{{/capture}}
+              {{#capture 'wrapper_id'}}ArticleImageWrapper-{{ section.id }}--{{ article.image.id }}{{/capture}}
+              {{assign 'img_url' (replace (img_url article.image '1x1') '_1x1.' '_{width}x.')}}
+              {{assign 'image_alt' (escape article.title)}}
+              {{include 'image-style' image: article.image, width: article_width, height: 480, wrapper_id: wrapper_id, img_id: img_id}}
+              <p>
+                <div id="{{ wrapper_id }}" class="article__image-wrapper supports-js">
+                  <div style="padding-top:{{times (divided_by 1 article.image.aspect_ratio) 100}}%;">
+                    <img id="{{ img_id }}"
+                         class="article__image lazyload"
+                         src="{{img_url article.image '300x300'}}"
+                         data-src="{{ img_url }}"
+                         data-widths="[90, 120, 150, 180, 360, 480, 600, 750, 940, 1080, 1296]"
+                         data-aspectratio="{{ article.image.aspect_ratio }}"
+                         data-sizes="auto"
+                         alt="{{ image_alt }}">
+                  </div>
+                </div>
+              </p>
+
+              <noscript>
+                <p>{{link_to (img_tag (img_url article 'large') image_alt 'article__image') article.url}}</p>
+              </noscript>
+            {{/if}}
+            {{#if (gt article.excerpt.size 0)}}
+            <div class="clearfix">
+              {{ article.excerpt }}
+            </div>
+            {{else}}
+              <p>{{truncatewords (strip_html article.content) 30}}</p>
+            {{/if}}
+          </div>
+
+        {{else is block.type 'menu'}}
+          <div class="grid__item {{ column_width }}">
+            {{#unless (is num_columns 1)}}
+            <h3 class="h4">{{escape block.settings.menu_title}}</h3>
+            {{/unless}}
+            <ul class="site-footer__links{{#if (is num_columns 1)}} inline-list{{/if}}">
+              {{#each (get linklists (toPath block.settings.menu 'links')) as |link|}}
+                <li><a href="{{ link.url }}">{{ link.title }}</a></li>
+              {{/each}}
+            </ul>
+          </div>
+
+        {{else is block.type 'social'}}
+          <div class="grid__item {{ column_width }}">
+            <h3 class="h4">{{t 'layout.footer.social_title'}}</h3>
+              {{#comment}}
+                Loop through the social network links
+              {{/comment}}
+              {{include 'social-links'}}
+          </div>
+
+        {{else is block.type 'text'}}
+          <div class="grid__item {{ column_width }}">
+            <h3 class="h4">{{escape block.settings.title}}</h3>
+            <div class="rte">{{ block.settings.richtext }}</div>
+          </div>
+
+        {{else is block.type 'newsletter'}}
+          <div class="grid__item {{ column_width }}">
+            <h3 class="h4">{{t 'layout.footer.newsletter_title'}}</h3>
+            <p>{{t 'layout.footer.newsletter_caption'}}</p>
+            {{include 'newsletter-form'}}
+          </div>
+
+      {{/is}}
+    {{/each}}
+  </div>
+
+  <hr class="hr--small hr--clear">
+
+  <div class="grid">
+    <div class="grid__item text-center">
+      <p class="site-footer__links">{{t 'layout.footer.copyright'}} &copy; {{date 'now' '%Y'}}, {{link_to shop.name '/'}}. {{ powered_by_link }}</p>
+    </div>
+  </div>
+
+  {{#if section.settings.show_methods_of_payment}}
+    {{#unless (is shop.enabled_payment_types empty)}}
+    <div class="grid">
+      <div class="grid__item text-center">
+        {{assign 'payment_icons_available' (split 'amazon_payments,american_express,apple_pay,bitcoin,cirrus,dankort,diners_club,discover,dogecoin,dwolla,forbrugsforeningen,interac,jcb,litecoin,maestro,master,paypal,visa' ',')}}
+        <ul class="inline-list payment-icons">
+          {{#each shop.enabled_payment_types as |type|}}
+            {{#if (contains payment_icons_available type)}}
+              <li>
+                <span class="icon-fallback-text">
+                  <span class="icon icon-{{ type }}" aria-hidden="true"></span>
+                  <span class="fallback-text">{{replace type '_' ' '}}</span>
+                </span>
+              </li>
+            {{/if}}
+          {{/each}}
+        </ul>
+      </div>
+    </div>
+    {{/unless}}
+  {{/if}}
+</div>
+
+</footer>
+
+{{#schema}}
+  {
+    "name": "Footer",
+    "max_blocks": 6,
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "show_methods_of_payment",
+        "label": "Payment icons"
+      }
+    ],
+    "blocks": [
+      {
+        "type": "menu",
+        "name": "Menu",
+        "settings": [
+          {
+            "type": "text",
+            "id": "menu_title",
+            "label": "Heading",
+            "default": "Links"
+          },
+          {
+            "type": "link_list",
+            "id": "menu",
+            "label": "Menu"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "name": "Text",
+        "settings": [
+          {
+            "type": "text",
+            "id": "title",
+            "label": "Heading",
+            "default": "Contact us"
+          },
+          {
+            "type": "richtext",
+            "id": "richtext",
+            "label": "Text"
+          }
+        ]
+      },
+      {
+        "type": "blog",
+        "name": "Latest blog post",
+        "settings": [
+          {
+            "type": "blog",
+            "id": "blog",
+            "label": "Blog"
+          }
+        ]
+      },
+      {
+        "type": "social",
+        "name": "Social icons",
+        "limit": 1,
+        "settings": [
+          {
+            "type": "paragraph",
+            "content": "Edit your social settings and accounts in General settings"
+          }
+        ]
+      },
+      {
+        "type": "newsletter",
+        "name": "Newsletter signup",
+        "limit": 1
+      }
+    ]
+  }
+{{/schema}}

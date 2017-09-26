@@ -1,0 +1,127 @@
+{{assign 'featured' section.settings.featured_collection}}
+{{assign 'products_per_row' section.settings.num_per_row}}
+{{assign 'rows' section.settings.num_rows}}
+{{assign 'total_products' (times products_per_row rows)}}
+
+<div data-section-id="{{ section.id }}" data-section-type="featured-products-section">
+  {{#unless (is section.settings.title blank)}}
+  <div class="section-header section-header--small">
+    <h2 class="section-header__title">
+      {{escape section.settings.title}}
+    </h2>
+  </div>
+  {{/unless}}
+
+  {{#is products_per_row 3}}
+      {{assign 'grid_item_width' 'medium--one-third post-large--one-third'}}
+      {{assign 'product_width' 410}}
+    {{else is products_per_row 4}}
+      {{assign 'grid_item_width' 'medium-down--one-half post-large--one-quarter'}}
+      {{assign 'product_width' 335}}
+    {{else is products_per_row 5}}
+      {{assign 'grid_item_width' 'medium-down--one-half post-large--one-fifth'}}
+      {{assign 'product_width' 335}}
+  {{/is}}
+
+  <div class="grid-uniform">
+    {{#each (get collections (toPath featured 'products')) as |product|}}
+      {{assign 'featured' product}}
+      <div class="grid__item {{ grid_item_width }}" {{ block.shopify_attributes }}>
+        {{include 'product-grid-item'}}
+      </div>
+    {{else}}
+      <div class="grid__item">
+        <div class="helper-section">
+          <div class="grid-uniform helper-content">
+            {{#each (range 1 total_products) as |i|}}
+              <div class="grid__item {{ grid_item_width }}">
+                <a href="/admin/products" class="grid-link{{#if section.settings.center_grid_link}} text-center{{/if}}">
+                  <span class="grid-link__image">
+                    <span class="grid-link__image-centered">
+                      {{#capture 'current'}}{{cycle 1 2 3 4 5 6}}{{/capture}}
+                      {{placeholder_svg_tag (append 'product-' current) 'placeholder-svg'}}
+                    </span>
+                  </span>
+                  <p class="grid-link__title">{{t 'home_page.onboarding.product_title'}}</p>
+                  <p class="grid-link__meta">
+                    <strong>$19.99</strong>
+                  </p>
+                </a>
+              </div>
+            {{/each}}
+          </div>
+        </div>
+      </div>
+    {{/each}}
+  </div>
+</div>
+
+{{#schema}}
+  {
+    "name": "Featured collection",
+    "class": "index-section",
+    "settings": [
+      {
+        "type": "text",
+        "id": "title",
+        "label": "Heading",
+        "default": "Featured collection"
+      },
+      {
+        "type": "collection",
+        "id": "featured_collection",
+        "label": "Collection"
+      },
+      {
+        "type": "range",
+        "id": "num_per_row",
+        "label": "Products per row",
+        "min": 3,
+        "max": 5,
+        "step": 1,
+        "default": 3
+      },
+
+      {
+        "type": "range",
+        "id": "num_rows",
+        "label": "Rows",
+        "min": 1,
+        "max": 6,
+        "step": 1,
+        "default": 1
+      },
+      {
+        "type": "checkbox",
+        "id": "vendor_enable",
+        "label": "Show product vendor"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_sale_circle",
+        "label": "Show 'Sale' circle"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_sold_out_circle",
+        "label": "Show 'Sold out' circle"
+      },
+      {
+        "type": "checkbox",
+        "id": "center_grid_link",
+        "label": "Center text below product images"
+      }
+    ],
+    "presets": [
+      {
+        "name": "Featured collection",
+        "category": "Collection",
+        "settings":
+        {
+          "title": "Featured collection",
+          "featured_collection": "frontpage"
+        }
+      }
+    ]
+  }
+{{/schema}}

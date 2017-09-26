@@ -1,0 +1,59 @@
+<div class="page-width">
+  <h1>{{t 'customer.account.title'}}</h1>
+
+  <div class="grid">
+    <div class="grid__item medium-up--two-thirds">
+      <div class="content-block">
+        <h2>{{t 'customer.orders.title'}}</h2>
+
+        {{#paginate customer.orders by=20}}
+          {{#if (isnt customer.orders.size 0)}}
+
+            <table class="responsive-table">
+              <thead>
+                <tr>
+                  <th>{{t 'customer.orders.order_number'}}</th>
+                  <th>{{t 'customer.orders.date'}}</th>
+                  <th>{{t 'customer.orders.payment_status'}}</th>
+                  <th>{{t 'customer.orders.fulfillment_status'}}</th>
+                  <th>{{t 'customer.orders.total'}}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {{#each customer.orders as |order|}}
+                  <tr>
+                    <td data-label="{{t 'customer.orders.order_number'}}">{{link_to order.name order.customer_url}}</td>
+                    <td data-label="{{t 'customer.orders.date'}}">{{date order.created_at format 'month_day_year'}}</td>
+                    <td data-label="{{t 'customer.orders.payment_status'}}">{{ order.financial_status_label }}</td>
+                    <td data-label="{{t 'customer.orders.fulfillment_status'}}">{{ order.fulfillment_status_label }}</td>
+                    <td data-label="{{t 'customer.orders.total'}}">{{money order.total_price}}</td>
+                  </tr>
+                {{/each}}
+              </tbody>
+            </table>
+
+          {{else}}
+
+            <p>{{t 'customer.orders.none'}}</p>
+
+          {{/if}}
+          {{#if (gt paginate.pages 1)}}
+            <div class="pagination">
+              {{replace (replace (default_pagination paginate) '&laquo; Previous' '&larr;') 'Next &raquo;' '&rarr;'}}
+            </div>
+          {{/if}}
+        {{/paginate}}
+      </div>
+    </div>
+
+    <div class="grid__item medium-up--one-third">
+      <div class="content-block">
+        <h3 class="h6 content-block__title">{{t 'customer.account.details'}}</h3>
+
+        {{format_address customer.default_address}}
+
+        <p><a href="/account/addresses">{{t 'customer.account.view_addresses'}} ({{ customer.addresses_count }})</a></p>
+      </div>
+    </div>
+  </div>
+</div>

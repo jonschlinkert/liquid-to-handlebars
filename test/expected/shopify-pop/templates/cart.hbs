@@ -1,0 +1,176 @@
+{{#comment}}
+
+  This is your /cart template. If you are using the Ajaxify Cart plugin,
+  your form (with action="/cart") layout will be used in the drawer/modal.
+
+  For info on test orders:
+    - General http://docs.shopify.com/manual/your-store/orders/test-orders
+    - Shopify Payments - http://docs.shopify.com/manual/more/shopify-payments/testing-shopify-payments
+
+{{/comment}}
+
+{{#if (gt cart.item_count 0)}}
+
+  <form action="/cart" method="post" novalidate class="cart-wrapper">
+
+    <h1 class="text-center cart__title">{{t 'cart.general.title'}}</h1>
+
+    {{#comment}}
+      Loop through products in the cart
+    {{/comment}}
+    {{#each cart.items as |item|}}
+      <div class="cart__row" data-id="{{ item.key }}">
+        <div class="grid">
+          <div class="grid-item medium--two-fifths large--one-fifth text-center">
+            {{#unless (is item.image blank)}}
+              {{#capture 'img_id'}}CartImage-{{ item.id }}{{/capture}}
+              {{#capture 'img_wrapper_id'}}CartImageWrapper-{{ item.id }}{{/capture}}
+              {{assign 'img_url' (replace (img_url item.image '1x1') '_1x1.' '_{width}x.')}}
+              {{include 'image-style' image: item.image, small_style: false, width: 400, height: 240, wrapper_id: img_wrapper_id, img_id: img_id}}
+
+              <div id="{{ img_wrapper_id }}" class="cart__image-wrapper js">
+                <div style="padding-top:{{times (divided_by 1 item.image.aspect_ratio) 100}}%;">
+                  <img id="{{ img_id }}"
+                       class="cart__image lazyload"
+                       data-src="{{ img_url }}"
+                       data-widths="[180, 360, 540, 720, 900, 1080, 1296, 1512, 1728, 2048]"
+                       data-aspectratio="{{ item.image.aspect_ratio }}"
+                       data-sizes="auto"
+                       alt="{{escape item.title}}">
+                </div>
+              </div>
+            {{else}}
+              <img src="{{img_url item.image '400x400'}}">
+            {{/unless}}
+
+            <noscript>
+              <img src="{{img_url item 'medium'}}" alt="{{escape item.title}}">
+            </noscript>
+
+            <p class="cart__remove"><a href="/cart/change?line={{ forloop.index }}&amp;quantity=0" data-line="{{ forloop.index }}"><span class="icon icon-cross2"></span> {{t 'cart.general.remove'}}</a></p>
+          </div>
+          <div class="grid-item medium--three-fifths large--four-fifths">
+            <p class="cart__product">
+              <a href="{{ item.url }}">
+                {{ item.product.title }}
+              </a>
+              {{#unless (contains item.variant.title 'Default')}}
+              <br><small>{{ item.variant.title }}</small>
+              {{/unless}}
+
+              {{#comment}}
+                Line item properties
+              {{/comment}}
+
+              {{assign 'property_size' (size item.properties)}}
+              {{#if (gt property_size 0)}}
+                {{#each item.properties as |p|}}
+                {{assign 'first_character_in_key' (truncate p.first 1 '')}}
+                {{#unless (or (is p.last blank) (is first_character_in_key '_'))}}
+                    <br>
+                    <small>
+                    {{ p.first }}:
+                    {{#if (contains p.last '/uploads/')}}
+                      <a href="{{ p.last }}">{{last (split p.last '/')}}</a>
+                    {{else}}
+                      {{ p.last }}
+                    {{/if}}
+                    </small>
+                  {{/unless}}
+                {{/each}}
+              {{/if}}
+
+            </p>
+
+            <div class="grid">
+
+              <div class="grid-item one-third">
+                <span class="cart__mini-labels">{{t 'cart.label.price'}}</span>
+                <span>{{money item.price}}</span>
+              </div>
+
+              <div class="grid-item one-third text-center">
+                <label for="updates_{{ item.id }}" class="cart__mini-labels">{{t 'cart.label.quantity'}}</label>
+                {{#comment}}
+                  Added data-line for the ajax cart implementation only.
+                {{/comment}}
+                <input type="number" name="updates[]" data-id="{{ item.key }}" id="updates_{{ item.key }}" value="{{ item.quantity }}" min="0" data-line="{{ forloop.index }}">
+              </div>
+
+              <div class="grid-item one-third text-right">
+                <span class="cart__mini-labels">{{t 'cart.label.total'}}</span>
+                <span>
+                  {{#if (isnt item.original_line_price item.line_price)}}
+                  <small class="cart-item__original-price"><s>{{money item.original_line_price}}</s></small>
+                  {{/if}}
+                  {{money item.line_price}}
+                </span>
+              </div>
+
+              <div class="grid-item text-right">
+                {{#each item.discounts as |discount|}}
+                <small class="cart-item__discount">{{ discount.title }}</small>
+                {{/each}}
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+      </div>
+    {{/each}}
+
+    <div class="cart__row text-center large--text-right">
+      <h2 class="h6">
+        {{t 'cart.general.subtotal'}}
+        <span class="cart__subtotal">{{money cart.total_price}}</span>
+        {{#if (gt cart.total_discounts 0)}}
+          {{assign 'savings' (money cart.total_discounts)}}
+          <br><small class="cart__subtotal__savings">{{t 'cart.general.savings_html' price savings}}</small>
+        {{/if}}
+      </h2>
+    </div>
+
+    <div class="cart__row">
+      <div class="grid">
+
+        {{#comment}}
+          Optional, add a textarea for special notes
+            - Your theme settings can turn this on or off. Default is on.
+            - Make sure you have name="note" for the message to be submitted properly
+        {{/comment}}
+        {{#if settings.cart_notes_enable}}
+          <div class="grid-item large--five-twelfths text-center large--text-left">
+            <label for="cartSpecialInstructions">{{t 'cart.general.note'}}</label>
+            <textarea name="note" class="input-full cart__instructions" id="cartSpecialInstructions">{{ cart.note }}</textarea>
+          </div>
+        {{/if}}
+
+        <div class="grid-item text-center large--text-right {{#if settings.cart_notes_enable}}large--seven-twelfths{{/if}}">
+          <p class="cart__subtotal__note"><em>{{t 'cart.general.taxes_extra'}}</em></p>
+          <button type="submit" id="update" name="update" class="btn--secondary update-cart">{{t 'cart.general.update'}}</button>
+          <button type="submit" id="checkout" name="checkout" class="btn">{{t 'cart.general.checkout'}}</button>
+
+          {{#if additional_checkout_buttons}}
+            <div class="cart__additional_checkout_buttons">{{ content_for_additional_checkout_buttons }}</div>
+          {{/if}}
+
+        </div>
+
+      </div>
+    </div>
+
+  </form>
+
+{{else}}
+  {{#comment}}
+    The cart is empty
+  {{/comment}}
+  <div id="cartEmpty">
+    <h1 class="text-center cart__title">{{t 'cart.general.title'}}</h1>
+    <div class="cart--cookie-message text-center">
+      <p>{{t 'cart.general.cookies_required'}}</p>
+    </div>
+    <p class="cart--continue-message text-center">{{t 'cart.general.empty'}} {{t 'cart.general.continue_browsing_html'}}</p>
+  </div>
+{{/if}}

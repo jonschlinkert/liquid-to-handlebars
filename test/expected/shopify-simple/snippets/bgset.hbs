@@ -1,0 +1,22 @@
+{{#if (isnt image blank)}}
+    {{#if (gt image.width 180)}}{{img_url image '180x'}} 180w {{round (divided_by 180 image.aspect_ratio)}}h,{{/if}}
+    {{#if (gt image.width 360)}}{{img_url image '360x'}} 360w {{round (divided_by 360 image.aspect_ratio)}}h,{{/if}}
+    {{#if (gt image.width 540)}}{{img_url image '540x'}} 540w {{round (divided_by 540 image.aspect_ratio)}}h,{{/if}}
+    {{#if (gt image.width 720)}}{{img_url image '720x'}} 720w {{round (divided_by 720 image.aspect_ratio)}}h,{{/if}}
+    {{#if (gt image.width 900)}}{{img_url image '900x'}} 900w {{round (divided_by 900 image.aspect_ratio)}}h,{{/if}}
+    {{#if (gt image.width 970)}}{{img_url image '900x'}} 900w {{round (divided_by 900 image.aspect_ratio)}}h,{{/if}}
+    {{#if (gt image.width 1080)}}{{img_url image '1080x'}} 1080w {{round (divided_by 1080 image.aspect_ratio)}}h,{{/if}}
+    {{#if (gt image.width 1296)}}{{img_url image '1296x'}} 1296w {{round (divided_by 1296 image.aspect_ratio)}}h,{{/if}}
+    {{#if (gt image.width 1512)}}{{img_url image '1512x'}} 1512w {{round (divided_by 1512 image.aspect_ratio)}}h,{{/if}}
+    {{#if (gt image.width 1728)}}{{img_url image '1728x'}} 1728w {{round (divided_by 1728 image.aspect_ratio)}}h,{{/if}}
+    {{#if (gt image.width 1940)}}{{img_url image '1950x'}} 1950w {{round (divided_by 1950 image.aspect_ratio)}}h,{{/if}}
+    {{#if (gt image.width 2100)}}{{img_url image '2100x'}} 2100w {{round (divided_by 2100 image.aspect_ratio)}}h,{{/if}}
+    {{#if (gt image.width 2260)}}{{img_url image '2260x'}} 2260w {{round (divided_by 2260 image.aspect_ratio)}}h,{{/if}}
+    {{#if (gt image.width 2450)}}{{img_url image '2450x'}} 2450w {{round (divided_by 2450 image.aspect_ratio)}}h,{{/if}}
+    {{#if (gt image.width 2700)}}{{img_url image '2700x'}} 2700w {{round (divided_by 2700 image.aspect_ratio)}}h,{{/if}}
+    {{#if (gt image.width 3000)}}{{img_url image '3000x'}} 3000w {{round (divided_by 3000 image.aspect_ratio)}}h,{{/if}}
+    {{#if (gt image.width 3350)}}{{img_url image '3350x'}} 3350w {{round (divided_by 3350 image.aspect_ratio)}}h,{{/if}}
+    {{#if (gt image.width 3750)}}{{img_url image '3750x'}} 3750w {{round (divided_by 3750 image.aspect_ratio)}}h,{{/if}}
+    {{#if (gt image.width 4100)}}{{img_url image '4100x'}} 4100w {{round (divided_by 4100 image.aspect_ratio)}}h,{{/if}}
+    {{img_url image 'master'}} {{ image.width }}w {{ image.height }}h
+{{/if}}

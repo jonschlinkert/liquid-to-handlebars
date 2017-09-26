@@ -1,0 +1,226 @@
+{{assign 'limit' (times section.settings.products section.settings.rows)}}
+{{assign 'totalProducts' collection.products.size}}
+
+<div class="collection-template" data-section-id="{{ section.id }}" data-section-type="collection-template">
+  {{#paginate collection.products by=limit}}
+
+  {{#if (and section.settings.collection_hero_image collection.image)}}
+    <div class="section-header-image-wrapper">
+      <div class="section-header-image{{#if section.settings.collection_hero_image_parallax}} section-header-image--parallax{{/if}} lazyload" data-bgset="{{include 'bgset",' image: collection.image}}"></div>
+
+      <noscript>
+        <div class="section-header-image" style="background-image: {{img_url collection.image 'master'}}"></div>
+      </noscript>
+    </div>
+  {{/if}}
+
+  <div class="page-width">
+    <div class="grid text-center">
+      <div class="grid__item medium-up--ten-twelfths medium-up--push-one-twelfth">
+        <header class="section-header">
+          <h1 class="section-header__title h2">{{ collection.title }}</h1>
+          {{#if (isnt collection.description blank)}}
+            <div class="section-header__description rte">
+              {{ collection.description }}
+            </div>
+          {{/if}}
+
+          {{#if (or section.settings.product_tags_enable section.settings.product_sorting_enable)}}
+            <div class="collection-dropdowns">
+              {{#if section.settings.product_tags_enable}}
+                <div class="collection-sort">
+                  <label for="FilterBy" class="label--hidden">{{t 'collections.filters.title_tags'}}</label>
+                  <select name="FilterBy" id="FilterBy" class="collection-sort__input">
+                    {{#if current_tags}}
+                      {{#if collection.handle}}
+                        <option value="/collections/{{ collection.handle }}">{{t 'collections.filters.all_tags'}}</option>
+                      {{else if collection.current_type}}
+                        <option value="{{url_for_type collection.current_type}}">{{t 'collections.filters.all_tags'}}</option>
+                      {{else if collection.current_vendor}}
+                        <option value="{{url_for_vendor collection.current_vendor}}">{{t 'collections.filters.all_tags'}}</option>
+                      {{/if}}
+                    {{else}}
+                      {{#if (contains current_tags tag)}}
+                        <option value="">{{t 'collections.filters.all_tags'}}</option>
+                      {{else}}
+                        <option value="">{{t 'collections.filters.title_tags'}}</option>
+                      {{/if}}
+                    {{/if}}
+                    {{#each collection.all_tags as |tag|}}
+                      <option value="/collections/{{#if (isnt collection.handle blank)}}{{ collection.handle }}{{else}}all{{/if}}/{{handleize tag}}"{{#if (contains current_tags tag)}} selected="selected"{{/if}}>{{ tag }}</option>
+                    {{/each}}
+                  </select>
+                </div>
+              {{/if}}
+
+              {{#if section.settings.product_sorting_enable}}
+                <div class="collection-sort">
+                  {{assign 'sort_by' (default collection.sort_by collection.default_sort_by)}}
+                  <label for="SortBy" class="label--hidden">{{t 'collections.sorting.title'}}</label>
+                  <select name="SortBy" id="SortBy" class="collection-sort__input">
+                    {{#if (is sort_by collection.default_sort_by)}}
+                      <option selected="selected">{{t 'collections.sorting.title'}}</option>
+                      {{#if (isnt collection.default_sort_by 'manual')}}
+                        <option value="manual"{{#if (is sort_by 'manual')}} selected="selected"{{/if}}>{{t 'collections.sorting.featured'}}</option>
+                      {{/if}}
+                      {{#if (isnt collection.default_sort_by 'best-selling')}}
+                        <option value="best-selling"{{#if (is sort_by 'best-selling')}} selected="selected"{{/if}}>{{t 'collections.sorting.best_selling'}}</option>
+                      {{/if}}
+                      {{#if (isnt collection.default_sort_by 'title-ascending')}}
+                        <option value="title-ascending"{{#if (is sort_by 'title-ascending')}}selected="selected"{{/if}}>{{t 'collections.sorting.az'}}</option>
+                      {{/if}}
+                      {{#if (isnt collection.default_sort_by 'title-descending')}}
+                        <option value="title-descending"{{#if (is sort_by 'title-descending')}} selected="selected"{{/if}}>{{t 'collections.sorting.za'}}</option>
+                      {{/if}}
+                      {{#if (isnt collection.default_sort_by 'price-ascending')}}
+                        <option value="price-ascending"{{#if (is sort_by 'price-ascending')}} selected="selected"{{/if}}>{{t 'collections.sorting.price_ascending'}}</option>
+                      {{/if}}
+                      {{#if (isnt collection.default_sort_by 'price-descending')}}
+                        <option value="price-descending"{{#if (is sort_by 'price-descending')}} selected="selected"{{/if}}>{{t 'collections.sorting.price_descending'}}</option>
+                      {{/if}}
+                      {{#if (isnt collection.default_sort_by 'created-descending')}}
+                        <option value="created-descending"{{#if (is sort_by 'created-descending')}} selected="selected"{{/if}}>{{t 'collections.sorting.date_descending'}}</option>
+                      {{/if}}
+                      {{#if (isnt collection.default_sort_by 'created-ascending')}}
+                        <option value="created-ascending"{{#if (is sort_by 'created-ascending')}} selected="selected"{{/if}}>{{t 'collections.sorting.date_ascending'}}</option>
+                      {{/if}}
+                    {{else}}
+                      <option value="manual"{{#if (is sort_by 'manual')}} selected="selected"{{/if}}>{{t 'collections.sorting.featured'}}</option>
+                      <option value="best-selling"{{#if (is sort_by 'best-selling')}} selected="selected"{{/if}}>{{t 'collections.sorting.best_selling'}}</option>
+                      <option value="title-ascending"{{#if (is sort_by 'title-ascending')}}selected="selected"{{/if}}>{{t 'collections.sorting.az'}}</option>
+                      <option value="title-descending"{{#if (is sort_by 'title-descending')}} selected="selected"{{/if}}>{{t 'collections.sorting.za'}}</option>
+                      <option value="price-ascending"{{#if (is sort_by 'price-ascending')}} selected="selected"{{/if}}>{{t 'collections.sorting.price_ascending'}}</option>
+                      <option value="price-descending"{{#if (is sort_by 'price-descending')}} selected="selected"{{/if}}>{{t 'collections.sorting.price_descending'}}</option>
+                      <option value="created-descending"{{#if (is sort_by 'created-descending')}} selected="selected"{{/if}}>{{t 'collections.sorting.date_descending'}}</option>
+                      <option value="created-ascending"{{#if (is sort_by 'created-ascending')}} selected="selected"{{/if}}>{{t 'collections.sorting.date_ascending'}}</option>
+                    {{/if}}
+                  </select>
+                  <input class="collection-header__default-sort" type="hidden" value="{{ collection.default_sort_by }}" />
+                </div>
+              {{/if}}
+            </div>
+          {{/if}}
+        </header>
+      </div>
+    </div>
+
+    {{assign 'desktopColumns' section.settings.products}}
+    {{assign 'mobileColumns' '1'}}
+
+    {{#capture 'gridClasses'}}
+      {{#if (and (is desktopColumns '3') (gt totalProducts 2))}}medium-up--one-third {{else}}medium-up--one-half {{/if}}
+      {{#if (is mobileColumns '2')}}small--one-half {{/if}}
+    {{/capture}}
+
+    <div class="card-list grid" data-desktop-columns="{{ desktopColumns }}" data-mobile-columns="{{ mobileColumns }}">
+      <div class="card-list__column{{#if (is totalProducts 1)}} card-list__column--center{{/if}} grid grid__item {{ gridClasses }}">
+        {{#each collection.products as |product|}}
+          {{include 'product-card",' product: product}}
+        {{/each}}
+      </div>
+    </div>
+
+    {{#if (is collection.products.size 0)}}
+      <p class="text-center">{{t 'collections.general.no_matches'}}</p>
+    {{/if}}
+
+    {{#if (gt paginate.pages 1)}}
+      <div class="card-list__sub-actions">
+        {{include 'pagination'}}
+      </div>
+    {{/if}}
+  </div>
+
+  {{/paginate}}
+</div>
+
+{{#schema}}
+{
+  "name": "Collection",
+  "settings": [
+    {
+      "type": "select",
+      "id": "products",
+      "label": "Products per row",
+      "default": "2",
+      "options": [
+        {
+          "value": "2",
+          "label": "2"
+        },
+        {
+          "value": "3",
+          "label": "3"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "rows",
+      "label": "Rows per page",
+      "default": "4",
+      "options": [
+        {
+          "value": "2",
+          "label": "2"
+        },
+        {
+          "value": "3",
+          "label": "3"
+        },
+        {
+          "value": "4",
+          "label": "4"
+        },
+        {
+          "value": "5",
+          "label": "5"
+        },
+        {
+          "value": "6",
+          "label": "6"
+        }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "product_tags_enable",
+      "label": "Enable tag filtering"
+    },
+    {
+      "type": "checkbox",
+      "id": "product_sorting_enable",
+      "label": "Enable collection sorting"
+    },
+    {
+      "type": "header",
+      "content": "Collection image"
+    },
+    {
+      "type": "checkbox",
+      "id": "collection_hero_image",
+      "label": "Show collection image"
+    },
+    {
+      "type": "checkbox",
+      "id": "collection_hero_image_parallax",
+      "label": "Show collection image parallax animation"
+    },
+    {
+      "type": "header",
+      "content": "Products"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_spacing",
+      "label": "Enable image spacing"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_vendor",
+      "label": "Show product vendor",
+      "default": true
+    }
+  ]
+}
+{{/schema}}

@@ -1,0 +1,157 @@
+{{assign 'social_icons' false}}
+{{assign 'menu_enabled' false}}
+
+{{#if (or (isnt settings.social_twitter_link blank) (isnt settings.social_facebook_link blank) (isnt settings.social_pinterest_link blank) (isnt settings.social_instagram_link blank) (isnt settings.social_tumblr_link blank) (isnt settings.social_snapchat_link blank) (isnt settings.social_youtube_link blank) (isnt settings.social_vimeo_link blank) (is template.name 'article') (is template.name 'blog'))}}
+  {{assign 'social_icons' true}}
+{{/if}}
+
+{{#each section.blocks as |block|}}
+  {{#if (is block.type 'menu')}}
+    {{assign 'menu_enabled' true}}
+  {{/if}}
+{{/each}}
+
+<footer class="site-footer" role="contentinfo" data-section-type="footer" data-section-id="{{ section.id }}" {{#if section.settings.enable_parallax}}data-footer-parallax{{/if}} data-section-id="{{ section.id }}" data-section-type="footer">
+  <div class="page-width">
+    {{#if (or menu_enabled section.settings.show_newsletter)}}
+      <div class="flex-footer{{#unless section.settings.show_newsletter}} flex-footer--full text-center{{/unless}}">
+        {{#each section.blocks as |block|}}
+          <div class="flex-footer__item flex-footer__item--{{ block.type }}" {{ block.shopify_attributes }}>
+            {{#is block.type 'menu'}}
+              {{assign 'link_list' block.settings.link_list}}
+              <ul class="site-footer__linklist">
+                {{#each (get linklists (toPath link_list 'links')) as |link|}}
+                  <li class="site-footer__linklist-item h6">
+                    <a href="{{ link.url }}">{{ link.title }}</a>
+                  </li>
+                {{/each}}
+              </ul>
+            {{/is}}
+          </div>
+        {{/each}}
+
+        {{#if section.settings.show_newsletter}}
+          <div class="flex-footer__item flex-footer__item--newsletter">
+            <div class="site-footer__newsletter">
+              {{#form 'customer'}}
+                <input type="hidden" name="contact[tags]" value="newsletter">
+                <label for="NewsletterEmail" class="site-footer__newsletter-label">{{ section.settings.newsletter_heading }}</label>
+                <div class="input-group--underline">
+                  <input type="email" value="{{#if customer}}{{ customer.email }}{{/if}}" placeholder="{{t 'general.newsletter_form.newsletter_placeholder'}}" name="contact[email]" id="NewsletterEmail" class="input-group__field site-footer__newsletter-input" aria-label="{{t 'general.newsletter_form.newsletter_placeholder'}}" autocorrect="off" autocapitalize="off">
+                  <div class="input-group__btn">
+                    <input type="submit" class="btn btn--clear" value="{{ section.settings.newsletter_button }}" name="subscribe" id="Subscribe">
+                  </div>
+                </div>
+                <div class="site-footer__newsletter-message" aria-role="alert">
+                  {{#if form.posted_successfully}}
+                    <p class="form-success" aria-role="alert">{{t 'general.newsletter_form.confirmation'}}</p>
+                  {{/if}}
+                  {{default_errors form.errors}}</div>
+              {{/form}}
+            </div>
+          </div>
+        {{/if}}
+      </div>
+    {{/if}}
+
+    <div class="site-footer__bottom{{#unless (or section.settings.show_social_icons section.settings.show_payment_icons)}} site-footer__bottom--center{{/unless}}">
+      {{#if section.settings.show_social_icons}}
+        <div class="site-footer__social-icons flex-footer__item--one-third">
+          {{include 'social-links",' disableTab: true, largeIcons: false}}
+        </div>
+      {{/if}}
+
+      <div class="site-footer__copyright flex-footer__item--one-third">
+        <small>{{t 'layout.footer.copyright'}} &copy; {{date 'now' '%Y'}}, {{link_to shop.name '/'}}.</small>
+        <small class="site-footer__powered-by">{{ powered_by_link }}</small>
+      </div>
+
+      {{#if section.settings.show_payment_icons}}
+        <div class="site-footer__payment-icons flex-footer__item--one-third">
+          {{#unless (is shop.enabled_payment_types empty)}}
+            {{assign 'payment_icons_available' (split 'amazon_payments,american_express,apple_pay,bitcoin,cirrus,dankort,diners_club,discover,dogecoin,dwolla,forbrugsforeningen,interac,jcb,litecoin,maestro,master,paypal,stripe,visa' ',')}}
+            <ul class="payment-icons list--inline">
+              {{#each shop.enabled_payment_types as |type|}}
+                {{#if (contains payment_icons_available type)}}
+                  <li class="payment-icon">
+                    {{assign 'icon_name' (prepend type 'icon-')}}
+                    {{include 'icon_name'}}
+                  </li>
+                {{/if}}
+              {{/each}}
+            </ul>
+          {{/unless}}
+        </div>
+      {{/if}}
+    </div>
+  </div>
+
+  {{#if section.settings.enable_parallax}}
+    <div class="site-footer__drawer-cover"></div>
+  {{/if}}
+</footer>
+
+{{#schema}}
+{
+  "name": "Footer",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_social_icons",
+      "label": "Show social icons",
+      "info": "Fill out your social links in the general settings",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_payment_icons",
+      "label": "Show payment icons",
+      "info": "Update your payment settings in your store's Settings / Payments",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_parallax",
+      "label": "Enable footer scrolling parallax effect",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Newsletter"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_newsletter",
+      "label": "Show newsletter signup",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "newsletter_heading",
+      "label": "Heading",
+      "default": "Sign up for updates"
+    },
+    {
+      "type": "text",
+      "id": "newsletter_button",
+      "label": "Button label",
+      "default": "Ok"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "menu",
+      "name": "Menu",
+      "limit": 2,
+      "settings": [
+        {
+          "id": "link_list",
+          "type": "link_list",
+          "label": "Menu",
+          "default": "footer"
+        }
+      ]
+    }
+  ]
+}
+{{/schema}}

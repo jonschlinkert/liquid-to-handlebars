@@ -1,0 +1,83 @@
+{{#if section.settings.show_announcement}}
+  {{#if (or (is section.settings.home_page_only false) (is template.name 'index'))}}
+    <style>
+      .announcement-bar {
+        background-color: {{ section.settings.color_bg }};
+      }
+
+      .announcement-bar--link:hover {
+        {{assign 'brightness' (color_brightness section.settings.color_bg)}}
+
+        {{#if (lte brightness 192)}}
+          {{assign 'lightenAmount' (times (divided_by (minus 255 brightness) 255) 16)}}
+          background-color: {{color_lighten section.settings.color_bg lightenAmount}};
+        {{else}}
+          {{assign 'darkenAmount' (times (divided_by 255 brightness) 8)}}
+          background-color: {{color_darken section.settings.color_bg darkenAmount}};
+        {{/if}}
+      }
+
+      .announcement-bar__message {
+        color: {{ section.settings.color_text }};
+      }
+    </style>
+
+    {{#if (is section.settings.link blank)}}
+      <div class="announcement-bar">
+    {{else}}
+      <a href="{{ section.settings.link }}" class="announcement-bar announcement-bar--link">
+    {{/if}}
+
+      <p class="announcement-bar__message">{{escape section.settings.text}}</p>
+
+    {{#if (is section.settings.link blank)}}
+      </div>
+    {{else}}
+      </a>
+    {{/if}}
+
+  {{/if}}
+{{/if}}
+
+{{#schema}}
+  {
+    "name": "Announcement bar",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "show_announcement",
+        "label": "Show announcement",
+        "default": false
+      },
+      {
+        "type": "checkbox",
+        "id": "home_page_only",
+        "label": "Home page only",
+        "default": true
+      },
+      {
+        "type": "text",
+        "id": "text",
+        "label": "Announcement text",
+        "default": "Announce something here"
+      },
+      {
+        "type": "url",
+        "id": "link",
+        "label": "Announcement link"
+      },
+      {
+        "type": "color",
+        "id": "color_bg",
+        "label": "Bar color",
+        "default": "#dbc18b"
+      },
+      {
+        "type": "color",
+        "id": "color_text",
+        "label": "Text color",
+        "default": "#fff"
+      }
+    ]
+  }
+{{/schema}}

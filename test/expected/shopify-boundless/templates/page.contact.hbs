@@ -1,0 +1,49 @@
+<!-- /templates/page.contact.liquid -->
+
+<div class="page-width page-container">
+  <header>
+    <h1>{{{ page.title }}}</h1>
+  </header>
+
+  <div class="rte rte--indented-images">
+    {{{ page.content }}}
+  </div>
+
+  <div class="contact-form form-vertical">
+    {{#form 'contact'}}
+
+      {{#if form.posted_successfully}}
+        <p class="note form-success">
+          {{t 'contact.form.post_success'}}
+        </p>
+      {{/if}}
+
+      {{default_errors form.errors}}
+
+      <div class="grid">
+        <div class="grid__item medium-up--one-half">
+          <label for="ContactFormName" class="label--hidden">{{t 'contact.form.name'}}</label>
+          <input type="text" id="ContactFormName" name="contact[name]" placeholder="{{t 'contact.form.name'}}" value="{{#if form.name}}{{ form.name }}{{else if customer}}{{ customer.name }}{{/if}}" class="input-full">
+        </div>
+
+        <div class="contact-form__email grid__item medium-up--one-half">
+          <label for="ContactFormEmail" class="label--hidden">{{t 'contact.form.email'}}</label>
+          <input type="email" id="ContactFormEmail" name="contact[email]" placeholder="{{t 'contact.form.email'}}" autocorrect="off" value="{{#if form.email}}{{ form.email }}{{else if customer}}{{ customer.email }}{{/if}}" class="input-full">
+        </div>
+
+        <div class="grid__item">
+          <label for="ContactFormPhone" class="label--hidden">{{t 'contact.form.phone'}}</label>
+          <input type="tel" id="ContactFormPhone" name="contact[phone]" placeholder="{{t 'contact.form.phone'}}" pattern="[0-9\-]*" value="{{#if form.phone}}{{ form.phone }}{{else if customer}}{{ customer.phone }}{{/if}}" class="input-full">
+        </div>
+
+        <div class="grid__item">
+          <label for="ContactFormMessage" class="label--hidden">{{t 'contact.form.message'}}</label>
+          <textarea id="ContactFormMessage" name="contact[body]" placeholder="{{t 'contact.form.message'}}" class="input-full">{{#if form.body}}{{ form.body }}{{/if}}</textarea>
+        </div>
+      </div>
+
+      <input type="submit" class="btn" value="{{t 'contact.form.send'}}">
+
+    {{/form}}
+  </div>
+</div>

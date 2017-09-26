@@ -1,0 +1,120 @@
+<!doctype html>
+<!--[if IE 9]> <html class="ie9 no-js" lang="{{ shop.locale }}"> <![endif]-->
+<!--[if (gt IE 9)|!(IE)]><!--> <html class="no-js" lang="{{ shop.locale }}"> <!--<![endif]-->
+<head>
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="{{ settings.color_header_bg }}">
+
+  {{#if (isnt settings.favicon blank)}}
+    <link rel="shortcut icon" href="{{img_url settings.favicon '32x32'}}" type="image/png">
+  {{/if}}
+
+  <link rel="canonical" href="{{ canonical_url }}">
+  <title>
+  {{{ page_title }}}{{#if current_tags}}{{assign 'meta_tags' (join current_tags ', ')}} &ndash; {{t 'general.meta.tags' tags meta_tags}}{{/if}}{{#if (isnt current_page 1)}} &ndash; {{t 'general.meta.page' page current_page}}{{/if}}{{#unless (contains page_title shop.name)}} &ndash; {{ shop.name }}{{/unless}}
+  </title>
+
+  {{#if page_description}}
+    <meta name="description" content="{{escape page_description}}">
+  {{/if}}
+
+  {{include 'social-meta-tags'}}
+
+  <script>
+    document.documentElement.className = document.documentElement.className.replace('no-js', 'js');
+  </script>
+
+  {{stylesheet_tag (asset_url 'theme.scss.css')}}
+  {{include 'google-fonts'}}
+
+  <script>
+    window.theme = window.theme || {};
+
+    theme.strings = {
+      stockAvailable: {{json (t 'products.product.stock_available' count '1')}},
+      addToCart: {{json (t 'products.product.add_to_cart')}},
+      soldOut: {{json (t 'products.product.sold_out')}},
+      unavailable: {{json (t 'products.product.unavailable')}},
+      noStockAvailable: {{json (t 'products.product.stock_unavailable')}},
+      willNotShipUntil: {{json (t 'products.product.will_not_ship_until' date '[date]')}},
+      willBeInStockAfter: {{json (t 'products.product.will_be_in_stock_after' date '[date]')}},
+      totalCartDiscount: {{json (t 'cart.general.savings_html' price '[savings]')}},
+      addressError: {{json (t 'sections.map.address_error')}},
+      addressNoResults: {{json (t 'sections.map.address_no_results')}},
+      addressQueryLimit: {{json (t 'sections.map.address_query_limit_html')}},
+      authError: {{json (t 'sections.map.auth_error_html')}}
+    };
+  </script>
+
+  <!--[if (gt IE 9)|!(IE)]><!--><script src="{{asset_url 'lazysizes.min.js'}}" async="async"></script><!--<![endif]-->
+  <!--[if lte IE 9]><script src="{{asset_url 'lazysizes.min.js'}}"></script><![endif]-->
+
+  {{#if (is template.directory 'customers')}}
+    <!--[if (gt IE 9)|!(IE)]><!--><script src="{{shopify_asset_url 'shopify_common.js'}}" defer="defer"></script><!--<![endif]-->
+    <!--[if lte IE 9]><script src="{{shopify_asset_url 'shopify_common.js'}}"></script><![endif]-->
+  {{/if}}
+
+  <!--[if (gt IE 9)|!(IE)]><!--><script src="{{asset_url 'vendor.js'}}" defer="defer"></script><!--<![endif]-->
+  <!--[if lt IE 9]><script src="{{asset_url 'vendor.js'}}"></script><![endif]-->
+
+  {{#if (or (is template.name 'product') (is template.name 'cart'))}}
+    <script>
+      window.theme = window.theme || {};
+      theme.moneyFormat = {{json shop.money_format}};
+    </script>
+  {{/if}}
+
+  <!--[if (gt IE 9)|!(IE)]><!--><script src="{{asset_url 'theme.js'}}" defer="defer"></script><!--<![endif]-->
+  <!--[if lte IE 9]><script src="{{asset_url 'theme.js'}}"></script><![endif]-->
+
+  {{ content_for_header }}
+</head>
+
+<body class="template-{{handle (truncatewords (replace template '.' ' ') 1 '')}}" >
+
+  <a class="in-page-link visually-hidden skip-link" href="#MainContent">
+    {{t 'general.accessibility.skip_to_content'}}
+  </a>
+
+  {{section 'header'}}
+
+  <div class="page-container page-element is-moved-by-drawer">
+    <main class="main-content" id="MainContent" role="main">
+      {% body %}
+    </main>
+
+    {{section 'footer'}}
+  </div>
+
+  <script id="QuantityTemplate" type="text/template">
+    {{#raw}}
+      <div class="js-qty">
+        <input type="text" value="{{ value }}" id="{{ key }}" name="{{ name }}" pattern="[0-9]*" data-line="{{ line }}" class="js-qty__input" aria-live="polite">
+        <button type="button" class="js-qty__adjust js-qty__adjust--minus" aria-label="{{/raw}}{{t 'cart.label.decrease_quantity'}}{{#raw}}">
+          {{/raw}}{{include 'icon-minus'}}{{#raw}}
+          <span class="icon__fallback-text">−</span>
+        </button>
+        <button type="button" class="js-qty__adjust js-qty__adjust--plus" aria-label="{{/raw}}{{t 'cart.label.increase_quantity'}}{{#raw}}">
+          {{/raw}}{{include 'icon-plus'}}{{#raw}}
+          <span class="icon__fallback-text">+</span>
+        </button>
+      </div>
+    {{/raw}}
+  </script>
+
+  {{#if (is template.name 'product')}}
+    <div id="ProductModal" class="modal">
+      <div class="modal__inner">
+        <img src="" id="ProductZoomImg" class="product-modal__image">
+      </div>
+      <button type="button" class="modal__close js-modal-close text-link">
+        {{include 'icon-close'}}
+        <span class="icon__fallback-text">{{json (t 'general.accessibility.close_modal')}}</span>
+      </button>
+    </div>
+  {{/if}}
+</body>
+</html>

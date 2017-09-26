@@ -1,0 +1,80 @@
+{{#capture 'header_title'}} {{t 'general.search.title'}} {{/capture}}
+{{include 'page_header' header_title}}
+
+<div class="wrapper wrapper--margins">
+
+{{assign 'respond_js_secret_key' (md5 shop.domain)}}
+{{#unless (is search.terms respond_js_secret_key)}}
+
+  {{#paginate search.results by=24}}
+
+    {{#if search.performed}}
+
+      <div class="collection-list grid-uniform small-gutter">
+      {{assign 'grid_item_width' 'small--one-whole medium--one-third large--one-third'}}
+
+        {{#each search.results as |item|}}
+
+          {{#if (is item.object_type 'product')}}
+            {{assign 'product' item}}
+            {{include 'product-grid-item",' grid_item_width: grid_item_width}}
+          {{else}}
+            <div class="product grid__item {{ grid_item_width }} text-center">
+
+              {{#if item.featured_image}}
+                {{assign 'img' item.featured_image}}
+              {{else if item.image}}
+                {{assign 'img' item.image}}
+              {{else}}
+                {{assign 'img' ''}}
+              {{/if}}
+
+              {{#if (isnt img blank)}}
+                <a href="{{ item.url }}" class="grid__image">
+                  <div class="product__image-wrapper" style="padding-top:{{times (divided_by 1 img.aspect_ratio) 100}}%;">
+                  {{assign 'img_url' (replace (img_url item '1x1') '_1x1.' '_{width}x.')}}
+                    <img class="no-js lazyload"
+                      data-src="{{ img_url }}"
+                      data-widths="[108, 360, 375, 414, 568, 684, 720, 732, 736, 768, 1024, 1200, 1296, 1512, 1728, 1944, 2048]"
+                      data-aspectratio="{{ img.aspect_ratio }}"
+                      data-sizes="auto"
+                      data-parent-fit="width"
+                      alt="{{default (escape img.alt) item.title}}">
+                  </div>
+                      <noscript>
+                        <img src="{{img_url img '580x'}}"
+                          srcset="{{img_url img '580x'}} 1x, {{img_url img '580x' scale 2}} 2x"
+                          alt="{{default (escape img.alt) item.title}}" style="opacity:1;">
+                      </noscript>
+
+                </a>
+              {{/if}}
+
+              <p class="h3">{{link_to item.title item.url}}</p>
+
+              {{#if (is img blank)}}
+                <p class="excerpt">{{truncatewords (strip_html item.content) 50}}</p>
+              {{/if}}
+
+            </div>
+          {{/if}}
+
+        {{/each}}
+
+      </div>
+
+      {{include 'page_pagination'}}
+
+    {{/if}}
+
+    <form action="/search" method="get" class="search-bar text-center" role="search">
+      <h2 class="home-section-title less-margin">{{t 'general.search.label'}}</h2>
+      <input type="search" name="q" value="{{escape search.terms}}">
+      <button type="submit" class="btn btn--regular btn--dark btn--fill">
+        {{t 'general.search.submit'}}
+      </button>
+    </form>
+
+  {{/paginate}}
+
+{{/unless}}

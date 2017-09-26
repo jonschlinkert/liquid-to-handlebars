@@ -1,0 +1,145 @@
+{{#if (gt cart.item_count 0)}}
+  <form action="/cart" method="post" class="cart-form" novalidate>
+
+    <h1 class="h2">{{t 'cart.general.title'}}</h1>
+
+    {{#each cart.items as |item|}}
+    <div class="cart-row" data-line="{{ forloop.index }}">
+      <div class="grid">
+
+        <div class="grid-item large--seven-twelfths">
+          <div class="grid">
+
+            <div class="grid-item one-third large--one-quarter">
+              <a href="{{ item.url }}" class="cart-image">
+                <img src="{{img_url item 'medium'}}"  alt="{{escape item.title}}">
+              </a>
+            </div>
+
+            <div class="grid-item two-thirds large--three-quarters">
+              <a href="{{ item.url }}">
+                {{ item.product.title }}
+              </a>
+              {{#unless (contains item.variant.title 'Default')}}
+                <br>
+                <small>{{ item.variant.title }}</small>
+              {{/unless}}
+
+              {{#if (and settings.product_quantity_message item.variant.inventory_management (lte item.variant.inventory_quantity 0) item.variant.incoming)}}
+                {{assign 'date' (date item.variant.next_incoming_date format 'month_day_year')}}
+                <p><small>{{t 'products.product.will_not_ship_until' date date}}</small></p>
+              {{/if}}
+
+              {{assign 'property_size' (size item.properties)}}
+              {{#if (gt property_size 0)}}
+                {{#each item.properties as |p|}}
+                  {{#if forloop.first}}<br>{{/if}}
+                  {{assign 'first_character_in_key' (truncate p.first 1 '')}}
+                  {{#unless (or (is p.last blank) (is first_character_in_key '_'))}}
+                    {{ p.first }}:
+
+                    {{#if (contains p.last '/uploads/')}}
+                      <a href="{{ p.last }}">{{last (split p.last '/')}}</a>
+                    {{else}}
+                      {{ p.last }}
+                    {{/if}}
+
+                    <br>
+                  {{/unless}}
+                {{/each}}
+              {{/if}}
+            </div>
+
+          </div>
+        </div>
+
+        <div class="grid-item large--five-twelfths medium--two-thirds push--medium--one-third">
+          <div class="grid">
+
+            <div class="grid-item one-half medium-down--one-third text-right">
+              <input type="number" name="updates[]" id="updates_{{ item.key }}" data-id="{{ item.key }}" value="{{ item.quantity }}" min="0" data-line="{{ forloop.index }}">
+            </div>
+
+            <div class="grid-item one-third medium-down--one-third medium-down--text-left text-right">
+              {{#if (isnt item.original_line_price item.line_price)}}
+                <small class="cart-item--original-price"><s>{{money item.original_price}}</s></small>
+              {{/if}}
+              <span class="h2">
+                {{include 'price' item.price}}
+              </span>
+            </div>
+
+            <div class="grid-item one-sixth medium-down--one-third text-right">
+              <a href="/cart/change?line={{ forloop.index }}&amp;quantity=0" data-line="{{ forloop.index }}" class="icon-fallback-text btn-secondary remove">
+                <span class="icon icon-x" aria-hidden="true"></span>
+                <span class="fallback-text">{{t 'cart.general.remove'}}</span>
+              </a>
+            </div>
+
+            <div class="grid-item one-whole text-right small--text-left">
+              {{#each item.discounts as |discount|}}
+                <small class="cart-item--discount">{{ discount.title }}</small>
+              {{/each}}
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    {{/each}}
+
+    <div class="cart-row">
+      <div class="grid">
+
+        {{#if settings.cart_notes_enable}}
+          <div class="grid-item large--one-half">
+            <label for="cartSpecialInstructions">{{t 'cart.general.note'}}</label>
+            <textarea name="note" class="input-full" id="cartSpecialInstructions">{{ cart.note }}</textarea>
+          </div>
+        {{/if}}
+
+        <div class="grid-item text-right {{#if settings.cart_notes_enable}}large--one-half{{/if}}">
+
+          <div class="cart-subtotal">
+            {{t 'cart.general.subtotal'}}
+            <span class="h1 cart-subtotal--price">
+              {{include 'price' cart.total_price}}
+            </span>
+            {{#if (gt cart.total_discounts 0)}}
+             {{assign 'savings' (money cart.total_discounts)}}
+             <small class="cart-subtotal--savings">{{t 'cart.general.savings_html' price savings}}</small>
+            {{/if}}
+          </div>
+
+          <p class="cart-subtotal__note"><em>{{t 'cart.general.taxes_extra'}}</em></p>
+
+          <input type="submit" name="update" class="btn-secondary update-cart" value="{{t 'cart.general.update'}}">
+
+          <button type="submit" name="checkout" class="btn">
+            <span class="icon icon-cart"></span>
+            {{t 'cart.general.checkout'}}
+          </button>
+
+          {{#if additional_checkout_buttons}}
+            <div class="additional-checkout-buttons">{{ content_for_additional_checkout_buttons }}</div>
+          {{/if}}
+
+        </div>
+
+      </div>
+    </div>
+
+  </form>
+
+{{else}}
+
+  <div id="EmptyCart">
+    <h1 class="h2">{{t 'cart.general.title'}}</h1>
+    <p class="cart--empty-message">{{t 'cart.general.empty'}}</p>
+    <p class="cart--continue-message">{{t 'cart.general.continue_browsing_html'}}</p>
+    <p class="cart--cookie-message">{{t 'cart.general.cookies_required'}}</p>
+  </div>
+
+{{/if}}

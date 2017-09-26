@@ -1,0 +1,128 @@
+<!-- snippets/product-grid-item.liquid -->
+{{#comment}}
+
+  This snippet is used to showcase each product during the loop,
+  'for product in collection.products' in collection.liquid.
+
+  A liquid variable (grid_item_width) is set just before the this
+  snippet is included to change the size of the container.
+  Once the variable is set on a page, all future instances of this
+  snippet will use that width. Overwrite the variable to adjust this.
+
+  Example
+    - assign grid_item_width = 'large--one-quarter medium--one-half'
+
+{{/comment}}
+
+{{#comment}}
+  Set the default grid_item_width if no variable is set
+{{/comment}}
+{{#unless grid_item_width}}
+  {{assign 'grid_item_width' 'large--one-third medium--one-half'}}
+{{/unless}}
+
+{{#if (is featured.title '')}}
+  {{#comment}}add default state for product block in storefront editor{{/comment}}
+  {{#capture 'product_title'}}{{t 'home_page.onboarding.product_title'}}{{/capture}}
+{{else}}
+  {{#capture 'product_title'}}{{escape featured.title}}{{/capture}}
+{{/if}}
+
+{{#comment}}
+  Check if the product is on sale and set a variable to be used below.
+{{/comment}}
+{{assign 'on_sale' false}}
+{{#if (gt featured.compare_at_price featured.price)}}
+  {{assign 'on_sale' true}}
+{{/if}}
+
+{{#comment}}
+  Check if the product is sold out and set a variable to be used below.
+{{/comment}}
+{{assign 'sold_out' true}}
+{{#if featured.available}}
+  {{assign 'sold_out' false}}
+{{/if}}
+
+{{#comment}}
+  Set a class for sold-out and on-sale items
+{{/comment}}
+<div class="{{#if sold_out}} sold-out{{/if}}{{#if on_sale}} on-sale{{/if}}{{#if forloop.last}} last{{/if}}">
+  <div class="product-wrapper">
+    <a href="{{within featured.url collection}}" class="product">
+      {{#if (isnt featured.title '')}}
+        {{#unless (is featured.featured_image blank)}}
+          {{#capture 'img_id'}}ProductImage-{{ featured.featured_image.id }}{{/capture}}
+          {{#capture 'wrapper_id'}}ProductImageWrapper-{{ featured.featured_image.id }}{{/capture}}
+          {{assign 'img_url' (replace (img_url featured.featured_image '1x1') '_1x1.' '_{width}x.')}}
+
+          {{include 'image-style' image: featured.featured_image, width: product_size, height: 480, small_style: true, wrapper_id: wrapper_id, img_id: img_id}}
+          <div id="{{ wrapper_id }}" class="product__img-wrapper js">
+            <div style="padding-top:{{times (divided_by 1 featured.featured_image.aspect_ratio) 100}}%;">
+              <img id="{{ img_id }}"
+                   class="product__img lazyload"
+                   data-src="{{ img_url }}"
+                   data-widths="[180, 360, 470, 600, 750, 940, 1080, 1296, 1512, 1728, 2048]"
+                   data-aspectratio="{{ featured.featured_image.aspect_ratio }}"
+                   data-sizes="auto"
+                   alt="{{escape featured.featured_image.alt}}">
+            </div>
+          </div>
+        {{else}}
+          <img src="{{img_url featured.featured_image.src 'large'}}" alt="{{escape featured.featured_image.alt}}" class="product__img">
+        {{/unless}}
+        <noscript>
+          <img src="{{img_url featured.featured_image.src 'large'}}" alt="{{escape featured.featured_image.alt}}" class="product__img">
+        </noscript>
+      {{else}}
+        {{#capture 'current'}}{{cycle 1 2 3 4 5 6}}{{/capture}}
+        {{placeholder_svg_tag (append 'product-' current) 'placeholder-svg'}}
+      {{/if}}
+      <div class="product__cover"></div>
+      {{#comment}}
+        Link to your product with the 'within: collection' filter for the link to be aware of the collection.
+        This allows you to create collection-based navigation on the product page.
+
+        Results of using 'within: collection':
+        - Instead of a URL with /products/product-handle
+          you would get /collections/collection-handle/products/product-handle
+
+        For more info on navigation within a collection
+          - http://docs.shopify.com/support/your-store/collections/how-to-navigate-within-a-collection
+
+      {{/comment}}
+
+      <div class="product__details text-center">
+        <div class="table-contain">
+          <div class="table-contain__inner">
+            <p class="h4 product__title">{{ product_title }}</p>
+            <p class="product__price">
+              {{#if on_sale}}
+                <span class="visuallyhidden">{{t 'products.general.sale_price'}}</span>
+              {{else}}
+                <span class="visuallyhidden">{{t 'products.general.regular_price'}}</span>
+              {{/if}}
+              {{assign 'price' (money featured.price)}}
+              {{#if featured.price_varies}}{{t 'products.general.from_text_html' price price}}{{else}}{{ price }}{{/if}}
+              {{#if on_sale}}
+                {{assign 'original_price' (money featured.compare_at_price)}}
+                <span class="visuallyhidden">{{t 'products.general.regular_price'}}</span>
+                <del>{{ original_price }}</del>
+              {{/if}}
+            </p>
+          </div>
+        </div>
+      </div>
+    {{#if sold_out}}
+      <div class="sold-out-tag text-center">
+        <span class="tag">{{t 'products.product.sold_out'}}</span>
+      </div>
+    {{/if}}
+    {{#if (and on_sale (isnt sold_out true))}}
+      <div class="on-sale-tag text-center">
+        <span class="tag" aria-hidden="true">{{t 'products.product.on_sale'}}</span>
+      </div>
+    {{/if}}
+    </a>
+  </div>
+</div>

@@ -1,0 +1,53 @@
+<!-- /templates/blog.liquid -->
+
+{{#paginate blog.articles by=5}}
+
+<div class="page-width page-container" itemscope itemtype="http://schema.org/Article">
+  <header class="visually-hidden">
+    {{#if current_tags}}
+      <h1>{{link_to blog.title blog.url}} &mdash; {{ current_tags.first }}</h1>
+    {{else}}
+      <h1>{{ blog.title }}</h1>
+    {{/if}}
+  </header>
+
+  {{#each blog.articles as |article|}}
+    <h2><a href="{{ article.url }}">{{ article.title }}</a></h2>
+
+    {{#comment}}
+      Use the excerpt if it exists or truncate the full article
+    {{/comment}}
+    <div class="rte rte--indented-images">
+      {{#if article.image}}
+        <p>
+          <a href="{{ article.url }}">
+            {{img_tag (img_url article 'master') article.title}}
+          </a>
+        </p>
+      {{/if}}
+
+      {{#if (gt article.excerpt.size 0)}}
+        {{ article.excerpt }}
+      {{else}}
+        <p>{{truncatewords article.content 100}}</p>
+      {{/if}}
+    </div>
+
+    <p class="action-link">
+      <a href="{{ article.url }}">{{t 'blogs.article.read_more'}} <span class="icon icon-arrow-right action-link__icon" aria-hidden="true"></span></a>
+    </p>
+
+    {{#unless forloop.last}}
+      <hr class="hr--clear">
+    {{/unless}}
+
+  {{/each}}
+
+  {{#if (gt paginate.pages 1)}}
+    <hr class="hr--clear">
+
+    {{include 'pagination'}}
+  {{/if}}
+</div>
+
+{{/paginate}}

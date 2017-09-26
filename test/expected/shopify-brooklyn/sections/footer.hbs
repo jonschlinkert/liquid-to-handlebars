@@ -1,0 +1,208 @@
+<footer class="site-footer small--text-center" role="contentinfo">
+  <div class="wrapper">
+
+    <div class="grid-uniform">
+
+      {{#comment}}
+        Default to 1 footer column (copyright/powered_by/payment_types)
+      {{/comment}}
+      {{assign 'num_footer_columns' 1}}
+
+      {{#comment}}
+        Create an extra menu column if link list has more than 5 links
+      {{/comment}}
+      {{#if (gt (get linklists (toPath section.settings.footer_link_list 'links.size')) 0)}}
+        {{#comment}}
+          We have a Footer menu that isn't empty, we will need another column
+        {{/comment}}
+        {{assign 'num_footer_columns' (plus num_footer_columns 1)}}
+        {{assign 'extra_footer_linklist_column' false}}
+        {{assign 'footer_linklist_count' (get linklists (toPath section.settings.footer_link_list 'links.size'))}}
+        {{#if (gt footer_linklist_count 5)}}
+          {{assign 'extra_footer_linklist_column' true}}
+          {{#comment}}
+            We split the links so we'll need another column
+          {{/comment}}
+          {{assign 'num_footer_columns' (plus num_footer_columns 1)}}
+        {{/if}}
+        {{#comment}}
+          If we have an odd amount of links, we need to show 1 more link in 1st column
+        {{/comment}}
+        {{assign 'extra_link' (modulo footer_linklist_count 2)}}
+        {{#comment}}
+          We start with a 2nd column after first column is filled up.
+        {{/comment}}
+        {{assign 'footer_linklist_split' (plus (plus (divided_by footer_linklist_count 2) extra_link) 1)}}
+      {{/if}}
+
+      {{#comment}}
+        Determine whether there are social links
+      {{/comment}}
+      {{assign 'footer_social_enable' false}}
+      {{#if (or (isnt settings.social_twitter_link blank) (isnt settings.social_facebook_link blank) (isnt settings.social_pinterest_link blank) (isnt settings.social_google_plus_link blank) (isnt settings.social_instagram_link blank) (isnt settings.social_tumblr_link blank) (isnt settings.social_youtube_link blank) (isnt settings.social_vimeo_link blank) (isnt settings.social_fancy_link blank) (isnt settings.social_snapchat_link blank))}}
+        {{assign 'footer_social_enable' true}}
+      {{/if}}
+
+      {{#comment}}
+        Calculate the number of footer columns shown. Default to 1.
+      {{/comment}}
+      {{#if footer_social_enable}}
+        {{assign 'num_footer_columns' (plus num_footer_columns 1)}}
+      {{/if}}
+
+      {{#is num_footer_columns 0}}
+        {{else is num_footer_columns 1}}
+          {{assign 'footer_column_width' ''}}
+        {{else is num_footer_columns 2}}
+          {{assign 'footer_column_width' 'one-half small--one-whole'}}
+        {{else is num_footer_columns 3}}
+          {{assign 'footer_column_width' 'one-third small--one-whole'}}
+        {{else is num_footer_columns 4}}
+          {{assign 'footer_column_width' 'large--one-quarter medium--one-half'}}
+      {{/is}}
+
+      {{#if (gt (get linklists (toPath section.settings.footer_link_list 'links.size')) 0)}}
+        <div class="grid__item {{ footer_column_width }}">
+          <ul class="no-bullets site-footer__linklist">
+            {{#each (get linklists (toPath section.settings.footer_link_list 'links')) as |link|}}
+
+      {{#comment}}
+        Create a second column
+      {{/comment}}
+      {{#if (and extra_footer_linklist_column (is forloop.index footer_linklist_split))}}
+          </ul>
+        </div>
+        <div class="grid__item {{ footer_column_width }}">
+          <ul class="no-bullets site-footer__linklist">
+      {{/if}}
+
+              <li><a href="{{ link.url }}">{{ link.title }}</a></li>
+
+            {{/each}}
+          </ul>
+        </div>
+      {{/if}}
+
+      {{#if footer_social_enable}}
+        <div class="grid__item {{ footer_column_width }}">
+            <ul class="no-bullets social-icons">
+              {{#if (isnt settings.social_facebook_link blank)}}
+                <li>
+                  <a href="{{escape settings.social_facebook_link}}" title="{{t 'layout.footer.social_platform' name shop.name platform 'Facebook'}}">
+                    <span class="icon icon-facebook" aria-hidden="true"></span>
+                    Facebook
+                  </a>
+                </li>
+              {{/if}}
+              {{#if (isnt settings.social_twitter_link blank)}}
+                <li>
+                  <a href="{{escape settings.social_twitter_link}}" title="{{t 'layout.footer.social_platform' name shop.name platform 'Twitter'}}">
+                    <span class="icon icon-twitter" aria-hidden="true"></span>
+                    Twitter
+                  </a>
+                </li>
+              {{/if}}
+              {{#if (isnt settings.social_pinterest_link blank)}}
+                <li>
+                  <a href="{{escape settings.social_pinterest_link}}" title="{{t 'layout.footer.social_platform' name shop.name platform 'Pinterest'}}">
+                    <span class="icon icon-pinterest" aria-hidden="true"></span>
+                    Pinterest
+                  </a>
+                </li>
+              {{/if}}
+              {{#if (isnt settings.social_instagram_link blank)}}
+                <li>
+                  <a href="{{escape settings.social_instagram_link}}" title="{{t 'layout.footer.social_platform' name shop.name platform 'Instagram'}}">
+                    <span class="icon icon-instagram" aria-hidden="true"></span>
+                    Instagram
+                  </a>
+                </li>
+              {{/if}}
+              {{#if (isnt settings.social_snapchat_link blank)}}
+                <li>
+                  <a href="{{escape settings.social_snapchat_link}}" title="{{t 'layout.footer.social_platform' name shop.name platform 'Snapchat'}}">
+                    <span class="icon icon-snapchat" aria-hidden="true"></span>
+                    Snapchat
+                  </a>
+                </li>
+              {{/if}}
+              {{#if (isnt settings.social_google_plus_link blank)}}
+                <li>
+                  <a href="{{escape settings.social_google_plus_link}}" rel="publisher" title="{{t 'layout.footer.social_platform' name shop.name platform 'Google Plus'}}">
+                    <span class="icon icon-google_plus" aria-hidden="true"></span>
+                    Google Plus
+                  </a>
+                </li>
+              {{/if}}
+              {{#if (isnt settings.social_tumblr_link blank)}}
+                <li>
+                  <a href="{{escape settings.social_tumblr_link}}" title="{{t 'layout.footer.social_platform' name shop.name platform 'Tumblr'}}">
+                    <span class="icon icon-tumblr" aria-hidden="true"></span>
+                    Tumblr
+                  </a>
+                </li>
+              {{/if}}
+              {{#if (isnt settings.social_youtube_link blank)}}
+                <li>
+                  <a href="{{escape settings.social_youtube_link}}" title="{{t 'layout.footer.social_platform' name shop.name platform 'YouTube'}}">
+                    <span class="icon icon-youtube" aria-hidden="true"></span>
+                    YouTube
+                  </a>
+                </li>
+              {{/if}}
+              {{#if (isnt settings.social_vimeo_link blank)}}
+                <li>
+                  <a href="{{escape settings.social_vimeo_link}}" title="{{t 'layout.footer.social_platform' name shop.name platform 'Vimeo'}}">
+                    <span class="icon icon-vimeo" aria-hidden="true"></span>
+                    Vimeo
+                  </a>
+                </li>
+              {{/if}}
+              {{#if (isnt settings.social_fancy_link blank)}}
+                <li>
+                  <a href="{{escape settings.social_fancy_link}}" title="{{t 'layout.footer.social_platform' name shop.name platform 'Fancy'}}">
+                    <span class="icon icon-fancy" aria-hidden="true"></span>
+                    Fancy
+                  </a>
+                </li>
+              {{/if}}
+            </ul>
+        </div>
+      {{/if}}
+
+      <div class="grid__item {{ footer_column_width }} {{#if (is num_footer_columns 1)}}text-center{{else}}large--text-right{{/if}}">
+        <p>&copy; {{date 'now' '%Y'}}, {{link_to shop.name '/'}}<br>{{ powered_by_link }}</p>
+        {{#unless (is shop.enabled_payment_types empty)}}
+          {{assign 'payment_icons_available' (split 'amazon_payments,american_express,apple_pay,bitcoin,cirrus,dankort,diners_club,discover,dogecoin,dwolla,forbrugsforeningen,interac,jcb,litecoin,maestro,master,paypal,visa' ',')}}
+          <ul class="inline-list payment-icons">
+            {{#each shop.enabled_payment_types as |type|}}
+              {{#if (contains payment_icons_available type)}}
+                <li>
+                  <span class="icon-fallback-text">
+                    <span class="icon icon-{{ type }}" aria-hidden="true"></span>
+                    <span class="fallback-text">{{replace type '_' ' '}}</span>
+                  </span>
+                </li>
+              {{/if}}
+            {{/each}}
+          </ul>
+        {{/unless}}
+      </div>
+    </div>
+
+  </div>
+</footer>
+
+{{#schema}}
+  {
+    "name": "Footer",
+    "settings": [
+      {
+        "type": "link_list",
+        "id": "footer_link_list",
+        "label": "Footer menu",
+        "default": "footer"
+      }
+    ]
+  }
+{{/schema}}

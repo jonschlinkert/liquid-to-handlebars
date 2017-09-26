@@ -1,0 +1,120 @@
+---
+layout: none
+---
+{{assign 'formatted_initial_value' (money_without_trailing_zeros gift_card.initial_value gift_card.currency)}}
+{{assign 'formatted_initial_value_stripped' (strip_html formatted_initial_value)}}
+
+<!doctype html>
+<!--[if IE 9]><html class="ie9 no-js" lang="{{ shop.locale }}"> <![endif]-->
+<!--[if (gt IE 9)|!(IE)]><!--> <html class="no-js" lang="{{ shop.locale }}"> <!--<![endif]-->
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="{{ settings.color_primary }}">
+  <link rel="canonical" href="{{ canonical_url }}">
+
+  {{#if (isnt settings.favicon blank)}}
+    <link rel="shortcut icon" href="{{img_url settings.favicon '32x32'}}" type="image/png">
+  {{/if}}
+
+  <title>{{t 'gift_cards.issued.title_html' value formatted_initial_value_stripped shop shop.name}}</title>
+  <meta name="description" content="{{t 'gift_cards.issued.subtext'}}">
+
+  <script>
+    document.documentElement.className = document.documentElement.className.replace('no-js', 'js');
+  </script>
+
+  {{stylesheet_tag (asset_url 'theme.scss.css')}}
+  {{include 'google-fonts'}}
+
+  <!--[if (gt IE 9)|!(IE)]><!--><script src="{{shopify_asset_url 'vendor/qrcode.js'}}" defer="defer"></script><!--<![endif]-->
+  <!--[if lte IE 9]><script src="{{shopify_asset_url 'vendor/qrcode.js'}}"></script><![endif]-->
+
+  <!--[if (gt IE 9)|!(IE)]><!--><script src="{{asset_url 'vendor.js'}}" defer="defer"></script><!--<![endif]-->
+  <!--[if lte IE 9]><script src="{{asset_url 'vendor.js'}}"></script><![endif]-->
+
+  <!--[if (gt IE 9)|!(IE)]><!--><script src="{{asset_url 'gift-card.js'}}" defer="defer"></script><!--<![endif]-->
+  <!--[if lte IE 9]><script src="{{asset_url 'gift-card.js'}}"></script><![endif]-->
+
+  {{ content_for_header }}
+</head>
+
+<body id="{{handle page_title}}" class="template-giftcard">
+
+  <div class="page-width text-center">
+    <header class="giftcard__header" role="banner">
+      <h1 class="site-header__logo" itemscope itemtype="http://schema.org/Organization">
+        <a href="/" itemprop="url">{{ shop.name }}</a>
+      </h1>
+      <div class="giftcard__shop-url">{{escape shop.url}}</div>
+    </header>
+
+    <div class="giftcard__content">
+      <main class="giftcard__wrapper{{#if (or gift_card.expired (isnt gift_card.enabled true))}} giftcard__disabled{{/if}}" role="main">
+
+        <h2 class="h3 giftcard__title">{{t 'gift_cards.issued.subtext'}}</h2>
+        {{#unless gift_card.enabled}}
+          <span class="giftcard__tag">{{t 'gift_cards.issued.disabled'}}</span>
+        {{/unless}}
+        {{assign 'gift_card_expiry_date' (date gift_card.expires_on '%d/%m/%y')}}
+        {{#if (and gift_card.expired gift_card.enabled)}}
+           <span class="giftcard__tag">{{t 'gift_cards.issued.expired' expiry gift_card_expiry_date}}</span>
+        {{/if}}
+        {{#if (and (isnt gift_card.expired true) gift_card.expires_on gift_card.enabled)}}
+          <span class="giftcard__tag giftcard__tag--active">{{t 'gift_cards.issued.active' expiry gift_card_expiry_date}}</span>
+        {{/if}}
+
+        <div class="giftcard__wrap">
+          <img class="giftcard__image" src="{{shopify_asset_url 'gift-card/card.jpg'}}" alt="Gift card illustration">
+
+          <div class="giftcard__amount-wrapper">
+            {{assign 'initial_value_size' (size formatted_initial_value)}}
+            <h2 class="giftcard__amount">{{ formatted_initial_value }}</h2>
+
+            {{#if (isnt gift_card.balance gift_card.initial_value)}}
+              <p class="giftcard__amount-remaining">{{money (t 'gift_cards.issued.remaining_html' balance gift_card.balance)}}</p>
+            {{/if}}
+          </div>
+
+          {{assign 'code_size' (size (format_code gift_card.code))}}
+          <div class="giftcard__code">
+            <div class="giftcard__code-bubble">
+              <strong class="giftcard__code-text" id="GiftCardDigits">{{format_code gift_card.code}}</strong>
+            </div>
+          </div>
+        </div>
+
+        <p class="giftcard__instructions">
+          {{t 'gift_cards.issued.redeem'}}
+        </p>
+
+        <p>
+          <a href="{{ shop.url }}" class="btn" target="_blank">{{t 'gift_cards.issued.shop_link'}}</a>
+        </p>
+
+        <p>
+          <div id="QrCode" class="giftcard__qr-code" data-identifier="{{ gift_card.qr_identifier }}"></div>
+        </p>
+
+        {{#if gift_card.pass_url}}
+          <p>
+            <a class="giftcard__apple-wallet" href="{{ gift_card.pass_url }}">
+              <img class="giftcard__apple-wallet-image" src="{{shopify_asset_url 'gift-card/add-to-apple-wallet.svg'}}" width="120" height="40" alt="{{t 'gift_cards.issued.add_to_apple_wallet'}}">
+            </a>
+          </p>
+        {{/if}}
+
+        <p>
+          <a href="#" id="PrintGiftCard" class="giftcard__print-link">
+            {{t 'gift_cards.issued.print'}}
+          </a>
+        </p>
+
+      </main>
+    </div>
+  </div>
+
+</body>
+</html>

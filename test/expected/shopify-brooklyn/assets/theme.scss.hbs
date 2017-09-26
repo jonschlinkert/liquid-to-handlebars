@@ -1,0 +1,4078 @@
+/*============================================================================
+  Brooklyn by Shopify
+==============================================================================*/
+
+/*================ Variables, theme settings, and Sass mixins from Timber ================*/
+/*============================================================================
+  #Sass Mixins
+==============================================================================*/
+.clearfix {
+  &:after {
+    content: '';
+    display: table;
+    clear: both;
+  }
+}
+
+@mixin clearfix() {
+  &:after {
+    content: '';
+    display: table;
+    clear: both;
+  }
+}
+
+@mixin prefix($property, $value) {
+  -webkit-#{$property}: #{$value};
+  -moz-#{$property}: #{$value};
+  -ms-#{$property}: #{$value};
+  -o-#{$property}: #{$value};
+  #{$property}: #{$value};
+}
+
+/*============================================================================
+  Prefix mixin for generating vendor prefixes.
+  Based on https://github.com/thoughtbot/bourbon/blob/master/app/assets/stylesheets/addons/_prefixer.scss
+  Usage:
+    // Input:
+    .element {
+      @include prefix(transform, scale(1), ms webkit spec);
+    }
+    // Output:
+    .element {
+      -ms-transform: scale(1);
+      -webkit-transform: scale(1);
+      transform: scale(1);
+    }
+==============================================================================*/
+@mixin prefixFlex($property, $value, $prefixes) {
+  @each $prefix in $prefixes {
+    @if $prefix == webkit {
+      -webkit-#{$property}: $value;
+    } @else if $prefix == moz {
+      -moz-#{$property}: $value;
+    } @else if $prefix == ms {
+      -ms-#{$property}: $value;
+    } @else if $prefix == o {
+      -o-#{$property}: $value;
+    } @else if $prefix == spec {
+      #{$property}: $value;
+    } @else  {
+      @warn 'Unrecognized prefix: #{$prefix}';
+    }
+  }
+}
+
+@mixin keyframes($name) {
+  @-webkit-keyframes #{$name} {
+    @content;
+  }
+  @-moz-keyframes #{$name} {
+    @content;
+  }
+  @-ms-keyframes #{$name} {
+    @content;
+  }
+  @keyframes #{$name} {
+    @content;
+  }
+}
+
+@mixin transition($transition: 0.1s all) {
+  @include prefix('transition', #{$transition});
+}
+
+@mixin transform($transform: 0.1s all) {
+  @include prefix('transform', #{$transform});
+}
+
+@mixin animation($animation) {
+  -webkit-animation: $animation;
+  -moz-animation:    $animation;
+  -o-animation:      $animation;
+  animation:         $animation;
+}
+
+@mixin gradient($from, $to, $fallback) {
+  background: $fallback;
+  background: -moz-linear-gradient(top, $from 0%, $to 100%);
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,$from), color-stop(100%,$to));
+  background: -webkit-linear-gradient(top, $from 0%, $to 100%);
+  background: -o-linear-gradient(top, $from 0%, $to 100%);
+  background: -ms-linear-gradient(top, $from 0%, $to 100%);
+  background: linear-gradient(top bottom, $from 0%, $to 100%);
+}
+
+@mixin backface($visibility: hidden) {
+  @include prefix('backface-visibility', #{$visibility});
+}
+
+@mixin box-sizing($box-sizing: border-box) {
+  -webkit-box-sizing: #{$box-sizing};
+  -moz-box-sizing: #{$box-sizing};
+  box-sizing: #{$box-sizing};
+}
+
+/*================ Functions ================*/
+@function em($target, $context: $baseFontSize) {
+  @if $target == 0 {
+    @return 0;
+  }
+  @return $target / $context + 0em;
+}
+
+@function color-control($color) {
+  @if (lightness( $color ) > 40) {
+    @return #1c1d1d;
+  }
+  @else {
+    @return #fff;
+  }
+}
+
+@function adaptive-color($color, $percentage) {
+  @if (lightness( $color ) > 40) {
+    @return darken($color, $percentage);
+  }
+  @else {
+    @return lighten($color, $percentage);
+  }
+}
+
+@function strip-units($number) {
+  @return $number / ($number * 0 + 1);
+}
+
+//Font Stack Mixins
+@mixin headerFontStack {
+  font-family: $headerFontStack;
+  font-weight: $headerFontWeight;
+}
+
+@mixin accentFontStack {
+  font-family: $accentFontStack;
+  font-weight: $accentFontWeight;
+  font-style: normal;
+  {{#if settings.type_accent_spacing}}
+    letter-spacing: 0.1em;
+  {{/if}}
+  {{#if settings.type_accent_transform}}
+    text-transform: uppercase;
+  {{/if}}
+}
+
+@mixin bodyFontItalic {
+  {{#if settings.type_base_italize_titles}}
+    font-style: italic;
+  {{/if}}
+}
+
+@mixin visuallyHidden {
+  clip: rect(0 0 0 0);
+  clip: rect(0, 0, 0, 0);
+  overflow: hidden;
+  position: absolute;
+  height: 1px;
+  width: 1px;
+}
+
+/*================ Animations and keyframes ================*/
+@include keyframes(spin) {
+  0% {
+    @include transform(rotate(0deg));
+  }
+
+  100% {
+    @include transform(rotate(360deg));
+  }
+}
+
+@include keyframes(fadeIn) {
+  0%, 35% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@include keyframes(heroContentIn) {
+  0%, 35% {
+    opacity: 0;
+    @include transform('translateY(8px)');
+  }
+  60% {
+    opacity: 1;
+  }
+  100% {
+    @include transform('translateY(0)');
+  }
+}
+
+/*============================================================================
+  Dependency-free breakpoint mixin
+    - http://blog.grayghostvisuals.com/sass/sass-media-query-mixin/
+==============================================================================*/
+$min: min-width;
+$max: max-width;
+@mixin at-query ($constraint, $viewport1, $viewport2:null) {
+  @if $constraint == $min {
+    @media screen and ($min: $viewport1) {
+      @content;
+    }
+  } @else if $constraint == $max {
+    @media screen and ($max: $viewport1) {
+      @content;
+    }
+  } @else {
+    @media screen and ($min: $viewport1) and ($max: $viewport2) {
+      @content;
+    }
+  }
+}
+
+/*============================================================================
+  Flexbox prefix mixins from Bourbon
+    https://github.com/thoughtbot/bourbon/blob/master/app/assets/stylesheets/css3/_flex-box.scss
+==============================================================================*/
+@mixin display-flexbox() {
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  width: 100%; // necessary for ie10
+}
+
+@mixin flex-wrap($value: nowrap) {
+  @include prefixFlex(flex-wrap, $value, webkit moz ms spec);
+}
+
+@mixin flex-direction($value) {
+  @include prefixFlex(flex-direction, $value, webkit moz ms spec);
+}
+
+@mixin align-items($value: stretch) {
+  $alt-value: $value;
+
+  @if $value == 'flex-start' {
+    $alt-value: start;
+  } @else if $value == 'flex-end' {
+    $alt-value: end;
+  }
+
+  // sass-lint:disable no-misspelled-properties
+  -ms-flex-align: $alt-value;
+  @include prefixFlex(align-items, $value, webkit moz ms o spec);
+}
+
+@mixin flex($value) {
+  @include prefixFlex(flex, $value, webkit moz ms spec);
+}
+
+@mixin flex-basis($width: auto) {
+  // sass-lint:disable no-misspelled-properties
+  -ms-flex-preferred-size: $width;
+  @include prefixFlex(flex-basis, $width, webkit moz spec);
+}
+
+@mixin align-self($align: auto) {
+  // sass-lint:disable no-misspelled-properties
+  -ms-flex-item-align: $align;
+  @include prefixFlex(align-self, $align, webkit spec);
+}
+
+@mixin justify-content($justify: flex-start) {
+  @include prefixFlex(justify-content, $justify, webkit ms spec);
+}
+
+$viewportIncrement: 1px;
+$siteWidth: 1050px;
+$small: 590px;
+$medium: 768px;
+$large: 769px;
+$xlarge: $siteWidth + $viewportIncrement;
+
+$postSmall: $small + $viewportIncrement;
+$preMedium: $medium - $viewportIncrement;
+$preLarge: $large - $viewportIncrement;
+
+/*================ The following are dependencies of csswizardry grid ================*/
+$breakpoints: (
+  'small' '(max-width: #{$small})',
+  'medium' '(min-width: #{$postSmall}) and (max-width: #{$medium})',
+  'medium-down' '(max-width: #{$medium})',
+  'large' '(min-width: #{$large})'
+);
+$breakpoint-has-widths: ('small', 'medium', 'medium-down', 'large');
+$breakpoint-has-push:  ('medium', 'medium-down', 'large');
+$breakpoint-has-pull:  ('medium', 'medium-down', 'large');
+
+/*================ Color variables ================*/
+$colorPrimary: {{ settings.color_primary }};
+$colorSecondary: {{ settings.color_secondary }};
+
+// Button colors
+$colorBtnPrimary: $colorPrimary;
+$colorBtnPrimaryHover: lighten($colorBtnPrimary, 12%);
+$colorBtnPrimaryActive: adaptive-color($colorPrimary, 24%);
+$colorBtnPrimaryText: color-control($colorPrimary);
+
+$colorBtnSecondary: $colorSecondary;
+$colorBtnSecondaryHover: lighten($colorBtnSecondary, 10%);
+$colorBtnSecondaryActive: adaptive-color($colorSecondary, 10%);
+$colorBtnSecondaryText: color-control($colorSecondary);
+
+// Text link colors
+$colorLink: $colorSecondary;
+$colorLinkHover: $colorPrimary;
+
+// Text colors
+$colorTextBody: {{ settings.color_body_text }};
+
+// Backgrounds
+$colorBody: {{ settings.color_body_bg }};
+$colorProductBackground: {{ settings.color_product_background }};
+$colorInputBg: {{ settings.color_input }};
+$colorNewsletter: {{ settings.color_newsletter }};
+
+// Border colors
+$colorBorder: {{ settings.color_borders }};
+
+// Border size
+$borderWidthHeader: {{ settings.type_header_border_thickness }};
+
+// Sale tag color
+$colorSaleTag: {{ settings.color_sale_tag }};
+
+// Nav and dropdown link background
+$colorNav: $colorBody;
+$colorNavText: $colorTextBody;
+
+// Helper colors
+$disabledGrey: #f6f6f6;
+$disabledBorder: darken($disabledGrey, 25%);
+$errorRed: #d02e2e;
+$errorRedBg: #fff6f6;
+$successGreen: #56ad6a;
+$successGreenBg: #ecfef0;
+
+// Drawer sizes and colors
+$drawerNavWidth: 300px;
+$drawerCartWidth: 300px;
+$drawerCartWidthLarge: 400px; // small-up width
+$drawerHeaderHeight: 80px;
+$drawerCartFooterHeight: 130px; // default, overwritten by JS
+$colorDrawers: {{ settings.color_drawer_background }};
+$colorDrawerBorder: {{ settings.color_drawer_border }};
+$colorDrawerText: {{ settings.color_drawer_text }};
+$colorDrawerButton: {{ settings.color_drawer_button }};
+$colorDrawerButtonText: {{ settings.color_drawer_button_text }};
+$drawerTransition: 'all 0.35s cubic-bezier(0.46, 0.01 , 0.32, 1)';
+
+// Sizing variables
+$gutter: 30px;
+$gridGutterMobile: 22px;
+$section-spacing-small: 35px;
+$gridGutter: 30px; // can be a %, but nested grids will have smaller margins because of it
+$contentTopMargin: 80px;
+$contentTopMarginSmall: 35px;
+$radius: 0;
+$customSelectHeight: 46px;
+
+// Z-index
+$zindexNavDropdowns: 5;
+$zindexDrawer: 10;
+$zindexHeroHeader: 2;
+$zindexDrawerOverlay: 20;
+
+// Product Collage Grid
+$collageImageXLarge: 670px;
+$collageImageLarge: 520px;
+$collageImageMedium: 310px;
+$collageImageSmall: 230px;
+
+{{#if settings.product_vendor_enable}}
+  $collageImageLarge: 544px;
+{{/if}}
+
+// Collection Collage Grid
+// These heights are used to determine the row height for the
+// collection grid.
+$collectionCollageRowHeightFull: 450px;
+$collectionCollageRowHeightLarge: 310px;
+$collectionCollageRowHeightSmall: 280px;
+
+// Password page
+$passwordPageUseBgImage: true;
+
+// Section onboarding
+$color-blankstate: rgba($colorTextBody, 0.35);
+$color-blankstate-background: rgba($colorTextBody, 0.10);
+
+/*================ Typography ================*/
+{{#if (contains settings.type_base_family 'Google')}}
+  {{assign 'type_base_parts' (split settings.type_base_family '_')}}
+  {{assign 'type_base_name' (get type_base_parts 1)}}
+  {{#capture 'base_family'}}"{{replace (first (split type_base_name ':')) '+' ' '}}"{{#if (is type_base_parts.last 'serif')}}, serif {{else}}, "HelveticaNeue", "Helvetica Neue", sans-serif{{/if}}{{/capture}}
+{{else}}
+  {{assign 'base_family' settings.type_base_family}}
+{{/if}}
+
+{{#if (contains settings.type_header_family 'Google')}}
+  {{assign 'type_header_parts' (split settings.type_header_family '_')}}
+  {{assign 'type_header_name' (get type_header_parts 1)}}
+  {{#capture 'header_family'}}"{{replace (first (split type_header_name ':')) '+' ' '}}"{{#if (is type_header_parts.last 'serif')}}, serif {{else}}, "HelveticaNeue", "Helvetica Neue", sans-serif{{/if}}{{/capture}}
+  {{assign 'header_weight' (split (get type_header_parts 2) ',')}}
+{{else}}
+  {{assign 'header_family' settings.type_header_family}}
+  {{assign 'header_weight' 400}}
+{{/if}}
+
+{{#if (contains settings.type_accent_family 'Google')}}
+  {{assign 'type_accent_parts' (split settings.type_accent_family '_')}}
+  {{assign 'type_accent_name' (get type_accent_parts 1)}}
+  {{#capture 'accent_family'}}"{{replace (first (split type_accent_name ':')) '+' ' '}}"{{#if (is type_accent_parts.last 'serif')}}, serif {{else}}, "HelveticaNeue", "Helvetica Neue", sans-serif{{/if}}{{/capture}}
+  {{assign 'accent_weight' (split (get type_accent_parts 2) ',')}}
+{{else}}
+  {{assign 'accent_family' settings.type_accent_family}}
+  {{assign 'accent_weight' 700}}
+{{/if}}
+
+$headerFontStack: {{ header_family }};
+$headerFontWeight: {{ header_weight }};
+$headerBaseFontSize: {{ settings.type_header_base_size }};
+
+$bodyFontStack: {{ base_family }};
+$baseFontSize: {{ settings.type_base_size }}; // Henseforth known as 1em
+
+$accentFontStack: {{ accent_family }};
+$accentFontWeight: {{ accent_weight }};
+
+@font-face {
+  font-family: 'icons';
+  src: url('{{asset_url 'icons.eot'}}');
+  src: url('{{asset_url 'icons.eot'}}#iefix') format("embedded-opentype"),
+       url('{{asset_url 'icons.woff'}}') format("woff"),
+       url('{{asset_url 'icons.ttf'}}') format("truetype"),
+       url('{{asset_url 'icons.svg'}}#timber-icons') format("svg");
+  font-weight: normal;
+  font-style: normal;
+};
+
+$socialIconFontStack: 'icons';
+
+
+/*================ Vendor-specific styles ================*/
+/* Magnific Popup CSS */
+.mfp-bg {
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1042;
+  overflow: hidden;
+  position: fixed;
+  background: #0b0b0b;
+  opacity: 0.8;
+  filter: alpha(opacity=80); }
+
+.mfp-wrap {
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1043;
+  position: fixed;
+  outline: none !important;
+  -webkit-backface-visibility: hidden; }
+
+.mfp-container {
+  text-align: center;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  left: 0;
+  top: 0;
+  padding: 0 8px;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box; }
+
+.mfp-container:before {
+  content: '';
+  display: inline-block;
+  height: 100%;
+  vertical-align: middle; }
+
+.mfp-align-top .mfp-container:before {
+  display: none; }
+
+.mfp-content {
+  position: relative;
+  display: inline-block;
+  vertical-align: middle;
+  margin: 0 auto;
+  text-align: left;
+  z-index: 1045; }
+
+.mfp-inline-holder .mfp-content, .mfp-ajax-holder .mfp-content {
+  width: 100%;
+  cursor: auto; }
+
+.mfp-ajax-cur {
+  cursor: progress; }
+
+.mfp-zoom-out-cur, .mfp-zoom-out-cur .mfp-image-holder .mfp-close {
+  cursor: -moz-zoom-out;
+  cursor: -webkit-zoom-out;
+  cursor: zoom-out; }
+
+.mfp-zoom {
+  cursor: pointer;
+  cursor: -webkit-zoom-in;
+  cursor: -moz-zoom-in;
+  cursor: zoom-in; }
+
+.mfp-auto-cursor .mfp-content {
+  cursor: auto; }
+
+.mfp-close, .mfp-arrow, .mfp-preloader, .mfp-counter {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none; }
+
+.mfp-loading.mfp-figure {
+  display: none; }
+
+.mfp-hide {
+  display: none !important; }
+
+.mfp-preloader {
+  color: #CCC;
+  position: absolute;
+  top: 50%;
+  width: auto;
+  text-align: center;
+  margin-top: -0.8em;
+  left: 8px;
+  right: 8px;
+  z-index: 1044; }
+  .mfp-preloader a {
+    color: #CCC; }
+    .mfp-preloader a:hover {
+      color: #FFF; }
+
+.mfp-s-ready .mfp-preloader {
+  display: none; }
+
+.mfp-s-error .mfp-content {
+  display: none; }
+
+button.mfp-close, button.mfp-arrow {
+  overflow: visible;
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  -webkit-appearance: none;
+  display: block;
+  outline: none;
+  padding: 0;
+  z-index: 1046;
+  -webkit-box-shadow: none;
+  box-shadow: none; }
+button::-moz-focus-inner {
+  padding: 0;
+  border: 0; }
+
+.mfp-close {
+  width: 44px;
+  height: 44px;
+  line-height: 44px;
+  position: absolute;
+  right: 0;
+  top: 0;
+  text-decoration: none;
+  text-align: center;
+  opacity: 0.65;
+  filter: alpha(opacity=65);
+  padding: 0 0 18px 10px;
+  color: #FFF;
+  font-style: normal;
+  font-size: 28px;
+  font-family: Arial, Baskerville, monospace; }
+  .mfp-close:hover, .mfp-close:focus {
+    opacity: 1;
+    filter: alpha(opacity=100); }
+  .mfp-close:active {
+    top: 1px; }
+
+.mfp-close-btn-in .mfp-close {
+  color: #333; }
+
+.mfp-image-holder .mfp-close, .mfp-iframe-holder .mfp-close {
+  color: #FFF;
+  right: -6px;
+  text-align: right;
+  padding-right: 6px;
+  width: 100%; }
+
+.mfp-counter {
+  position: absolute;
+  top: 0;
+  right: 0;
+  color: #CCC;
+  font-size: 12px;
+  line-height: 18px;
+  white-space: nowrap; }
+
+.mfp-arrow {
+  position: absolute;
+  opacity: 0.65;
+  filter: alpha(opacity=65);
+  margin: 0;
+  top: 50%;
+  margin-top: -55px;
+  padding: 0;
+  width: 90px;
+  height: 110px;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0); }
+  .mfp-arrow:active {
+    margin-top: -54px; }
+  .mfp-arrow:hover, .mfp-arrow:focus {
+    opacity: 1;
+    filter: alpha(opacity=100); }
+  .mfp-arrow:before, .mfp-arrow:after, .mfp-arrow .mfp-b, .mfp-arrow .mfp-a {
+    content: '';
+    display: block;
+    width: 0;
+    height: 0;
+    position: absolute;
+    left: 0;
+    top: 0;
+    margin-top: 35px;
+    margin-left: 35px;
+    border: medium inset transparent; }
+  .mfp-arrow:after, .mfp-arrow .mfp-a {
+    border-top-width: 13px;
+    border-bottom-width: 13px;
+    top: 8px; }
+  .mfp-arrow:before, .mfp-arrow .mfp-b {
+    border-top-width: 21px;
+    border-bottom-width: 21px;
+    opacity: 0.7; }
+
+.mfp-arrow-left {
+  left: 0; }
+  .mfp-arrow-left:after, .mfp-arrow-left .mfp-a {
+    border-right: 17px solid #FFF;
+    margin-left: 31px; }
+  .mfp-arrow-left:before, .mfp-arrow-left .mfp-b {
+    margin-left: 25px;
+    border-right: 27px solid #3F3F3F; }
+
+.mfp-arrow-right {
+  right: 0; }
+  .mfp-arrow-right:after, .mfp-arrow-right .mfp-a {
+    border-left: 17px solid #FFF;
+    margin-left: 39px; }
+  .mfp-arrow-right:before, .mfp-arrow-right .mfp-b {
+    border-left: 27px solid #3F3F3F; }
+
+.mfp-iframe-holder {
+  padding-top: 40px;
+  padding-bottom: 40px; }
+  .mfp-iframe-holder .mfp-content {
+    line-height: 0;
+    width: 100%;
+    max-width: 900px; }
+  .mfp-iframe-holder .mfp-close {
+    top: -40px; }
+
+.mfp-iframe-scaler {
+  width: 100%;
+  height: 0;
+  overflow: hidden;
+  padding-top: 56.25%; }
+  .mfp-iframe-scaler iframe {
+    position: absolute;
+    display: block;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.6);
+    background: #000; }
+
+/* Main image in popup */
+img.mfp-img {
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  display: block;
+  line-height: 0;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  padding: 40px 0 40px;
+  margin: 0 auto; }
+
+/* The shadow behind the image */
+.mfp-figure {
+  line-height: 0; }
+  .mfp-figure:after {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 40px;
+    bottom: 40px;
+    display: block;
+    right: 0;
+    width: auto;
+    height: auto;
+    z-index: -1;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.6);
+    background: #444; }
+  .mfp-figure small {
+    color: #BDBDBD;
+    display: block;
+    font-size: 12px;
+    line-height: 14px; }
+  .mfp-figure figure {
+    margin: 0; }
+
+.mfp-bottom-bar {
+  margin-top: -36px;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  cursor: auto; }
+
+.mfp-title {
+  text-align: left;
+  line-height: 18px;
+  color: #F3F3F3;
+  word-wrap: break-word;
+  padding-right: 36px; }
+
+.mfp-image-holder .mfp-content {
+  max-width: 100%; }
+
+.mfp-gallery .mfp-image-holder .mfp-figure {
+  cursor: pointer; }
+
+@media screen and (max-width: 800px) and (orientation: landscape), screen and (max-height: 300px) {
+  /**
+       * Remove all paddings around the image on small screen
+       */
+  .mfp-img-mobile .mfp-image-holder {
+    padding-left: 0;
+    padding-right: 0; }
+  .mfp-img-mobile img.mfp-img {
+    padding: 0; }
+  .mfp-img-mobile .mfp-figure:after {
+    top: 0;
+    bottom: 0; }
+  .mfp-img-mobile .mfp-figure small {
+    display: inline;
+    margin-left: 5px; }
+  .mfp-img-mobile .mfp-bottom-bar {
+    background: rgba(0, 0, 0, 0.6);
+    bottom: 0;
+    margin: 0;
+    top: auto;
+    padding: 3px 5px;
+    position: fixed;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box; }
+    .mfp-img-mobile .mfp-bottom-bar:empty {
+      padding: 0; }
+  .mfp-img-mobile .mfp-counter {
+    right: 5px;
+    top: 3px; }
+  .mfp-img-mobile .mfp-close {
+    top: 0;
+    right: 0;
+    width: 35px;
+    height: 35px;
+    line-height: 35px;
+    background: rgba(0, 0, 0, 0.6);
+    position: fixed;
+    text-align: center;
+    padding: 0; }
+ }
+
+@media all and (max-width: 900px) {
+  .mfp-arrow {
+    -webkit-transform: scale(0.75);
+    transform: scale(0.75); }
+
+  .mfp-arrow-left {
+    -webkit-transform-origin: 0;
+    transform-origin: 0; }
+
+  .mfp-arrow-right {
+    -webkit-transform-origin: 100%;
+    transform-origin: 100%; }
+
+  .mfp-container {
+    padding-left: 6px;
+    padding-right: 6px; }
+ }
+
+.mfp-ie7 .mfp-img {
+  padding: 0; }
+.mfp-ie7 .mfp-bottom-bar {
+  width: 600px;
+  left: 50%;
+  margin-left: -300px;
+  margin-top: 5px;
+  padding-bottom: 5px; }
+.mfp-ie7 .mfp-container {
+  padding: 0; }
+.mfp-ie7 .mfp-content {
+  padding-top: 44px; }
+.mfp-ie7 .mfp-close {
+  top: 0;
+  right: 0;
+  padding-top: 0; }
+
+
+/*================ Theme-specific partials ================*/
+/*================ Theme specific global styles ================*/
+hr {
+  border-width: $borderWidthHeader 0 0 0;
+  width: 50px;
+}
+
+.hr--small {
+  @extend hr;
+  margin: 20px auto;
+}
+
+.hr--medium {
+  @extend hr;
+  margin: 35px auto;
+
+  @include at-query($min, $large) {
+    margin: 45px auto;
+  }
+}
+
+.hr--large {
+  @extend hr;
+  margin: ($gutter * 2) auto;
+}
+
+.hr--left {
+  margin-left: 0;
+  margin-right: 0;
+}
+
+/*================ Table styles ================*/
+table {
+  position: relative;
+  border: 0 none;
+  background-color: $colorNewsletter;
+}
+
+td,
+th {
+  border: 0 none;
+}
+
+td {
+  padding: 10px 15px;
+}
+
+tr:first-child th,
+tr:first-child td {
+  position: relative;
+
+  &:after {
+    content: '';
+    display: block;
+    position: absolute;
+    bottom: 0;
+    left: -15px;
+    right: 15px;
+    border-bottom: 1px solid $colorBorder;
+  }
+
+  &:first-child:after {
+    left: 15px;
+    right: -15px;
+  }
+}
+
+/*============================================================================
+  Responsive tables, defined with .table--responsive on table element.
+  Only defined for IE9+
+==============================================================================*/
+html:not(.lt-ie9) {
+  .table--responsive {
+    @include at-query($max, $small) {
+      thead {
+        display: none;
+      }
+
+      tr {
+        display: block;
+      }
+
+      // IE9 table layout fixes
+      tr,
+      td {
+        float: left;
+        clear: both;
+        width: 100%;
+      }
+
+      th,
+      td {
+        display: block;
+        text-align: right;
+        padding: 15px;
+      }
+
+      td:before {
+        content: attr(data-label);
+        float: left;
+        @include accentFontStack;
+        font-size: 12px;
+        padding-right: 10px;
+      }
+    }
+  }
+
+  @include at-query($max, $small) {
+    .table--small-hide {
+      display: none !important;
+    }
+
+    .table__section + .table__section {
+      position: relative;
+      margin-top: 10px;
+      padding-top: 15px;
+
+      &:after {
+        content: '';
+        display: block;
+        position: absolute;
+        top: 0;
+        left: 15px;
+        right: 15px;
+        border-bottom: 1px solid $colorBorder;
+      }
+    }
+  }
+}
+
+/*================ Partials | Theme typography overrides ================*/
+body,
+input,
+textarea,
+button,
+select {
+  line-height: 1.563; // 25px based on 16px font
+}
+
+h1 {
+  font-size: em($headerBaseFontSize);
+}
+
+h2 {
+  @include accentFontStack;
+  font-size: em(floor($headerBaseFontSize * 0.93)); //26px
+}
+
+h3 {
+  @include accentFontStack;
+  font-size: em(floor($headerBaseFontSize * 0.63)); //18px
+}
+
+h4 {
+  @include accentFontStack;
+  font-size: em(floor($headerBaseFontSize * 0.54)); //15px
+}
+
+h5,
+h6 {
+  font-size: em(floor($headerBaseFontSize * 0.5)); //14px
+}
+
+.h1 { @extend h1; }
+.h2 { @extend h2; }
+.h3 { @extend h3; }
+.h4 { @extend h4; }
+.h5 { @extend h5; }
+.h6 { @extend h6; }
+
+/*================ Tables ================*/
+th,
+.table__title {
+  @include accentFontStack;
+  font-weight: normal;
+  font-size: em(13px);
+  letter-spacing: 0.15em;
+}
+
+/*================ Rich Text Editor Styles ================*/
+.rte {
+  h1 {
+    @include accentFontStack;
+    font-size: em(22px);
+    text-align: center;
+  }
+
+  h2 {
+    font-size: em(17px);
+    text-align: center;
+  }
+
+  h3 {
+    font-size: em(15px);
+    text-align: center;
+  }
+}
+
+blockquote {
+  @include bodyFontItalic;
+  font-size: em(23px);
+  line-height: 1.385;
+  text-align: center;
+
+  @include at-query($min, $postSmall) {
+    font-size: em(26px);
+  }
+}
+
+.section-header .rte {
+  @include bodyFontItalic;
+  font-size: em(18px);
+}
+
+/*================ Blog and Page Typography ================*/
+.article .rte,
+.page .rte {
+  h2,
+  h3 {
+    margin-bottom: 2em;
+  }
+}
+
+/*================ Blog Typography ================*/
+.date {
+  @include bodyFontItalic;
+  display: inline-block;
+  line-height: 1.7;
+  margin-bottom: 5px;
+
+  @include at-query($min, $large) {
+    margin-bottom: 0;
+  }
+
+  .section-header &:last-child {
+    margin-bottom: 40px;
+  }
+}
+
+.comment-author {
+  @include bodyFontItalic;
+  margin-bottom: 0;
+}
+
+.comment-date {
+  @include accentFontStack;
+  font-size: em(12px);
+}
+
+/*================ Cart Typography ================*/
+.ajaxcart__product-name,
+.cart__product-name {
+  @include bodyFontItalic;
+}
+
+.ajaxcart__product-name {
+  font-size: em(17px);
+  line-height: 1.3;
+}
+
+.ajaxcart__price,
+.cart__price,
+.cart__subtotal {
+  @include accentFontStack;
+}
+
+.ajaxcart__price {
+  font-size: em(13px);
+}
+
+.ajaxcart__price--strikethrough,
+.cart__price--strikethrough {
+  text-decoration: line-through;
+}
+
+.ajaxcart__discount,
+.cart__discount {
+  display: block;
+  @include bodyFontItalic;
+}
+
+.ajaxcart__subtotal {
+  @include accentFontStack;
+}
+
+.ajaxcart__qty-num[type="text"] {
+  @include accentFontStack;
+  font-style: normal;
+  font-size: em(13px);
+}
+
+.ajaxcart__note {
+  @include bodyFontItalic;
+  font-weight: normal;
+  opacity: 0.7;
+}
+
+.ajaxcart__savings,
+.cart__savings {
+  @include bodyFontItalic;
+  font-size: em(20px);
+}
+
+/*================ Misc typography ================*/
+.drawer__title {
+  @include headerFontStack;
+  font-size: em(24px);
+}
+
+.collection-grid__item-title {
+  @include bodyFontItalic;
+  font-size: em(26px);
+  line-height: 1.1;
+
+  @include at-query($min, $postSmall) {
+    font-size: em(34px);
+  }
+}
+
+/*================ Partials | Theme Form Overrides ================*/
+label {
+  @include bodyFontItalic;
+  font-weight: normal;
+}
+
+::-webkit-input-placeholder {
+   color: $colorTextBody;
+   opacity: 0.6;
+}
+
+:-moz-placeholder {
+   color: $colorTextBody;
+   opacity: 0.6;
+}
+
+:-ms-input-placeholder {
+   color: $colorTextBody;
+   opacity: 0.6;
+}
+
+::-ms-input-placeholder {
+   color: $colorTextBody;
+   opacity: 1;
+}
+
+input,
+textarea,
+select {
+  @include bodyFontItalic;
+  font-size: em(18px);
+  border-color: transparent;
+  background-color: $colorInputBg;
+  color: color-control($colorInputBg);
+  @include transition(opacity 0.4s ease-out);
+
+  &[disabled],
+  &.disabled {
+    background-color: $disabledGrey;
+    border-color: transparent;
+  }
+
+  &:hover {
+    @include transition(opacity 0.15s ease-out);
+    opacity: 0.9;
+  }
+
+  &:active,
+  &:focus {
+    opacity: 1;
+  }
+}
+
+select:hover {
+  outline: 1px solid darken($colorInputBg, 10%);
+}
+
+input[type="number"] {
+  @include accentFontStack;
+  font-size: em(16px);
+}
+
+input[type="image"] {
+  background-color: transparent;
+}
+
+/*================ Ajax quantity selectors ================*/
+.js-qty {
+  background-color: $colorInputBg;
+  color: color-control($colorInputBg);
+}
+
+.js-qty__adjust {
+  &:hover {
+    background-color: darken($colorInputBg, 5%);
+    color: color-control($colorInputBg);
+  }
+}
+
+.js-qty__adjust--minus,
+.js-qty__adjust--plus {
+  border-color: darken($colorInputBg, 5%);
+  color: color-control($colorInputBg);
+}
+
+/*================ Newsletter area ================*/
+.newsletter {
+  background-color: $colorNewsletter;
+  padding: $gutter 0;
+  margin-top: $gutter * 2;
+
+  .shopify-section:first-child & {
+    margin-top: -($gutter * 2);
+    @include at-query($min, $postSmall) {
+      margin-bottom: -($gutter * 2);
+      position: relative;
+      top: -($gutter * 5 / 3);
+    }
+  }
+
+  @include at-query($min, $postSmall) {
+    padding: ($gutter * 2) 0;
+  }
+
+  .section-header + .section-subheading {
+    margin-top: -30px;
+    margin-bottom: 30px;
+
+    @include at-query($min, $postSmall) {
+      margin-top: -50px;
+      margin-bottom: 50px;
+    }
+  }
+
+  form {
+    margin: 0 auto;
+    max-width: 520px;
+
+    .newsletter--form {
+      padding: $gutter / 3;
+    }
+    .note, .errors {
+      margin-bottom: 0;
+    }
+  }
+
+  form .newsletter--form,
+  .newsletter__input {
+    background-color: $colorBody;
+    color: $colorTextBody;
+  }
+
+  .newsletter__input {
+    font-size: em(18px);
+    -moz-appearance: textfield;
+    -webkit-appearance: textfield;
+    appearance: textfield;
+
+    &::-webkit-input-placeholder { /* WebKit browsers */
+      color: $colorTextBody;
+      opacity: 1;
+    }
+
+    &:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+      color: $colorTextBody;
+      opacity: 1;
+    }
+
+    &::-moz-placeholder { /* Mozilla Firefox 19+ */
+      color: $colorTextBody;
+      opacity: 1;
+    }
+
+    &:-ms-input-placeholder { /* Internet Explorer 10+ */
+      color: $colorTextBody;
+    }
+
+    &::-ms-input-placeholder { /* Microsoft Edge 12+ */
+      color: $colorTextBody;
+      opacity: 1;
+    }
+
+    @include at-query($min, $postSmall) {
+      font-size: em(21px);
+    }
+  }
+
+  .newsletter__submit-text--large {
+    white-space: nowrap;
+  }
+}
+
+@include at-query($max, $small) {
+  .newsletter__submit-text--large,
+  .password-page__login-form__submit-text--large {
+    display: none;
+  }
+
+  .newsletter__submit-text--small,
+  .password-page__login-form__submit-text--small {
+    display: block;
+  }
+}
+
+@include at-query($min, $postSmall) {
+  .newsletter__submit-text--large,
+  .password-page__login-form__submit-text--large {
+    display: block;
+  }
+
+  .newsletter__submit-text--small,
+  .password-page__login-form__submit-text--small {
+    display: none;
+  }
+}
+
+.newsletter__label {
+  padding-left: 10px;
+}
+
+/*================ Modules | Theme product collage grid ================*/
+.grid__row-separator {
+  clear: both;
+  width: 100%;
+}
+
+//overrides for IE8 for non-collage grid
+.lt-ie9 .grid-uniform .grid-product {
+  display: inline-block;
+  margin-left: -4px;
+  float: none;
+}
+
+.grid-collage {
+  margin-bottom: -13px; // matches bottom padding of .grid-product__meta
+}
+
+@include at-query($max, $small) {
+  .grid-collage {
+    .grid-product__image-link {
+      height: $collageImageMedium;
+    }
+  }
+}
+
+.grid-collage .grid-product__image-link {
+  vertical-align: middle;
+  display: table-cell;
+}
+
+@include at-query($min, $postSmall) {
+  .large--two-thirds.reverse {
+    float: right;
+  }
+
+  .grid-collage {
+    .large--two-thirds {
+      clear: both;
+
+      &.reverse {
+        clear: none;
+      }
+    }
+
+    // specificity necessary to override timber defaults
+    .grid__item.large--one-third {
+      clear: none;
+    }
+
+    .large--one-half {
+      float: left;
+      display: inline-block;
+    }
+  }
+
+  .grid-collage .large--one-third {
+    clear: inherit;
+  }
+
+  .grid-collage .grid-product__image-link {
+    height: $collageImageXLarge;
+  }
+
+  .grid-collage .large--one-half .grid-product__image-link {
+    height: $collageImageMedium;
+  }
+
+  .grid-collage .large--two-thirds .grid-product__image-link {
+    height: $collageImageLarge;
+  }
+
+  .grid-collage .large--one-third .grid-product__image-link {
+    height: $collageImageSmall;
+  }
+
+}
+
+/*================ Modules | Theme collection collage grid ================*/
+.collection-grid {
+  margin-bottom: -($gutter / 2);
+
+  @include at-query($min, $postSmall) {
+    margin-bottom: -$gutter;
+  }
+}
+
+.collection-collage__item {
+  position: relative;
+  margin-bottom: $gutter / 2;
+  height: $collectionCollageRowHeightFull;
+
+  @include at-query($max, $small) {
+    // calculate height for single item rows for
+    // mobile breakpoint only
+    &.one-whole {
+      height: $collectionCollageRowHeightLarge - 120px;
+    }
+
+    // calculate height for single item rows
+    // mobile breakpoint only
+    &.one-half {
+      height: $collectionCollageRowHeightSmall - 150px;
+    }
+  }
+
+  @include at-query($min, $postSmall) {
+    margin-bottom: $gutter;
+  }
+}
+
+@include at-query($min, $postSmall) {
+  .collection-collage__item {
+    &.large--one-half {
+      height: $collectionCollageRowHeightLarge;
+    }
+
+    &.large--one-third {
+      height: $collectionCollageRowHeightSmall;
+    }
+  }
+}
+
+/*================ Partials | Theme button overrides ================*/
+a {
+  color: $colorTextBody;
+  text-decoration: none;
+  background: transparent;
+
+  &:hover {
+    color: $colorTextBody;
+  }
+}
+
+.rte a,
+.text-link {
+  color: $colorLink;
+
+  &:hover {
+    color: $colorLinkHover;
+  }
+}
+
+.return-link {
+  @include accentFontStack;
+  font-size: em(14px);
+}
+
+/*================ Buttons and Input Groups ================*/
+.btn,
+.btn--secondary {
+  @include accentFontStack;
+  padding: 12px 20px;
+  font-size: em(13px);
+}
+
+.input-group .btn,
+.input-group .btn--secondary,
+.input-group .input-group-field {
+  height: 45px;
+}
+
+/*================ Button loading indicator, when supported ================*/
+.supports-csstransforms .btn--loading {
+  position: relative;
+
+  background-color: darken($colorBtnPrimary, 5%);
+  color: darken($colorBtnPrimary, 5%);
+
+  &:hover,
+  &:active {
+    background-color: darken($colorBtnPrimary, 5%);
+    color: darken($colorBtnPrimary, 5%);
+  }
+
+  &:after {
+    content: '';
+    display: block;
+    width: 24px;
+    height: 24px;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    margin-left: -12px;
+    margin-top: -12px;
+    border-radius: 50%;
+    border: 3px solid $colorBtnPrimaryText;
+    border-top-color: transparent;
+    @include animation(spin 1s infinite linear);
+  }
+}
+
+/*================ Partials | Theme drawer overrides ================*/
+
+/*================ Override drawer scrolling to accommodate fixed header/footers ================*/
+.drawer {
+  overflow: hidden;
+}
+
+.drawer__inner {
+  position: absolute;
+  top: $drawerHeaderHeight;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: ($gutter / 2) ($gutter / 2) 0;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+
+  @include at-query($min, $large) {
+    padding-left: $gutter;
+    padding-right: $gutter;
+  }
+
+  .drawer--has-fixed-footer & {
+    overflow: hidden;
+  }
+}
+
+/*================ Drawer Fixed Headers ================*/
+.drawer__fixed-header {
+  position: absolute;
+  top: 0;
+  left: $gutter / 2;
+  right: $gutter / 2;
+  height: $drawerHeaderHeight;
+  overflow: visible; // for close button hit area
+
+  @include at-query($min, $large) {
+    left: $gutter;
+    right: $gutter;
+  }
+}
+
+.drawer__header {
+  padding: ($gutter / 2) 0;
+  margin: 0;
+}
+
+@include at-query($max, $medium) {
+  .drawer__close-button {
+    .icon {
+      font-size: em(22px);
+    }
+  }
+}
+
+@include at-query($min, $postSmall) {
+  .drawer__close-button {
+    right: 0;
+  }
+}
+
+
+@include at-query($min, $xlarge) {
+  .drawer__close-button {
+    right: -20px;
+  }
+}
+
+/*================ Drawer Fixed Cart Footer ================*/
+.ajaxcart__inner--has-fixed-footer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  margin: 0;
+  padding: ($gutter / 2) ($gutter / 2) 0;
+  bottom: $drawerCartFooterHeight; // overwritten with JS
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+
+  @include at-query($min, $large) {
+    padding: $gutter $gutter 0;
+  }
+}
+
+.ajaxcart__footer {
+  border-top: 1px solid $colorDrawerBorder;
+  padding-top: $gutter / 2;
+}
+
+.ajaxcart__footer--fixed {
+  position: absolute;
+  bottom: 0;
+  left: $gutter / 2;
+  right: $gutter / 2;
+  min-height: $drawerCartFooterHeight; // overwritten by JS
+  padding-bottom: $gutter;
+
+  @include at-query ($max, $small) {
+    padding-bottom: $gutter /2;
+  }
+
+  @include at-query($min, $large) {
+    left: $gutter;
+    right: $gutter;
+  }
+}
+
+/*================ Drawer Quantity Selectors ================*/
+.ajaxcart__qty {
+  max-width: 75px;
+
+  input[type="text"] {
+    padding: 0 20px;
+  }
+
+  .js-qty__adjust,
+  .ajaxcart__qty-adjust {
+    padding: 0 5px;
+    line-height: 1;
+  }
+}
+
+/*================ Cart item styles ================*/
+.ajaxcart__product:last-child .ajaxcart__row {
+  border-bottom: 0 none;
+  padding-bottom: 0;
+}
+
+.btn--secondary {
+  @include transition(all 0.2s ease-out);
+
+  &:hover {
+    background-color: adaptive-color($colorDrawerButton, 10%);
+  }
+}
+
+/*============================================================================
+  Social Icon Buttons v1.0
+  Author:
+    Carson Shold | @cshold
+    http://www.carsonshold.com
+  MIT License
+==============================================================================*/
+
+/*================ Social share buttons ================*/
+$shareButtonHeight: 22px;
+$shareButtonCleanHeight: 30px;
+$shareCountBg: $colorBody;
+
+.social-sharing {
+  font-family: $bodyFontStack;
+
+  * {
+    -webkit-box-sizing:border-box;
+    -moz-box-sizing:border-box;
+    box-sizing:border-box;
+  }
+
+  a {
+    display: inline-block;
+    color: $colorTextBody;
+    border-radius: 2px;
+    margin: 5px 0;
+    height: $shareButtonHeight;
+    line-height: $shareButtonHeight;
+    text-decoration: none;
+    font-weight: normal;
+  }
+
+  span {
+    display: inline-block;
+    vertical-align: top;
+    height: $shareButtonHeight;
+    line-height: $shareButtonHeight;
+    font-size: 12px;
+  }
+
+  .icon {
+    padding: 0 5px 0 10px;
+
+    &:before {
+      line-height: $shareButtonHeight;
+    }
+  }
+
+  /*================ Large Buttons ================*/
+  &.is-large a {
+    height: $shareButtonHeight*2;
+    line-height: $shareButtonHeight*2;
+
+    span {
+      height: $shareButtonHeight*2;
+      line-height: $shareButtonHeight*2;
+      font-size: 18px;
+    }
+
+    .icon {
+      padding: 0 10px 0 18px;
+
+      &:before {
+        line-height: $shareButtonHeight*2;
+      }
+    }
+  }
+}
+
+.share-title {
+  font-size: em(18px);
+  padding-right: 10px;
+
+  .is-large & {
+    padding-right: 16px;
+  }
+}
+
+/*================ Clean Buttons ================*/
+.social-sharing.clean {
+  a {
+    background-color: $shareCountBg;
+    color: $colorTextBody;
+    height: $shareButtonCleanHeight;
+    line-height: $shareButtonCleanHeight;
+
+    span {
+      height: $shareButtonCleanHeight;
+      line-height: $shareButtonCleanHeight;
+      font-size: 13px;
+    }
+
+    &:hover {
+      opacity: 0.8;
+    }
+
+    &:hover .share-count {
+      opacity: 0.8;
+
+      &:after {
+        border-right-color: $shareCountBg;
+      }
+    }
+
+    .share-title {
+      font-weight: normal;
+    }
+  }
+
+  .share-count {
+    top: -1px;
+  }
+}
+
+/*================ Partials | Theme search grid ================*/
+
+//overrides for IE8 for non-collage grid
+.lt-ie9 .grid-uniform .grid-search {
+  display: inline-block;
+  margin-left: -4px;
+  float: none;
+}
+
+.grid-search {
+  margin-bottom: $gutter;
+}
+
+.grid-search__product {
+  position: relative;
+  text-align: center;
+}
+
+// Force heights for consistency
+.grid-search__page-link,
+.grid-search__product-link {
+  @include at-query($min, $large) {
+    height: 280px;
+  }
+}
+
+.grid-search__page-link {
+  display: block;
+  background-color: $colorProductBackground;
+  padding: 20px;
+  color: $colorTextBody;
+  overflow: hidden;
+
+  &:hover,
+  &:focus {
+    background-color: adaptive-color($colorProductBackground, 3%);
+  }
+}
+
+.grid-search__page-content {
+  display: block;
+  height: 100%;
+  overflow: hidden;
+}
+
+.grid-search__image {
+  display: block;
+  padding: 20px;
+  margin: 0 auto;
+  max-height: 100%;
+  max-width: 100%;
+
+  @include at-query($min, $large) {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    @include prefix('transform', 'translate(-50%, -50%)');
+
+    .lt-ie9 {
+      position: static;
+      @include prefix('transform', 'translate(0, 0)');
+    }
+  }
+}
+
+/*================ Partials | Sections ================*/
+.index-sections {
+  .shopify-section:first-child {
+    margin: 0;
+  }
+
+  .shopify-section {
+    margin-top: $gutter * 3;
+
+    @include at-query($max, $medium) {
+      margin-top: $gutter * 1.5;
+    }
+  }
+}
+
+/*================ Partials | Sections onboarding ================*/
+.placeholder-svg {
+  fill: $color-blankstate;
+  background-color: $color-blankstate-background;
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.placeholder-background {
+  background-color: $color-blankstate-background;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+
+  .hero & {
+    background-color: transparent;
+  }
+
+  .placeholder-svg {
+    fill: $color-blankstate-background;
+    background-color: transparent;
+  }
+}
+
+.hero__slide {
+  &.slide--placeholder {
+    background-color: $color-blankstate-background !important;
+  }
+}
+
+/*================ Partials | Featured products section onboarding ================*/
+.grid-product__image-link {
+  .helper-section &,
+  .helper & {
+    background-color: transparent;
+  }
+}
+
+.grid-product__image-wrapper {
+  .helper-section & {
+    height: 275px !important;
+  }
+}
+
+/*================ Partials | Featured row section ================*/
+.feature-row {
+  @include display-flexbox();
+  @include justify-content(space-between);
+  @include align-items(center);
+
+  @include at-query($max, $medium) {
+    @include flex-wrap(wrap);
+  }
+}
+
+.feature-row__item {
+  @include flex(0 1 50%);
+
+  @include at-query($max, $medium) {
+    @include flex(1 1 100%);
+    max-width: 100%;
+  }
+}
+
+.feature-row__image-wrapper {
+  position: relative;
+
+  .no-js & {
+    @include visuallyHidden();
+    padding-top: 0 !important;
+  }
+}
+
+.feature-row__image-no-js {
+  display: block;
+  margin: 0 auto;
+
+  @include at-query($max, $medium) {
+    order: 1;
+  }
+}
+
+.feature-row__image {
+  display: block;
+  margin: 0 auto;
+  width: 100%;
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+
+  @include at-query($max, $medium) {
+    order: 1;
+  }
+}
+
+.feature-row__text {
+  padding-top: $section-spacing-small;
+  padding-bottom: $section-spacing-small;
+
+  @include at-query($max, $medium) {
+    order: 2;
+    padding-bottom: 0; // always last element on mobile
+  }
+}
+
+@include at-query($min, $large) {
+  .feature-row__text--left {
+    padding-left: $section-spacing-small;
+  }
+
+  .feature-row__text--right {
+    padding-right: $section-spacing-small;
+  }
+}
+
+@include at-query($min, $large) {
+  .featured-row__subtext {
+  }
+}
+
+
+/*================ Module-specific styles ================*/
+/*============================================================================
+  To update Slick slider to a new version,
+  scroll down to #Slick Slider SCSS and follow the instructions
+
+  Default Slick classes all start with '.slick'
+  Custom classes all start with '.hero'
+
+  Extra specificity in selectors is used to override default
+  styles before including the default Slick CSS
+==============================================================================*/
+
+/*================ Prev/next and pagination ================*/
+.slick-slider .slick-dots {
+  margin: 0;
+  bottom: 10px;
+
+  li {
+    margin: 0;
+    vertical-align: middle;
+
+    button {
+      position: relative;
+    }
+
+    button:before {
+      text-indent: -9999px;
+      background-color: #fff;
+      border-radius: 100%;
+      border: 2px solid transparent;
+      width: 10px;
+      height: 10px;
+      margin: 5px 0 0 5px;
+      opacity: 1;
+      @include transition(all 0.2s);
+    }
+
+    &.slick-active button:before {
+      background-color: transparent;
+      border-color: #fff;
+      opacity: 1;
+      width: 12px;
+      height: 12px;
+      margin: 4px 0 0 4px;
+    }
+
+    button:active:before {
+      opacity: 0.5;
+    }
+  }
+
+  &.is-dark {
+    li button:before {
+      background-color: #000;
+    }
+
+    & li.slick-active button:before {
+      border-color: #000;
+      background-color: transparent;
+    }
+  }
+}
+
+.hero {
+  .slick-prev,
+  .slick-next {
+    top: 0;
+    height: 100%;
+    margin-top: 0;
+    width: 40px;
+  }
+
+  .slick-prev {
+    left: 0;
+  }
+
+  .slick-next {
+    right: 0;
+  }
+}
+
+/*================ Slide colors ================*/
+.hero__slide {
+  &.is-light {
+    color: #fff;
+    background-color: #fff;
+
+    a.hero__cta {
+      color: #000;
+      background-color: #fff;
+    }
+  }
+
+  &.is-dark {
+    color: #000;
+    background-color: #fff;
+
+    a.hero__cta {
+      color: #fff;
+      background-color: #000;
+    }
+  }
+}
+
+/*============================================================================
+  General slide styles
+    - Sizes based on height of image when 100% of container width
+==============================================================================*/
+.hero__slide {
+  position: relative;
+}
+
+.hero__image {
+  position: relative;
+  opacity: 0;
+
+  .slick-initialized & {
+    opacity: 1;
+    @include animation(fadeIn 1s cubic-bezier(0.44, 0.13, 0.48, 0.87));
+  }
+
+  img {
+    display: block;
+    width: 100%;
+  }
+}
+
+.hero__slide--hidden {
+  visibility: hidden;
+}
+
+.supports-touch .hero__slide--hidden {
+  visibility: visible;
+}
+
+// z-index stacking issues in oldIE
+.ie9,
+.lt-ie9 {
+  .hero__slide {
+    z-index: 1!important;
+  }
+
+  .slick-dots {
+    z-index: 2;
+  }
+}
+
+/*============================================================================
+  Full screen hero styles
+    - Uses css background image
+==============================================================================*/
+.hero--full-height {
+  // Height is set by JS on slider init. vh is a nice default for modern browsers.
+  height: 100vh;
+  min-height: 550px;
+
+  .slick-list,
+  .slick-track {
+    height: 100%;
+  }
+
+  .hero__image {
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+    // Used for the IE lazysizes object-fit polyfill
+    font-family: "object-fit: cover";
+
+    .lt-ie9 & {
+      background-position: center center;
+    }
+  }
+}
+
+.hero__image {
+  .no-js & {
+    @include visuallyHidden;
+  }
+}
+
+.hero__image-no-js {
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: top center;
+  height: 100vh;
+  min-height: 550px;
+  opacity: 1;
+}
+
+/*================ Hero text/CTA ================*/
+.hero__text-wrap {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  text-align: center;
+}
+
+.hero__text-align {
+  display: table;
+  width: 100%;
+  height: 100%;
+}
+
+.hero__text-content {
+  opacity: 0;
+  display: table-cell;
+  vertical-align: middle;
+  padding: 15px 30px 0;
+  @include transition('color 0.2s ease');
+
+  .slick-initialized & {
+    opacity: 1;
+    @include animation(heroContentIn 1s cubic-bezier(0.44, 0.13, 0.48, 0.87));
+  }
+
+  @include at-query($min, $large) {
+    padding: 15px 150px;
+  }
+}
+
+.hero__text-content .slick-dots {
+  position: static;
+}
+
+/*================ Extra specificity to override Timber defaults ================*/
+.hero__slide {
+  .hero__title {
+    margin-bottom: 20px;
+    line-height: 1.25;
+    letter-spacing: 0;
+    text-transform: capitalize;
+  }
+
+  .hero__subtitle {
+    @include accentFontStack;
+    margin-bottom: 15px;
+  }
+
+  a.hero__cta {
+    margin-bottom: 0;
+  }
+}
+
+/*================ Font sizes ================*/
+.hero__slide {
+  .hero__title {
+    font-size: em(50px);
+  }
+
+  .hero__subtitle {
+    font-size: em(15px);
+  }
+
+  @include at-query($min, $postSmall) {
+    .hero__title {
+      font-size: em(60px);
+    }
+
+    .hero__subtitle {
+      font-size: em(18px);
+    }
+  }
+
+  @include at-query($min, $large) {
+    .hero__title {
+      font-size: em(64px);
+    }
+  }
+}
+
+/*================ Hero header ================*/
+.hero__header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  opacity: 0;
+  z-index: $zindexHeroHeader;
+}
+
+.template-index .header-wrapper {
+  opacity: 0;
+  z-index: $zindexHeroHeader;
+  @include animation(fadeIn 0.8s cubic-bezier(0.44, 0.13, 0.48, 0.87) forwards);
+
+  .supports-no-cssanimations & {
+    opacity: 1;
+    @include animation(fadeIn 0.8s cubic-bezier(0.44, 0.13, 0.48, 0.87));
+  }
+}
+
+.header-container {
+  position: relative;
+  z-index: $zindexHeroHeader;
+}
+
+.header-wrapper--over-hero {
+  position: relative;
+}
+
+/*============================================================================
+  #Slick Slider overrides
+    - If upgrading Slick's styles, use the following variables/functions
+      instead of the slick defaults
+    - Only overwrite slick's default styles starting at #Slick Slider SCSS
+==============================================================================*/
+$slick-font-family: "slick-icons, sans-serif";
+$slick-arrow-color: $colorPrimary;
+$slick-dot-color: $colorPrimary;
+$slick-dot-color-active: $slick-dot-color;
+$slick-prev-character: '\2190';
+$slick-next-character: '\2192';
+$slick-dot-character: '\2022';
+$slick-dot-size: 6px;
+$slick-opacity-default: 0.75;
+$slick-opacity-on-hover: 1;
+$slick-opacity-not-active: 0.25;
+
+// Only called once so make sure proper file is grabbed
+@function slick-image-url($url) {
+  @return url({{asset_url 'ajax-loader.gif'}});
+}
+
+// Unused intentionally
+@function slick-font-url($url) {}
+
+/*============================================================================
+  #Slick Slider SCSS
+    - Everything below this line is unchanged from Slick's scss file
+    - When updating to a new version, don't include the variables/function
+      that were modified above
+==============================================================================*/
+.slick-slider {
+  position: relative;
+  display: block;
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -ms-touch-action: pan-y;
+  touch-action: pan-y;
+  -webkit-tap-highlight-color: transparent;
+}
+.slick-list {
+  position: relative;
+  overflow: hidden;
+  display: block;
+  margin: 0;
+  padding: 0;
+
+  &:focus {
+    outline: none;
+  }
+
+  .slick-loading & {
+    background: #fff slick-image-url("ajax-loader.gif") center center no-repeat;
+  }
+
+  &.dragging {
+    cursor: pointer;
+    cursor: hand;
+  }
+}
+.slick-slider .slick-track,
+.slick-slider .slick-list {
+  -webkit-transform: translate3d(0, 0, 0);
+  -moz-transform: translate3d(0, 0, 0);
+  -ms-transform: translate3d(0, 0, 0);
+  -o-transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0);
+}
+
+.slick-track {
+  position: relative;
+  left: 0;
+  top: 0;
+  display: block;
+
+  &:before,
+  &:after {
+    content: "";
+    display: table;
+  }
+
+  &:after {
+    clear: both;
+  }
+
+  .slick-loading & {
+    visibility: hidden;
+  }
+}
+.slick-slide {
+  float: left;
+  height: 100%;
+  min-height: 1px;
+  [dir="rtl"] & {
+    float: right;
+  }
+  img {
+    display: block;
+  }
+  &.slick-loading img {
+    display: none;
+  }
+
+  display: none;
+
+  &.dragging img {
+    pointer-events: none;
+  }
+
+  .slick-initialized & {
+    display: block;
+  }
+
+  .slick-loading & {
+    visibility: hidden;
+  }
+
+  .slick-vertical & {
+    display: block;
+    height: auto;
+    border: 1px solid transparent;
+  }
+}
+
+/* Icons */
+@if $slick-font-family == "slick" {
+  @font-face {
+    font-family:"slick";
+    src:  slick-font-url("slick.eot");
+    src:  slick-font-url("slick.eot?#iefix") format("embedded-opentype"),
+        slick-font-url("slick.woff") format("woff"),
+        slick-font-url("slick.ttf") format("truetype"),
+        slick-font-url("slick.svg#slick") format("svg");
+    font-weight: normal;
+    font-style: normal;
+  }
+}
+
+/* Arrows */
+
+.slick-prev,
+.slick-next {
+  position: absolute;
+  display: block;
+  height: 20px;
+  width: 20px;
+  line-height: 0;
+  font-size: 0;
+  cursor: pointer;
+  background: transparent;
+  color: transparent;
+  top: 50%;
+  margin-top: -10px;
+  padding: 0;
+  border: none;
+  outline: none;
+  &:hover, &:focus {
+    outline: none;
+    background: transparent;
+    color: transparent;
+    &:before {
+    opacity: $slick-opacity-on-hover;
+    }
+  }
+  &.slick-disabled:before {
+    opacity: $slick-opacity-not-active;
+  }
+}
+.slick-prev:before, .slick-next:before {
+  font-family: $slick-font-family;
+  font-size: 20px;
+  line-height: 1;
+  color: $slick-arrow-color;
+  opacity: $slick-opacity-default;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+.slick-prev {
+  left: -25px;
+  [dir="rtl"] & {
+    left:  auto;
+    right: -25px;
+  }
+  &:before {
+    content: $slick-prev-character;
+    [dir="rtl"] & {
+      content: $slick-next-character;
+    }
+  }
+}
+.slick-next {
+  right: -25px;
+  [dir="rtl"] & {
+    left:  -25px;
+    right: auto;
+  }
+  &:before {
+    content: $slick-next-character;
+    [dir="rtl"] & {
+      content: $slick-prev-character;
+    }
+  }
+}
+
+/* Dots */
+
+.slick-slider {
+  margin-bottom: 30px;
+}
+.slick-dots {
+  position: absolute;
+  bottom: -45px;
+  list-style: none;
+  display: block;
+  text-align: center;
+  padding: 0;
+  width: 100%;
+
+  li {
+    position: relative;
+    display: inline-block;
+    height: 20px;
+    width: 20px;
+    margin: 0 5px;
+    padding: 0;
+    cursor: pointer;
+
+    button {
+      border: 0;
+      background: transparent;
+      display: block;
+      height: 20px;
+      width: 20px;
+      outline: none;
+      line-height: 0;
+      font-size: 0;
+      color: transparent;
+      padding: 5px;
+      cursor: pointer;
+      &:hover, &:focus {
+        outline: none;
+        &:before {
+          opacity: $slick-opacity-on-hover;
+        }
+      }
+
+      &:before {
+        position: absolute;
+        top: 0;
+        left: 0;
+        content: $slick-dot-character;
+        width: 20px;
+        height: 20px;
+        font-family: $slick-font-family;
+        font-size: $slick-dot-size;
+        line-height: 20px;
+        text-align: center;
+        color: $slick-dot-color;
+        opacity: $slick-opacity-not-active;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+
+    }
+
+    &.slick-active button:before {
+      color: $slick-dot-color-active;
+      opacity: $slick-opacity-default;
+    }
+  }
+}
+
+/*================ Module | Collection images at top of templates ================*/
+.collection-hero {
+  margin-top: -$contentTopMarginSmall;
+  margin-bottom: $contentTopMarginSmall;
+  overflow: hidden;
+
+  @include at-query($min, $large) {
+    margin-top: -$contentTopMargin + ($gutter / 2);
+    margin-bottom: $contentTopMargin;
+  }
+
+  @include at-query($max, $medium) {
+    margin-bottom: $gutter * 2;
+  }
+}
+
+.collection-hero__image-wrapper {
+  position: relative;
+
+  .no-js & {
+    @include visuallyHidden;
+  }
+}
+
+.collection-hero__image-wrapper:after {
+  padding-bottom: 70%;
+  content: '';
+  display: block;
+  height: 0;
+  width: 100%;
+
+  @include at-query($min, $large) {
+    padding-bottom: 45%;
+  }
+}
+
+.collection-hero__image {
+  position: absolute;
+  display: block;
+  width: 100%;
+  object-fit: cover;
+  object-position: 50% 50%;
+  // Used for the IE lazysizes object-fit polyfill
+  font-family: "object-fit: cover";
+  opacity: 0;
+
+  &.is-init {
+    opacity: 1;
+    @include animation(fadeIn 1s cubic-bezier(0.44, 0.13, 0.48, 0.87));
+  }
+}
+
+.collection-hero__image-no-js {
+  padding-bottom: 70%;
+  background-size: cover;
+  background-position: 50% 50%;
+  background-repeat: no-repeat;
+  opacity: 1;
+
+  @include at-query($min, $large) {
+    padding-bottom: 45%;
+  }
+}
+
+/*================ Module | Theme Header and Navigation Overrides ================*/
+@include at-query($max, $medium) {
+  .site-header {
+    padding: 0;
+
+    .grid--table {
+      height: $drawerHeaderHeight;
+    }
+  }
+}
+
+
+/*================ Logo Image ================*/
+.site-header__logo .logo--has-inverted {
+  @include transition(all 0.2s);
+
+  .is-light & {
+    opacity: 0;
+    visibility: hidden;
+    overflow: hidden;
+    height: 0;
+  }
+}
+
+.site-header__logo .logo--inverted {
+  opacity: 0;
+  visibility: hidden;
+  overflow: hidden;
+  height: 0;
+
+  .is-light & {
+    opacity: 1;
+    visibility: visible;
+    height: auto;
+  }
+}
+
+/*================ Text Shop Name ================*/
+.site-header__logo {
+  font-size: em(20px);
+
+  @include at-query($min, $large) {
+    text-align: left;
+    font-size: em(25px);
+  }
+
+  @include at-query($max, $medium) {
+    img {
+      max-height: $drawerHeaderHeight - ($gutter / 2); // account for border-box height
+      margin-top: $gutter / 3;
+      margin-bottom: $gutter / 3;
+    }
+  }
+}
+
+.site-header__logo a,
+.header-logo a {
+  @include transition(color 0.2s);
+  @include accentFontStack;
+
+  .is-light & {
+    color: #fff;
+  }
+
+  .is-dark & {
+    color: #000;
+  }
+}
+
+/*================ Nav Links ================*/
+.site-nav {
+  white-space: nowrap;
+  opacity: 0;
+
+  .no-js &,
+  &.site-nav--init {
+    opacity: 1;
+    @include transition('color 0.2s, opacity 0.1s');
+  }
+}
+
+.site-nav__item {
+  white-space: normal;
+}
+
+.site-nav__link {
+  @include accentFontStack;
+  font-size: em(14px);
+
+  .is-light & {
+    color: #fff;
+  }
+
+  .is-dark & {
+    color: #000;
+  }
+}
+
+.site-nav--has-dropdown {
+  > a {
+    position: relative;
+    z-index: $zindexNavDropdowns + 1;
+  }
+
+  &:hover > a {
+    color: $colorNavText;
+    background-color: $colorNav;
+    opacity: 1;
+    @include transition(none);
+
+    &:before {
+      content: '';
+      position: absolute;
+      left: $gutter / 2;
+      right: $gutter;
+      bottom: 0;
+      display: block;
+      background-color: $colorNavText;
+      height: 1px;
+      z-index: $zindexNavDropdowns + 1;
+    }
+  }
+}
+
+/*================ Dropdown Animation ================*/
+.site-nav__dropdown {
+  display: block;
+  visibility: hidden;
+  overflow: hidden;
+  background-color: $colorNav;
+  min-width: 100%;
+  padding: ($gutter / 3) 0;
+  box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.09);
+  @include transform(translate3d(0px, -12px, 0px));
+
+  .supports-no-touch .site-nav--has-dropdown:hover &,
+  .site-nav--has-dropdown.nav-hover &,
+  .nav-focus + & {
+    visibility: visible;
+    @include transform(translate3d(0px, 0px, 0px));
+    @include transition('all 300ms cubic-bezier(0.2, .06, .05, .95)');
+  }
+
+}
+
+/*================ Submenu items ================*/
+.site-nav__dropdown a {
+  background-color: transparent;
+  color: $colorTextBody;
+
+  &:hover,
+  &:active {
+    background-color: transparent;
+    color: $colorSecondary;
+  }
+}
+
+.site-nav__dropdown-link {
+  @include bodyFontItalic;
+  display: block;
+  white-space: nowrap;
+  padding: 5px 15px;
+  font-size: em(16px);
+}
+
+/*================ Compressed nav if too many links ================*/
+.site-nav--compress {
+  .site-nav__expanded-item {
+    display: none;
+  }
+}
+
+.site-nav--compress__menu {
+  display: none;
+
+  .site-nav--compress & {
+    display: inline-block;
+  }
+}
+
+/*================ Search bar ================*/
+.site-nav--search__bar {
+  vertical-align: middle;
+  padding: 0 10px 7px 0;
+
+  input {
+    background-color: $colorInputBg;
+  }
+}
+
+/*================ Module | Theme Tags ================*/
+.tags {
+  a {
+    padding: 4px ($gutter / 2);
+    @include accentFontStack;
+    font-size: em(13px);
+    letter-spacing: 0.15em;
+  }
+}
+
+.tags--collection {
+  max-width: 75%;
+  margin: 0 auto 25px;
+
+  @include at-query($min, $large) {
+    li {
+      display: inline-block;
+    }
+  }
+
+  @include at-query($max, $small) {
+    li {
+      display: block;
+    }
+  }
+
+}
+
+.tags--article {
+  a {
+    padding-right: $gutter / 2;
+    padding-left: 0;
+  }
+}
+
+.tags__title {
+  margin-right: $gutter / 2;
+}
+
+.tag--active {
+  a {
+    color: $colorSecondary;
+  }
+}
+
+.single-option-radio {
+  border: 0;
+  padding-top: 0;
+  position: relative;
+  background-color: $colorBody;
+
+  input {
+    @include visuallyHidden;
+
+    .lt-ie9 & {
+      position: relative;
+      height: auto;
+      width: auto;
+      clip: initial;
+    }
+  }
+
+  label {
+    @include accentFontStack;
+    position: relative;
+    display: inline-block;
+    line-height: 1;
+    padding: 9px 11px;
+    margin: 3px 4px 1px 3px;
+    font-size: em(13px);
+    font-style: normal;
+    background-color: $colorBody;
+    border: 1px solid $colorBody;
+
+    &.disabled:before {
+      position: absolute;
+      content: "";
+      left: 50%;
+      top: 0;
+      bottom: 0;
+      border-left: 1px solid;
+      border-color: $colorTextBody;
+      @include transform(rotate(45deg));
+
+      .lt-ie9 & {
+        display: none;
+      }
+    }
+
+    &:active,
+    &:focus {
+      background-color: adaptive-color($colorBody, 5%);
+      border-color: adaptive-color($colorBody, 5%);
+    }
+  }
+
+  //style selected radio button's label
+  input[type='radio']:checked + label {
+    border-color: $colorTextBody;
+  }
+
+  //style label on input focus
+  input[type='radio']:focus + label {
+    background-color: adaptive-color($colorBody, 5%);
+  }
+}
+
+.radio-wrapper .single-option-radio__label {
+  display: block;
+  margin-bottom: 10px;
+  cursor: default;
+  font-style: normal;
+}
+
+/*================ Module | Product Lightbox ================*/
+
+.mfp-bg {
+  background-color: $colorBody;
+
+  &.mfp-fade {
+    -webkit-backface-visibility: hidden;
+    opacity: 0;
+    @include transition(all 0.3s ease-out);
+
+    //background opacity after load
+    &.mfp-ready {
+      opacity: 1;
+      filter: alpha(opacity=100);
+    }
+
+
+    &.mfp-removing {
+      @include transition(all 0.3s ease-out);
+      opacity: 0;
+      filter: alpha(opacity=0);
+    }
+  }
+}
+
+.mfp-fade {
+  &.mfp-wrap {
+    .mfp-content {
+      opacity: 0;
+      @include transition(all 0.3s ease-out);
+    }
+
+    &.mfp-ready {
+      .mfp-content {
+        opacity: 1;
+      }
+    }
+
+    &.mfp-removing {
+        @include transition(all 0.3s ease-out);
+      .mfp-content {
+        opacity: 0;
+      }
+
+      button {
+        opacity: 0;
+      }
+    }
+  }
+
+}
+
+.mfp-counter {
+  display: none;
+}
+
+.mfp-figure {
+  .mfp-gallery .mfp-image-holder & {
+    cursor: zoom-out;
+  }
+
+  &:after {
+    box-shadow: none;
+  }
+}
+
+.mfp-img {
+  background-color: $colorProductBackground;
+}
+
+button.mfp-close {
+  margin: 30px;
+  font-size: em(40px);
+  font-weight: 300px;
+  opacity: 1;
+  filter: alpha(opacity=100);
+  color: $colorTextBody;
+}
+
+button.mfp-arrow {
+  top: 0;
+  height: 100%;
+  width: 20%;
+  margin: 0;
+  opacity: 1;
+  filter: alpha(opacity=100);
+  z-index: 1045;
+
+  &:after,
+  & .mfp-a {
+    display: none;
+  }
+
+  &:before,
+  & .mfp-b {
+    display: none;
+  }
+
+  &:active {
+    margin-top: 0;
+  }
+}
+
+.mfp-chevron {
+  position: absolute;
+  pointer-events: none;
+
+  &:before {
+    content: '';
+    display: inline-block;
+    position: relative;
+    vertical-align: top;
+    height: 25px;
+    width: 25px;
+    border-style: solid;
+    border-width: 4px 4px 0 0;
+    @include transform(rotate(-45deg));
+  }
+
+  &.mfp-chevron-right {
+    right: 55px;
+
+    &:before {
+      @include transform(rotate(45deg));
+    }
+  }
+
+  &.mfp-chevron-left {
+    left: 55px;
+
+    &:before {
+      @include transform(rotate(-135deg));
+    }
+  }
+}
+
+
+.lt-ie9 {
+  .mfp-chevron:before,
+  .mfp-chevron:after {
+    content: " ";
+    position: absolute;
+    display: block;
+    border-width: 0;
+    width: 0;
+    height: 0;
+    top: 50%;
+    margin-top: -25px;
+    border-top: 25px solid transparent;
+    border-bottom: 25px solid transparent;
+  }
+
+  .mfp-chevron:before {
+    z-index: 5;
+  }
+
+  .mfp-chevron:after {
+    z-index: 2;
+  }
+
+  .mfp-chevron-right:after {
+    border-left: 25px solid $colorTextBody;
+    left: 80%;
+  }
+
+  .mfp-chevron-right:before {
+    border-left: 25px solid white;
+    left: 80%;
+  }
+
+  .mfp-chevron-left:after {
+    border-right: 25px solid $colorTextBody;
+    right: 80%;
+  }
+
+  .mfp-chevron-left:before {
+    border-right: 25px solid white;
+    right: 80%;
+  }
+}
+
+.grid-product__wrapper {
+  text-align: center;
+  margin-bottom: $gutter;
+
+  .grid-collage & {
+    margin-bottom: 0;
+  }
+}
+
+.grid-product__image-wrapper {
+  position: relative;
+  width: 100%;
+  display: table;
+  table-layout: fixed;
+}
+
+.grid-product__image-link {
+  position: relative;
+  display: block;
+  width: 100%;
+  background-color: $colorProductBackground;
+  @include transition(opacity 0.4s ease-out);
+
+  .grid-collage & {
+    padding: 0 20px;
+  }
+
+  &:hover,
+  &:focus {
+    opacity: 0.9;
+    @include transition(opacity 0.15s ease-in);
+
+    /*================ Remove hover in IE8 and below ================*/
+    .lt-ie9 & {
+      @include transform('none');
+    }
+  }
+
+  .grid-uniform & {
+    display: table-cell;
+    vertical-align: middle;
+    overflow: hidden;
+  }
+}
+
+.grid-product__image {
+  display: block;
+  margin: 0 auto;
+}
+
+@include at-query($max, $small) {
+  .grid-uniform {
+    .grid-product__image-wrapper {
+      height: auto !important;
+    }
+  }
+}
+
+.grid-collage {
+  .grid-product__image {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    max-height: 100%;
+    max-width: 100%;
+    padding: 20px;
+    @include prefix('transform', 'translate(-50%, -50%)');
+    @include backface();
+
+    .lt-ie9 & {
+      position: static;
+      max-height: 90%;
+      @include prefix('transform', 'translate(0, 0)');
+    }
+  }
+}
+
+.product--wrapper {
+  margin: 0 auto;
+  position: relative;
+  width: 100%;
+
+  @include at-query($max, $small) {
+    margin: 20px auto;
+  }
+}
+
+.product--image {
+  width: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+
+  &.lazyload {
+    opacity: 0;
+  }
+
+  .is-sold-out & {
+    opacity: 0.5;
+  }
+}
+
+.grid-product__meta {
+  position: relative;
+  display: block;
+  padding: 13px 0;
+}
+
+.grid-product__price-wrap {
+  white-space: nowrap;
+}
+
+.long-dash {
+  margin: 0 4px;
+}
+
+.grid-product__title {
+  @include bodyFontItalic;
+  font-size: em(floor($baseFontSize * 1.25));  //20px based on 16px base font size
+}
+
+.grid-product__vendor {
+  @include accentFontStack;
+  letter-spacing: 0.2em;
+  font-size: em(11px);
+  margin: 1px 0;
+}
+
+.grid-product__price {
+  @include accentFontStack;
+  font-size: em(14px);
+}
+
+.grid-product__price-min {
+  position: relative;
+  top: -1px;
+  font-size: em(10px);
+  margin-left: -4px;
+}
+
+.grid-product__sold-out,
+.grid-product__on-sale {
+  @include accentFontStack;
+  font-size: em(11px);
+  line-height: 1.3;
+  position: absolute;
+  min-width: 50px;
+  border-radius: 25px;
+  top: -8px;
+  left: -8px;
+
+  p {
+    padding: 12px 8px 10px 9px;
+    margin: 0;
+    letter-spacing: 1px;
+  }
+
+  sup {
+    display: none;
+  }
+}
+
+.grid-product__sold-out {
+  color: $colorTextBody;
+  border: 1px solid $colorTextBody;
+
+}
+
+.grid-product__on-sale {
+  color: $colorSaleTag;
+  border: 1px solid $colorSaleTag;
+}
+
+/*================ Product Carousel ================*/
+
+.product-single__photos {
+  @include at-query($max, $small) {
+    margin-top: -$contentTopMarginSmall;
+    margin-left: -($gutter / 2);
+    margin-right: -($gutter / 2);
+    padding-bottom: 55px;
+  }
+
+  .slick-dots {
+    background-color: $colorProductBackground;
+    bottom: 0;
+    padding: 15px;
+  }
+
+  .slick-dots li button {
+    &:before {
+      background-color: $colorTextBody;
+      opacity: 0.2;
+      width: 9px;
+      height: 9px;
+
+      .lt-ie9 & {
+        filter: alpha(opacity=20);
+      }
+    }
+  }
+
+  .slick-dots li.slick-active button {
+    &:before {
+      background-color: $colorTextBody;
+      border-color: $colorTextBody;
+      opacity: 1;
+      width: 11px;
+      height: 11px;
+
+      .lt-ie9 & {
+        filter: alpha(opacity=100);
+      }
+    }
+  }
+
+}
+
+/*================ Modules | Theme collection grid item ================*/
+.collection-collage__item {
+  overflow: hidden;
+}
+
+.collection-collage__item-wrapper {
+  position: relative;
+  overflow: hidden;
+  height: 100%;
+  width: 100%;
+
+  .collection-grid__item-overlay {
+    position: relative;
+    @include transition(all 0.8s ease);
+
+    &:after {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      opacity: 0.25;
+      background-color: #000;
+      @include transition(all 0.8s ease);
+
+      .lt-ie9 & {
+        display: none;
+      }
+    }
+
+    &:hover,
+    &:focus {
+      @include transform(scale(1.03));
+
+      &:after {
+        opacity: 0.5;
+      }
+    }
+  }
+}
+
+.collection-grid__item-link {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.collection-grid__item-overlay {
+  display: block;
+  overflow: hidden;
+  height: 100%;
+  width: 100%;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.collection-grid__item-title--wrapper {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  width: 100%;
+  pointer-events: none;
+  display: table;
+  table-layout: fixed;
+  color: #fff;
+  cursor: pointer;
+
+  .collection-grid__item-title {
+    display: table-cell;
+    vertical-align: middle;
+    margin: 0 auto;
+  }
+}
+
+.custom-content {
+  @include display-flexbox;
+  @include align-items(stretch);
+  @include flex-wrap(wrap);
+  width: auto;
+  margin-bottom: -$gridGutter;
+  margin-left: -$gridGutter;
+
+  @include at-query($max, $small) {
+    margin-bottom: -$gridGutterMobile;
+    margin-left: -$gridGutterMobile;
+  }
+}
+
+.custom__item {
+  @include flex(0 0 auto);
+  margin-bottom: $gridGutter;
+  padding-left: $gridGutter;
+  max-width: 100%;
+
+  @include at-query($max, $small) {
+    @include flex(0 0 auto);
+    padding-left: $gridGutterMobile;
+    margin-bottom: $gridGutterMobile;
+
+    &.small--one-half {
+      @include flex(1 0 50%);
+      max-width: 400px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+  }
+}
+
+.custom__item-inner {
+  position: relative;
+  display: inline-block;
+  text-align: left;
+  max-width: 100%;
+}
+
+.custom__item-inner--video,
+.custom__item-inner--html {
+  display: block;
+}
+
+/*================ Flex item alignment ================*/
+.align--top-middle {
+  text-align: center;
+}
+
+.align--top-right {
+  text-align: right;
+}
+
+.align--middle-left {
+  @include align-self(center);
+}
+
+.align--center {
+  @include align-self(center);
+  text-align: center;
+}
+
+.align--middle-right {
+  @include align-self(center);
+  text-align: right;
+}
+
+.align--bottom-left {
+  @include align-self(flex-end);
+}
+
+.align--bottom-middle {
+  @include align-self(flex-end);
+  text-align: center;
+}
+
+.align--bottom-right {
+  @include align-self(flex-end);
+  text-align: right;
+}
+
+.featured-blog__post,
+.featured-blog__meta,
+.title--one-post {
+  margin-bottom: $gridGutter * 1.75;
+
+  @include at-query($max, $small) {
+    margin-bottom: $gridGutterMobile * 1.75;
+  }
+}
+
+.featured-blog__author {
+  display: inline-block;
+  font-style: italic;
+  line-height: 1.7;
+
+  &:after {
+    content: '\2022';
+    margin: 0 5px;
+  }
+}
+
+.featured-blog__date {
+  display: inline-block;
+}
+.map-section {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  padding: $gutter * 3 0;
+  @include display-flexbox();
+  @include align-items(center);
+  @include flex-wrap(wrap);
+  @include flex-direction(row);
+
+  @include at-query($max, $medium) {
+    min-height: auto;
+    padding: 0 $gutter;
+    margin-top: $gutter * 1.5;
+  }
+
+  @include at-query($max, $small) {
+    padding: 0 $gutter * 0.5;
+  }
+
+  .shopify-section:first-child & {
+    margin-top: -110px;
+
+    @include at-query($max, $medium) {
+      margin-top: inherit;
+    }
+  }
+}
+
+.map-section__wrapper {
+  height: 100%;
+  flex-shrink: 0;
+  flex-grow: 1;
+  @include flex-basis(100%);
+  @include display-flexbox();
+  @include flex-wrap(wrap);
+  @include flex-direction(row);
+
+  @include at-query($max, $medium) {
+    padding: 0;
+  }
+}
+
+.map-section--load-error {
+  height: auto;
+}
+
+.map-section__overlay {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  opacity: 0;
+  z-index: 0;
+}
+
+.map-section__error {
+  position: relative;
+  z-index: 3;
+
+  @include at-query($max, $medium) {
+    position: absolute;
+    margin: 0 2rem;
+    top: 50%;
+    @include transform(translateY(-50%));
+  }
+}
+
+.map-section__content-wrapper {
+  position: relative;
+  text-align: center;
+  height: 100%;
+  @include display-flexbox();
+  flex-grow: 0;
+}
+
+.map-section__content {
+  position: relative;
+  display: inline-block;
+  background-color: $colorBody;
+  padding: $section-spacing-small;
+  width: 100%;
+  text-align: center;
+  z-index: 3;
+  @include display-flexbox();
+  @include align-items(center);
+  @include flex-wrap(wrap);
+  min-height: 350px;
+
+  // Make sure every children is on one line
+  & > * {
+    width: 100%;
+  }
+
+  @include at-query($max, $medium) {
+    background-color: $colorNewsletter;
+    min-height: auto;
+    display: block;
+
+    .ie9 & {
+      top: 10%;
+    }
+  }
+
+  .map-section--load-error & {
+    position: static;
+    transform: translateY(0);
+  }
+}
+
+.map-section__link {
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 50%;
+  max-width: none;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+  @include transform(translateX(-50%));
+}
+
+// Optically center map in visible area with
+// extended height/widths and negative margins
+.map-section__container {
+  position: absolute;
+  height: 100%;
+  min-height: auto;
+  left: 0;
+  top: 0;
+  // map is centered on resize, larger widths allow pin to be off-center
+  width: 130%;
+
+  @include at-query($max, $medium) {
+    position: relative;
+    max-width: $siteWidth;
+    width: 100%;
+    height: 55vh;
+  }
+
+}
+
+.map_section__directions-btn {
+  [class^="icon"] {
+    height: 1em;
+  }
+
+  * {
+    vertical-align: middle;
+  }
+}
+
+.map-section__background-wrapper {
+  @include flex-basis(100%);
+  flex-grow: 0;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+
+  @include at-query($max, $medium) {
+    overflow: hidden;
+    position: relative;
+    @include flex-basis(100%);
+  }
+
+  .ie9 & {
+    width: 100%;
+    height: 500px;
+  }
+
+  .map-section--onboarding & {
+    min-height: 350px;
+  }
+
+  .placeholder-background {
+    height: 100%;
+  }
+
+  .js {
+    .no-js & {
+      @include visuallyHidden();
+    }
+  }
+}
+
+.map-section__image {
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+
+  @include at-query($max, $medium) {
+    position: relative;
+  }
+
+  // Only show the background image if map fails to load
+  .map-section--display-map & {
+    display: none !important;
+  }
+
+ .map-section--load-error & {
+    display: block !important;
+  }
+}
+
+// Hide Google maps UI
+.gm-style-cc,
+.gm-style-cc + div {
+  visibility: hidden;
+}
+
+.flex--third {
+  @include flex-basis(33%);
+
+  @include at-query($max, $medium) {
+    @include flex-basis(100%);
+  }
+
+  .ie9 & {
+    width: 33%;
+    float: left;
+    display: block;
+
+    @include at-query($max, $medium) {
+      width: 100%;
+    }
+  }
+}
+
+// Section padding
+.index-newsletter-section + .index-map-section{
+  margin-top: 0;
+}
+
+.index-map-section + .index-newsletter-section {
+  margin-top: -60px;
+
+  @include at-query($max, $medium) {
+    margin-top: $gutter;
+  }
+}
+
+
+/*================ View-specific styles ================*/
+/*================ Templates | Theme Blog ================*/
+.article {
+  margin-bottom: -($gutter / 2);
+}
+
+.article__featured-image-wrapper {
+  position: relative;
+
+  .no-js & {
+    @include visuallyHidden();
+  }
+}
+
+.article__featured-image {
+  display: block;
+  margin: 0 auto;
+  position: absolute;
+  width: 100%;
+  top: 0;
+  bottom: 0;
+  left: 0;
+}
+
+.article__featured-link {
+  display: block;
+  margin-bottom: $gutter;
+}
+
+/*================ RSS ================*/
+.rss-link {
+  font-size: 0.6em;
+}
+
+/*================ Comments ================*/
+.comment.last {
+  margin-bottom: -($gutter / 2);
+}
+
+/*============= Templates | Password page =============*/
+
+.template-password {
+  height: 100vh;
+  text-align: center;
+}
+
+.password-page__wrapper {
+  display: table;
+  height: 100%;
+  width: 100%;
+
+  @if $passwordPageUseBgImage {
+    background-image: url({{asset_url 'password-page-background.jpg'}});
+    background-size: cover;
+    background-repeat: no-repeat;
+    color: #ffffff;
+  } @else {
+    color: $colorTextBody;
+  }
+
+  a {
+    color: inherit;
+  }
+
+  hr {
+    @if $passwordPageUseBgImage {
+      border-color: inherit;
+    } @else {
+      border-color: $colorBorder;
+    }
+  }
+
+  .social-sharing.clean a {
+    color: inherit;
+    background: transparent;
+  }
+}
+
+.password-header-section {
+  display: table-row;
+}
+
+.password-page__header {
+  display: table-cell;
+  height: 1px;
+}
+
+.password-page__header__inner {
+  padding: ($gutter / 2) $gutter;
+}
+
+.password-page__logo {
+  margin-top: 3 * $gutter;
+
+  .logo {
+    max-width: 100%;
+  }
+
+  @if $passwordPageUseBgImage {
+    /* If we have a background image, we want to use a light-colored logo */
+    .logo--inverted {
+      display: inline;
+    }
+    /* If we have an inverted logo, we hide the default logo */
+    .logo--has-inverted {
+      display: none;
+    }
+  } @else {
+    .logo--inverted {
+      display: none;
+    }
+  }
+}
+
+.password-page__main {
+  display: table-row;
+  width: 100%;
+  height: 100%;
+  margin: 0 auto;
+}
+
+.password-page__main__inner {
+  display: table-cell;
+  vertical-align: middle;
+  padding: ( $gutter / 2 ) $gutter;
+}
+
+.password-page__hero {
+  font-family: $headerFontStack;
+  font-weight: $headerFontWeight;
+  font-size: em(42px);
+  line-height: 1.25;
+  text-transform: none;
+  letter-spacing: 0;
+  text-rendering: optimizeLegibility;
+
+  @include at-query($min, $postSmall) {
+    font-size: em(60px);
+  }
+
+  @include at-query($min, $large) {
+    font-size: em(64px);
+  }
+}
+
+.password-page__message {
+  font-style: italic;
+  font-size: 120%;
+
+  img {
+    max-width: 100%;
+  }
+}
+
+.password-page__hr {
+  margin: $gutter auto;
+}
+
+.password-page__message,
+.password-page__login-form,
+.password-page__signup-form {
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.password-page__login-form {
+  text-align: center;
+  padding: $gutter;
+}
+
+.password-page__login-form,
+.password-page__signup-form {
+  @include at-query($min, $small) {
+    padding: 0 $gutter;
+  }
+
+  .input-group {
+    width: 100%;
+  }
+
+  .errors ul {
+    list-style-type: none;
+    margin-left: 0;
+  }
+}
+
+.password-page__signup-form__heading {
+  margin-bottom: 0.8em;
+}
+
+.lt-ie9 .template-password {
+  .newsletter__submit-text--small,
+  .password-page__login-form__submit-text--small {
+    display: none !important;
+  }
+}
+
+.password-page__social-sharing {
+  margin-top: $gutter;
+}
+
+.password-page__social-sharing__heading {
+  margin-bottom: 0;
+}
+
+.password-login,
+.admin-login  {
+  margin-top: $gutter / 2;
+  a:hover {
+    color: inherit;
+  }
+}
+
+.password-login {
+  @include accentFontStack;
+  font-size: em( 0.8 * $baseFontSize );
+  line-height: 0.8 * $baseFontSize;
+}
+
+.lock-icon-svg {
+  width: 0.8 * $baseFontSize;
+  height: 0.8 * $baseFontSize;
+  display: inline-block;
+  vertical-align: baseline;
+
+  path {
+    fill: currentColor;
+  }
+
+  /* Hiding the SVG logo in IE8 */
+  .lt-ie9 & {
+    display: none;
+  }
+}
+
+.admin-login {
+  font-size: 95%;
+}
+
+.password-page__footer {
+  display: table-row;
+  height: 1px;
+}
+
+.password-page__footer_inner {
+  display: table-cell;
+  vertical-align: bottom;
+  padding: $gutter;
+  line-height: 1.5 * $baseFontSize;
+  font-size: 95%;
+}
+
+.shopify-link {
+  color: inherit;
+
+  &:hover {
+    color: inherit;
+  }
+}
+
+.shopify-logo-svg {
+  width: 1.5 * $baseFontSize * 120 / 35;
+  height: 1.5 * $baseFontSize;
+  display: inline-block;
+  line-height: 0;
+  vertical-align: top;
+
+  path {
+    fill: currentColor;
+  }
+
+  /* Hiding the SVG logo in IE8, we show the word 'Shopify' instead */
+  .lt-ie9 & {
+    display: none;
+  }
+}
+
+/* =========
+   Hiding the word 'Shopify' but not from screen readers.
+   IE8 does not support SVG, so in it we hide the logo and show the word.
+   To target all browsers except IE8, we use the class 'modern',
+   which needs to be added to the html element.
+   ========= */
+
+.shopify-name {
+  .modern & {
+    @include visuallyHidden;
+  }
+}
+

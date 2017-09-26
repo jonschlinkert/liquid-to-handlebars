@@ -1,0 +1,95 @@
+{{#paginate collection.products by=20}}
+
+<div class="page-width">
+
+  <header class="grid medium-up--grid--table section-header small--text-center">
+    <div class="grid__item medium-up--one-half section-header__item">
+      <h1 class="section-header__title">
+        {{ collection.title }}
+        {{#if current_tags}}
+          &ndash; {{assign 'title_tags' (join current_tags ', ')}}
+          {{ title_tags }}
+        {{/if}}
+      </h1>
+      {{#if (isnt collection.description blank)}}
+        <div class="section-header__subtext rte">
+          {{ collection.description }}
+        </div>
+      {{/if}}
+    </div>
+    <div class="grid__item medium-up--one-half medium-up--text-right section-header__item">
+      {{section 'collection-filters'}}
+    </div>
+  </header>
+
+  <div class="grid grid--no-gutters grid--uniform">
+
+    {{#each collection.products as |product|}}
+      <div class="grid__item small--one-half medium-up--one-fifth">
+        {{include 'product-card",' product: product}}
+      </div>
+    {{else}}
+      {{#comment}}
+        Add default products to help with onboarding for collections/all only.
+
+        The onboarding styles and products are only loaded if the
+        store has no products.
+      {{/comment}}
+      {{#if (is shop.products_count 0)}}
+        <div class="grid__item">
+          <div class="grid grid--no-gutters grid--uniform">
+            {{assign 'collection_index' 1}}
+            {{#each (range 1 10) as |i|}}
+              {{#is i 7}}
+                  {{assign 'collection_index' 1}}
+                {{else is i 8}}
+                  {{assign 'collection_index' 2}}
+                {{else is i 9}}
+                  {{assign 'collection_index' 3}}
+                {{else is i 10}}
+                  {{assign 'collection_index' 4}}
+              {{/is}}
+              <div class="grid__item small--one-half medium-up--one-fifth">
+                <a href="/admin/products" class="product-card">
+                  <div class="product-card__image-wrapper">
+                    <div class="product-card__image">
+                      {{#capture 'current'}}{{cycle 1 2 3 4 5 6}}{{/capture}}
+                      {{placeholder_svg_tag (append 'product-' current) 'placeholder-svg'}}
+                    </div>
+                  </div>
+                  <div class="product-card__info">
+                    <div class="product-card__name">{{t 'homepage.onboarding.product_title'}}</div>
+                    <div class="product-card__price">
+                      $19.99
+                    </div>
+                  </div>
+                  <div class="product-card__overlay">
+                    {{assign 'view_string_length' (size (t 'products.product.view'))}}
+                    <span class="btn product-card__overlay-btn {{#if (gt view_string_length 8)}} btn--narrow{{/if}}">{{t 'products.product.view'}}</span>
+                  </div>
+                </a>
+              </div>
+              {{assign 'collection_index' (plus collection_index 1)}}
+            {{/each}}
+          </div>
+        </div>
+      {{else}}
+        {{#comment}}
+          If collection exists but is empty, display message
+        {{/comment}}
+        <div class="grid__item small--text-center">
+          <p>{{t 'collections.general.no_matches'}}</p>
+        </div>
+      {{/if}}
+    {{/each}}
+  </div>
+
+  {{#if (gt paginate.pages 1)}}
+    <div class="pagination">
+      {{replace (replace (default_pagination paginate) '&laquo; Previous' '&larr;') 'Next &raquo;' '&rarr;'}}
+    </div>
+  {{/if}}
+
+</div>
+
+{{/paginate}}

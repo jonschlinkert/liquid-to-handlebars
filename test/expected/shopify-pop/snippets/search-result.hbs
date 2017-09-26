@@ -1,0 +1,46 @@
+{{#comment}}
+
+  This snippet defines the default structure of each search result.
+
+  'item' refers to the result, but typically mimics the product liquid tag,
+  so you can access product liquid tags with {{ item.XXX }}.
+
+  Remember that results aren't specific to products, so don't depend on
+  a featured image or item.type. Pages, for example, have a blank item.type.
+
+  Product liquid tag info:
+   - http://docs.shopify.com/themes/liquid-variables/product
+
+{{/comment}}
+
+<div class="grid">
+
+  {{assign 'has_image' false}}
+  {{#if (or item.featured_image item.image)}}
+    {{#comment}}
+      We have a featured_image
+    {{/comment}}
+    {{assign 'has_image' true}}
+    {{assign 'image_alt' (escape item.title)}}
+    <div class="grid-item one-third">
+      <a href="{{ item.url }}" title="{{ image_alt }}">
+        {{img_tag (img_url item 'medium') image_alt}}
+      </a>
+    </div>
+  {{/if}}
+
+  {{#comment}}
+    If we don't have an image to show, add a push-- class to keep the alignment the same
+  {{/comment}}
+  <div class="grid-item {{#if has_image}}two-thirds{{/if}}">
+    <h2 class="h3">{{link_to item.title item.url}}</h2>
+
+    {{#comment}}
+      Get a brief excerpt of raw text from the page/product
+    {{/comment}}
+    <p>{{truncatewords (strip_html item.content) 50}}</p>
+  </div>
+
+</div>
+
+{{#unless forloop.last}}<hr>{{/unless}}

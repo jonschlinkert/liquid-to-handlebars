@@ -1,0 +1,105 @@
+<div class="wrapper">
+  {{#if (isnt section.settings.title blank)}}
+    <div class="section-header text-center">
+      <h2 class="h1 section-header__title">{{escape section.settings.title}}</h2>
+      <hr class="hr--small">
+    </div>
+  {{/if}}
+
+  <div class="grid collection-grid">
+
+    {{#comment}}
+      Show up to 9 collections.
+      Frontpage will be excluded if collections defined automatically.
+    {{/comment}}
+    {{assign 'isEmpty' true}}
+    {{assign 'collection_index' 0}}
+    {{assign 'collection_count' 0}}
+    {{assign 'collection_limit' section.blocks.size}}
+
+    {{#comment}}
+      Add one to the collection limit to offset chance of Frontpage being included
+    {{/comment}}
+    {{assign 'collection_limit' (plus collection_limit 1)}}
+
+    {{#comment}}
+      Calculate number of collections to show, making sure Frontpage isn't one
+    {{/comment}}
+    {{#each (limit section.blocks undefined) as |collection|}}
+        {{assign 'collection_count' (plus collection_count 1)}}
+    {{/each}}
+
+    {{#if (gt collection_count 0)}}
+      {{assign 'isEmpty' false}}
+    {{/if}}
+
+    {{assign 'divisible_by_three' (modulo collection_count 3)}}
+    {{assign 'divisible_by_two' (modulo collection_count 2)}}
+
+    {{#comment}}
+      Loop through the collections to display
+    {{/comment}}
+    {{#each (limit section.blocks undefined) as |block|}}
+        {{assign 'collection' (get collections block.settings.collection)}}
+        {{assign 'collection_index' (plus collection_index 1)}}
+        {{assign 'collection_handle' collection.handle}}
+        {{include 'collection-grid-collage'}}
+    {{/each}}
+
+    {{#if isEmpty}}
+      <div class="wrapper">
+        <div class="grid">
+          <div class="grid__item">
+            <div class="rte text-center">
+              {{t 'home_page.onboarding.no_content'}}
+            </div>
+          </div>
+        </div>
+      </div>
+    {{/if}}
+
+  </div>
+</div>
+
+{{#schema}}
+  {
+    "name": "Collection list",
+    "max_blocks": 9,
+    "settings": [
+      {
+        "type": "text",
+        "id": "title",
+        "label": "Heading",
+        "default": "Collection list"
+      }
+    ],
+    "presets": [{
+      "name": "Collection list",
+      "category": "Collection",
+      "blocks": [
+        {
+          "type": "collection"
+        },
+        {
+          "type": "collection"
+        },
+        {
+          "type": "collection"
+        }
+      ]
+    }],
+    "blocks": [
+      {
+        "type": "collection",
+        "name": "Collection",
+        "settings": [
+          {
+            "id": "collection",
+            "type": "collection",
+            "label": "Collection"
+          }
+        ]
+      }
+    ]
+  }
+{{/schema}}

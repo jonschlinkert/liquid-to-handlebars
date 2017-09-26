@@ -1,0 +1,86 @@
+{{#paginate search.results by=20}}
+
+<div class="page-width">
+  <header class="grid medium-up--grid--table section-header small--text-center">
+    <div class="grid__item medium-up--two-thirds section-header__item">
+      <h1 class="section-header__title">{{t 'general.search.title'}}</h1>
+      {{#if search.performed}}
+        <p class="section-header__subtext">{{t 'general.search.results_count_html' count search.results_count terms search.terms}}</p>
+      {{/if}}
+    </div>
+    <div class="grid__item medium-up--one-third section-header__item">
+      <form action="/search" method="get" class="input-group" role="search">
+        {{#comment}}<input type="hidden" name="type" value="product">{{/comment}}
+        <input type="search" name="q" value="{{escape search.terms}}" placeholder="{{t 'general.search.placeholder'}}" aria-label="{{t 'general.search.placeholder'}}" class="input-group__field input--content-color">
+
+        <div class="input-group__btn">
+          <button type="submit" class="btn btn--narrow">
+            {{include 'icon-arrow-right'}}
+            <span class="icon__fallback-text">{{t 'general.search.submit'}}</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </header>
+
+  {{#if search.performed}}
+
+    {{#comment}}
+      Find the number of products and pages in the search results
+    {{/comment}}
+    {{assign 'product_count' 0}}
+    {{assign 'page_count' 0}}
+    {{#each search.results as |item|}}
+      {{#if (is item.object_type 'product')}}
+        {{assign 'product_count' (plus product_count 1)}}
+      {{else}}
+        {{assign 'page_count' (plus page_count 1)}}
+      {{/if}}
+    {{/each}}
+
+    {{#if (gt product_count 0)}}
+      <h2 class="h4 small--text-center">{{t 'general.search.products'}}</h2>
+
+      <div class="grid grid--no-gutters grid--uniform">
+        {{#each search.results as |item|}}
+          {{#if (is item.object_type 'product')}}
+            <div class="grid__item small--one-half medium-up--one-fifth">
+              {{include 'product-card",' product: item}}
+            </div>
+          {{/if}}
+        {{/each}}
+      </div>
+    {{/if}}
+
+    {{#if (and product_count page_count)}}
+      <hr>
+    {{/if}}
+
+    {{#if (gt page_count 0)}}
+      <h4 class="small--text-center">{{t 'general.search.pages_and_articles'}}</h4>
+
+      <div class="content-block content-block--no-bottom-padding">
+        <div class="grid grid--uniform">
+        {{#each search.results as |item|}}
+          {{#unless (is item.object_type 'product')}}
+            <div class="grid__item medium-up--one-third content-block__item">
+              <h5>{{link_to item.title item.url}}</h5>
+              <div class="rte">{{truncate (strip_html item.content) 150}}</div>
+              <p><a href="{{ item.url }}"><strong>{{t 'general.search.read_more'}}</strong></a></p>
+            </div>
+          {{/unless}}
+        {{/each}}
+        </div>
+      </div>
+    {{/if}}
+
+    {{#if (gt paginate.pages 1)}}
+      <div class="pagination">
+        {{replace (replace (default_pagination paginate) '&laquo; Previous' '&larr;') 'Next &raquo;' '&rarr;'}}
+      </div>
+    {{/if}}
+
+  {{/if}}
+</div>
+
+{{/paginate}}

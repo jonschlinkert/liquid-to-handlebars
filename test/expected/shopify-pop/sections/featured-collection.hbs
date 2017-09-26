@@ -1,0 +1,154 @@
+<style>
+{{#if (is section.settings.product_details_display_method 'hover')}}
+  @media screen and (min-width: 769px) {
+    [data-section-id="{{ section.id }}"] .product__cover,
+    [data-section-id="{{ section.id }}"] .product__details {
+      height: 100%;
+      left: 0;
+      opacity: 0;
+      position: absolute;
+      top: 0;
+      width: 100%;
+      z-index: 1;
+    }
+    /*================ Remove hover in IE8 and below ================*/
+    .lt-ie9 [data-section-id="{{ section.id }}"] .product__cover {
+      height: auto;
+      position: relative;
+      opacity: 1;
+      width: auto;
+    }
+    .lt-ie9 [data-section-id="{{ section.id }}"] .product__details {
+      height: auto;
+      position: relative;
+      opacity: 1;
+      width: auto;
+    }
+  }
+{{/if}}
+
+@media screen and (min-width: 769px) {
+  [data-section-id="{{ section.id }}"] .product__details {
+    {{#if (is section.settings.product_details_display_method 'always')}}
+      margin-top: 15px;
+    {{/if}}
+
+    z-index: 2;
+  }
+}
+
+{{#if (is section.settings.product_details_display_method 'always')}}
+  [data-section-id="{{ section.id }}"] .product__price {
+    margin-bottom: 0;
+  }
+  @include at-query($min, $large) {
+    .product:hover .product__price {
+      color: {{ settings.color_accent }};
+    }
+  }
+{{/if}}
+</style>
+
+{{assign 'featured_collection' (get collections section.settings.featured_collection)}}
+{{assign 'products_per_row' section.settings.num_per_row}}
+{{assign 'rows' section.settings.num_rows}}
+{{assign 'total_products' (times products_per_row rows)}}
+
+<div data-section-id="{{ section.id }}">
+  <div class="section-header text-center">
+    {{#unless (is section.settings.title blank)}}
+      <h2 class="section-header__title">{{escape section.settings.title}}</h2>
+    {{/unless}}
+    {{#if (isnt featured_collection.description blank)}}
+      <hr class="hr--small">
+      <div class="rte rte--header">
+        {{ featured_collection.description }}
+      </div>
+    {{/if}}
+  </div>
+
+  {{#is products_per_row 2}}
+      {{assign 'grid_item_width' 'medium--one-half large--one-half'}}
+      {{assign 'product_size' 515}}
+    {{else is products_per_row 3}}
+      {{assign 'grid_item_width' 'medium--one-third large--one-third'}}
+      {{assign 'product_size' 335}}
+    {{else is products_per_row 4}}
+      {{assign 'grid_item_width' 'medium-down--one-half large--one-quarter'}}
+      {{assign 'product_size' 460}}
+  {{/is}}
+
+  <div class="grid-uniform product-grid">
+    {{#each (limit featured_collection.products undefined) as |product|}}
+      {{assign 'featured' product}}
+      <div class="grid-item {{ grid_item_width }}" {{ block.shopify_attributes }}>
+        {{include 'product-grid-item' product_size: product_size}}
+      </div>
+    {{else}}
+      {{include 'onboarding-featured-products'}}
+    {{/each}}
+  </div>
+</div>
+
+{{#schema}}
+  {
+    "name": "Featured collection",
+    "class": "index-section",
+    "settings": [
+      {
+        "type": "text",
+        "id": "title",
+        "label": "Heading",
+        "default": "Featured collection"
+      },
+      {
+        "type": "collection",
+        "id": "featured_collection",
+        "label": "Featured collection"
+      },
+      {
+        "type": "range",
+        "id": "num_per_row",
+        "label": "Products per row",
+        "min": 2,
+        "max": 4,
+        "step": 1,
+        "default": 2
+      },
+      {
+        "type": "range",
+        "id": "num_rows",
+        "label": "Rows",
+        "min": 1,
+        "max": 4,
+        "step": 1,
+        "default": 2
+      },
+      {
+        "type": "select",
+        "id": "product_details_display_method",
+        "label": "Show title and price",
+        "options": [
+          {
+            "value": "always",
+            "label": "Always"
+          },
+          {
+            "value": "hover",
+            "label": "On hover"
+          }
+        ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "Featured collection",
+        "category": "Collection",
+        "settings": {
+          "num_per_row": 3,
+          "num_rows": 2
+        }
+      }
+    ]
+  }
+{{/schema}}

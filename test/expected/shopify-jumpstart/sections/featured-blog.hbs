@@ -1,0 +1,77 @@
+<div id="home-blog" class="index-section home-section">
+	<div class="home-blog">
+		<div class="wrapper wrapper--margins">
+		{{assign 'blog' (get blogs section.settings.blog)}}
+
+			{{#if (isnt (get blogs section.settings.blog) blank)}}
+
+			  {{#if (isnt section.settings.title blank)}}
+			    <h2 class="home-section-title">{{escape section.settings.title}}</h2>
+			  {{/if}}
+
+			{{#paginate blog.articles by=section.settings.post_limit}}
+
+			<div class="blog-list">
+
+				{{#each blog.articles as |article|}}
+				  {{include 'blog_item' blog.comments_enabled}}
+				{{/each}}
+
+			</div>
+
+			{{#if paginate.next.is_link}}
+			  <p class="text-center"><a class="btn btn--large btn--outline btn--dark" href="{{ blog.url }}">More posts</a></p>
+			{{/if}}
+
+			{{/paginate}}
+
+			{{else}}
+
+			<!-- onboarding -->
+			<div class="onboarding">
+				<h2 class="home-section-title">{{t 'homepage.onboarding.section_title'}}</h2>
+				<p>{{t 'homepage.onboarding.no_content'}}</p>
+			</div>
+
+			{{/if}}
+
+		</div>
+	</div>
+</div>
+
+{{#schema}}
+	{
+		"name": "Blog posts",
+		"settings": [
+			{
+				"type": "text",
+				"id": "title",
+				"label": "Header",
+				"default": "Blog"
+			},
+			{
+				"id": "blog",
+				"type": "blog",
+				"label": "Blog"
+			},
+			{
+				"type": "range",
+				"id": "post_limit",
+				"label": "Posts",
+				"min": 1,
+				"max": 3,
+				"step": 1,
+				"default": 3
+			}
+		],
+		"presets": [
+			{
+				"name": "Blog posts",
+				"category": "Blog",
+				"settings": {
+					"blog": "News"
+				}
+			}
+		]
+	}
+{{/schema}}

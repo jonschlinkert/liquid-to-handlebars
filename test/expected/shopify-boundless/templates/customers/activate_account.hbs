@@ -1,0 +1,24 @@
+<!-- /templates/customers/activate_account.liquid -->
+
+<div class="page-width page-container">
+  <div class="customer__account-form form-vertical text-center">
+    {{#form 'activate_customer_password'}}
+
+      <h1 class="h2">{{t 'customer.activate_account.title'}}</h1>
+      <p>{{t 'customer.activate_account.subtext'}}</p>
+
+      {{default_errors form.errors}}
+
+      <label for="CustomerPassword" class="label--hidden">{{t 'customer.activate_account.password'}}</label>
+      <input type="password" value="" name="customer[password]" id="CustomerPassword" class="input-full" placeholder="{{t 'customer.activate_account.password'}}">
+
+      <label for="CustomerPasswordConfirmation" class="label--hidden">{{t 'customer.activate_account.password_confirm'}}</label>
+      <input type="password" value="" name="customer[password_confirmation]" id="CustomerPasswordConfirmation" class="input-full" placeholder="{{t 'customer.activate_account.password_confirm'}}">
+
+      <input type="submit" class="btn" value="{{t 'customer.activate_account.submit'}}">
+      <p>
+        <input type="submit" class="btn--link" name="decline" value="{{t 'customer.activate_account.cancel'}}">
+      </p>
+    {{/form}}
+  </div>
+</div>

@@ -1,0 +1,112 @@
+<div class="page-width feature-row">
+  {{#capture 'image_layout'}}
+    <div class="feature-row__item">
+      {{#if (isnt section.settings.image blank)}}
+        <noscript>
+          {{img_tag (img_url section.settings.image '640x640') section.settings.image.alt}}
+        </noscript>
+
+        {{#capture 'img_id'}}FeatureRowImage--{{ section.id }}{{/capture}}
+        {{#capture 'img_wrapper_id'}}FeatureRowImageWrapper--{{ section.id }}{{/capture}}
+        {{include 'image-style' image: section.settings.image, width: 700, height: 640, wrapper_id: img_wrapper_id, img_id: img_id}}
+        {{assign 'img_url' (replace (img_url section.settings.image '1x1') '_1x1.' '_{width}x.')}}
+        <div id="{{ img_wrapper_id }}" class="feature-row__image-wrapper supports-js">
+          <div style="padding-top:{{times (divided_by 1 section.settings.image.aspect_ratio) 100}}%;">
+            <img id="{{ img_id }}"
+                 class="feature-row__image lazyload"
+                 src="{{img_url section.settings.image '300x300'}}"
+                 data-src="{{ img_url }}"
+                 data-widths="[180, 360, 540, 720, 900, 1080, 1296, 1512, 1728, 1944, 2048]"
+                 data-aspectratio="{{ section.settings.image.aspect_ratio }}"
+                 data-sizes="auto"
+                 alt="{{escape section.settings.image.alt}}">
+          </div>
+        </div>
+      {{else}}
+        {{placeholder_svg_tag 'image' 'placeholder-svg'}}
+      {{/if}}
+    </div>
+  {{/capture}}
+
+  <div class="feature-row">
+    {{#if (is section.settings.layout 'left')}}
+      {{ image_layout }}
+    {{/if}}
+
+    <div class="feature-row__item feature-row__text feature-row__text--{{ section.settings.layout }}">
+      {{#if (isnt section.settings.title blank)}}
+        <h2>{{escape section.settings.title}}</h2>
+      {{/if}}
+      {{#if (isnt section.settings.text blank)}}
+        <div class="rte featured-row__subtext">{{ section.settings.text }}</div>
+      {{/if}}
+      {{#if (and (isnt section.settings.button_label blank) (isnt section.settings.button_link blank))}}
+        <a href="{{ section.settings.button_link }}" class="btn">
+          {{escape section.settings.button_label}}
+        </a>
+      {{/if}}
+    </div>
+
+    {{#if (is section.settings.layout 'right')}}
+      {{ image_layout }}
+    {{/if}}
+  </div>
+</div>
+
+{{#schema}}
+  {
+    "name": "Image with text",
+    "class": "index-section",
+    "settings": [
+      {
+        "type": "image_picker",
+        "id": "image",
+        "label": "Image"
+      },
+      {
+        "type": "select",
+        "id": "layout",
+        "label": "Image alignment",
+        "default": "left",
+        "options": [
+          {
+            "value": "left",
+            "label": "Left"
+          },
+          {
+            "value": "right",
+            "label": "Right"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "id": "title",
+        "label": "Heading",
+        "default": "Image with text"
+      },
+      {
+        "type": "richtext",
+        "id": "text",
+        "label": "Text",
+        "default": "<p>Pair large text with an image to give focus to your chosen product, collection, or blog post. Add details on availability, style, or even provide a review.</p>"
+      },
+      {
+        "type": "text",
+        "id": "button_label",
+        "label": "Button label"
+      },
+      {
+        "type": "url",
+        "id": "button_link",
+        "label": "Button link"
+      }
+    ],
+    "presets": [
+      {
+        "name": "Image with text",
+        "category": "Image"
+      }
+    ]
+  }
+{{/schema}}

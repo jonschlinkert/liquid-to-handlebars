@@ -1,0 +1,82 @@
+<!-- /templates/blog.liquid -->
+{{#paginate blog.articles by=5}}
+
+<div class="grid">
+
+  <div class="grid__item large--five-sixths push--large--one-twelfth">
+
+    <header class="section-header text-center">
+      <h1>
+        {{#if current_tags}}
+          {{link_to blog.title blog.url}} &mdash; {{ current_tags.first }}
+        {{else}}
+          {{ blog.title }}
+        {{/if}}
+        <a href="{{ shop.url }}{{ blog.url }}.atom" class="icon-fallback-text rss-link">
+          <span class="icon icon-rss" aria-hidden="true"></span>
+          <span class="fallback-text">RSS</span>
+        </a>
+      </h1>
+      <hr class="hr--small">
+    </header>
+
+    {{#each blog.articles as |article|}}
+
+      {{assign 'article_content' article.excerpt_or_content}}
+
+      <article class="article grid small--text-center">
+
+        {{#unless (is article.image blank)}}
+          <div class="grid__item">
+            <a class="article__featured-link" href="{{ article.url }}">
+              <noscript>
+                {{escape (img_tag (img_url article.image '2048x2048') article.title)}}
+              </noscript>
+              <div class="article__featured-image-wrapper" style="padding-top:{{times (divided_by 1 article.image.aspect_ratio) 100}}%;">
+                {{assign 'img_url' (replace (img_url article.image '1x1') '_1x1.' '_{width}x.')}}
+                <img class="article__featured-image lazyload"
+                  src="{{img_url article.image '300x300'}}"
+                  data-src="{{ img_url }}"
+                  data-widths="[360, 540, 720, 900, 1080, 1296, 1512, 1728, 2048]"
+                  data-aspectratio="{{ article.image.aspect_ratio }}"
+                  data-sizes="auto"
+                  alt="{{escape article.title}}">
+              </div>
+            </a>
+          </div>
+        {{/unless}}
+
+        <div class="grid__item large--two-tenths push--large--one-tenth">
+          <time datetime="{{date article.published_at '%Y-%m-%d'}}" class="date">{{date article.published_at format 'month_day_year'}}</time>
+          <hr class="hr--small hr--left small--hide">
+        </div>
+        <div class="grid__item large--six-tenths push--large--one-tenth">
+          <h2 class="h3"><a href="{{ article.url }}">{{ article.title }}</a></h2>
+          <div class="rte rte--indented-images">
+            {{truncatewords (strip_html article_content) 120}}
+          </div>
+
+          <p>
+            <a href="{{ article.url }}" class="text-link">{{t 'blogs.article.read_more'}} <span class="icon icon-arrow-right" aria-hidden="true"></span></a>
+          </p>
+
+          {{#if (gt article.tags.size 0)}}
+            <ul class="tags tags--article inline-list">
+              {{include 'tags-article'}}
+            </ul>
+          {{/if}}
+        </div>
+      </article>
+
+      {{#unless forloop.last}}<hr class="hr--clear">{{/unless}}
+
+    {{/each}}
+
+    {{#if (gt paginate.pages 1)}}
+      {{include 'pagination'}}
+    {{/if}}
+
+  </div>
+</div>
+
+{{/paginate}}

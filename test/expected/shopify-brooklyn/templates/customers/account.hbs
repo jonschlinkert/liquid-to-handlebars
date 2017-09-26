@@ -1,0 +1,76 @@
+<!-- /templates/customers/account.liquid -->
+{{#comment}}
+
+  For all available customer liquid tags:
+    - http://docs.shopify.com/themes/liquid-variables/customer
+
+{{/comment}}
+
+{{#paginate customer.orders by=20}}
+
+<header class="section-header text-center">
+  <h1>{{t 'customer.account.title'}}</h1>
+  {{customer_logout_link (t 'layout.customer.log_out"|')}}
+  <hr class="hr--small">
+</header>
+
+<div class="grid">
+
+  <div class="grid__item two-thirds medium-down--one-whole">
+    <h2 class="h3">{{t 'customer.orders.title'}}</h2>
+
+    {{#comment}}
+      If we have past orders, loop through each one
+    {{/comment}}
+    {{#if (isnt customer.orders.size 0)}}
+
+      <div class="table-wrap">
+        <table class="full table--responsive">
+          <thead>
+            <tr>
+              <th>{{t 'customer.orders.order_number'}}</th>
+              <th>{{t 'customer.orders.date'}}</th>
+              <th>{{t 'customer.orders.payment_status'}}</th>
+              <th>{{t 'customer.orders.fulfillment_status'}}</th>
+              <th>{{t 'customer.orders.total'}}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{#each customer.orders as |order|}}
+              <tr class="table__section">
+                <td data-label="{{t 'customer.orders.order_number'}}">{{link_to order.name order.customer_url}}</td>
+                <td data-label="{{t 'customer.orders.date'}}">{{date order.created_at format 'month_day_year'}}</td>
+                <td data-label="{{t 'customer.orders.payment_status'}}">{{ order.financial_status_label }}</td>
+                <td data-label="{{t 'customer.orders.fulfillment_status'}}">{{ order.fulfillment_status_label }}</td>
+                <td data-label="{{t 'customer.orders.total'}}">{{money order.total_price}}</td>
+              </tr>
+            {{/each}}
+          </tbody>
+        </table>
+      </div>
+
+      <hr class="hr--clear">
+
+    {{else}}
+
+      <p>{{t 'customer.orders.none'}}</p>
+
+    {{/if}}
+  </div>
+
+  <div class="grid__item one-third medium-down--one-whole">
+    <h3>{{t 'customer.account.details'}}</h3>
+
+    <p class="h5">{{ customer.name }}</p>
+
+    {{format_address customer.default_address}}
+
+    <p><a href="/account/addresses" class="text-link">{{t 'customer.account.view_addresses'}} ({{ customer.addresses_count }})</a></p>
+  </div>
+
+</div>
+
+{{#if (gt paginate.pages 1)}}
+  {{include 'pagination'}}
+{{/if}}
+{{/paginate}}

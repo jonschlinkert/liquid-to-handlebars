@@ -1,0 +1,90 @@
+<h1>{{t 'customer.account.title'}}</h1>
+
+<hr class="hr--small">
+
+<div class="grid">
+
+  <div class="grid-item two-thirds medium-down--one-whole">
+    <h2 class="h4">{{t 'customer.orders.title'}}</h2>
+
+    {{#paginate customer.orders by=20}}
+    {{#if (isnt customer.orders.size 0)}}
+
+      <table class="full">
+        <thead>
+          <tr>
+            <th>{{t 'customer.orders.order_number'}}</th>
+            <th>{{t 'customer.orders.date'}}</th>
+            <th>{{t 'customer.orders.payment_status'}}</th>
+            <th>{{t 'customer.orders.fulfillment_status'}}</th>
+            <th>{{t 'customer.orders.total'}}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#each customer.orders as |order|}}
+            <tr>
+              <td>{{link_to order.name order.customer_url}}</td>
+              <td>{{date order.created_at format 'month_day_year'}}</td>
+              <td>{{ order.financial_status_label }}</td>
+              <td>{{ order.fulfillment_status_label }}</td>
+              <td>{{money order.total_price}}</td>
+            </tr>
+          {{/each}}
+        </tbody>
+      </table>
+
+    {{else}}
+
+      <p>{{t 'customer.orders.none'}}</p>
+
+    {{/if}}
+
+    {{#if (gt paginate.pages 1)}}
+    <div class="text-center">
+      {{include 'pagination-custom'}}
+    </div>
+    {{/if}}
+    {{/paginate}}
+  </div>
+
+  <div class="grid-item one-third medium-down--one-whole">
+    <h2 class="h4">{{t 'customer.account.details'}}</h2>
+
+    <h3 class="h5">{{ customer.name }}</h3>
+
+    {{#if (isnt customer.default_address nil)}}
+      <p>
+      {{ customer.default_address.address1 }}<br>
+
+      {{#if (isnt customer.default_address.address2 '')}}
+        {{ customer.default_address.address2 }}<br>
+      {{/if}}
+
+      {{#if (isnt customer.default_address.city '')}}
+        {{ customer.default_address.city }}<br>
+      {{/if}}
+
+      {{#if (isnt customer.default_address.province_code '')}}
+        {{upcase customer.default_address.province_code}}<br>
+      {{/if}}
+
+      {{#if (isnt customer.default_address.zip '')}}
+        {{upcase customer.default_address.zip}}<br>
+      {{/if}}
+
+      {{#if (isnt customer.default_address.country '')}}
+        {{ customer.default_address.country }}<br>
+      {{/if}}
+
+      {{#if (isnt customer.default_address.phone '')}}
+        {{ customer.default_address.phone }}
+      {{/if}}
+
+      </p>
+
+    {{/if}}
+
+    <p><a href="/account/addresses">{{t 'customer.account.view_addresses'}} ({{ customer.addresses_count }})</a></p>
+  </div>
+
+</div>

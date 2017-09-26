@@ -1,0 +1,57 @@
+{{assign 't' (first (split template '.'))}}
+<nav class="breadcrumb-nav small--text-center" aria-label="{{t 'general.breadcrumbs.you_are_here'}}">
+  <span itemscope itemtype="http://data-vocabulary.org/Breadcrumb">
+    <a href="/" itemprop="url" title="{{t 'general.breadcrumbs.home_link_title'}}">
+      <span itemprop="title">{{t 'general.breadcrumbs.home'}}</span>
+    </a>
+    <span class="breadcrumb-nav__separator" aria-hidden="true">›</span>
+  </span>
+  {{#is t 'collection'}}
+    {{#if current_tags}}
+      <span itemscope itemtype="http://data-vocabulary.org/Breadcrumb">
+        {{assign 'collection_url' (first (split (last (split (link_to_remove_tag current_tags.first current_tags.first) 'href="')) '"'))}}
+        <a href="{{ collection_url }}" itemprop="url">
+          <span itemprop="title">{{ collection.title }}</span>
+        </a>
+        <span class="breadcrumb-nav__separator" aria-hidden="true">›</span>
+      </span>
+      {{ current_tags.first }}
+    {{else}}
+      {{ collection.title }}
+    {{/if}}
+  {{else is t 'product'}}
+    {{#if collection}}
+      <span itemscope itemtype="http://data-vocabulary.org/Breadcrumb">
+        <a href="{{ collection.url }}" itemprop="url">
+          <span itemprop="title">{{ collection.title }}</span>
+        </a>
+        <span class="breadcrumb-nav__separator" aria-hidden="true">›</span>
+      </span>
+    {{/if}}
+    {{ product.title }}
+  {{else is t 'blog'}}
+    {{#if current_tags}}
+      <span itemscope itemtype="http://data-vocabulary.org/Breadcrumb">
+        <a href="{{ blog.url }}" itemprop="url">
+          <span itemprop="title">{{ blog.title }}</span>
+        </a>
+        <span class="breadcrumb-nav__separator" aria-hidden="true">›</span>
+      </span>
+      {{ current_tags.first }}
+    {{else}}
+      {{ blog.title }}
+    {{/if}}
+  {{else is t 'article'}}
+    <span itemscope itemtype="http://data-vocabulary.org/Breadcrumb">
+      <a href="{{ blog.url }}" itemprop="url">
+        <span itemprop="title">{{ blog.title }}</span>
+      </a>
+      <span class="breadcrumb-nav__separator" aria-hidden="true">›</span>
+    </span>
+    {{ article.title }}
+  {{else is t 'page'}}
+    {{{ page.title }}}
+  {{else}}
+    {{{ page_title }}}
+  {{/is}}
+</nav>

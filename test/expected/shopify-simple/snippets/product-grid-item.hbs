@@ -1,0 +1,106 @@
+{{#unless grid_item_width}}
+  {{assign 'grid_item_width' 'medium-up--one-third small--one-half'}}
+{{/unless}}
+
+{{#unless (is current_collection blank)}}
+  {{assign 'current_collection' collection}}
+{{/unless}}
+
+{{assign 'on_sale' false}}
+{{assign 'sale_text' (t 'products.product.sale')}}
+{{#if (gt product.compare_at_price product.price)}}
+  {{assign 'on_sale' true}}
+{{/if}}
+
+{{assign 'sold_out' true}}
+{{assign 'sold_out_text' (t 'products.product.sold_out')}}
+{{#if product.available}}
+  {{assign 'sold_out' false}}
+{{/if}}
+
+{{assign 'img_url' (replace (img_url product.featured_image '1x1') '_1x1.' '_{width}x.')}}
+
+<div class="product grid__item {{ grid_item_width }} slide-up-animation animated" role="listitem">
+  {{#unless (is product.featured_image blank)}}
+    <div class="supports-js" style="max-width: {{round (times 600 product.featured_image.aspect_ratio)}}px; margin: 0 auto;">
+      <a href="{{within product.url collection}}" class="product__image-wrapper" style="padding-top:{{times (divided_by 1 product.featured_image.aspect_ratio) 100}}%;" title="{{escape product.title}}">
+        <img class="product__image lazyload"
+             src="{{img_url product.featured_image '150x150'}}"
+             data-src="{{ img_url }}"
+             data-widths="[180, 360, 540, 720, 900, 1080, 1296, 1512, 1728, 2048]"
+             data-aspectratio="{{ product.featured_image.aspect_ratio }}"
+             data-sizes="auto"
+             alt="{{escape product.featured_image.alt}}"
+             style="max-width: {{round (times 600 product.featured_image.aspect_ratio)}}px; max-height: 600px;">
+      </a>
+    </div>
+  {{else}}
+    <a href="{{within product.url collection}}" class=" supports-js product__image-wrapper" title="{{escape product.title}}">
+      <img src="{{img_url product.featured_image.src 'grande'}}" alt="{{escape product.featured_image.alt}}">
+    </a>
+  {{/unless}}
+
+  <noscript>
+    <a href="{{within product.url collection}}" class="product__image-wrapper" title="{{escape product.title}}">
+      <img src="{{img_url product.featured_image.src 'grande'}}" alt="{{escape product.featured_image.alt}}">
+    </a>
+  </noscript>
+
+  <div class="product__title text-center">
+    <a href="{{within product.url collection}}">{{ product.title }}</a>
+  </div>
+
+  {{#if section.settings.vendor_show}}
+    <div class="product__vendor text-center">
+      {{ product.vendor }}
+    </div>
+  {{/if}}
+
+  <div class="product__prices text-center">
+    {{#if (gt product.compare_at_price product.price)}}
+
+      <span class="product__price--on-sale">
+        {{#if product.price_varies}}
+          {{assign 'sale_price' (money product.price)}}
+          {{t 'products.product.on_sale_from_html' price sale_price}}
+        {{else}}
+          <strong class="visually-hidden">{{t 'products.product.sale_price'}}</strong>
+          {{money product.price}}
+        {{/if}}
+      </span>
+
+    {{else}}
+
+      <span class="product__price">
+        {{#if product.price_varies}}
+          {{assign 'price' (money product.price)}}
+          {{t 'products.product.from_text_html' price price}}
+        {{else}}
+          <span class="visually-hidden">{{t 'products.product.regular_price'}}</span>
+          {{money product.price}}
+        {{/if}}
+      </span>
+
+    {{/if}}
+
+    {{#if (gt product.compare_at_price product.price)}}
+      <span class="visually-hidden">{{t 'products.product.regular_price'}}</span>
+      <s>{{money product.compare_at_price}}</s>
+    {{/if}}
+
+    {{#if on_sale}}
+      <span class="badge badge--sale"><span>{{t 'products.product.on_sale'}}</span></span>
+    {{/if}}
+
+    {{#comment}}
+    {{#if sold_out}}
+      <span class="badge badge--sold-out"><span>{{t 'products.product.sold_out'}}</span></span>
+    {{/if}}
+    {{/comment}}
+
+    {{#if sold_out}}
+      — <strong class="sold-out-text">{{t 'products.product.sold_out'}}</strong>
+    {{/if}}
+
+  </div>
+</div>

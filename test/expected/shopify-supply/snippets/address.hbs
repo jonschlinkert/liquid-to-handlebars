@@ -1,0 +1,43 @@
+{{#if (isnt customers__address '')}}
+
+  <p>
+    {{capitalize customers__address.first_name}} {{capitalize customers__address.last_name}}
+
+    {{#unless (is template 'customers/account')}}
+      {{#if (is customers__address customer.default_address)}}
+        ({{t 'customer.addresses.default'}})
+      {{/if}}
+    {{/unless}}
+  </p>
+
+  <p>
+    {{#if (isnt customers__address.company '')}}
+      {{ customers__address.company }}<br>
+    {{/if}}
+
+    {{#if (isnt customers__address.street '')}}
+      {{ customers__address.street }}<br>
+    {{/if}}
+
+    {{#if (isnt customers__address.city '')}}
+      {{capitalize customers__address.city}}<br>
+    {{/if}}
+
+    {{#if (isnt customers__address.province_code '')}}
+      {{upcase customers__address.province_code}}<br>
+    {{/if}}
+
+    {{#if (isnt customers__address.zip '')}}
+      {{upcase customers__address.zip}}<br>
+    {{/if}}
+
+    {{#if (isnt customers__address.country '')}}
+      {{ customers__address.country }}<br>
+    {{/if}}
+
+    {{#if (isnt customers__address.phone '')}}
+      {{ customers__address.phone }}
+    {{/if}}
+  </p>
+
+{{/if}}

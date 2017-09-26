@@ -1,0 +1,17 @@
+<!-- snippets/onboarding-featured-products.liquid -->
+<div class="grid--full helper-section">
+  <div class="helper-content product-wrapper">
+    {{#each (range 1 total_products) as |i|}}
+      <div class="grid-item one-half {{ grid_item_width }} text-center">
+        <div class="product-wrapper">
+          <a href="/admin/products" class="grid-link__image product">
+            {{#capture 'current'}}{{cycle 1 2 3 4 5 6}}{{/capture}}
+            {{placeholder_svg_tag (append 'product-' current) 'placeholder-svg'}}
+          <p class="h4 product__title">{{t 'home_page.onboarding.product_title'}}</p>
+          <p class="product__price">$19.99</p>
+          </a>
+        </div>
+      </div>
+    {{/each}}
+  </div>
+</div>

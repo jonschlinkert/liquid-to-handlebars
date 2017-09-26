@@ -1,0 +1,7 @@
+{{#if (gt paginate.pages 1)}}
+  <div class="pagination text-center">
+    {{#each paginate.parts as |part|}}
+      <a class="btn btn--small btn--dark btn--outline {{#unless part.is_link}} btn--disabled-alt {{/unless}}" {{#if part.is_link}} href="{{ part.url }}" {{/if}}>{{ part.title }}</a>
+    {{/each}}
+  </div>
+{{/if}}

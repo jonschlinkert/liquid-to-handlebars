@@ -1,0 +1,207 @@
+{{#comment}}
+
+  Comments will not appear right after they are submitted, either to be checked for spam
+  or to await moderation. When a comment is submitted, the browser is redirected to a page
+  that includes the new comment id in its URL.
+    Example: http://shopname.myshopify.com/blogs/news/2022072-my-post?comment=3721372
+
+  More information:
+    - http://docs.shopify.com/themes/liquid-variables/comment
+
+{{/comment}}
+
+{{#comment}}
+  We're going to reference the number of comments below, so let's hold it in a variable.
+{{/comment}}
+{{assign 'number_of_comments' article.comments_count}}
+
+{{#comment}}
+  If a comment was just submitted and it has no blank fields, we have an extra comment to count.
+{{/comment}}
+{{#if (and comment comment.created_at)}}
+  {{assign 'number_of_comments' (plus article.comments_count 1)}}
+{{/if}}
+
+<div class="grid" data-section-id="{{ section.id }}" data-section-type="article-template">
+  <article class="grid-item large--two-thirds push--large--one-sixth blog-post-single" itemscope itemtype="http://schema.org/Article">
+
+    <header class="section-header text-center">
+
+      <a class="blog__name text-center" href="{{ blog.url }}">{{ blog.handle }}</a>
+
+      <h1>{{ article.title }}</h1>
+
+      {{assign 'month' (date article.published_at '%b')}}
+      {{assign 'day' (date article.published_at '%d')}}
+      {{assign 'year' (date article.published_at '%Y')}}
+      {{assign 'iso' (date article.published_at '%F')}}
+
+      <div class="blog-meta">
+        <p class="meta">
+          <time datetime="{{ iso }}">{{ month }} {{ day }}, {{ year }}</time>
+          <span class="meta__dot" aria-hidden="true"></span>
+          <span>{{ article.author }}</span>
+        </p>
+
+        <div class="meta text-center">
+          {{include 'tags-article'}}
+        </div>
+      </div>
+    </header>
+
+    <div class="rte" itemprop="articleBody">
+      {{ article.content }}
+    </div>
+
+    {{#if section.settings.social_sharing}}
+      <div class="text-center item-social-sharing">
+        <h2 class="h3">{{t 'blogs.article.share_post'}}</h2>
+        {{include 'social-sharing'}}
+      </div>
+    {{/if}}
+    
+    {{#comment}}
+      Create links to the next and previous articles, if available.
+    {{/comment}}
+    {{#if (or blog.next_article blog.previous_article)}}
+      <hr class="hr--clear hr--small">
+      <p class="clearfix">
+        {{#if blog.previous_article}}
+          <span class="left">
+            &larr; {{link_to (t 'blogs.article.older_post') blog.previous_article}}
+          </span>
+        {{/if}}
+        {{#if blog.next_article}}
+          <span class="right">
+            {{link_to (t 'blogs.article.newer_post') blog.next_article}} &rarr;
+          </span>
+        {{/if}}
+      </p>
+    {{/if}}
+
+    {{#comment}}
+      Show off meta information like comments and tags.
+    {{/comment}}
+    <div class="text-center">
+    {{#if blog.comments_enabled}}
+      <div class="comments">
+        <hr>
+        {{#if (gt article.comments.size 0)}}
+          <h2 class="text-center h3">{{t 'blogs.comments.with_count' count number_of_comments}}</h2>
+        {{/if}}
+
+        {{#comment}}
+          Just like blog.liquid page, define how many comments should be on each page.
+        {{/comment}}
+        {{#paginate article.comments by=5}}
+          {{#comment}}
+            #comments is required, it is used as an anchor link by Shopify.
+          {{/comment}}
+          <div id="comments">
+
+            {{#if (and comment comment.created_at)}}
+              <p class="note form-success">
+                {{#if blog.moderated}}
+                  {{t 'blogs.comments.success_moderated'}}
+                {{else}}
+                  {{t 'blogs.comments.success'}}
+                {{/if}}
+              </p>
+            {{/if}}
+
+            {{#if (gt number_of_comments 0)}}
+              <ul>
+                {{#comment}}
+                  If a comment was just submitted with no blank field, show it.
+                {{/comment}}
+                {{#if (and comment comment.created_at)}}
+                  <li id="{{ comment.id }}" class="comment first{{#if (is article.comments_count 0)}} last{{/if}}">
+                    {{include 'comment'}}
+                  </li>
+                {{/if}}
+
+                {{#comment}}
+                  Showing the rest of the comments.
+                {{/comment}}
+                {{#each article.comments as |comment|}}
+                  <li id="{{ comment.id }}" class="comment{{#unless (gt number_of_comments article.comments_count)}}{{#if forloop.first}} first{{/if}}{{/unless}}{{#if forloop.last}} last {{/if}}">
+                    {{include 'comment'}}
+                  </li>
+                {{/each}}
+              </ul>
+
+              {{#if (gt paginate.pages 1)}}
+                <hr>
+                <div class="text-center">
+                  {{include 'pagination-custom'}}
+                </div>
+              {{/if}}
+
+            {{/if}}
+
+            {{#comment}}
+              Comment submission form
+            {{/comment}}
+            {{#form 'new_comment' article}}
+
+              {{default_errors form.errors}}
+              <div class="grid--full">
+                <h2 class="text-center h3">{{t 'blogs.comments.title'}}</h2>
+                <div class="grid-item large--one-half comments-form__author">
+                  <label for="comment-author" class="form-label--hidden">
+                    <span class="visuallyhidden">
+                      {{t 'blogs.comments.name'}}
+                    </span>
+                  </label>
+                  <input {{#if (contains form.errors 'author')}} class="error"{{/if}}  type="text" name="comment[author]" placeholder="{{t 'blogs.comments.name'}}" id="comment-author" value="{{ form.author }}" autocapitalize="words">
+                </div>
+
+                <div class="grid-item large--one-half comments-form__email">
+                  <label for="comment-email" class="form-label--hidden">
+                    <span class="visuallyhidden">
+                      {{t 'blogs.comments.email'}}
+                    </span>
+                  </label>
+                  <input {{#if (contains form.errors 'email')}} class="error"{{/if}} type="email" name="comment[email]" placeholder="{{t 'blogs.comments.email'}}" id="comment-email" value="{{ form.email }}" autocorrect="off" autocapitalize="off">
+                </div>
+
+                <div class="grid-item">
+                  <label for="comment-body" class="form-label--hidden">
+                    <span class="visuallyhidden">
+                      {{t 'blogs.comments.message'}}
+                    </span>
+                  </label>
+                  <textarea {{#if (contains form.errors 'body')}} class="error"{{/if}} name="comment[body]" id="comment-body" placeholder="{{t 'blogs.comments.message'}}">{{ form.body }}</textarea>
+                </div>
+                <div class="grid-item">
+                  {{#if blog.moderated}}
+                    <p class="text-center">{{t 'blogs.comments.moderated'}}</p>
+                  {{/if}}
+
+                  <input type="submit" class="btn text-center" value="{{t 'blogs.comments.post'}}">
+                </div>
+              </div>
+
+            {{/form}}
+
+          </div>
+          {{/paginate}}
+
+        </div>
+
+    {{/if}}
+  </article>
+</div>
+
+{{#schema}}
+  {
+    "name": "Article",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "social_sharing",
+        "label": "Enable blog post sharing"
+      }
+    ]
+  }
+{{/schema}}

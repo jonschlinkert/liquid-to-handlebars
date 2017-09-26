@@ -1,0 +1,119 @@
+{{#unless grid_item_width}}
+  {{assign 'grid_item_width' 'large--one-third medium--one-half'}}
+{{/unless}}
+
+{{#unless current_collection}}
+  {{assign 'current_collection' collection}}
+{{/unless}}
+
+{{assign 'on_sale' false}}
+{{#if (gt item.compare_at_price item.price)}}
+  {{assign 'on_sale' true}}
+{{/if}}
+
+{{assign 'sold_out' true}}
+{{#if item.available}}
+  {{assign 'sold_out' false}}
+{{/if}}
+
+{{assign 'image_size' '600x600'}}
+
+<div class="grid-item search-result {{ grid_item_width }}{{#if sold_out}} sold-out{{/if}}{{#if on_sale}} on-sale{{/if}}">
+
+  <a href="{{within item.url current_collection}}" class="product-grid-item">
+
+    {{#if (is item.object_type 'product')}}
+      {{#if item.featured_image}}
+      <div class="product-grid-image">
+        <div class="product-grid-image--centered">
+          {{#if sold_out}}
+            <div class="badge badge--sold-out"><span class="badge-label">{{t 'products.product.sold_out'}}</span></div>
+          {{/if}}
+          {{#if item.featured_image}}
+            {{assign 'img_url' (replace (img_url item.featured_image '1x1') '_1x1.' '_{width}x.')}}
+            <div class="lazyload__image-wrapper no-js" style="padding-top:{{times (divided_by 1 item.featured_image.aspect_ratio) 100}}%;">
+              <img id="{{ img_id }}"
+                class="lazyload no-js"
+                data-src="{{ img_url }}"
+                data-widths="[180, 360, 540, 720, 900, 1080, 1296, 1512, 1728, 2048]"
+                data-aspectratio="{{ item.featured_image.aspect_ratio }}"
+                data-sizes="auto"
+                alt="{{escape item.featured_image.alt}}">
+            </div>
+            <noscript>
+              <img src="{{img_url item.featured_image '580x'}}"
+                srcset="{{img_url item.featured_image '580x'}} 1x, {{img_url item.featured_image '580x' scale 2}} 2x"
+                alt="{{ item.featured_image.alt }}" style="opacity:1;">
+            </noscript>
+          {{else}}
+            {{#capture 'current'}}{{cycle 1 2 3 4}}{{/capture}}
+            <div style="min-height:100%">
+              {{placeholder_svg_tag (append 'product-' current) 'placeholder-svg'}}
+            </div>
+          {{/if}}
+        </div>
+      </div>
+      {{/if}}
+
+      <p>{{ item.title }}</p>
+
+      <div class="product-item--price">
+        <span class="h1 medium--left">
+          {{#if (and on_sale section.settings.product_show_compare_at_price)}}
+            <span class="visually-hidden">{{t 'products.general.sale_price'}}</span>
+          {{else}}
+            <span class="visually-hidden">{{t 'products.general.regular_price'}}</span>
+          {{/if}}
+          {{include 'price' item.price}}
+          {{#if (and on_sale section.settings.product_show_compare_at_price)}}
+            <small>
+              <s>
+                <span class="visually-hidden">{{t 'products.general.regular_price'}}</span>
+                {{include 'price' item.compare_at_price}}
+              </s>
+            </small>
+          {{/if}}
+        </span>
+
+        {{#if (and on_sale section.settings.product_show_saved_amount)}}
+          <span class="sale-tag medium--right">
+            {{assign 'compare_price' item.compare_at_price}}
+            {{assign 'product_price' item.price}}
+            {{include 'price-sale'}}
+          </span>
+        {{/if}}
+      </div>
+    {{else}}
+
+      {{assign 'img_tag' (append '<' 'img')}}
+      {{#if (contains item.content img_tag)}}
+        {{assign 'src' (split item.content 'src="')}}
+        {{assign 'src' (first (split (get src 1) '"'))}}
+        {{#if src}}
+          {{assign 'image_src' (replace (replace (replace (replace (replace src '_small.' '.') '_compact.' '.') '_medium.' '.') '_large.' '.') '_grande.' '.')}}
+        {{/if}}
+      {{/if}}
+
+      {{#unless (is image_src blank)}}
+      <div class="product-grid-image">
+        <div class="product-grid-image--centered">
+          {{img_tag image_src}}
+        </div>
+      </div>
+      {{/unless}}
+
+      <p class="h6">{{ item.title }}</p>
+
+      <div class="rte">
+        {{#if (gt item.excerpt.size 0)}}
+          <p>{{truncatewords (strip_html item.excerpt) 30}}</p>
+        {{else}}
+          <p>{{truncatewords (strip_html item.content) 30}}</p>
+        {{/if}}
+      </div>
+    {{/if}}
+
+
+  </a>
+
+</div>

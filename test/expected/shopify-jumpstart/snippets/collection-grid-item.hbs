@@ -1,0 +1,64 @@
+{{#if collection.image}}
+{{#capture 'collection_image'}}
+{{assign 'img_url' (replace (img_url collection.image '1x1') '_1x1.' '_{width}x.')}}
+<div class="product__image-wrapper" style="padding-top:{{times (divided_by 1 collection.image.aspect_ratio) 100}}%;">
+  <img class="no-js lazyload"
+    data-src="{{ img_url }}"
+    data-widths="[108, 360, 375, 414, 568, 684, 720, 732, 736, 768, 1024, 1200, 1296, 1512, 1728, 1944, 2048]"
+    data-aspectratio="{{ collection.image.aspect_ratio }}"
+    data-sizes="auto"
+    data-parent-fit="width"
+    alt="{{escape collection.image.alt}}">
+    <noscript>
+      <img src="{{img_url collection.image '580x'}}"
+        srcset="{{img_url collection.image '580x'}} 1x, {{img_url collection.image '580x' scale 2}} 2x"
+        alt="{{ collection.image.alt }}" style="opacity:1;">
+    </noscript>
+</div>
+{{/capture}}
+{{else}}
+{{#capture 'collection_image'}}
+  {{#if (isnt collection.products.first.featured_image blank)}}
+  {{assign 'img_url' (replace (img_url collection.products.first.featured_image '1x1') '_1x1.' '_{width}x.')}}
+  <div class="product__image-wrapper supports-no-js" style="padding-top:{{times (divided_by 1 collection.products.first.featured_image.aspect_ratio) 100}}%;">
+  <img class="no-js lazyload"
+    data-src="{{ img_url }}"
+    data-widths="[108, 360, 375, 414, 568, 684, 720, 732, 736, 768, 1024, 1200, 1296, 1512, 1728, 1944, 2048]"
+    data-aspectratio="{{ collection.products.first.featured_image.aspect_ratio }}"
+    data-sizes="auto"
+    data-parent-fit="width"   
+    alt="{{escape collection.products.first.featured_image.alt}}">
+    <noscript>
+      <img src="{{img_url collection.products.first.featured_image '580x'}}"
+        srcset="{{img_url collection.products.first.featured_image '580x'}} 1x, {{img_url collection.products.first.featured_image '580x' scale 2}} 2x"
+        alt="{{ collection.products.first.featured_image.alt }}" style="opacity:1;">
+    </noscript>
+</div>
+{{else}}
+  {{#capture 'current'}}{{cycle 1 2 3 4 5 6}}{{/capture}}
+  {{placeholder_svg_tag (append 'collection-' current) 'placeholder-svg'}}
+{{/if}}
+{{/capture}}
+{{/if}}
+
+{{#if (is collection empty)}}
+  {{#comment}}add default state for collection block in storefront editor{{/comment}}
+  {{#capture 'collection_title'}}{{t 'homepage.onboarding.collection_title'}}{{/capture}}
+{{else}}
+  {{#capture 'collection_title'}}{{escape collection.title}}{{/capture}}
+{{/if}}
+
+<div class="product grid__item {{ grid_item_width }} text-center">
+
+  <a href="{{ collection.url }}" class="grid__image">
+  {{#if (is collection blank)}}
+    {{#capture 'current'}}{{cycle 1 2 3 4 5 6}}{{/capture}}
+    {{placeholder_svg_tag (append 'collection-' current) 'placeholder-svg'}}
+  {{else}}
+    {{ collection_image }}
+  {{/if}}
+  </a>
+
+  <p class="h3"><a href="{{ collection.url }}">{{ collection_title }}</a></p>
+
+</div>

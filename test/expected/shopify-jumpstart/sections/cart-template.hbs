@@ -1,0 +1,138 @@
+<div id="CartSection" class="page-width" data-section-id="{{ section.id }}" data-section-type="cart-template">
+{{#capture 'header_title'}} {{t 'cart.general.title'}} {{/capture}}
+{{include 'page_header' header_title}}
+
+<div class="wrapper wrapper--margins wrapper--mini">
+
+  {{#if (gt cart.item_count 0)}}
+
+    <form id="cart-form" action="/cart" method="post" novalidate class="cart table-wrap">
+
+      {{#each cart.items as |item|}}
+
+        <div class="cart-row cart-item clearfix" data-id="{{ item.key }}">
+
+          <a class="cart-img" href="{{within item.url collections.all}}" style="background-image:url({{#if item.image}}{{img_url item 'medium'}}{{else}}{{asset_url 'no-image.svg'}}{{/if}})">{{escape item.title}}</a>
+
+          <div class="content">
+
+            <div>
+
+              <div>
+
+                <h2 class="h3 cart-item__title"><a href="{{ item.url }}">{{ item.product.title }}</a></h2>
+
+                {{#unless (contains item.variant.title 'Default')}}
+                  <small class="cart-item__variant-title">{{ item.variant.title }}</small>
+                {{/unless}}
+
+                {{assign 'property_size' (size item.properties)}}
+                {{#if (gt property_size 0)}}
+                  {{#each item.properties as |p|}}
+                    {{assign 'first_character_in_key' (truncate p.first 1 '')}}
+                    {{#unless (or (is p.last blank) (is first_character_in_key '_'))}}
+                      <div class="cart-item__property">
+                        {{ p.first }}:
+                        {{#if (contains p.last '/uploads/')}}
+                          <a href="{{ p.last }}">{{last (split p.last '/')}}</a>
+                        {{else}}
+                          {{ p.last }}
+                        {{/if}}
+                      </div>
+                    {{/unless}}
+                  {{/each}}
+                {{/if}}
+
+                <div>
+                  {{#if (isnt item.original_line_price item.line_price)}}
+                    <small class="cart-item__original-price">
+                      <s>{{money item.original_line_price}}</s>
+                    </small>
+                  {{/if}}
+                  <span class="cart-item__line-price price">{{money item.line_price}}</span>
+                </div>
+
+                {{#each item.discounts as |discount|}}
+                  <div class="cart-item__discount"><small>{{ discount.title }}</small></div>
+                {{/each}}
+
+              </div>
+
+            </div>
+
+          </div>
+
+          <label for="updates_{{ item.key }}" class="fallback-text">{{t 'cart.general.quantity'}}</label>
+          <input class="count qty-remove-defaults" type="number" name="updates[]" id="updates_{{ item.key }}" value="{{ item.quantity }}" min="0" data-id="{{ item.key }}">
+          <a class="remove" href="/cart/change?line={{ forloop.index }}&amp;quantity=0" data-id="{{ item.key }}">
+            <span aria-hidden="true">{{include 'asset_svg' 'close'}}</span>
+            <span class="fallback-text">{{t 'cart.general.remove_item'}}</span>
+          </a>
+
+        </div>
+
+      {{/each}}
+
+      <div class="cart_bottom grid">
+
+        {{#if section.settings.cart_notes_enable}}
+          <div class="grid__item large--one-half">
+            <label for="CartSpecialInstructions">{{t 'cart.general.note'}}</label>
+            <textarea name="note" class="input-full" id="CartSpecialInstructions">{{ cart.note }}</textarea>
+          </div>
+        {{/if}}
+
+        <div class="grid__item {{#if section.settings.cart_notes_enable}}large--one-half{{/if}} text-right">
+          <p class="cart__subtotal-holder">
+            <span class="cart__subtotal-title">{{t 'cart.general.subtotal'}}</span>
+            <span class="h3 cart__subtotal">{{money cart.total_price}}</span>
+            {{#if (gt cart.total_discounts 0)}}
+              {{assign 'savings' (money cart.total_discounts)}}
+              <small class="cart__savings">
+                {{t 'cart.general.savings_html' savings savings}}
+              </small>
+            {{/if}}
+            <span class="cart__subtotal-shipping">{{t 'cart.general.shipping_at_checkout'}}</span>
+          </p>
+          <button type="submit" name="update" class="btn btn--regular btn--dark btn--outline btn__update">
+            <span aria-hidden="true">{{include 'asset_svg' 'reload'}}</span>
+            <span class="fallback-text">{{t 'cart.general.update_cart'}}</span>
+          </button>
+          <button type="submit" name="checkout" class="btn btn--regular btn--color btn--fill">{{t 'cart.general.checkout'}}</button>
+        </div>
+
+      </div>
+
+    </form>
+
+  {{else}}
+
+    <div class="text-center">
+      <p class="cart--empty-message">{{t 'cart.general.empty'}}</p>
+      <div class="cart--cookie-message">
+        <p>{{t 'cart.general.cookies_required'}}</p>
+      </div>
+      <a href="/" class="btn btn--dark btn--outline btn--small cart__continue-btn">
+        {{t 'cart.general.continue_browsing'}}
+      </a>
+    </div>
+
+  {{/if}}
+
+</div>
+
+</div>
+
+{{#schema}}
+  {
+    "name": "Cart page",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "cart_notes_enable",
+        "label": "Enable cart notes",
+        "default": false
+      }
+    ]
+  }
+{{/schema}}

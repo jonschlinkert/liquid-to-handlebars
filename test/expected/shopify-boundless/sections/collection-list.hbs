@@ -1,0 +1,259 @@
+<style>
+  .collection-list-grid__image-wrapper {
+    background: {{ section.settings.background_color }};
+  }
+  .collection-list-grid__image {
+    background-position: {{ section.settings.alignment }};
+  }
+</style>
+
+<div class="collection-list collection-list--{{ section.id }}">
+
+  {{#if (isnt section.settings.title blank)}}
+    <div class="section-title text-center">
+      <h2>{{escape section.settings.title}}</h2>
+    </div>
+  {{/if}}
+
+  <div class="grid grid--uniform collection-grid">
+
+    {{#each (limit section.blocks undefined) as |block|}}
+
+      {{#is section.blocks.size 1}}
+          {{assign 'grid_item_width' 'one-whole'}}
+        {{else is section.blocks.size 2}}
+          {{assign 'grid_item_width' 'medium-up--one-half'}}
+        {{else is section.blocks.size 3}}
+          {{assign 'grid_item_width' 'small--one-half medium-up--one-third'}}
+        {{else is section.blocks.size 4}}
+          {{assign 'grid_item_width' 'small--one-half medium-up--one-quarter'}}
+        {{else is section.blocks.size 5}}
+          {{assign 'grid_item_width' 'small--one-half medium-up--one-fifth'}}
+        {{else is section.blocks.size 6}}
+          {{assign 'grid_item_width' 'small--one-half medium-up--one-third'}}
+        {{else}}
+          {{assign 'grid_item_width' 'small--one-half medium-up--one-quarter'}}
+      {{/is}}
+
+      {{assign 'collection' (get collections block.settings.collection)}}
+
+      {{#if (is collection empty)}}
+        {{#comment}}add default state for collection block in storefront editor{{/comment}}
+        {{#capture 'collection_title'}}{{t 'homepage.onboarding.collection_title'}}{{/capture}}
+      {{else}}
+        {{#capture 'collection_title'}}{{escape collection.title}}{{/capture}}
+      {{/if}}
+
+      {{#if collection.image}}
+        {{assign 'no_collection_image' false}}
+        {{assign 'collection_image' collection.image}}
+      {{else if (and collection.products.first (isnt collection.products.first.images empty))}}
+        {{assign 'collection_image' collection.products.first.featured_image}}
+      {{else}}
+        {{assign 'collection_image' blank}}
+      {{/if}}
+
+      <div class="grid__item {{ grid_item_width }}" {{ block.shopify_attributes }}>
+        <div class="collection-list-grid__item">
+          <div class="collection-list-grid__item-container">
+            <a href="{{ collection.url }}" class="collection-grid__link">
+              <div class="collection-list-grid__inner">
+                <div class="collection-list-grid__image-wrapper">
+                  {{#unless (is collection_image blank)}}
+                    <noscript>
+                      <div class="collection-list-grid__image" style="background-image: url({{img_url collection_image '1024x1024'}})">
+                        {{#if section.settings.show_text_over_image}}
+                          <div class="collection-list-grid__title-wrapper">
+                            <h2 class="product-item__title collection-list-grid__title">
+                              {{ collection_title }} <span class="link--action">&rarr;</span>
+                            </h2>
+                            {{#if section.settings.show_number_products}}
+                              <p class="number-products">{{t 'collections.general.number_products' count collection.products.size}}</p>
+                            {{/if}}
+                          </div>
+                        {{/if}}
+                      </div>
+                    </noscript>
+                    <div class="collection-list-grid__image lazyload"
+                      style="background-image: url({{img_url collection_image '300x300'}})"
+                      data-bgset="{{include 'bgset",' image: collection_image}}"
+                      data-sizes="auto"
+                      data-parent-fit="cover">
+                      {{#if section.settings.show_text_over_image}}
+                        <div class="collection-list-grid__title-wrapper">
+                          <h2 class="product-item__title collection-list-grid__title">
+                            {{ collection_title }} <span class="link--action">&rarr;</span>
+                          </h2>
+                          {{#if section.settings.show_number_products}}
+                            <p class="number-products">{{t 'collections.general.number_products' count collection.products.size}}</p>
+                          {{/if}}
+                        </div>
+                      {{/if}}
+                    </div>
+                  {{else}}
+                    {{#if (is collection empty)}}
+                      {{#capture 'current'}}{{cycle 1 2 3}}{{/capture}}
+                      {{placeholder_svg_tag (append 'collection-' current) 'placeholder-svg collection-list-grid__placeholder'}}
+                      {{#if section.settings.show_text_over_image}}
+                        <div class="collection-list-grid__title-wrapper">
+                          <h2 class="product-item__title collection-list-grid__title">
+                            {{ collection_title }} <span class="link--action">&rarr;</span>
+                          </h2>
+                          {{#if section.settings.show_number_products}}
+                            <p class="number-products">{{t 'collections.general.number_products' count collection.products.size}}</p>
+                          {{/if}}
+                        </div>
+                      {{/if}}
+                    {{else}}
+                      <div class="collection-list-grid__image" style="background-image: url({{img_url collection_image '1024x1024'}})">
+                        {{#if section.settings.show_text_over_image}}
+                          <div class="collection-list-grid__title-wrapper">
+                            <h2 class="product-item__title collection-list-grid__title">
+                              {{ collection_title }} <span class="link--action">&rarr;</span>
+                            </h2>
+                            {{#if section.settings.show_number_products}}
+                              <p class="number-products">{{t 'collections.general.number_products' count collection.products.size}}</p>
+                            {{/if}}
+                          </div>
+                        {{/if}}
+                      </div>
+                    {{/if}}
+                  {{/unless}}
+                </div>
+              </div>
+            </a>
+          </div>
+          {{#unless section.settings.show_text_over_image}}
+            <div class="collection-list-grid__title-wrapper-under under-spacing">
+              <h2 class="product-item__title collection-list-grid__title">
+                {{ collection_title }} <span class="link--action">&rarr;</span>
+              </h2>
+              {{#if section.settings.show_number_products}}
+                <p class="number-products">{{t 'collections.general.number_products' count collection.products.size}}</p>
+              {{/if}}
+            </div>
+          {{else}}
+            <div class="collection-list-grid__title-wrapper-under under-spacing mobile-view">
+              <h2 class="product-item__title collection-list-grid__title">
+                {{ collection_title }} <span class="link--action">&rarr;</span>
+              </h2>
+              {{#if section.settings.show_number_products}}
+                <p class="number-products">{{t 'collections.general.number_products' count collection.products.size}}</p>
+              {{/if}}
+            </div>
+          {{/unless}}
+        </div>
+      </div>
+    {{/each}}
+
+  </div>
+</div>
+
+
+{{#schema}}
+  {
+    "name": "Collection list",
+    "class": "index-section",
+    "max_blocks": 12,
+    "settings": [
+      {
+        "type": "text",
+        "id": "title",
+        "label": "Heading",
+        "default": "Collection list"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_text_over_image",
+        "label": "Text over image",
+        "default": false
+      },
+      {
+       "type": "checkbox",
+        "id": "show_number_products",
+        "label": "Show number of products",
+        "default": true
+      },
+      {
+        "type": "select",
+        "id": "alignment",
+        "label": "Image alignment",
+        "default": "center center",
+        "options": [
+          {
+            "label": "Top left",
+            "value": "top left"
+          },
+          {
+            "label": "Top center",
+            "value": "top center"
+          },
+          {
+            "label": "Top right",
+            "value": "top right"
+          },
+          {
+            "label": "Middle left",
+            "value": "center left"
+          },
+          {
+            "label": "Middle center",
+            "value": "center center"
+          },
+          {
+            "label": "Middle right",
+            "value": "center right"
+          },
+          {
+            "label": "Bottom left",
+            "value": "bottom left"
+          },
+          {
+            "label": "Bottom center",
+            "value": "bottom center"
+          },
+          {
+            "label": "Bottom right",
+            "value": "bottom right"
+          }
+        ]
+      },
+      {
+        "type": "color",
+        "id": "background_color",
+        "label": "Background color",
+        "default": "#f9f9f9"
+      }
+    ],
+    "blocks": [
+      {
+        "type": "collection",
+        "name": "Collection",
+        "settings": [
+          {
+            "type": "collection",
+            "id": "collection",
+            "label": "Collection"
+          }
+        ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "Collection list",
+        "category": "Collection",
+        "blocks": [
+          {
+            "type": "collection"
+          },
+          {
+            "type": "collection"
+          },
+          {
+            "type": "collection"
+          }
+        ]
+      }
+    ]
+  }
+{{/schema}}

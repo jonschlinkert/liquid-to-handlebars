@@ -1,0 +1,227 @@
+<div class="page-width" itemscope itemtype="http://schema.org/Product" id="ProductSection-{{ section.id }}" data-section-id="{{ section.id }}" data-section-type="product" data-enable-history-state="true" data-ajax="{{ section.settings.enable_ajax }}" data-stock="{{ section.settings.stock_enable }}">
+  {{assign 'product_image_size' '480x480'}}
+
+  <meta itemprop="name" content="{{ product.title }}">
+  <meta itemprop="url" content="{{ shop.url }}{{ product.url }}">
+  <meta itemprop="image" content="{{img_url product.featured_image.src '600x600'}}">
+  {{#if settings.product_vendor_enable}}
+    <meta itemprop="brand" content="{{ product.vendor }}">
+  {{/if}}
+
+  {{#comment}}
+    Get first variant, or deep linked one
+  {{/comment}}
+  {{assign 'current_variant' product.selected_or_first_available_variant}}
+
+  <div class="grid product-single">
+    <div class="grid__item {{#if (gt product.images.size 1)}}medium-up--three-fifths{{else}}medium-up--one-half{{/if}}">
+      <div class="photos">
+        <div class="photos__item photos__item--main">
+          <div class="product-single__photo" id="ProductPhoto">
+            {{assign 'featured_image' (default current_variant.featured_image product.featured_image)}}
+            <a href="{{img_url featured_image '1024x1024'}}" class="js-modal-open-product-modal" id="ProductPhotoLink-{{ section.id }}">
+              <img src="{{img_url featured_image product_image_size}}" alt="{{escape featured_image.alt}}" id="ProductPhotoImg-{{ section.id }}">
+            </a>
+          </div>
+        </div>
+        {{#if (gt product.images.size 1)}}
+          <div class="photos__item photos__item--thumbs">
+            <div class="product-single__thumbnails{{#unless (gt product.images.size 2)}} product-single__thumbnails--static{{/unless}}" id="ProductThumbs-{{ section.id }}">
+              {{#each product.images as |image|}}
+                <div class="product-single__thumbnail-item {{#if (is image featured_image)}} is-active {{/if}}">
+                  <a href="{{img_url image.src product_image_size}}" data-zoom="{{img_url image.src '1024x1024'}}" class="product-single__thumbnail product-single__thumbnail-{{ section.id }}">
+                    <img src="{{img_url image.src '160x160'}}" alt="{{escape image.alt}}">
+                  </a>
+                </div>
+              {{/each}}
+            </div>
+          </div>
+        {{/if}}
+        {{#if (gt product.images.size 2)}}
+          {{#comment}}
+            Add SVG icon snippets to an object for custom slider arrows
+          {{/comment}}
+          <script>
+            {{#capture 'arrow_left'}}{{include 'icon-arrow-left'}}{{/capture}}
+            {{#capture 'arrow_right'}}{{include 'icon-arrow-right'}}{{/capture}}
+            {{#capture 'arrow_up'}}{{include 'icon-arrow-up'}}{{/capture}}
+            {{#capture 'arrow_down'}}{{include 'icon-arrow-down'}}{{/capture}}
+            var sliderArrows = {
+              left: {{json arrow_left}},
+              right: {{json arrow_right}},
+              up: {{json arrow_up}},
+              down: {{json arrow_down}}
+            }
+          </script>
+        {{/if}}
+      </div>
+    </div>
+
+    <div class="grid__item {{#if (gt product.images.size 1)}}medium-up--two-fifths{{else}}medium-up--one-half{{/if}}" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+      <div class="product-single__info-wrapper">
+        <meta itemprop="priceCurrency" content="{{ shop.currency }}">
+        <link itemprop="availability" href="http://schema.org/{{#if product.available}}InStock{{else}}OutOfStock{{/if}}">
+
+        <div class="product-single__meta small--text-center">
+          {{#if settings.product_vendor_enable}}
+            <p class="product-single__vendor">{{ product.vendor }}</p>
+          {{/if}}
+
+          <h1 itemprop="name" class="product-single__title">{{ product.title }}</h1>
+
+          <ul class="product-single__meta-list list--no-bullets list--inline">
+            <li id="ProductSaleTag-{{ section.id }}" class="{{#unless (gt product.compare_at_price product.price)}}hide{{/unless}}">
+              <div class="product-tag">
+                {{t 'products.product.on_sale'}}
+              </div>
+            </li>
+            <li>
+              {{#unless (gt product.compare_at_price_max product.price)}}
+                <span class="visually-hidden">{{t 'products.product.regular_price'}}</span>
+              {{/unless}}
+              <span id="ProductPrice-{{ section.id }}" class="product-single__price" itemprop="price" content="{{divided_by current_variant.price 100.00}}">
+                {{money current_variant.price}}
+              </span>
+            </li>
+            {{#if (gt product.compare_at_price_max product.price)}}
+              <li>
+                <span class="visually-hidden">{{t 'products.product.regular_price'}}</span>
+                <s id="ComparePrice-{{ section.id }}" class="product-single__price product-single__price--compare">
+                  {{money current_variant.compare_at_price}}
+                </s>
+              </li>
+            {{/if}}
+            {{#if section.settings.stock_enable}}
+              <li>
+                <span id="ProductStock-{{ section.id }}" class="product-single__stock {{#unless (and current_variant.inventory_management (lt current_variant.inventory_quantity 10) (or (gt current_variant.inventory_quantity 0)  current_variant.inventory_management) (lte current_variant.inventory_quantity 0) current_variant.incoming)}} hide{{/unless}}">
+                  {{#if current_variant.inventory_management}}
+                    {{#if (and (lt current_variant.inventory_quantity 10) (gt current_variant.inventory_quantity 0))}}
+                      {{assign 'qty' current_variant.inventory_quantity}}
+                      {{t 'products.product.stock_available' count qty}}
+                    {{else if (and (or (is current_variant.inventory_quantity 0) (lt current_variant.inventory_quantity 0)) current_variant.incoming)}}
+                      {{#if current_variant.available}}
+                        {{assign 'date' (date current_variant.next_incoming_date '%B %-d, %Y')}}
+                        {{t 'products.product.will_not_ship_until' date date}}
+                      {{else}}
+                        {{assign 'date' (date current_variant.next_incoming_date '%B %-d, %Y')}}
+                        {{t 'products.product.will_be_in_stock_after' date date}}
+                      {{/if}}
+                    {{/if}}
+                  {{/if}}
+                </span>
+              </li>
+            {{/if}}
+          </ul>
+
+        </div>
+
+        <hr>
+
+        <form action="/cart/add" method="post" enctype="multipart/form-data" class="product-form" id="AddToCartForm">
+
+          {{#unless (and (is product.options.size 1) (is (get product.variants '0.title') 'Default Title'))}}
+            {{#each product.options_with_values as |option|}}
+              <div class="selector-wrapper js product-form__item">
+                <label {{#if (is option.name 'default')}}class="label--hidden" {{/if}}for="SingleOptionSelector-{{ section.id }}-{{ forloop.index0 }}">{{ option.name }}</label>
+                <select class="single-option-selector single-option-selector-{{ section.id }} product-form__input"
+                  id="SingleOptionSelector-{{ forloop.index0 }}"
+                  data-name="{{ option.name }}"
+                  data-index="option{{ forloop.index }}">
+                  {{#each option.values as |value|}}
+                    <option value="{{escape value}}"{{#if (is option.selected_value value)}} selected="selected"{{/if}}>{{ value }}</option>
+                  {{/each}}
+                </select>
+              </div>
+            {{/each}}
+          {{/unless}}
+
+          <select name="id" id="ProductSelect-{{ section.id }}" class="product-form__variants no-js">
+            {{#each product.variants as |variant|}}
+              <option {{#if (is variant current_variant)}} selected="selected" {{/if}} data-sku="{{ variant.sku }}" value="{{ variant.id }}" {{#unless variant.available}} disabled="disabled" {{/unless}}>
+                {{#if variant.available}}
+                  {{ variant.title }} - {{money_with_currency variant.price}}
+                {{else}}
+                  {{ variant.title }} - {{t 'products.product.sold_out'}}
+                {{/if}}
+              </option>
+            {{/each}}
+          </select>
+          <div class="product-form__item product-form__item--quantity">
+            <label for="Quantity">{{t 'products.product.quantity'}}</label>
+            <input type="number" id="Quantity" name="quantity" value="1" min="1" class="product-form__input product-form__quantity">
+          </div>
+          <div class="product-form__item product-form__item--submit">
+            <button type="submit"
+              name="add"
+              id="AddToCart-{{ section.id }}"
+              class="btn btn--full product-form__cart-submit{{#unless current_variant.available}} btn--sold-out{{/unless}}"
+              {{#unless current_variant.available}}disabled="disabled"{{/unless}}>
+              <span id="AddToCartText-{{ section.id }}">
+                {{#unless current_variant.available}}
+                  {{t 'products.product.sold_out'}}
+                {{else}}
+                  {{t 'products.product.add_to_cart'}}
+                {{/unless}}
+              </span>
+            </button>
+          </div>
+        </form>
+
+        <hr>
+
+        <div class="rte product-single__description" itemprop="description">
+          {{ product.description }}
+        </div>
+
+        {{#if section.settings.social_sharing_products}}
+          <hr>
+          {{include 'social-sharing",' share_title: product.title, share_permalink: product.url, share_image: product}}
+        {{/if}}
+      </div>
+    </div>
+  </div>
+</div>
+
+{{#unless (is product empty)}}
+  <script type="application/json" id="ProductJson-{{ section.id }}">
+    {{json product}}
+  </script>
+  {{#if section.settings.stock_enable}}
+    <script type="application/json" id="VariantJson-{{ section.id }}">
+      [
+        {{#each product.variants as |variant|}}
+          {
+             "incoming": {{json (default variant.incoming false)}},
+             "next_incoming_date": {{json (date variant.next_incoming_date format 'month_day_year')}}
+          }{{#unless forloop.last}},{{/unless}}
+        {{/each}}
+      ]
+    </script>
+  {{/if}}
+{{/unless}}
+
+{{#schema}}
+  {
+    "name": "Product pages",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "enable_ajax",
+        "label": "Stay on current page when item is added to cart",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "stock_enable",
+        "label": "Show stock when less than 10 products available",
+        "default": false
+      },
+      {
+        "type": "checkbox",
+        "id": "social_sharing_products",
+        "label": "Enable product sharing",
+        "default": true
+      }
+    ]
+  }
+{{/schema}}

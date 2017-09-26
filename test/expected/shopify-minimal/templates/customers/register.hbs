@@ -1,0 +1,37 @@
+<div class="grid">
+
+  <div class="grid__item wide--one-third large--one-half small--text-center">
+
+    <div class="section-header section-header--large">
+      <h1 class="section-header__title">{{t 'customer.register.title'}}</h1>
+    </div>
+
+    {{#comment}}
+      This form must use 'create_customer'
+    {{/comment}}
+    {{#form 'create_customer'}}
+
+      {{default_errors form.errors}}
+
+      <label for="FirstName" class="label--hidden">{{t 'customer.register.first_name'}}</label>
+      <input type="text" name="customer[first_name]" id="FirstName" placeholder="{{t 'customer.register.first_name'}}" {{#if form.first_name}}value="{{ form.first_name }}"{{/if}} autocapitalize="words" autofocus>
+
+      <label for="LastName" class="label--hidden">{{t 'customer.register.last_name'}}</label>
+      <input type="text" name="customer[last_name]" id="LastName" placeholder="{{t 'customer.register.last_name'}}" {{#if form.last_name}}value="{{ form.last_name }}"{{/if}} autocapitalize="words">
+
+      <label for="Email" class="label--hidden">{{t 'customer.register.email'}}</label>
+      <input type="email" name="customer[email]" id="Email" placeholder="{{t 'customer.register.email'}}" {{#if (contains form.errors 'email')}} class="error"{{else if form.email}} value="{{ form.email }}"{{/if}} autocorrect="off" autocapitalize="off">
+
+      <label for="CreatePassword" class="label--hidden">{{t 'customer.register.password'}}</label>
+      <input type="password" name="customer[password]" id="CreatePassword" placeholder="{{t 'customer.register.password'}}" {{#if (contains form.errors 'password')}} class="error"{{/if}}>
+
+      <p>
+        <input type="submit" value="{{t 'customer.register.submit'}}" class="btn">
+      </p>
+      <a href="{{ shop.url }}">{{t 'customer.register.cancel'}}</a>
+
+    {{/form}}
+
+  </div>
+
+</div>

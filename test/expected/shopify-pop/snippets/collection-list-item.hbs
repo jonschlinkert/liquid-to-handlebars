@@ -1,0 +1,23 @@
+<!-- snippets/collection-list-item -->
+{{#comment}}
+
+  This snippet is used to showcase each collection during the loop,
+  'for product in collection.products' in list-collections.liquid.
+
+{{/comment}}
+{{#capture 'collection_title'}}{{escape collection.title}}{{/capture}}
+
+<h1 class="visuallyhidden">{{t 'collections.general.catalog_title'}}</h1>
+<h2 class="h1 text-center">{{ collection_title }}</h2>
+
+<div class="grid-uniform">
+  {{#each (limit collection.products undefined) as |product|}}
+    {{assign 'grid_item_width' 'medium--one-third large--one-third'}}
+    {{assign 'featured' product}}
+    <div class="grid-item {{ grid_item_width }}">
+      {{include 'product-grid-item' product_size: 335}}
+    </div>
+  {{/each}}
+</div>
+
+<p class="text-center"><a href="{{ collection.url }}" title="{{t 'collections.general.link_title' title collection_title}}">{{t 'collections.sorting.all_of_collection' collection collection.title}} <span class="icon icon-chevron-right" aria-hidden="true"></span></a></p>

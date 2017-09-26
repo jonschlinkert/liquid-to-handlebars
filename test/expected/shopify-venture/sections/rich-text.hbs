@@ -1,0 +1,63 @@
+<div class="page-width">
+
+  {{#each section.blocks as |block|}}
+
+  <div class="section-block section-block--padding rich-text__block" {{ block.shopify_attributes }}>
+
+    <div class="page-width">
+      <div class="rte text-center">
+
+        {{#is block.type 'page'}}
+            {{get pages (toPath block.settings.home_page_content "content")}}
+          {{else is block.type 'text'}}
+            {{ block.settings.home_page_richtext }}
+        {{/is}}
+
+      </div>
+    </div>
+
+  </div>
+
+  {{/each}}
+
+</div>
+
+{{#schema}}
+  {
+    "name": "Rich text",
+    "class": "index-section rich-text-section",
+    "max_blocks": 6,
+    "presets": [{
+      "name": "Rich text",
+      "category": "Text",
+      "blocks": [
+        {
+          "type": "text"
+        }
+      ]
+    }],
+    "blocks": [
+      {
+        "type": "page",
+        "name": "Page",
+        "settings": [{
+            "type": "page",
+            "id": "home_page_content",
+            "label": "Pages"
+        }]
+      },
+      {
+        "type": "text",
+        "name": "Text",
+        "settings": [
+          {
+            "id": "home_page_richtext",
+            "type": "richtext",
+            "label": "Text",
+            "default": "<p>Use this text to share information about your brand with your customers. Describe a product, share announcements, or welcome customers to your store.</p>"
+          }
+        ]
+      }
+    ]
+  }
+{{/schema}}

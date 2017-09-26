@@ -1,0 +1,77 @@
+{{#comment}}
+
+  This snippet defines the default structure of each search result.
+
+  'item' refers to the result, but typically mimics the product liquid tag,
+  so you can access product liquid tags with {{ item.XXX }}.
+
+  Remember that results aren't specific to products, so don't depend on
+  a featured image or item.type. Pages, for example, have a blank item.type.
+
+  Product liquid tag info:
+   - http://docs.shopify.com/themes/liquid-variables/product
+
+{{/comment}}
+
+<div class="grid">
+
+
+  {{#if (or item.featured_image item.image)}}
+     {{#comment}}
+      We have a featured_image
+     {{/comment}}
+    {{assign 'has_image' true}}
+    {{assign 'image_alt' (escape item.title)}}
+    <div class="grid__item one-fifth">
+      <a href="{{ item.url }}" title="{{ image_alt }}">
+        {{#capture 'img_id'}}SearchImage-{{ item.id }}{{/capture}}
+        {{#capture 'wrapper_id'}}SearchImageWrapper-{{ item.id }}{{/capture}}
+        {{assign 'img_url' (replace (img_url item.featured_image '1x1') '_1x1.' '_{width}x.')}}
+        {{include 'image-style' image: item.featured_image, width: 170, height: 240, wrapper_id: wrapper_id, img_id: img_id}}
+        <div id="{{ wrapper_id }}" class="search__image-wrapper supports-js">
+          <div style="padding-top:{{times (divided_by 1 item.featured_image.aspect_ratio) 100}}%;">
+            <img id="{{ img_id }}"
+                 class="search__image lazyload"
+                 data-src="{{ img_url }}"
+                 data-widths="[40, 65, 90, 120, 150, 180, 360, 480, 600]"
+                 data-aspectratio="{{ item.featured_image.aspect_ratio }}"
+                 data-sizes="auto"
+                 alt="{{ image_alt }}">
+          </div>
+        </div>
+
+        <noscript>
+          {{img_tag (img_url item 'medium') image_alt}}
+        </noscript>
+      </a>
+    </div>
+  {{/if}}
+
+  {{#comment}}
+    If we don't have a featured_image, add a push-- class to keep the alignment the same
+  {{/comment}}
+  <div class="grid__item four-fifths {{#unless has_image}}push--one-fifth{{/unless}}">
+    <h2 class="h3">{{link_to item.title item.url}}</h2>
+    {{#if (is item.object_type 'product')}}
+      {{#if (gt item.compare_at_price item.price)}}
+        <span class="visually-hidden">{{t 'products.product.sale_price'}}</span>
+        <span itemprop="price">
+          {{money item.price}}
+        </span>
+        <span class="visually-hidden">{{t 'products.product.regular_price'}}</span>
+        <s><small>{{money item.compare_at_price_max}}</small></s>
+      {{else}}
+        <span class="visually-hidden">{{t 'products.product.regular_price'}}</span>
+        <span itemprop="price">
+          {{money item.price}}
+        </span>
+      {{/if}}
+    {{/if}}
+
+    {{#comment}}
+      Get a brief excerpt of raw text from the page/product
+    {{/comment}}
+    <p>{{truncatewords (strip_html item.content) 20}}</p>
+  </div>
+
+</div>

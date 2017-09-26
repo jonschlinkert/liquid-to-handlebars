@@ -1,0 +1,326 @@
+<div itemscope itemtype="http://schema.org/Product" id="ProductSection" data-section-id="{{ section.id }}" data-section-type="product-template" data-image-zoom-type="{{ section.settings.product_image_zoom_type }}" data-related-enabled="{{ section.settings.product_related_enable }}" data-show-extra-tab="{{ section.settings.show_extra_tab }}" data-extra-tab-content="{{ section.settings.extra_tab_content }}" data-enable-history-state="true">
+
+  <meta itemprop="url" content="{{ shop.url }}{{ product.url }}">
+  <meta itemprop="image" content="{{img_url product.featured_image.src 'grande'}}">
+
+  <div class="section-header section-header--breadcrumb">
+    {{include 'breadcrumb'}}
+  </div>
+
+  <div class="product-single">
+    <div class="grid product-single__hero">
+      <div class="grid__item post-large--one-half">
+
+        {{#if (or (is section.settings.product_thumbnails_position 'below') (lt product.images.size 2))}}
+
+          <div class="product-single__photos">
+            {{assign 'featured_image' (default product.selected_or_first_available_variant.featured_image product.featured_image)}}
+
+            {{#each product.images as |image|}}
+              {{#capture 'img_id'}}ProductImage-{{ image.id }}{{/capture}}
+              {{#capture 'img_wrapper_id'}}ProductImageWrapper-{{ image.id }}{{/capture}}
+              {{assign 'img_url' (replace (img_url image '1x1') '_1x1.' '_{width}x.')}}
+              {{include 'image-style' image: image, small_style: false, width: 700, height: 1024, wrapper_id: img_wrapper_id, img_id: img_id}}
+
+              <div id="{{ img_wrapper_id }}" class="product-single__image-wrapper supports-js{{#unless (is featured_image image)}} hide{{/unless}}{{#if (is section.settings.product_image_zoom_type 'lightbox')}} zoom-lightbox{{/if}}" data-image-id="{{ image.id }}">
+                <div style="padding-top:{{times (divided_by 1 image.aspect_ratio) 100}}%;">
+                  <img id="{{ img_id }}"
+                       class="product-single__image lazyload{{#unless (is featured_image image)}} lazypreload{{/unless}}"
+                       {{#if (is featured_image image)}}src="{{img_url image '300x300'}}"{{/if}}
+                       data-src="{{ img_url }}"
+                       data-widths="[180, 370, 540, 740, 900, 1080, 1296, 1512, 1728, 2048]"
+                       data-aspectratio="{{ image.aspect_ratio }}"
+                       data-sizes="auto"
+                       {{#if (is section.settings.product_image_zoom_type 'zoom-in')}} data-zoom="{{img_url image '1024x1024' scale 2}}"{{/if}}
+                       alt="{{escape image.alt}}">
+                </div>
+              </div>
+            {{/each}}
+
+            <noscript>
+              <img src="{{img_url featured_image '1024x1024' scale 2}}" alt="{{escape featured_image.alt}}">
+            </noscript>
+          </div>
+
+          {{#if (gt product.images.size 1)}}
+
+            <ul class="product-single__thumbnails grid-uniform" id="ProductThumbs">
+              {{#each product.images as |image|}}
+                <li class="grid__item wide--one-quarter large--one-third medium-down--one-third">
+                  <a data-image-id="{{ image.id }}" href="{{img_url image.src '1024x1024'}}" class="product-single__thumbnail">
+                    <img src="{{img_url image.src 'grande'}}" alt="{{escape image.alt}}">
+                  </a>
+                </li>
+              {{/each}}
+            </ul>
+
+          {{/if}}
+
+        {{else}}
+
+          <div class="grid">
+
+            <div class="grid__item four-fifths product-single__photos" id="ProductPhoto">
+              {{assign 'featured_image' (default product.selected_or_first_available_variant.featured_image product.featured_image)}}
+
+              {{#each product.images as |image|}}
+                {{#capture 'img_id'}}ProductImage-{{ image.id }}{{/capture}}
+                {{#capture 'img_wrapper_id'}}ProductImageWrapper-{{ image.id }}{{/capture}}
+                {{assign 'img_url' (replace (img_url image '1x1') '_1x1.' '_{width}x.')}}
+                {{include 'image-style' image: image, small_style: false, width: 700, height: 1024, wrapper_id: img_wrapper_id, img_id: img_id}}
+
+                <div id="{{ img_wrapper_id }}" class="product-single__image-wrapper supports-js{{#unless (is featured_image image)}} hide{{/unless}}{{#if (is section.settings.product_image_zoom_type 'lightbox')}} zoom-lightbox{{/if}}" data-image-id="{{ image.id }}">
+                  <div style="padding-top:{{times (divided_by 1 image.aspect_ratio) 100}}%;">
+                    <img id="{{ img_id }}"
+                         class="product-single__image lazyload{{#unless (is featured_image image)}} lazypreload{{/unless}}"
+                         {{#if (is featured_image image)}}src="{{img_url image '300x300'}}"{{/if}}
+                         data-src="{{ img_url }}"
+                         data-widths="[180, 370, 540, 740, 900, 1080, 1296, 1512, 1728, 2048]"
+                         data-aspectratio="{{ image.aspect_ratio }}"
+                         data-sizes="auto"
+                         {{#if (is section.settings.product_image_zoom_type 'zoom-in')}} data-zoom="{{img_url image '1024x1024' scale 2}}"{{/if}}
+                         alt="{{escape image.alt}}">
+                  </div>
+                </div>
+              {{else}}
+                <img src="{{img_url featured_image '1024x1024' scale 2}}" alt="{{escape featured_image.alt}}">
+              {{/each}}
+
+              <noscript>
+                <img src="{{img_url featured_image '1024x1024' scale 2}}" alt="{{escape featured_image.alt}}">
+              </noscript>
+            </div>
+
+            <div class="grid__item one-fifth">
+
+              <ul class="grid product-single__thumbnails" id="ProductThumbs">
+                {{#each product.images as |image|}}
+                  <li class="grid__item">
+                    <a data-image-id="{{ image.id }}" href="{{img_url image.src '1024x1024'}}" class="product-single__thumbnail">
+                      <img src="{{img_url image.src 'grande'}}" alt="{{escape image.alt}}">
+                    </a>
+                  </li>
+                {{/each}}
+              </ul>
+
+            </div>
+
+          </div>
+
+        {{/if}}
+
+        {{#if (is section.settings.product_image_zoom_type 'lightbox')}}
+        <ul class="gallery" class="hidden">
+          {{#each product.images as |image|}}
+          <li data-image-id="{{ image.id }}" class="gallery__item" data-mfp-src="{{img_url image '1024x1024' scale 2}}"></li>
+          {{/each}}
+        </ul>
+        {{/if}}
+
+      </div>
+      <div class="grid__item post-large--one-half">
+        {{#if section.settings.product_vendor_enable}}
+          <span class="h3" itemprop="brand">{{ product.vendor }}</span>
+        {{/if}}
+        <h1 itemprop="name">{{ product.title }}</h1>
+
+        <div itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+          {{assign 'variant' product.selected_or_first_available_variant}}
+
+          <meta itemprop="priceCurrency" content="{{ shop.currency }}">
+          <link itemprop="availability" href="http://schema.org/{{#if product.available}}InStock{{else}}OutOfStock{{/if}}">
+
+          <div class="product-single__prices">
+            {{#if (gt product.compare_at_price product.price)}}
+              <span id="ComparePriceA11y" class="visually-hidden">{{t 'products.product.sale_price'}}</span>
+            {{else}}
+              <span id="PriceA11y" class="visually-hidden">{{t 'products.product.regular_price'}}</span>
+            {{/if}}
+            <span id="ProductPrice" class="product-single__price" itemprop="price" content="{{divided_by product.price 100.00}}">
+              {{money product.price}}
+            </span>
+
+            {{#if (gt product.compare_at_price product.price)}}
+              <span id="PriceA11y" class="visually-hidden">{{t 'products.product.regular_price'}}</span>
+              <s id="ComparePrice" class="product-single__sale-price">
+                {{money product.compare_at_price_max}}
+              </s>
+            {{/if}}
+          </div>
+
+          <form action="/cart/add" method="post" enctype="multipart/form-data" id="AddToCartForm">
+            <select name="id" id="ProductSelect-{{ section.id }}" class="product-single__variants">
+              {{#each product.variants as |variant|}}
+                {{#if variant.available}}
+
+                  <option {{#if (is variant product.selected_or_first_available_variant)}} selected="selected" {{/if}} data-sku="{{ variant.sku }}" value="{{ variant.id }}">{{ variant.title }} - {{money_with_currency variant.price}}</option>
+
+                {{else}}
+                  <option disabled="disabled">
+                    {{ variant.title }} - {{t 'products.product.sold_out'}}
+                  </option>
+                {{/if}}
+              {{/each}}
+            </select>
+
+            <div class="product-single__quantity{{#unless section.settings.product_quantity_enable}} is-hidden{{/unless}}">
+              <label for="Quantity">{{t 'products.product.quantity'}}</label>
+              <input type="number" id="Quantity" name="quantity" value="1" min="1" class="quantity-selector">
+            </div>
+
+            <button type="submit" name="add" id="AddToCart" class="btn">
+              <span id="AddToCartText">{{t 'products.product.add_to_cart'}}</span>
+            </button>
+          </form>
+
+          {{#unless (or (is section.settings.show_extra_tab false) (is (get pages section.settings.extra_tab_content) empty))}}
+            <div class="tabs">
+              <ul class="tab-switch__nav">
+                <li>
+                  <a href="#description" data-link="description" class="tab-switch__trigger h3">{{t 'products.product.description'}}</a>
+                </li>
+                <li>
+                  <a href="#extra" data-link="extra" class="tab-switch__trigger h3">{{get pages (toPath section.settings.extra_tab_content "title")}}</a>
+                </li>
+              </ul>
+              <div id="description" class="tab-switch__content" data-content="description">
+                <div class="product-description rte" itemprop="description">
+                  {{ product.description }}
+                </div>
+              </div>
+              <div id="extra" class="tab-switch__content" data-content="extra">
+                <div class="rte">
+                  {{get pages (toPath section.settings.extra_tab_content "content")}}
+                </div>
+              </div>
+            </div>
+          {{else}}
+            <div class="product-description rte" itemprop="description">
+              {{ product.description }}
+            </div>
+          {{/unless}}
+
+          {{#if section.settings.social_sharing}}
+            <hr class="hr--clear hr--small">
+            <h2 class="h4">{{t 'products.general.share_title'}}</h2>
+            {{include 'social-sharing'}}
+          {{/if}}
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  {{#if section.settings.product_related_enable}}
+    {{include 'related-products'}}
+  {{/if}}
+
+</div>
+
+{{#unless (is product empty)}}
+  <script type="application/json" id="ProductJson-{{ section.id }}">
+    {{json product}}
+  </script>
+{{/unless}}
+
+{{#schema}}
+  {
+    "name": "Product pages",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "product_vendor_enable",
+        "label": "Show product vendor"
+      },
+      {
+        "type": "checkbox",
+        "id": "product_quantity_enable",
+        "label": "Show quantity selector"
+      },
+      {
+        "type": "select",
+        "id": "product_image_zoom_type",
+        "label": "Image zoom type",
+        "options": [
+          {
+            "value": "lightbox",
+            "label": "Lightbox"
+          },
+          {
+            "value": "zoom-in",
+            "label": "Zoom-in"
+          },
+          {
+            "value": "",
+            "label": "No zoom"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "product_thumbnails_position",
+        "label": "Product thumbnail position",
+        "options": [
+          {
+            "value": "right",
+            "label": "Right of main image"
+          },
+          {
+            "value": "below",
+            "label": "Below main image"
+          }
+        ]
+      },
+      {
+        "type": "header",
+        "content": "Description"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_extra_tab",
+        "label": "Show a tab next to your product description",
+        "default": false
+      },
+      {
+        "type": "page",
+        "id": "extra_tab_content",
+        "label": "Tab content",
+        "info": "This page content will appear in the extra tab."
+      },
+      {
+        "type": "checkbox",
+        "id": "social_sharing",
+        "label": "Enable product sharing"
+      },
+      {
+        "type": "header",
+        "content": "Related products"
+      },
+      {
+        "type": "checkbox",
+        "id": "product_related_enable",
+        "label": "Enable related products"
+      },
+      {
+        "type": "checkbox",
+        "id": "vendor_enable",
+        "label": "Show vendor"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_sale_circle",
+        "label": "Show sale circle"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_sold_out_circle",
+        "label": "Show sold out circle"
+      },
+      {
+        "type": "checkbox",
+        "id": "center_grid_link",
+        "label": "Center text below product images"
+      }
+    ]
+  }
+{{/schema}}

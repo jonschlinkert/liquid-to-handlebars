@@ -1,0 +1,50 @@
+<style>
+  {{#if (lt image.aspect_ratio 1)}}
+    {{assign 'max_width' (times height image.aspect_ratio)}}
+    {{#if (lt image.height height)}}
+      {{assign 'max_height' image.height}}
+      {{assign 'max_width' image.width}}
+    {{else}}
+      {{assign 'max_height' height}}
+    {{/if}}
+  {{else}}
+    {{assign 'max_height' (divided_by width image.aspect_ratio)}}
+    {{#if (lt image.width width)}}
+      {{assign 'max_height' image.height}}
+      {{assign 'max_width' image.width}}
+    {{else}}
+      {{assign 'max_width' width}}
+    {{/if}}
+  {{/if}}
+  
+  {{#if small_style}}@media screen and (min-width: 750px) { {{/if}}
+    #{{ img_id }} {
+      max-width: {{ max_width }}px;
+      max-height: {{ max_height }}px;
+    }
+    #{{ wrapper_id }} {
+      max-width: {{ max_width }}px;
+    }
+  {{#if small_style}} } {{/if}}
+
+  {{#if small_style}}
+    {{#if (lt image.aspect_ratio 1)}}
+      {{assign 'max_width' (times 720 image.aspect_ratio)}}
+    {{else}}
+      {{#if (lt image.width 720)}}
+        {{assign 'max_width' image.width}}
+      {{else}}
+        {{assign 'max_width' 720}}
+      {{/if}}
+    {{/if}}
+    @media screen and (max-width: 749px) {
+      #{{ img_id }} {
+        max-width: {{ max_width }}px;
+        max-height: 720px;
+      }
+      #{{ wrapper_id }} {
+        max-width: {{ max_width }}px;
+      }
+    }
+  {{/if}}
+</style>

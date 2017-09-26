@@ -1,0 +1,168 @@
+{{assign 'new_comment' false}}
+{{#if (and comment comment.created_at)}}
+  {{assign 'new_comment' true}}
+  {{assign 'new_comment_id' comment.id}}
+{{/if}}
+
+{{#if new_comment}}
+  {{assign 'duplicate_comment' false}}
+  {{#each article.comments as |comment|}}
+    {{#if (is comment.id new_comment_id)}}
+      {{assign 'duplicate_comment' true}}
+      {{break}}
+    {{/if}}
+  {{/each}}
+
+  {{#if duplicate_comment}}
+    {{assign 'number_of_comments' article.comments_count}}
+  {{else}}
+    {{assign 'number_of_comments' (plus article.comments_count 1)}}
+  {{/if}}
+{{else}}
+  {{assign 'number_of_comments' article.comments_count}}
+{{/if}}
+
+<div class="content-block">
+
+  {{#if article.image}}
+    <div class="content-block__full-image content-block__full-image--large">
+      <noscript>
+        {{escape (img_tag (img_url article '1024x1024') article.title)}}
+      </noscript>
+      <div class="article__photo-container">
+        <div class="article__photo-wrapper" style="padding-top:{{times (divided_by 1 article.image.aspect_ratio) 100}}%;">
+        {{assign 'img_url' (replace (img_url article.image '1x1') '_1x1.' '_{width}x.')}}
+          <img class="lazyload"
+            src="{{img_url article.image '300x300'}}"
+            data-src="{{ img_url }}"
+            data-widths="[360, 540, 720, 900, 1080, 1296, 1512, 1728, 2048]"
+            data-aspectratio="{{ article.image.aspect_ratio }}"
+            data-sizes="auto"
+            alt="{{escape article.title}}">
+        </div>
+      </div>
+    </div>
+  {{/if}}
+
+  <p class="blog__meta">
+    {{#if (gt article.tags.size 0)}}
+      {{#each article.tags as |tag|}}
+        <a href="{{ blog.url }}/tagged/{{handle tag}}" class="link-body-color"><strong>{{ tag }}</strong></a>{{#if forloop.last}} - {{else}}, {{/if}}
+      {{/each}}
+    {{/if}}
+    {{time_tag article.published_at format 'month_day_year'}}
+  </p>
+
+  <h1 class="h2">{{ article.title }}</h1>
+
+  <div class="rte rte--indented-images" itemprop="articleBody">
+    {{ article.content }}
+  </div>
+
+  {{#if section.settings.social_sharing_blog}}
+    <hr>
+    {{include 'social-sharing",' share_title: article.title, share_permalink: article.url, share_image: article.image}}
+  {{/if}}
+</div>
+
+{{#if blog.comments_enabled}}
+  {{#if (gt number_of_comments 0)}}
+    <div class="content-block">
+      <h2 class="h3">{{t 'blogs.comments.with_count' count number_of_comments}}</h2>
+
+      {{#paginate article.comments by=5}}
+
+        {{#comment}}
+          #comments is required, it is used as an anchor link by Shopify.
+        {{/comment}}
+        <div id="comments">
+
+          {{#if new_comment}}
+            <p class="form-success">
+              {{#if blog.moderated}}
+                {{t 'blogs.comments.success_moderated'}}
+              {{else}}
+                {{t 'blogs.comments.success'}}
+              {{/if}}
+            </p>
+          {{/if}}
+
+          {{#if (gt number_of_comments 0)}}
+            <ul class="comments list--no-bullets">
+              {{#comment}}
+                If a comment was just submitted with no blank field, show it.
+              {{/comment}}
+              {{#if new_comment}}
+                {{#unless (gt paginate.current_page 1)}}
+                  <li id="{{ comment.id }}" class="comment">
+                    {{include 'comment'}}
+                  </li>
+                {{/unless}}
+              {{/if}}
+
+              {{#each article.comments as |comment|}}
+                {{#unless (is comment.id new_comment_id)}}
+                  <li id="{{ comment.id }}" class="comment">
+                    {{include 'comment'}}
+                  </li>
+                {{/unless}}
+              {{/each}}
+            </ul>
+
+            {{#if (gt paginate.pages 1)}}
+              <div class="pagination">
+                {{replace (replace (default_pagination paginate) '&laquo; Previous' '&larr;') 'Next &raquo;' '&rarr;'}}
+              </div>
+            {{/if}}
+          {{/if}}
+        </div>
+      {{/paginate}}
+    </div>
+  {{/if}}
+
+  <div class="content-block">
+    <div class="comment-form form-vertical">
+      {{#form 'new_comment' article}}
+
+        <h2 class="h3">{{t 'blogs.comments.title'}}</h2>
+
+        {{default_errors form.errors}}
+
+        <div class="grid grid--half-gutters">
+          <div class="grid__item medium-up--one-half">
+            <label for="CommentAuthor" class="label--hidden">{{t 'blogs.comments.name'}}</label>
+            <input type="text" name="comment[author]" id="CommentAuthor" class="{{#if (contains form.errors 'author')}} input--error{{/if}}" placeholder="{{t 'blogs.comments.name'}}" value="{{ form.author }}">
+          </div>
+
+          <div class="grid__item medium-up--one-half">
+            <label for="CommentEmail" class="label--hidden">{{t 'blogs.comments.email'}}</label>
+            <input type="email" name="comment[email]" id="CommentEmail" class="{{#if (contains form.errors 'email')}} input--error{{/if}}" placeholder="{{t 'blogs.comments.email'}}" value="{{ form.email }}" autocorrect="off" autocapitalize="off">
+          </div>
+        </div>
+
+        <label for="CommentBody" class="label--hidden">{{t 'blogs.comments.message'}}</label>
+        <textarea name="comment[body]" id="CommentBody" class="{{#if (contains form.errors 'body')}} input--error{{/if}}" placeholder="{{t 'blogs.comments.message'}}">{{ form.body }}</textarea>
+
+        <input type="submit" class="btn" value="{{t 'blogs.comments.post'}}">
+
+        {{#if blog.moderated}}
+          <p class="text-center"><small>{{t 'blogs.comments.moderated'}}</small></p>
+        {{/if}}
+      {{/form}}
+    </div>
+  </div>
+{{/if}}
+
+{{#schema}}
+  {
+    "name": "Article content",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "social_sharing_blog",
+        "label": "Enable blog post sharing",
+        "default": true
+      }
+    ]
+  }
+{{/schema}}

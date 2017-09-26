@@ -1,0 +1,26 @@
+<!-- /snippets/social-sharing.liquid -->
+<div class="social-sharing" data-permalink="{{ permalinkURL }}">
+  {{#if settings.share_facebook}}
+    <a target="_blank" href="//www.facebook.com/sharer.php?u={{append shop.url share_permalink}}" class="social-sharing__link" title="{{t 'general.social.alt_text.share_on_facebook'}}">
+      {{include 'icon-facebook'}}
+      <span aria-hidden="true">{{t 'general.social.share_on_facebook'}}</span>
+      <span class="visually-hidden">{{t 'general.social.alt_text.share_on_facebook'}}</span>
+    </a>
+  {{/if}}
+
+  {{#if settings.share_twitter}}
+    <a target="_blank" href="//twitter.com/share?text={{url_param_escape share_title}}&amp;url={{append shop.url share_permalink}}" class="social-sharing__link" title="{{t 'general.social.alt_text.share_on_twitter'}}">
+      {{include 'icon-twitter'}}
+      <span aria-hidden="true">{{t 'general.social.share_on_twitter'}}</span>
+      <span class="visually-hidden">{{t 'general.social.alt_text.share_on_twitter'}}</span>
+    </a>
+  {{/if}}
+
+  {{#if settings.share_pinterest}}
+    <a target="_blank" href="//pinterest.com/pin/create/button/?url={{append shop.url share_permalink}}&amp;media={{img_url share_image '1024x1024'}}&amp;description={{url_param_escape share_title}}" class="social-sharing__link" title="{{t 'general.social.alt_text.share_on_pinterest'}}">
+      {{include 'icon-pinterest'}}
+      <span aria-hidden="true">{{t 'general.social.share_on_pinterest'}}</span>
+      <span class="visually-hidden">{{t 'general.social.alt_text.share_on_pinterest'}}</span>
+    </a>
+  {{/if}}
+</div>

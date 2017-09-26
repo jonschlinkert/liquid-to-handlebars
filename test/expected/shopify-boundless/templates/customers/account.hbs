@@ -1,0 +1,61 @@
+<!-- /templates/customers/account.liquid -->
+
+<div class="page-width page-container">
+
+  <header class="section-header">
+    <h1>{{t 'customer.account.title'}}</h1>
+  </header>
+
+  <h2>{{t 'customer.orders.title'}}</h2>
+
+  {{#comment}}
+    If we have past orders, loop through each one
+  {{/comment}}
+  {{#paginate customer.orders by=20}}
+    {{#if (isnt customer.orders.size 0)}}
+
+      {{#comment}}
+        Responsive Table for small screens
+      {{/comment}}
+      <table class="responsive-table">
+        <thead>
+          <tr>
+            <th>{{t 'customer.orders.order_number'}}</th>
+            <th>{{t 'customer.orders.date'}}</th>
+            <th>{{t 'customer.orders.payment_status'}}</th>
+            <th>{{t 'customer.orders.fulfillment_status'}}</th>
+            <th>{{t 'customer.orders.total'}}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{#each customer.orders as |order|}}
+            <tr>
+              <td data-label="{{t 'customer.orders.order_number'}}">{{link_to order.name order.customer_url}}</td>
+              <td data-label="{{t 'customer.orders.date'}}">{{date order.created_at format 'month_day_year'}}</td>
+              <td data-label="{{t 'customer.orders.payment_status'}}">{{ order.financial_status_label }}</td>
+              <td data-label="{{t 'customer.orders.fulfillment_status'}}">{{ order.fulfillment_status_label }}</td>
+              <td data-label="{{t 'customer.orders.total'}}">{{money order.total_price}}</td>
+            </tr>
+          {{/each}}
+        </tbody>
+      </table>
+
+    {{else}}
+
+      <p>{{t 'customer.orders.none'}}</p>
+
+    {{/if}}
+    {{#if (gt paginate.pages 1)}}
+      {{include 'pagination'}}
+    {{/if}}
+  {{/paginate}}
+
+  <hr class="hr--clear">
+
+  <h2>{{t 'customer.account.details'}}</h2>
+
+  {{format_address customer.default_address}}
+
+  <p><a href="/account/addresses">{{t 'customer.account.view_addresses'}} ({{ customer.addresses_count }})</a></p>
+
+</div>

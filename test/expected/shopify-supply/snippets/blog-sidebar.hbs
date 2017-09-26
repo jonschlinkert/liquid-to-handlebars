@@ -1,0 +1,23 @@
+<h3 class="h4">{{t 'blogs.sidebar.recent_articles'}}</h3>
+{{#each (limit blog.articles 6) as |article|}}
+  <p>
+    <a href="{{ article.url }}">{{ article.title }}</a>
+    <br>
+    <time pubdate datetime="{{date article.published_at '%Y-%m-%d'}}">
+      <em class="text-light">{{date article.published_at format 'month_day_year'}}</em>
+    </time>
+  </p>
+{{/each}}
+
+{{#if (gt blog.all_tags.size 0)}}
+  <h4>{{t 'blogs.sidebar.categories'}}</h4>
+  <ul>
+    {{#each blog.all_tags as |tag|}}
+      {{#if (contains current_tags tag)}}
+      <li>{{ tag }}</li>
+      {{else}}
+      <li>{{link_to_tag tag tag}}</li>
+      {{/if}}
+    {{/each}}
+  </ul>
+{{/if}}

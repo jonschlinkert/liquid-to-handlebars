@@ -1,0 +1,285 @@
+<div itemscope itemtype="http://schema.org/Product" data-section-id="{{ section.id }}" data-section-type="product" data-history-state>
+
+  {{#comment}}
+    Get first variant, or deep linked one
+  {{/comment}}
+  {{assign 'current_variant' product.selected_or_first_available_variant}}
+
+  {{#comment}}
+    Get first image
+  {{/comment}}
+  {{assign 'featured_image' (default current_variant.featured_image product.featured_image)}}
+
+  <meta itemprop="url" content="{{ shop.url }}{{ product.url }}">
+  <meta itemprop="image" content="{{img_url featured_image 'grande'}}">
+  <meta itemprop="name" content="{{ product.title }}{{#if (and (gt product.variants.size 1) product.selected_variant)}} - {{ current_variant.title }}{{/if}}">
+
+  <div class="product grid grid--uniform grid--no-gutters" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+
+    {{assign 'first_image' featured_image}}
+
+    {{#if (and (gt product.images.size 1) section.settings.skip_first_product_image (is first_image product.featured_image))}}
+      {{assign 'first_image' (get product.images 1)}}
+    {{/if}}
+
+    {{#comment}}
+      Set variables for product image grid
+    {{/comment}}
+    {{#if (is section.settings.product_image_type 'portrait')}}
+      {{#if (is product.images.size 1)}}
+        {{assign 'grid_item_width' ''}}
+      {{else if (and (is product.images.size 2) section.settings.skip_first_product_image)}}
+        {{assign 'grid_item_width' ''}}
+      {{else}}
+        {{assign 'grid_item_width' 'medium-up--one-half'}}
+      {{/if}}
+      {{assign 'is_portrait_image' true}}
+    {{else}}
+      {{assign 'grid_item_width' ''}}
+    {{/if}}
+
+    {{#if (gt product.images.size 0)}}
+      <div class="product__photo grid__item {{ grid_item_width }}">
+        {{#each product.images as |image|}}
+          {{assign 'img_url' (replace (img_url image '1x1') '_1x1.' '_{width}x.')}}
+          <div data-image-id="{{ image.id }}" class="product__photo--single product__photo--variant-wrapper
+          {{#if (and (gt product.images.size 1) section.settings.skip_first_product_image)}}
+            fade-in
+            {{#if (is forloop.first true)}} hide{{/if}}
+            {{#if (isnt forloop.index 2)}} hide{{/if}}
+          {{else}}
+            {{#unless (is featured_image image)}} hide{{/unless}}
+          {{/if}}" style="padding-top:{{times (divided_by 1 image.aspect_ratio) 100}}%;">
+            <img class="product__photo--variant lazyload"
+              src="{{img_url image '300x'}}"
+              data-src="{{ img_url }}"
+              data-widths="[360, 540, 720, 900, 1080, 1296, 1512, 1728, 1944, 2048, 4472]"
+              data-aspectratio="{{ image.aspect_ratio }}"
+              data-sizes="auto"
+              alt="{{escape image.alt}}">
+          </div>
+        {{/each}}
+
+        <noscript>
+          <img class="product__photo--variant" src="{{img_url first_image '2048x2048'}}" alt="{{escape image.alt}}">
+        </noscript>
+      </div>
+
+      {{#comment}}
+        Counting images shown on the page
+      {{/comment}}
+      {{assign 'index' 1}}
+
+      {{#comment}}
+        If we have portrait images, we show two per row, so let's get a second image.
+        That image will be moved down below the description on mobile, hence why we'll use
+        `small--hide`. The image moved down is stored in the variable `duplicate_image`.
+      {{/comment}}
+
+      {{#if is_portrait_image}}
+        {{#each product.images as |image|}}
+          {{#unless (is image first_image)}}
+            {{#unless (and section.settings.skip_first_product_image (is image product.featured_image))}}
+              <div class="product__photo grid__item small--hide {{ grid_item_width }}">
+                <noscript>
+                  <img src="{{img_url image '2048x2048'}}" alt="{{escape image.alt}}">
+                </noscript>
+                {{assign 'img_url' (replace (img_url image '1x1') '_1x1.' '_{width}x.')}}
+                <div class="product__photo--single" style="padding-top:{{times (divided_by 1 image.aspect_ratio) 100}}%;">
+                  <img class="lazyload"
+                    src="{{img_url image '300x'}}"
+                    data-src="{{ img_url }}"
+                    data-widths="[360, 540, 720, 900, 1080, 1296, 1512, 1728, 1944, 2048, 4472]"
+                    data-aspectratio="{{ image.aspect_ratio }}"
+                    data-sizes="auto"
+                    alt="{{escape image.alt}}">
+                </div>
+              </div>
+              {{assign 'index' (plus index 1)}}
+              {{assign 'index_offset' forloop.index}}
+              {{assign 'duplicate_image' image}}
+              {{break}}
+            {{/unless}}
+          {{/unless}}
+        {{/each}}
+      {{/if}}
+
+    {{/if}}
+
+    <div class="product__details grid__item">
+      <div class="grid grid--no-gutters product__details-content">
+        <div class="grid__item large-up--two-twelfths large-up--push-two-twelfths medium-up--three-twelfths medium-up--push-one-twelfth">
+          {{#if section.settings.show_vendor}}
+            <p class="product-item__vendor small--text-center">{{ vendor }}</p>
+          {{/if}}
+          <h2 itemprop="name">{{ product.title }}</h2>
+          <link itemprop="availability" href="http://schema.org/{{#if current_variant.available}}InStock{{else}}OutOfStock{{/if}}">
+          <form id="AddToCartForm-{{ section.id }}" action="/cart/add" method="post" enctype="multipart/form-data" class="product__form add-to-cart__form">
+            {{#comment}}
+              Select element hidden when JS initializes. Safeguard for JS-disabled.
+            {{/comment}}
+            <select name="id" id="ProductSelect-{{ section.id }}">
+              {{#each product.variants as |variant|}}
+                <option {{#if (is variant product.selected_or_first_available_variant)}} selected="selected" {{/if}} {{#unless variant.available}} disabled="disabled" {{/unless}} value="{{ variant.id }}" data-sku="{{ variant.sku }}">{{ variant.title }} - {{#if variant.available}}{{money_with_currency variant.price}}{{else}}{{t 'products.product.sold_out'}}{{/if}}</option>
+              {{/each}}
+            </select>
+
+            {{#if section.settings.show_quantity_selector}}
+              <div class="product__quantity quantity-wrapper">
+                <label for="Quantity" class="product__quantity-label">{{t 'products.product.quantity'}}</label>
+                <input type="number" id="Quantity"
+                  class="quantity-input"
+                  name="quantity" value="1" min="1">
+              </div>
+            {{/if}}
+
+            {{assign 'price' (money_without_trailing_zeros current_variant.price)}}
+            <p class="product__price">
+              <meta itemprop="priceCurrency" content="{{ shop.currency }}">
+              <meta itemprop="price" content="{{divided_by current_variant.price 100.00}}">
+              {{#if (gt product.compare_at_price_max product.price)}}
+                <span class="visually-hidden">{{t 'products.general.regular_price'}}</span>
+                <span class="product__price--reg">{{money_without_trailing_zeros current_variant.compare_at_price}}</span>
+                <span class="product__price--sale">{{t 'products.general.now_price_html' price price}}</span>
+              {{else}}
+                <span class="visually-hidden">{{t 'products.general.regular_price'}}</span>
+                <span class="product__price--reg js-price">
+                  {{ price }}
+                </span>
+              {{/if}}
+            </p>
+
+            {{#if product.available}}
+              <button id="AddToCart-{{ section.id }}" type="submit" name="add" class="btn add-to-cart">
+                <span class="add-to-cart__text">{{t 'products.product.add_to_cart'}}</span>
+              </button>
+            {{else}}
+              <button type="button" class="btn add-to-cart btn--disabled" disabled="disabled">
+                {{t 'products.product.sold_out'}}
+              </button>
+            {{/if}}
+
+          </form>
+        </div>
+        <div class="grid__item large-up--one-half large-up--push-three-twelfths medium-up--six-twelfths medium-up--push-two-twelfths">
+          <div class="product-single__errors"></div>
+          <div class="product-single__description rte" itemprop="description">
+            {{ product.description }}
+          </div>
+          {{#if section.settings.social_sharing_products}}
+            {{include 'social-sharing",' share_title: product.title, share_permalink: product.url, share_image: product}}
+          {{/if}}
+        </div>
+      </div>
+    </div>
+
+    {{#comment}}
+      Show second product photo after description on mobile if
+      image setting style is 'portrait'
+    {{/comment}}
+    {{#if (and is_portrait_image (gt product.images.size 1))}}
+      <div class="product__photo grid__item medium-up--hide {{ grid_item_width }}">
+        <noscript>
+          <img src="{{img_url duplicate_image '2048x2048'}}" alt="{{escape duplicate_image.alt}}">
+        </noscript>
+        {{assign 'img_url' (replace (img_url duplicate_image '1x1') '_1x1.' '_{width}x.')}}
+        <div class="product__photo--single" style="padding-top:{{times (divided_by 1 duplicate_image.aspect_ratio) 100}}%;">
+          <img class="lazyload"
+            src="{{img_url duplicate_image '300x'}}"
+            data-src="{{ img_url }}"
+            data-widths="[360, 540, 720, 900, 1080, 1296, 1512, 1728, 1944, 2048, 4472]"
+            data-aspectratio="{{ duplicate_image.aspect_ratio }}"
+            data-sizes="auto"
+            alt="{{escape duplicate_image.alt}}">
+        </div>
+      </div>
+    {{/if}}
+
+    {{#comment}}
+      Show other product images below product info if there's any left to show
+    {{/comment}}
+    {{#if (lt index product.images.size)}}
+      {{#each (offset product.images index_offset) as |image|}}
+        {{#unless (is image first_image)}}
+          {{#unless (and section.settings.skip_first_product_image (is image product.featured_image))}}
+            <div class="product__photo grid__item {{ grid_item_width }}">
+              <noscript>
+                <img src="{{img_url image '2048x2048'}}" alt="{{escape image.alt}}">
+              </noscript>
+              {{assign 'img_url' (replace (img_url image '1x1') '_1x1.' '_{width}x.')}}
+              <div class="product__photo--single" style="padding-top:{{times (divided_by 1 image.aspect_ratio) 100}}%;">
+                <img class="lazyload"
+                  src="{{img_url image '300x'}}"
+                  data-src="{{ img_url }}"
+                  data-widths="[360, 540, 720, 900, 1080, 1296, 1512, 1728, 1944, 2048, 4472]"
+                  data-aspectratio="{{ image.aspect_ratio }}"
+                  data-sizes="auto"
+                  alt="{{escape image.alt}}">
+              </div>
+            </div>
+          {{/unless}}
+        {{/unless}}
+      {{/each}}
+    {{/if}}
+
+    <div class="product__back-button grid__item text-center">
+      <a href="{{#if collection}}{{ collection.url }}{{else}}/{{/if}}" class="btn return-link">
+        <span class="icon icon-arrow-left" aria-hidden="true"></span>
+        <span>{{t 'products.product.back'}}</span>
+      </a>
+    </div>
+  </div>
+</div>
+
+{{#unless (is product empty)}}
+  <script type="application/json" id="ProductJson-{{ section.id }}">
+    {{json product}}
+  </script>
+{{/unless}}
+
+{{#schema}}
+  {
+    "name": "Product",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "skip_first_product_image",
+        "label": "Skip first product image",
+        "info" : "Make the first image for each product only appear on the collections page of your store. [Learn more](https://docs.shopify.com/manual/more/official-shopify-themes/boundless#skip-first-product-image-option)."
+      },
+      {
+        "type": "select",
+        "id": "product_image_type",
+        "label": "Image style",
+        "options": [
+          {
+            "value": "portrait",
+            "label": "Tall/square"
+          },
+          {
+            "value": "landscape",
+            "label": "Wide"
+          }
+        ]
+      },
+      {
+        "type": "checkbox",
+        "id": "show_vendor",
+        "label": "Show vendor",
+        "default": false
+      },
+      {
+        "type": "checkbox",
+        "id": "show_quantity_selector",
+        "label": "Show quantity selector",
+        "default": false
+      },
+      {
+        "type": "checkbox",
+        "id": "social_sharing_products",
+        "label": "Enable product sharing",
+        "default": true
+      }
+    ]
+  }
+{{/schema}}

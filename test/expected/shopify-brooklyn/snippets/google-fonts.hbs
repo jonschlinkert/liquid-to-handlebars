@@ -1,0 +1,19 @@
+{{#if (contains settings.type_base_family 'Google')}}
+  {{assign 'type_base_parts' (split settings.type_base_family '_')}}
+  {{#capture 'baseGoogleUrl'}}{{get type_base_parts 1}}:{{get type_base_parts 2}}{{/capture}}
+  {{stylesheet_tag (append '//fonts.googleapis.com/css?family=' baseGoogleUrl)}}
+{{/if}}
+{{#if (contains settings.type_header_family 'Google')}}
+  {{#unless (contains settings.type_header_family (get type_base_parts 1))}}
+    {{assign 'type_header_parts' (split settings.type_header_family '_')}}
+    {{#capture 'headerGoogleUrl'}}{{get type_header_parts 1}}:{{get type_header_parts 2}}{{/capture}}
+    {{stylesheet_tag (append '//fonts.googleapis.com/css?family=' headerGoogleUrl)}}
+  {{/unless}}
+{{/if}}
+{{#if (contains settings.type_accent_family 'Google')}}
+  {{#unless (contains settings.type_accent_family (get type_base_parts 1))}}
+    {{assign 'type_accent_parts' (split settings.type_accent_family '_')}}
+    {{#capture 'headerGoogleUrl'}}{{get type_accent_parts 1}}:{{get type_accent_parts 2}}{{/capture}}
+    {{stylesheet_tag (append '//fonts.googleapis.com/css?family=' headerGoogleUrl)}}
+  {{/unless}}
+{{/if}}

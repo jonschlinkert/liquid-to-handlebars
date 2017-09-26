@@ -1,0 +1,227 @@
+{{#if (and section.settings.show_announcement (or (is section.settings.home_page_only false) (is template.name 'index')))}}
+  <style>
+    .announcement-bar--link:hover {
+      {{assign 'brightness' (color_brightness settings.color_primary_color)}}
+
+      {{#if (lte brightness 224)}}
+        background-color: {{color_lighten settings.color_primary_color 4}};
+      {{else}}
+        background-color: {{color_darken settings.color_primary_color 8}};
+      {{/if}}
+    }
+  </style>
+
+  {{#if (is section.settings.announcement_link blank)}}
+    <div class="announcement-bar">
+  {{else}}
+    <a href="{{ section.settings.announcement_link }}" class="announcement-bar announcement-bar--link">
+  {{/if}}
+
+    <p class="announcement-bar__message site-wrapper">{{escape section.settings.announcement_text}}</p>
+
+  {{#if (is section.settings.announcement_link blank)}}
+    </div>
+  {{else}}
+    </a>
+  {{/if}}
+{{else}}
+  <div class="page-border"></div>
+{{/if}}
+
+{{#unless (is section.settings.logo blank)}}
+  {{assign 'logo_max_height' (divided_by section.settings.logo_max_width section.settings.logo.aspect_ratio)}}
+  {{#if (gt logo_max_height 600)}}
+    {{assign 'logo_max_width' (times 600 section.settings.logo.aspect_ratio)}}
+  {{else}}
+    {{assign 'logo_max_width' section.settings.logo_max_width}}
+  {{/if}}
+
+  <style>
+    .site-header__logo {
+      width: {{append (remove (default (escape logo_max_width) '150') 'px') 'px'}};
+    }
+    #HeaderLogoWrapper {
+      max-width: {{append (remove (default (escape logo_max_width) '150') 'px') 'px'}} !important;
+    }
+  </style>
+{{/unless}}
+
+<div class="site-wrapper">
+  <div class="top-bar grid">
+
+    <div class="grid__item medium-up--one-fifth small--one-half">
+      <div class="top-bar__search">
+        <a href="/search" class="medium-up--hide">
+          {{include 'icon-search'}}
+        </a>
+        <form action="/search" method="get" class="search-bar small--hide" role="search">
+          {{#comment}}<input type="hidden" name="type" value="product">{{/comment}}
+          <button type="submit" class="search-bar__submit">
+            {{include 'icon-search'}}
+            <span class="icon__fallback-text">{{t 'general.search.submit'}}</span>
+          </button>
+          <input type="search" name="q" class="search-bar__input" value="{{escape search.terms}}" placeholder="{{t 'general.search.placeholder'}}" aria-label="{{t 'general.search.placeholder'}}">
+        </form>
+      </div>
+    </div>
+
+    {{#if shop.customer_accounts_enabled}}
+      <div class="grid__item medium-up--two-fifths small--hide">
+        <span class="customer-links small--hide">
+          {{#if customer}}
+            {{#if (isnt customer.first_name blank)}}
+              {{#capture 'first_name'}}<a href="/account">{{ customer.first_name }}</a>{{/capture}}
+              {{t 'layout.customer.logged_in_as_html' first_name first_name}}
+            {{else}}
+              <a href="/account">{{t 'layout.customer.account'}}</a>
+            {{/if}}
+            <span class="vertical-divider"></span>
+            {{customer_logout_link (t 'layout.customer.log_out')}}
+          {{else}}
+            {{customer_login_link (t 'layout.customer.log_in')}}
+            <span class="vertical-divider"></span>
+            {{customer_register_link (t 'layout.customer.create_account')}}
+          {{/if}}
+        </span>
+      </div>
+    {{/if}}
+
+    <div class="grid__item {{#if shop.customer_accounts_enabled}} medium-up--two-fifths {{else}} medium-up--four-fifths {{/if}} small--one-half text-right">
+      <a href="/cart" class="site-header__cart">
+        {{include 'icon-cart'}}
+        <span class="small--hide">
+          {{t 'layout.cart.title'}}
+          (<span id="CartCount">{{ cart.item_count }}</span>)
+        </span>
+      </a>
+      <span class="vertical-divider small--hide"></span>
+      <a href="/cart" class="site-header__cart small--hide">
+        {{t 'cart.general.checkout'}}
+      </a>
+    </div>
+  </div>
+
+  <hr class="small--hide hr--border">
+
+  <header class="site-header grid medium-up--grid--table" role="banner">
+    <div class="grid__item small--text-center">
+      <div itemscope itemtype="http://schema.org/Organization">
+        {{#comment}}
+          Use the uploaded logo from theme settings if enabled.
+          Site name uses `h1` tag on homepage, div on other pages.
+        {{/comment}}
+        {{assign 'img_url' (replace (img_url section.settings.logo '1x1') '_1x1.' '_{width}x.')}}
+        {{assign 'width' (times section.settings.logo_max_width 1)}}
+        {{include 'image-style' image: section.settings.logo, width: width, height: 600, small_style: false, wrapper_id: 'HeaderLogoWrapper', img_id: 'HeaderLogo'}}
+
+        {{#if section.settings.logo}}
+          <div id="HeaderLogoWrapper" class="supports-js">
+            <a href="/" itemprop="url" style="padding-top:{{times (divided_by 1 section.settings.logo.aspect_ratio) 100}}%; display: block;">
+              <img id="HeaderLogo"
+                   class="lazyload"
+                   src="{{img_url section.settings.logo '150x150'}}"
+                   data-src="{{ img_url }}"
+                   data-widths="[180, 360, 540, 720, 900, 1080, 1296, 1512, 1728, 2048]"
+                   data-aspectratio="{{ product.featured_image.aspect_ratio }}"
+                   data-sizes="auto"
+                   alt="{{default section.settings.logo.alt shop.name}}"
+                   itemprop="logo">
+            </a>
+          </div>
+          <noscript>
+            {{#capture 'image_size'}}{{escape section.settings.logo_max_width}}x{{/capture}}
+            <a href="/" itemprop="url">
+              <img class="site-header__logo" src="{{img_url section.settings.logo image_size}}"
+              srcset="{{img_url section.settings.logo image_size}} 1x, {{img_url section.settings.logo image_size scale 2}} 2x"
+              alt="{{default section.settings.logo.alt shop.name}}"
+              itemprop="logo">
+            </a>
+          </noscript>
+          {{#if (is template.name 'index')}}
+            <h1 class="visually-hidden">{{ shop.name }}</h1>
+          {{/if}}
+        {{else}}
+          {{#if (is template.name 'index')}}
+            <h1 class="site-header__site-name">
+              <a href="/" itemprop="url">{{ shop.name }}</a>
+            </h1>
+          {{else}}
+            <a href="/" class="site-header__site-name h1" itemprop="url">
+              {{ shop.name }}
+            </a>
+            {{#if (is template.name 'index')}}
+              <h1 class="visually-hidden">{{ shop.name }}</h1>
+            {{/if}}
+          {{/if}}
+        {{/if}}
+      </div>
+    </div>
+    {{#unless (is section.settings.tagline blank)}}
+      <div class="grid__item medium-up--text-right small--text-center">
+        <div class="rte tagline">
+          {{ section.settings.tagline }}
+        </div>
+      </div>
+    {{/unless}}
+  </header>
+</div>
+
+{{#schema}}
+  {
+    "name": "Header",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Logo"
+      },
+      {
+        "type": "image_picker",
+        "id": "logo",
+        "label": "Logo image"
+      },
+      {
+        "type": "text",
+        "id": "logo_max_width",
+        "label": "Custom logo width (in pixels)",
+        "default": "150"
+      },
+      {
+        "type": "header",
+        "content": "Announcement bar"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_announcement",
+        "label": "Show announcement",
+        "default": false
+      },
+      {
+        "type": "checkbox",
+        "id": "home_page_only",
+        "label": "Home page only",
+        "default": true
+      },
+      {
+        "type": "text",
+        "id": "announcement_text",
+        "label": "Announcement text",
+        "default": "Announce something here"
+      },
+      {
+        "type": "url",
+        "id": "announcement_link",
+        "label": "Announcement link",
+        "info": "Optional"
+      },
+      {
+        "type": "header",
+        "content": "Tagline"
+      },
+      {
+        "type": "richtext",
+        "id": "tagline",
+        "label": "Text"
+      }
+    ]
+  }
+{{/schema}}
