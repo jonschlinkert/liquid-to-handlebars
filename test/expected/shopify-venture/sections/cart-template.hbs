@@ -100,7 +100,7 @@
   </div>
 
   <script id="CartProductTemplate" type="text/template">
-    {{#raw}}
+    {{{{raw}}}}
       {{#items}}
       <tr class="cart__row responsive-table__row">
         <td class="cart__cell--image text-center">
@@ -125,13 +125,13 @@
           {{/properties}}
 
           <p>
-            <a href="/cart/change?line={{ line }}&amp;quantity=0">{{/raw}}{{t 'cart.general.remove'}}{{#raw}}</a>
+            <a href="/cart/change?line={{ line }}&amp;quantity=0">{{{{/raw}}}}{{t 'cart.general.remove'}}{{{{raw}}}}</a>
           </p>
         </td>
         <td class="cart__cell--quantity">
           <label for="Updates_{{ key }}" class="cart__quantity-label medium-up--hide">
-            {{/raw}}{{t 'cart.label.quantity'}}{{#raw}}</label>
-          <input type="number" name="updates[]" id="Updates_{{ key }}" value="{{ itemQty }}" min="0" data-line="{{ line }}" aria-label="{{/raw}}{{t 'cart.label.quantity'}}{{#raw}}">
+            {{{{/raw}}}}{{t 'cart.label.quantity'}}{{{{raw}}}}</label>
+          <input type="number" name="updates[]" id="Updates_{{ key }}" value="{{ itemQty }}" min="0" data-line="{{ line }}" aria-label="{{{{/raw}}}}{{t 'cart.label.quantity'}}{{{{raw}}}}">
         </td>
         <td class="cart__cell--total">
           {{#if discountsApplied}}
@@ -148,7 +148,7 @@
         </td>
       </tr>
       {{/items}}
-    {{/raw}}
+    {{{{/raw}}}}
   </script>
 </div>
 

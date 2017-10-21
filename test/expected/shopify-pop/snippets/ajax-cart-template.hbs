@@ -9,7 +9,7 @@
 
   <h1 class="text-center">{{t 'cart.general.title'}}</h1>
 
-  {{#raw}}
+  {{{{raw}}}}
     <form action="/cart" method="post" novalidate>
       <div class="ajaxifyCart--products">
         {{#items}}
@@ -29,7 +29,7 @@
               <div class="grid">
 
                 <div class="grid-item one-half">
-                  {{/raw}}<span class="cart__mini-labels">{{t 'cart.label.quantity'}}</span>{{#raw}}
+                  {{{{/raw}}}}<span class="cart__mini-labels">{{t 'cart.label.quantity'}}</span>{{{{raw}}}}
                   <div class="ajaxifyCart--qty">
                     <input type="text" name="updates[]" class="ajaxifyCart--num" value="{{ itemQty }}" min="0" data-id="{{ key }}" data-line="{{ line }}"  aria-label="quantity" pattern="[0-9]*">
                     <span class="ajaxifyCart--qty-adjuster ajaxifyCart--add" data-id="{{ key }}" data-line="{{ line }}" data-qty="{{ itemAdd }}"><span class="add">+</span></span>
@@ -38,7 +38,7 @@
                 </div>
 
                 <div class="grid-item one-half text-right">
-                  {{/raw}}<span class="cart__mini-labels">{{t 'cart.label.total'}}</span>{{#raw}}
+                  {{{{/raw}}}}<span class="cart__mini-labels">{{t 'cart.label.total'}}</span>{{{{raw}}}}
                   <p>{{ price }}</p>
                 </div>
 
@@ -50,25 +50,25 @@
       </div>
 
       <div class="cart__row text-center large--text-right">
-        {{/raw}}
+        {{{{/raw}}}}
         <h6>{{t 'cart.general.subtotal'}}
-        {{#raw}}
+        {{{{raw}}}}
         <span class="cart__subtotal">{{ totalPrice }}</span></h6>
       </div>
 
       <div class="cart__row">
         <div class="grid">
 
-          {{/raw}}
+          {{{{/raw}}}}
           {{#if settings.cart_notes_enable}}
             <div class="grid-item large--one-half text-center large--text-left">
               <label for="cartSpecialInstructions">{{t 'cart.general.note'}}</label>
               <textarea name="note" class="input-full cart__instructions" id="cartSpecialInstructions">{{ cart.note }}</textarea>
             </div>
           {{/if}}
-          {{#raw}}
+          {{{{raw}}}}
 
-          <div class="grid-item text-center large--text-right {{/raw}}{{#if settings.cart_notes_enable}}large--one-half{{/if}}{{#raw}}">
+          <div class="grid-item text-center large--text-right {{{{/raw}}}}{{#if settings.cart_notes_enable}}large--one-half{{/if}}{{{{raw}}}}">
 
             <input type="submit" class="{{ btnClass }}" name="checkout" value="Checkout">
 
@@ -77,49 +77,49 @@
         </div>
       </div>
     </form>
-  {{/raw}}
+  {{{{/raw}}}}
   </script>
   <script id="drawerTemplate" type="text/template">
-  {{#raw}}
+  {{{{raw}}}}
     <div id="ajaxifyDrawer" class="ajaxify-drawer">
       <div id="ajaxifyCart" class="ajaxifyCart--content {{ wrapperClass }}"></div>
     </div>
-  {{/raw}}
+  {{{{/raw}}}}
   </script>
   <script id="modalTemplate" type="text/template">
-  {{#raw}}
+  {{{{raw}}}}
     <div id="ajaxifyModal" class="ajaxify-modal">
       <div id="ajaxifyCart" class="ajaxifyCart--content"></div>
     </div>
-  {{/raw}}
+  {{{{/raw}}}}
   </script>
   <script id="ajaxifyQty" type="text/template">
-  {{#raw}}
+  {{{{raw}}}}
     <div class="ajaxifyCart--qty">
       <input type="text" class="ajaxifyCart--num" value="{{ itemQty }}" min="0" data-id="{{ key }}" data-line="{{ line }}" aria-label="quantity" pattern="[0-9]*">
       <span class="ajaxifyCart--qty-adjuster ajaxifyCart--add" data-id="{{ key }}" data-line="{{ line }}" data-qty="{{ itemAdd }}">
         <span class="add" aria-hidden="true">+</span>
-        <span class="visuallyhidden">{{/raw}}{{t 'cart.general.increase_quantity'}}{{#raw}}</span>
+        <span class="visuallyhidden">{{{{/raw}}}}{{t 'cart.general.increase_quantity'}}{{{{raw}}}}</span>
       </span>
       <span class="ajaxifyCart--qty-adjuster ajaxifyCart--minus" data-id="{{ key }}" data-line="{{ line }}" data-qty="{{ itemMinus }}">
         <span class="minus" aria-hidden="true">-</span>
-        <span class="visuallyhidden">{{/raw}}{{t 'cart.general.reduce_quantity'}}{{#raw}}</span>
+        <span class="visuallyhidden">{{{{/raw}}}}{{t 'cart.general.reduce_quantity'}}{{{{raw}}}}</span>
       </span>
     </div>
-  {{/raw}}
+  {{{{/raw}}}}
   </script>
   <script id="jsQty" type="text/template">
-  {{#raw}}
+  {{{{raw}}}}
     <div class="js-qty">
       <input type="text" class="js--num" value="{{ itemQty }}" min="1" data-id="{{ key }}" aria-label="quantity" pattern="[0-9]*" name="{{ inputName }}" id="{{ inputId }}">
       <span class="js--qty-adjuster js--add" data-id="{{ key }}" data-qty="{{ itemAdd }}">
         <span class="add" aria-hidden="true">+</span>
-        <span class="visuallyhidden">{{/raw}}{{t 'cart.general.increase_quantity'}}{{#raw}}</span>
+        <span class="visuallyhidden">{{{{/raw}}}}{{t 'cart.general.increase_quantity'}}{{{{raw}}}}</span>
       </span>
       <span class="js--qty-adjuster js--minus" data-id="{{ key }}" data-qty="{{ itemMinus }}">
         <span class="minus" aria-hidden="true">-</span>
-        <span class="visuallyhidden">{{/raw}}{{t 'cart.general.reduce_quantity'}}{{#raw}}</span>
+        <span class="visuallyhidden">{{{{/raw}}}}{{t 'cart.general.reduce_quantity'}}{{{{raw}}}}</span>
       </span>
     </div>
-  {{/raw}}
+  {{{{/raw}}}}
   </script>

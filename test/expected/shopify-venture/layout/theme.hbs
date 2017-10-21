@@ -90,19 +90,19 @@
   </div>
 
   <script id="QuantityTemplate" type="text/template">
-    {{#raw}}
+    {{{{raw}}}}
       <div class="js-qty">
         <input type="text" value="{{ value }}" id="{{ key }}" name="{{ name }}" pattern="[0-9]*" data-line="{{ line }}" class="js-qty__input" aria-live="polite">
-        <button type="button" class="js-qty__adjust js-qty__adjust--minus" aria-label="{{/raw}}{{t 'cart.label.decrease_quantity'}}{{#raw}}">
-          {{/raw}}{{include 'icon-minus'}}{{#raw}}
+        <button type="button" class="js-qty__adjust js-qty__adjust--minus" aria-label="{{{{/raw}}}}{{t 'cart.label.decrease_quantity'}}{{{{raw}}}}">
+          {{{{/raw}}}}{{include 'icon-minus'}}{{{{raw}}}}
           <span class="icon__fallback-text">−</span>
         </button>
-        <button type="button" class="js-qty__adjust js-qty__adjust--plus" aria-label="{{/raw}}{{t 'cart.label.increase_quantity'}}{{#raw}}">
-          {{/raw}}{{include 'icon-plus'}}{{#raw}}
+        <button type="button" class="js-qty__adjust js-qty__adjust--plus" aria-label="{{{{/raw}}}}{{t 'cart.label.increase_quantity'}}{{{{raw}}}}">
+          {{{{/raw}}}}{{include 'icon-plus'}}{{{{raw}}}}
           <span class="icon__fallback-text">+</span>
         </button>
       </div>
-    {{/raw}}
+    {{{{/raw}}}}
   </script>
 
   {{#if (is template.name 'product')}}

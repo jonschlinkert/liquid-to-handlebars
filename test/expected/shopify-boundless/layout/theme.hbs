@@ -163,7 +163,7 @@
   {{/comment}}
   {{#if (is settings.cart_type 'drawer')}}
     <script id="CartTemplate" type="text/template">
-      {{#raw}}
+      {{{{raw}}}}
         <form action="/cart" method="post" novalidate class="cart ajaxcart">
           <div class="ajaxcart__inner ajaxcart__inner--has-fixed-footer">
             {{#items}}
@@ -191,12 +191,12 @@
                     <div class="grid grid--table">
                       <div class="grid__item one-half">
                         <div class="ajaxcart__qty">
-                          <button type="button" class="ajaxcart__qty-adjust ajaxcart__qty--minus" data-id="{{ key }}" data-qty="{{ itemMinus }}" data-line="{{ line }}" aria-label="{{/raw}}{{t 'cart.label.reduce_quantity'}}{{#raw}}">
+                          <button type="button" class="ajaxcart__qty-adjust ajaxcart__qty--minus" data-id="{{ key }}" data-qty="{{ itemMinus }}" data-line="{{ line }}" aria-label="{{{{/raw}}}}{{t 'cart.label.reduce_quantity'}}{{{{raw}}}}">
                             <span class="icon icon-minus" aria-hidden="true"></span>
                             <span class="icon__fallback-text" aria-hidden="true">&minus;</span>
                           </button>
                           <input type="text" name="updates[]" class="ajaxcart__qty-num" value="{{ itemQty }}" min="0" data-id="{{ key }}" data-line="{{ line }}" aria-label="quantity" pattern="[0-9]*">
-                          <button type="button" class="ajaxcart__qty-adjust ajaxcart__qty--plus" data-id="{{ key }}" data-line="{{ line }}" data-qty="{{ itemAdd }}" aria-label="{{/raw}}{{t 'cart.label.increase_quantity'}}{{#raw}}">
+                          <button type="button" class="ajaxcart__qty-adjust ajaxcart__qty--plus" data-id="{{ key }}" data-line="{{ line }}" data-qty="{{ itemAdd }}" aria-label="{{{{/raw}}}}{{t 'cart.label.increase_quantity'}}{{{{raw}}}}">
                             <span class="icon icon-plus" aria-hidden="true"></span>
                             <span class="icon__fallback-text" aria-hidden="true">+</span>
                           </button>
@@ -226,18 +226,18 @@
             </div>
             {{/items}}
 
-            {{/raw}}{{#if settings.cart_notes_enable}}{{#raw}}
+            {{{{/raw}}}}{{#if settings.cart_notes_enable}}{{{{raw}}}}
               <div class="ajaxcart__row">
-                <label for="CartSpecialInstructions" class="ajaxcart__note txt--minor">{{/raw}}{{t 'cart.general.note'}}{{#raw}}</label>
+                <label for="CartSpecialInstructions" class="ajaxcart__note txt--minor">{{{{/raw}}}}{{t 'cart.general.note'}}{{{{raw}}}}</label>
                 <textarea name="note" class="input-full" id="CartSpecialInstructions">{{ note }}</textarea>
               </div>
-            {{/raw}}{{/if}}{{#raw}}
+            {{{{/raw}}}}{{/if}}{{{{raw}}}}
           </div>
           <div class="ajaxcart__footer ajaxcart__footer--fixed">
             <div class="ajaxcart__subtotal">
               <div class="grid grid--table">
                 <div class="grid__item two-thirds">
-                  <span class="ajaxcart__subtotal-title h3">{{/raw}}{{t 'cart.general.subtotal'}}{{#raw}}</span>
+                  <span class="ajaxcart__subtotal-title h3">{{{{/raw}}}}{{t 'cart.general.subtotal'}}{{{{raw}}}}</span>
                 </div>
                 <div class="grid__item one-third text-right">
                   <span>{{{ totalPrice }}}</span>
@@ -247,28 +247,28 @@
                 <p class="ajaxcart__savings text-center"><em>{{{ totalCartDiscount }}}</em></p>
               {{/if}}
             </div>
-            <p class="text-center ajaxcart__note txt--minor">{{/raw}}{{t 'cart.general.shipping_at_checkout'}}{{#raw}}</p>
+            <p class="text-center ajaxcart__note txt--minor">{{{{/raw}}}}{{t 'cart.general.shipping_at_checkout'}}{{{{raw}}}}</p>
             <button type="submit" class="btn btn--full cart__checkout" name="checkout">
-              {{/raw}}{{t 'cart.general.checkout'}}{{#raw}}
+              {{{{/raw}}}}{{t 'cart.general.checkout'}}{{{{raw}}}}
             </button>
           </div>
         </form>
-      {{/raw}}
+      {{{{/raw}}}}
     </script>
     <script id="JsQty" type="text/template">
-      {{#raw}}
+      {{{{raw}}}}
         <div class="js-qty">
-          <button type="button" class="js-qty__adjust js-qty__adjust--minus" data-id="{{ key }}" data-qty="{{ itemMinus }}" aria-label="{{/raw}}{{t 'cart.label.reduce_quantity'}}{{#raw}}">
+          <button type="button" class="js-qty__adjust js-qty__adjust--minus" data-id="{{ key }}" data-qty="{{ itemMinus }}" aria-label="{{{{/raw}}}}{{t 'cart.label.reduce_quantity'}}{{{{raw}}}}">
             <span class="icon icon-minus" aria-hidden="true"></span>
             <span class="icon__fallback-text" aria-hidden="true">&minus;</span>
           </button>
           <input type="text" class="js-qty__num" value="{{ itemQty }}" min="1" data-id="{{ key }}" aria-label="quantity" pattern="[0-9]*" name="{{ inputName }}" id="{{ inputId }}">
-          <button type="button" class="js-qty__adjust js-qty__adjust--plus" data-id="{{ key }}" data-qty="{{ itemAdd }}" aria-label="{{/raw}}{{t 'cart.label.increase_quantity'}}{{#raw}}">
+          <button type="button" class="js-qty__adjust js-qty__adjust--plus" data-id="{{ key }}" data-qty="{{ itemAdd }}" aria-label="{{{{/raw}}}}{{t 'cart.label.increase_quantity'}}{{{{raw}}}}">
             <span class="icon icon-plus" aria-hidden="true"></span>
             <span class="icon__fallback-text" aria-hidden="true">+</span>
           </button>
         </div>
-      {{/raw}}
+      {{{{/raw}}}}
     </script>
 
   {{/if}}

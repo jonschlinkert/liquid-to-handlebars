@@ -6,7 +6,7 @@
 
 {{/comment}}
   <script id="cartTemplate" type="text/template">
-  {{#raw}}
+  {{{{raw}}}}
     <form action="/cart" method="post" class="cart-form" novalidate>
       <div class="ajaxifyCart--products">
         {{#items}}
@@ -53,38 +53,38 @@
         <input type="submit" class="{{ btnClass }}" name="checkout" value="Checkout">
       </div>
     </form>
-  {{/raw}}
+  {{{{/raw}}}}
   </script>
   <script id="drawerTemplate" type="text/template">
-  {{#raw}}
+  {{{{raw}}}}
     <div id="ajaxifyDrawer" class="ajaxify-drawer">
       <div id="ajaxifyCart" class="ajaxifyCart--content {{ wrapperClass }}"></div>
     </div>
     <div class="ajaxifyDrawer-caret"><span></span></div>
-  {{/raw}}
+  {{{{/raw}}}}
   </script>
   <script id="modalTemplate" type="text/template">
-  {{#raw}}
+  {{{{raw}}}}
     <div id="ajaxifyModal" class="ajaxify-modal">
       <div id="ajaxifyCart" class="ajaxifyCart--content"></div>
     </div>
-  {{/raw}}
+  {{{{/raw}}}}
   </script>
   <script id="ajaxifyQty" type="text/template">
-  {{#raw}}
+  {{{{raw}}}}
     <div class="ajaxifyCart--qty">
       <input type="text" class="ajaxifyCart--num" value="{{ itemQty }}" data-id="{{ key }}" min="0" data-line="{{ line }}" aria-label="quantity" pattern="[0-9]*">
       <span class="ajaxifyCart--qty-adjuster ajaxifyCart--add" data-id="{{ key }}" data-line="{{ line }}" data-qty="{{ itemAdd }}">+</span>
       <span class="ajaxifyCart--qty-adjuster ajaxifyCart--minus" data-id="{{ key }}" data-line="{{ line }}" data-qty="{{ itemMinus }}">-</span>
     </div>
-  {{/raw}}
+  {{{{/raw}}}}
   </script>
   <script id="jsQty" type="text/template">
-  {{#raw}}
+  {{{{raw}}}}
     <div class="js-qty">
       <input type="text" class="js--num" value="{{ itemQty }}" min="1" data-id="{{ key }}" aria-label="quantity" pattern="[0-9]*" name="{{ inputName }}" id="{{ inputId }}">
       <span class="js--qty-adjuster js--add" data-id="{{ key }}" data-qty="{{ itemAdd }}">+</span>
       <span class="js--qty-adjuster js--minus" data-id="{{ key }}" data-qty="{{ itemMinus }}">-</span>
     </div>
-  {{/raw}}
+  {{{{/raw}}}}
   </script>

@@ -212,7 +212,7 @@
 
   <h4 class="docs-title">Vertical forms (customer, contact, etc)</h4>
   <p>No styles for this exist in Slate, but are used in most themes. Style elements inside a form/div with class `form-vertical` to see your styles here.</p>
-  <p>You cannot add a class directly to most liquid form elements (e.g. <code>{{#raw}}{{form 'contact'}}{{/raw}}</code>). Instead, wrap the form in a div with the class <code>.form-vertical</code> to achieve the same effect.</p>
+  <p>You cannot add a class directly to most liquid form elements (e.g. <code>{{{{raw}}}}{{form 'contact'}}{{{{/raw}}}}</code>). Instead, wrap the form in a div with the class <code>.form-vertical</code> to achieve the same effect.</p>
 
   <form class="form-vertical">
     <label for="text1">Text Field</label>
@@ -284,15 +284,15 @@
 
   <p>Example usage:</p>
   <pre>
-    {{#raw}}{{#if form.posted_successfully}}{{/if}}
+    {{{{raw}}}}{{#if form.posted_successfully}}{{/if}}
       &lt;p class="note note--success"&gt;Thanks for submitting the form&lt;/p&gt;
-    {{#raw}}{{/raw}}{{/raw}}
+    {{{{raw}}}}{{{{/raw}}}}{{{{/raw}}}}
 
-    {{#raw}}{{#if form.errors}}{{/if}}
+    {{{{raw}}}}{{#if form.errors}}{{/if}}
       &lt;div class="note note--error"&gt;
-        {{#raw}}{{default_errors form.errors}}{{/raw}}
+        {{{{raw}}}}{{default_errors form.errors}}{{{{/raw}}}}
       &lt;/div&gt;
-    {{#raw}}{{/raw}}{{/raw}}
+    {{{{raw}}}}{{{{/raw}}}}{{{{/raw}}}}
   </pre>
 
   <div class="note">This is a standard note</div>

@@ -280,7 +280,7 @@ var ajaxifyShopify = (function(module, $) {
       btnClass: null,
       wrapperClass: null,
       useCartTemplate: false,
-      moneyFormat: '{{#raw}}${{ amount }}{{/raw}}',
+      moneyFormat: '{{{{raw}}}}${{ amount }}{{{{/raw}}}}',
       disableAjaxCart: false,
       enableQtySelectors: true,
       prependDrawerTo: 'body',
@@ -1651,16 +1651,16 @@ timber.formatMoney = function (val) {
 
   {{#if settings.superscript_decimals}}
     if (moneyFormat.indexOf('money') === -1) {
-      if ( (moneyFormat.indexOf({{#raw}}'{{ amount }}'{{/raw}}) > -1) && (moneyFormat.indexOf('.') === -1) ) {
+      if ( (moneyFormat.indexOf({{{{raw}}}}'{{ amount }}'{{{{/raw}}}}) > -1) && (moneyFormat.indexOf('.') === -1) ) {
         val = val.replace('.','<sup>') + '</sup>';
       }
-      else if ( (moneyFormat.indexOf({{#raw}}'{{ amount }}'{{/raw}}) > -1) && (moneyFormat.indexOf('.') === -1) ) {
+      else if ( (moneyFormat.indexOf({{{{raw}}}}'{{ amount }}'{{{{/raw}}}}) > -1) && (moneyFormat.indexOf('.') === -1) ) {
         val = val.replace('.','<sup>') + '</sup>';
       }
-      else if (moneyFormat.indexOf({{#raw}}'{{ amount_with_comma_separator }}'{{/raw}}) > -1) {
+      else if (moneyFormat.indexOf({{{{raw}}}}'{{ amount_with_comma_separator }}'{{{{/raw}}}}) > -1) {
         val = val.replace(',','<sup>') + '</sup>';
       }
-      else if (moneyFormat.indexOf({{#raw}}'{{ amount_with_comma_separator }}'{{/raw}}) > -1) {
+      else if (moneyFormat.indexOf({{{{raw}}}}'{{ amount_with_comma_separator }}'{{{{/raw}}}}) > -1) {
         val = val.replace(',','<sup>') + '</sup>';
       }
     }
@@ -1673,14 +1673,14 @@ timber.formatSaleTag = function (val) {
   // If not using multiple currencies
   if (moneyFormat.indexOf('money') === -1) {
     // If we use amount
-    if ( (moneyFormat.indexOf({{#raw}}'{{ amount }}'{{/raw}}) > -1) && (moneyFormat.indexOf('.') === -1) ) {
+    if ( (moneyFormat.indexOf({{{{raw}}}}'{{ amount }}'{{{{/raw}}}}) > -1) && (moneyFormat.indexOf('.') === -1) ) {
       // If there are no cents or money amount is more than 10, remove decimals
       if ( (val.indexOf('.00') > -1) || parseInt(val.replace(/[^0-9]/g, ''), 10) > 1000 ) {
         return val.split('.')[0];
       }
     }
     // If we use amount_with_comma_separator
-    else if (moneyFormat.indexOf({{#raw}}'{{ amount_with_comma_separator }}'{{/raw}}) > -1) {
+    else if (moneyFormat.indexOf({{{{raw}}}}'{{ amount_with_comma_separator }}'{{{{/raw}}}}) > -1) {
       // If there are no cents or money amount is more than 10, remove decimals
       if ( (val.indexOf(',00') > -1) || parseInt(val.replace(/[^0-9]/g, ''), 10) > 1000 ) {
         return val.split(',')[0];
