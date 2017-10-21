@@ -30,8 +30,8 @@ gulp.task('html', function() {
     .pipe(gulp.dest(expected()));
 });
 
-gulp.task('liquid', function(cb) {
-  clone({repo: 'Shopify/liquid', branch: 'gh-pages', dest: liquid()}, cb);
+gulp.task('liquid', function() {
+  return clone({repo: 'Shopify/liquid', branch: 'gh-pages', dest: liquid()});
 });
 
 gulp.task('copy', function(cb) {
