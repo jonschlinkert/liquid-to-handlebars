@@ -1,0 +1,61 @@
+<div id="home-newsletter" class="index-section home-section">
+  <div class="home-newsletter">
+    <div class="wrapper wrapper--margins">
+      <div class="newsletter text-center password-input-group">
+        {% form 'customer' %}
+          {{ form.errors | default_errors }}
+          {% if form.posted_successfully? %}
+            <p class="form--success">{{ 'general.newsletter_form.confirmation' | t }}</p>
+          {% else %}
+            <div class="input-group">
+              <input type="hidden" name="contact[tags]" value="newsletter">
+              {% if section.settings.heading != blank %}
+                <h2 class="home-section-title" for="Email">{{ section.settings.heading | escape }}</h2>
+              {% else %}
+                <label class="visually-hidden" for="Email">{{ 'general.newsletter_form.newsletter_email' | t }}</label>
+              {% endif %}
+              {% unless section.settings.subheading == blank %}
+                <h4>{{ section.settings.subheading | escape }}</h4>
+              {% endunless %}
+              <input type="email" value="{% if customer %}{{ customer.email }}{% endif %}" placeholder="{{ 'general.newsletter_form.email_placeholder' | t }}" name="contact[email]" id="Email" class="input-group__field newsletter__input" autocorrect="off" autocapitalize="off">
+              <span class="input-group__btn">
+                <button type="submit" class="btn newsletter__submit btn--regular btn--fill btn--color" name="commit" id="Subscribe">
+                  <span class="newsletter__submit-text--large">{{ 'general.newsletter_form.submit' | t }}</span>
+                </button>
+              </span>
+            </div>
+          {% endif %}
+        {% endform %}
+      </div>
+    </div>
+  </div>
+</div>
+
+{% schema %}
+  {
+    "name": "Newsletter",
+    "settings": [
+      {
+        "type": "text",
+        "id": "heading",
+        "label": "Heading",
+        "default": "Stay up to date"
+      },
+      {
+        "type": "text",
+        "id": "subheading",
+        "label": "Subheading",
+        "default": "Promotions, new products and sales. Directly to your inbox."
+      },
+      {
+        "type": "paragraph",
+        "content": "Any customers who sign up will have an account created for them in Shopify. [View customers](/admin/customers?query=&accepts_marketing=1)"
+      }
+    ],
+    "presets": [{
+      "name": "Newsletter",
+      "category": "Promotional"
+    }],
+    "blocks" : []
+  }
+{% endschema %}

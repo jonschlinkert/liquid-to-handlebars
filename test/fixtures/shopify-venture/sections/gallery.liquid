@@ -1,0 +1,96 @@
+<div class="page-width">
+  <div class="flex column-flex">
+    {% for block in section.blocks %}
+      <div class="flex__item text-center" {{ block.shopify_attributes }}>
+        {% if block.settings.image != blank %}
+          <noscript>
+            <div class="column-flex__image column-flex__image--{{ section.settings.gallery_height }}" style="background-image: url({{ block.settings.image | img_url: '600x' }}); background-position: {{ block.settings.image_align }};"></div>
+          </noscript>
+          <div class="column-flex__image column-flex__image--{{ section.settings.gallery_height }} lazyload"
+            style="background-position: {{ block.settings.image_align }};background-image: url('{{ block.settings.image | img_url: '300x300' }});"
+            data-bgset="{% include 'bgset', image: block.settings.image %}"
+            data-sizes="auto"
+            data-parent-fit="cover">
+          </div>
+        {% else %}
+          <div class="column-flex__image">
+            <div class="placeholder-background">
+              {{ 'collection-1' | placeholder_svg_tag: 'placeholder-svg' }}
+            </div>
+          </div>
+        {% endif %}
+      </div>
+    {% endfor %}
+  </div>
+
+  {% if section.blocks.size == 0 %}
+    {% include 'no-blocks' %}
+  {% endif %}
+</div>
+
+{% schema %}
+  {
+    "name": "Gallery",
+    "class": "index-section",
+    "max_blocks": 3,
+    "settings": [
+      {
+        "type": "select",
+        "id": "gallery_height",
+        "label": "Gallery height",
+        "default": "short",
+        "options": [
+          {
+            "value": "short",
+            "label": "Short"
+          },
+          {
+            "value": "tall",
+            "label": "Tall"
+          }
+        ]
+      }
+    ],
+    "blocks": [
+      {
+        "type": "image_block",
+        "name": "Image",
+        "settings": [
+          {
+            "type": "image_picker",
+            "id": "image",
+            "label": "Image"
+          },
+          {
+            "type": "radio",
+            "id": "image_align",
+            "label": "Image alignment",
+            "options": [
+              { "value": "top center", "label": "Top center" },
+              { "value": "center center", "label": "Center" },
+              { "value": "bottom center", "label": "Bottom center" }
+            ],
+            "default": "top center"
+          }
+        ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "Gallery",
+        "category": "Image",
+        "blocks": [
+          {
+            "type": "image_block"
+          },
+          {
+            "type": "image_block"
+          },
+          {
+            "type": "image_block"
+          }
+        ]
+      }
+    ]
+  }
+{% endschema %}

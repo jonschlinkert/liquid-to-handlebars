@@ -1,0 +1,54 @@
+<div data-section-id="{{ section.id }}" data-section-type="collection-filters">
+  {% if section.settings.product_tags_enable and collection.all_tags.size > 0 %}
+    <div class="collection-sort">
+      <label for="SortTags" class="collection-sort__label">{{ 'collections.sorting.title_tags' | t }}</label>
+      <select name="SortTags" id="SortTags" class="collection-sort__input">
+        {% if collection.handle %}
+          <option value="/collections/{{ collection.handle }}">{{ 'collections.sorting.all_of_collection' | t }}</option>
+        {% elsif collection.current_type %}
+          <option value="{{ collection.current_type | url_for_type }}">{{ 'collections.sorting.all_of_collection' | t }}</option>
+        {% elsif collection.current_vendor %}
+          <option value="{{ collection.current_vendor | url_for_vendor }}">{{ 'collections.sorting.all_of_collection' | t }}</option>
+        {% endif %}
+        {% for tag in collection.all_tags %}
+          <option value="/collections/{% if collection.handle != blank %}{{ collection.handle }}{% else %}all{% endif %}/{{ tag | handleize }}"{% if current_tags contains tag %} selected="selected"{% endif %}>{{ tag }}</option>
+        {% endfor %}
+      </select>
+    </div>
+  {% endif %}
+  {% if section.settings.product_sorting_enable %}
+    <div class="collection-sort">
+      <label for="SortBy" class="collection-sort__label">{{ 'collections.sorting.title' | t }}</label>
+      <select name="SortBy" id="SortBy" data-default-sort="{{ collection.default_sort_by }}" class="collection-sort__input">
+        <option value="manual">{{ 'collections.sorting.featured' | t }}</option>
+        <option value="best-selling">{{ 'collections.sorting.best_selling' | t }}</option>
+        <option value="title-ascending">{{ 'collections.sorting.az' | t }}</option>
+        <option value="title-descending">{{ 'collections.sorting.za' | t }}</option>
+        <option value="price-ascending">{{ 'collections.sorting.price_ascending' | t }}</option>
+        <option value="price-descending">{{ 'collections.sorting.price_descending' | t }}</option>
+        <option value="created-descending">{{ 'collections.sorting.date_descending' | t }}</option>
+        <option value="created-ascending">{{ 'collections.sorting.date_ascending' | t }}</option>
+      </select>
+    </div>
+  {% endif %}
+</div>
+
+{% schema %}
+  {
+    "name": "Collection",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "product_tags_enable",
+        "label": "Enable tag filtering",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "product_sorting_enable",
+        "label": "Enable sorting",
+        "default": true
+      }
+    ]
+  }
+{% endschema %}

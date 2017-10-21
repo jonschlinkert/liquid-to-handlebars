@@ -1,0 +1,211 @@
+{%- assign product = all_products[section.settings.featured_product] -%}
+{%- assign variant = product.selected_or_first_available_variant -%}
+
+{%- if product == empty -%}
+  {%- assign section_onboarding = true -%}
+  {%- assign vendor = 'home_page.onboarding.product_vendor' | t -%}
+  {%- assign title = 'home_page.onboarding.product_title' | t -%}
+  {%- assign compare_at_price = 2999 -%}
+  {%- assign price = 1999 -%}
+{%- else -%}
+  {%- assign section_onboarding = false -%}
+  {%- assign vendor = product.vendor -%}
+  {%- assign title = product.title -%}
+  {%- assign compare_at_price = variant.compare_at_price -%}
+  {%- assign price = variant.price -%}
+{%- endif -%}
+
+<div itemscope itemtype="http://schema.org/Product" id="ProductSection-{{ section.id }}" data-section-id="{{ section.id }}" data-section-type="product-template" data-image-zoom-type="{{ section.settings.product_image_zoom_type }}">
+
+  <meta itemprop="url" content="{{ shop.url }}{{ product.url }}">
+  <meta itemprop="image" content="{{ product.featured_image.src | img_url: 'grande' }}">
+
+  <div class="section-header section-header--breadcrumb">
+    {% include 'breadcrumb' %}
+  </div>
+
+  <div class="product-single">
+    <div class="grid product-single__hero">
+      <div class="grid__item post-large--one-half">
+
+        <div class="product-single__photos">
+          {% unless section_onboarding %}
+            {% assign featured_image = variant.featured_image | default: product.featured_image %}
+
+            {% for image in product.images %}
+              {% capture img_id %}ProductImage-{{ image.id }}{% endcapture %}
+              {% capture img_wrapper_id %}ProductImageWrapper-{{ image.id }}{% endcapture %}
+              {%- assign img_url = image | img_url: '1x1' | replace: '_1x1.', '_{width}x.' -%}
+              {% include 'image-style' with image: image, small_style: false, width: 700, height: 1024, wrapper_id: img_wrapper_id, img_id: img_id %}
+
+              <div id="{{ img_wrapper_id }}" class="product-single__image-wrapper supports-js{% unless featured_image == image %} hide{% endunless %}{% if section.settings.product_image_zoom_type == 'lightbox' %} zoom-lightbox{% endif %}" data-image-id="{{ image.id }}">
+                <div style="padding-top:{{ 1 | divided_by: image.aspect_ratio | times: 100}}%;">
+                  <img id="{{ img_id }}"
+                        class="product-single__image lazyload{% unless featured_image == image %} lazypreload{% endunless %}"
+                        {% if featured_image == image %}src="{{ image | img_url: '300x300' }}"{% endif %}
+                        data-src="{{ img_url }}"
+                        data-widths="[180, 370, 540, 740, 900, 1080, 1296, 1512, 1728, 2048]"
+                        data-aspectratio="{{ image.aspect_ratio }}"
+                        data-sizes="auto"
+                        {% if section.settings.product_image_zoom_type == 'zoom-in' %} data-zoom="{{ image | img_url: '1024x1024', scale: 2 }}"{% endif %}
+                        alt="{{ image.alt | escape }}">
+                </div>
+              </div>
+            {% endfor %}
+
+            <noscript>
+              <img src="{{ featured_image | img_url: '1024x1024', scale: 2 }}" alt="{{ featured_image.alt | escape }}">
+            </noscript>
+          {% else %}
+            {{ 'product-1' | placeholder_svg_tag: 'placeholder-svg' }}
+          {% endunless %}
+        </div>
+
+        {% if section.settings.product_image_zoom_type == 'lightbox' %}
+          <ul class="gallery" class="hidden">
+            {% for image in product.images %}
+              <li data-image-id="{{ image.id }}" class="gallery__item" data-mfp-src="{{ image | img_url: '1024x1024', scale: 2 }}"></li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+
+      </div>
+      <div class="grid__item post-large--one-half">
+        {% if section.settings.product_vendor_enable %}
+          <span class="h3" itemprop="brand">{{ vendor }}</span>
+        {% endif %}
+        <h1 itemprop="name">{{ title }}</h1>
+
+        <div itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+
+          <meta itemprop="priceCurrency" content="{{ shop.currency }}">
+          <link itemprop="availability" href="http://schema.org/{% if product.available %}InStock{% else %}OutOfStock{% endif %}">
+
+          <div class="product-single__prices">
+            {% if compare_at_price > price %}
+              <span id="ComparePriceA11y" class="visually-hidden">{{ 'products.product.sale_price' | t }}</span>
+            {% else %}
+              <span id="PriceA11y" class="visually-hidden">{{ 'products.product.regular_price' | t }}</span>
+            {% endif %}
+            <span id="ProductPrice" class="product-single__price" itemprop="price" content="{{ price | divided_by: 100.00 }}">
+              {{ price | money }}
+            </span>
+
+            {% if compare_at_price > price %}
+              <span id="PriceA11y" class="visually-hidden">{{ 'products.product.regular_price' | t }}</span>
+              <s id="ComparePrice" class="product-single__sale-price">
+                {{ compare_at_price | money }}
+              </s>
+            {% endif %}
+          </div>
+
+          <form action="/cart/add" method="post" enctype="multipart/form-data" id="AddToCartForm">
+            <select name="id" id="ProductSelect-{{ section.id }}" class="product-single__variants">
+              {% for variant in product.variants %}
+                {% if variant.available %}
+
+                  <option {% if variant == product.selected_or_first_available_variant %} selected="selected" {% endif %} data-sku="{{ variant.sku }}" value="{{ variant.id }}">{{ variant.title }} - {{ variant.price | money_with_currency }}</option>
+
+                {% else %}
+                  <option disabled="disabled">
+                    {{ variant.title }} - {{ 'products.product.sold_out' | t }}
+                  </option>
+                {% endif %}
+              {% endfor %}
+            </select>
+
+            <div class="product-single__quantity{% unless section.settings.product_quantity_enable %} is-hidden{% endunless %}">
+              <label for="Quantity">{{ 'products.product.quantity' | t }}</label>
+              <input type="number" id="Quantity" name="quantity" value="1" min="1" class="quantity-selector">
+            </div>
+
+            <button type="submit" name="add" id="AddToCart" class="btn"{% unless current_variant.available %} disabled="disabled"{% endunless %}>
+              <span id="AddToCartText">{{ 'products.product.add_to_cart' | t }}</span>
+            </button>
+          </form>
+
+          <a class="product-single__full-details text-link"{% unless section_onboarding %} href="{{ product.url }}?variant={{ variant.id }}"{% endunless %}>
+            {{ 'products.product.full_details' | t }} &#x2192;
+          </a>
+
+          {% if section.settings.social_sharing %}
+            <hr class="hr--clear hr--small">
+            <h2 class="h4">{{ 'products.general.share_title' | t }}</h2>
+            {% include 'social-sharing' %}
+          {% endif %}
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</div>
+
+{% unless product == empty %}
+  <script type="application/json" id="ProductJson-{{ section.id }}">
+    {{ product | json }}
+  </script>
+{% endunless %}
+
+{% schema %}
+  {
+    "name": "Featured product",
+    "class": "index-section",
+    "settings": [
+      {
+        "type": "product",
+        "id": "featured_product",
+        "label": "Product"
+      },
+      {
+        "type": "checkbox",
+        "id": "product_vendor_enable",
+        "label": "Show vendor"
+      },
+      {
+        "type": "checkbox",
+        "id": "product_quantity_enable",
+        "label": "Show quantity selector"
+      },
+      {
+        "type": "select",
+        "id": "product_image_zoom_type",
+        "label": "Image zoom type",
+        "options": [
+          {
+            "value": "lightbox",
+            "label": "Lightbox"
+          },
+          {
+            "value": "zoom-in",
+            "label": "Zoom-in"
+          },
+          {
+            "value": "",
+            "label": "No zoom"
+          }
+        ]
+      },
+      {
+        "type": "checkbox",
+        "id": "social_sharing",
+        "label": "Show social sharing buttons",
+        "default": true,
+        "info": "Edit social accounts in General settings"
+      }
+    ],
+    "presets": [
+      {
+        "name": "Featured product",
+        "category": "Product"
+      }
+    ],
+    "presets":
+    [
+      {
+        "name": "Featured product",
+        "category": "Products"
+      }
+    ]
+  }
+{% endschema %}

@@ -1,0 +1,138 @@
+<div id="CartSection" class="page-width" data-section-id="{{ section.id }}" data-section-type="cart-template">
+{% capture header_title %} {{ 'cart.general.title' | t }} {% endcapture %}
+{% include 'page_header' with header_title %}
+
+<div class="wrapper wrapper--margins wrapper--mini">
+
+  {% if cart.item_count > 0 %}
+
+    <form id="cart-form" action="/cart" method="post" novalidate class="cart table-wrap">
+
+      {% for item in cart.items %}
+
+        <div class="cart-row cart-item clearfix" data-id="{{ item.key }}">
+
+          <a class="cart-img" href="{{ item.url | within: collections.all }}" style="background-image:url({% if item.image %}{{ item | img_url: 'medium' }}{% else %}{{ 'no-image.svg' | asset_url }}{% endif %})">{{ item.title | escape }}</a>
+
+          <div class="content">
+
+            <div>
+
+              <div>
+
+                <h2 class="h3 cart-item__title"><a href="{{ item.url }}">{{ item.product.title }}</a></h2>
+
+                {% unless item.variant.title contains 'Default' %}
+                  <small class="cart-item__variant-title">{{ item.variant.title }}</small>
+                {% endunless %}
+
+                {% assign property_size = item.properties | size %}
+                {% if property_size > 0 %}
+                  {% for p in item.properties %}
+                    {% assign first_character_in_key = p.first | truncate: 1, '' %}
+                    {% unless p.last == blank or first_character_in_key == '_' %}
+                      <div class="cart-item__property">
+                        {{ p.first }}:
+                        {% if p.last contains '/uploads/' %}
+                          <a href="{{ p.last }}">{{ p.last | split: '/' | last }}</a>
+                        {% else %}
+                          {{ p.last }}
+                        {% endif %}
+                      </div>
+                    {% endunless %}
+                  {% endfor %}
+                {% endif %}
+
+                <div>
+                  {% if item.original_line_price != item.line_price %}
+                    <small class="cart-item__original-price">
+                      <s>{{ item.original_line_price | money }}</s>
+                    </small>
+                  {% endif %}
+                  <span class="cart-item__line-price price">{{ item.line_price | money }}</span>
+                </div>
+
+                {% for discount in item.discounts %}
+                  <div class="cart-item__discount"><small>{{ discount.title }}</small></div>
+                {% endfor %}
+
+              </div>
+
+            </div>
+
+          </div>
+
+          <label for="updates_{{ item.key }}" class="fallback-text">{{ 'cart.general.quantity' | t }}</label>
+          <input class="count qty-remove-defaults" type="number" name="updates[]" id="updates_{{ item.key }}" value="{{ item.quantity }}" min="0" data-id="{{ item.key }}">
+          <a class="remove" href="/cart/change?line={{ forloop.index }}&amp;quantity=0" data-id="{{ item.key }}">
+            <span aria-hidden="true">{% include 'asset_svg' with 'close' %}</span>
+            <span class="fallback-text">{{ 'cart.general.remove_item' | t }}</span>
+          </a>
+
+        </div>
+
+      {% endfor %}
+
+      <div class="cart_bottom grid">
+
+        {% if section.settings.cart_notes_enable %}
+          <div class="grid__item large--one-half">
+            <label for="CartSpecialInstructions">{{ 'cart.general.note' | t }}</label>
+            <textarea name="note" class="input-full" id="CartSpecialInstructions">{{ cart.note }}</textarea>
+          </div>
+        {% endif %}
+
+        <div class="grid__item {% if section.settings.cart_notes_enable %}large--one-half{% endif %} text-right">
+          <p class="cart__subtotal-holder">
+            <span class="cart__subtotal-title">{{ 'cart.general.subtotal' | t }}</span>
+            <span class="h3 cart__subtotal">{{ cart.total_price | money }}</span>
+            {% if cart.total_discounts > 0 %}
+              {% assign savings = cart.total_discounts | money %}
+              <small class="cart__savings">
+                {{ 'cart.general.savings_html' | t: savings: savings }}
+              </small>
+            {% endif %}
+            <span class="cart__subtotal-shipping">{{ 'cart.general.shipping_at_checkout' | t }}</span>
+          </p>
+          <button type="submit" name="update" class="btn btn--regular btn--dark btn--outline btn__update">
+            <span aria-hidden="true">{% include 'asset_svg' with 'reload' %}</span>
+            <span class="fallback-text">{{ 'cart.general.update_cart' | t }}</span>
+          </button>
+          <button type="submit" name="checkout" class="btn btn--regular btn--color btn--fill">{{ 'cart.general.checkout' | t }}</button>
+        </div>
+
+      </div>
+
+    </form>
+
+  {% else %}
+
+    <div class="text-center">
+      <p class="cart--empty-message">{{ 'cart.general.empty' | t }}</p>
+      <div class="cart--cookie-message">
+        <p>{{ 'cart.general.cookies_required' | t }}</p>
+      </div>
+      <a href="/" class="btn btn--dark btn--outline btn--small cart__continue-btn">
+        {{ 'cart.general.continue_browsing' | t }}
+      </a>
+    </div>
+
+  {% endif %}
+
+</div>
+
+</div>
+
+{% schema %}
+  {
+    "name": "Cart page",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "cart_notes_enable",
+        "label": "Enable cart notes",
+        "default": false
+      }
+    ]
+  }
+{% endschema %}

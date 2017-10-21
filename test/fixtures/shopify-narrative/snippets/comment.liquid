@@ -1,0 +1,20 @@
+<!-- /snippets/comment.liquid -->
+<div id="{{ comment.id }}" class="comment grid__item">
+  <div class="grid">
+    <div class="grid__item medium-up--two-twelfths medium-up--push-one-twelfth comment__meta--large">
+      <div class="comment__author">
+        <strong>{{ comment.author }}</strong>
+      </div>
+
+      <span class="comment__date text-small--uppercase">
+        {{ comment.created_at | time_tag: format: 'month_day_year' }}
+      </span>
+    </div>
+
+    <div class="grid__item medium-up--seven-twelfths medium-up--push-two-twelfths comment__content--large">
+      <div class="comment__content text-small rte">
+        {{ comment.content }}
+      </div>
+    </div>
+  </div>
+</div>

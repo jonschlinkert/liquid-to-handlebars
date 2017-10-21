@@ -1,0 +1,260 @@
+<style>
+  .collection-list-grid__image-wrapper {
+    background: {{ section.settings.background_color }};
+  }
+  .collection-list-grid__image {
+    background-position: {{ section.settings.alignment }};
+  }
+</style>
+
+<div class="collection-list collection-list--{{ section.id }}">
+
+  {% if section.settings.title != blank %}
+    <div class="section-title text-center">
+      <h2>{{ section.settings.title | escape }}</h2>
+    </div>
+  {% endif %}
+
+  <div class="grid grid--uniform collection-grid">
+
+    {% for block in section.blocks limit: section.blocks.size %}
+
+      {% case section.blocks.size %}
+        {% when 1 %}
+          {%- assign grid_item_width = 'one-whole' -%}
+        {% when 2 %}
+          {%- assign grid_item_width = 'medium-up--one-half' -%}
+        {% when 3 %}
+          {%- assign grid_item_width = 'small--one-half medium-up--one-third' -%}
+        {% when 4 %}
+          {%- assign grid_item_width = 'small--one-half medium-up--one-quarter' -%}
+        {% when 5 %}
+          {%- assign grid_item_width = 'small--one-half medium-up--one-fifth' -%}
+        {% when 6 %}
+          {%- assign grid_item_width = 'small--one-half medium-up--one-third' -%}
+        {% else %}
+          {%- assign grid_item_width = 'small--one-half medium-up--one-quarter' -%}
+      {% endcase %}
+
+      {%- assign collection = collections[block.settings.collection] -%}
+
+      {% if collection == empty %}
+        {% comment %}add default state for collection block in storefront editor{% endcomment %}
+        {% capture collection_title %}{{ 'homepage.onboarding.collection_title' | t }}{% endcapture %}
+      {% else %}
+        {% capture collection_title %}{{ collection.title | escape }}{% endcapture %}
+      {% endif %}
+
+      {% if collection.image %}
+        {% assign no_collection_image = false %}
+        {%- assign collection_image = collection.image -%}
+      {% elsif collection.products.first and collection.products.first.images != empty %}
+        {%- assign collection_image = collection.products.first.featured_image -%}
+      {% else %}
+        {%- assign collection_image = blank -%}
+      {% endif %}
+
+      <div class="grid__item {{ grid_item_width }}" {{ block.shopify_attributes }}>
+        <div class="collection-list-grid__item">
+          <div class="collection-list-grid__item-container">
+            <a href="{{ collection.url }}" class="collection-grid__link">
+              <div class="collection-list-grid__inner">
+                <div class="collection-list-grid__image-wrapper">
+                  {% unless collection_image == blank %}
+                    <noscript>
+                      <div class="collection-list-grid__image" style="background-image: url({{ collection_image | img_url: '1024x1024' }})">
+                        {% if section.settings.show_text_over_image %}
+                          <div class="collection-list-grid__title-wrapper">
+                            <h2 class="product-item__title collection-list-grid__title">
+                              {{ collection_title }} <span class="link--action">&rarr;</span>
+                            </h2>
+                            {% if section.settings.show_number_products %}
+                              <p class="number-products">{{ 'collections.general.number_products' | t: count: collection.products.size }}</p>
+                            {% endif %}
+                          </div>
+                        {% endif %}
+                      </div>
+                    </noscript>
+                    <div class="collection-list-grid__image lazyload"
+                      style="background-image: url({{ collection_image | img_url: '300x300' }})"
+                      data-bgset="{% include 'bgset', image: collection_image %}"
+                      data-sizes="auto"
+                      data-parent-fit="cover">
+                      {% if section.settings.show_text_over_image %}
+                        <div class="collection-list-grid__title-wrapper">
+                          <h2 class="product-item__title collection-list-grid__title">
+                            {{ collection_title }} <span class="link--action">&rarr;</span>
+                          </h2>
+                          {% if section.settings.show_number_products %}
+                            <p class="number-products">{{ 'collections.general.number_products' | t: count: collection.products.size }}</p>
+                          {% endif %}
+                        </div>
+                      {% endif %}
+                    </div>
+                  {% else %}
+                    {% if collection == empty %}
+                      {% capture current %}{% cycle 1, 2, 3 %}{% endcapture %}
+                      {{ 'collection-' | append: current | placeholder_svg_tag: 'placeholder-svg collection-list-grid__placeholder' }}
+                      {% if section.settings.show_text_over_image %}
+                        <div class="collection-list-grid__title-wrapper">
+                          <h2 class="product-item__title collection-list-grid__title">
+                            {{ collection_title }} <span class="link--action">&rarr;</span>
+                          </h2>
+                          {% if section.settings.show_number_products %}
+                            <p class="number-products">{{ 'collections.general.number_products' | t: count: collection.products.size }}</p>
+                          {% endif %}
+                        </div>
+                      {% endif %}
+                    {% else %}
+                      <div class="collection-list-grid__image" style="background-image: url({{ collection_image | img_url: '1024x1024' }})">
+                        {% if section.settings.show_text_over_image %}
+                          <div class="collection-list-grid__title-wrapper">
+                            <h2 class="product-item__title collection-list-grid__title">
+                              {{ collection_title }} <span class="link--action">&rarr;</span>
+                            </h2>
+                            {% if section.settings.show_number_products %}
+                              <p class="number-products">{{ 'collections.general.number_products' | t: count: collection.products.size }}</p>
+                            {% endif %}
+                          </div>
+                        {% endif %}
+                      </div>
+                    {% endif %}
+                  {% endunless %}
+                </div>
+              </div>
+            </a>
+          </div>
+          {% unless section.settings.show_text_over_image %}
+            <div class="collection-list-grid__title-wrapper-under under-spacing">
+              <h2 class="product-item__title collection-list-grid__title">
+                {{ collection_title }} <span class="link--action">&rarr;</span>
+              </h2>
+              {% if section.settings.show_number_products %}
+                <p class="number-products">{{ 'collections.general.number_products' | t: count: collection.products.size }}</p>
+              {% endif %}
+            </div>
+          {% else %}
+            <div class="collection-list-grid__title-wrapper-under under-spacing mobile-view">
+              <h2 class="product-item__title collection-list-grid__title">
+                {{ collection_title }} <span class="link--action">&rarr;</span>
+              </h2>
+              {% if section.settings.show_number_products %}
+                <p class="number-products">{{ 'collections.general.number_products' | t: count: collection.products.size }}</p>
+              {% endif %}
+            </div>
+          {% endunless %}
+        </div>
+      </div>
+    {% endfor %}
+
+  </div>
+</div>
+
+
+{% schema %}
+  {
+    "name": "Collection list",
+    "class": "index-section",
+    "max_blocks": 12,
+    "settings": [
+      {
+        "type": "text",
+        "id": "title",
+        "label": "Heading",
+        "default": "Collection list"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_text_over_image",
+        "label": "Text over image",
+        "default": false
+      },
+      {
+       "type": "checkbox",
+        "id": "show_number_products",
+        "label": "Show number of products",
+        "default": true
+      },
+      {
+        "type": "select",
+        "id": "alignment",
+        "label": "Image alignment",
+        "default": "center center",
+        "options": [
+          {
+            "label": "Top left",
+            "value": "top left"
+          },
+          {
+            "label": "Top center",
+            "value": "top center"
+          },
+          {
+            "label": "Top right",
+            "value": "top right"
+          },
+          {
+            "label": "Middle left",
+            "value": "center left"
+          },
+          {
+            "label": "Middle center",
+            "value": "center center"
+          },
+          {
+            "label": "Middle right",
+            "value": "center right"
+          },
+          {
+            "label": "Bottom left",
+            "value": "bottom left"
+          },
+          {
+            "label": "Bottom center",
+            "value": "bottom center"
+          },
+          {
+            "label": "Bottom right",
+            "value": "bottom right"
+          }
+        ]
+      },
+      {
+        "type": "color",
+        "id": "background_color",
+        "label": "Background color",
+        "default": "#f9f9f9"
+      }
+    ],
+    "blocks": [
+      {
+        "type": "collection",
+        "name": "Collection",
+        "settings": [
+          {
+            "type": "collection",
+            "id": "collection",
+            "label": "Collection"
+          }
+        ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "Collection list",
+        "category": "Collection",
+        "blocks": [
+          {
+            "type": "collection"
+          },
+          {
+            "type": "collection"
+          },
+          {
+            "type": "collection"
+          }
+        ]
+      }
+    ]
+  }
+{% endschema %}

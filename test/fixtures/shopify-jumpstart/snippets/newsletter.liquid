@@ -1,0 +1,24 @@
+<!-- snippets/newsletter.liquid -->
+
+<div class="newsletter text-center password-input-group">
+
+    {% if section.settings.footer_newsletter_enable %}
+        {% form 'customer' %}
+          {{ form.errors | default_errors }}
+          {% if form.posted_successfully? %}
+            <p class="form--success">{{ 'general.newsletter_form.confirmation' | t }}</p>
+          {% else %}
+            <div class="input-group">
+              <input type="hidden" name="contact[tags]" value="newsletter">
+              <label for="Email" class="newsletter__label">{{ 'general.newsletter_form.newsletter_email' | t }}</label>
+              <input type="email" value="{% if customer %}{{ customer.email }}{% endif %}" placeholder="{{ 'general.newsletter_form.email_placeholder' | t }}" name="contact[email]" id="Email" class="input-group__field newsletter__input" autocorrect="off" autocapitalize="off">
+              <span class="input-group__btn">
+                <button type="submit" class="btn newsletter__submit btn--regular btn--fill btn--color" name="commit" id="Subscribe">
+                  <span class="newsletter__submit-text--large">{{ 'general.newsletter_form.submit' | t }}</span>
+                </button>
+              </span>
+            </div>
+          {% endif %}
+        {% endform %}
+    {% endif %}
+</div>

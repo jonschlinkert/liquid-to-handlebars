@@ -1,0 +1,182 @@
+{% comment %}
+  Set hero as enabled so JS is loaded at end of index.liquid.
+  Also set variables to control JS settings and appearance.
+
+  hero_full_height variable is also available in Header section.
+{% endcomment %}
+{% assign hero_full_height = true %}
+{% assign hero_parallax = true %}
+
+{% comment %}
+  If hero is first section on homepage, add class that sets
+  negative top-margin for alignment and force full height.
+{% endcomment %}
+
+<div data-section-id="{{ section.id }}" data-section-type="slideshow-section">
+  {% if section.blocks.size > 0 %}
+    <div class="hero-{{ section.id }} hero{% if hero_full_height %} hero--full-height{% endif %} hero--first" id="Hero"{% if hero_full_height %} data-fullscreen="true"{% endif %}{% if hero_parallax %}data-parallax="true"{% endif %} data-autoplay="{{ section.settings.hero_home_auto }}" data-autoplayspeed="{{ section.settings.home_hero_auto_speed }}">
+      {% for block in section.blocks %}
+
+          <div class="hero__slide {{ block.settings.slide_text_color }} slide--{{ block.id }}{% if block.settings.image == blank %} slide--placeholder{% endif %}" data-color="{{ block.settings.slide_text_color }}" {{ block.shopify_attributes }}>
+            {% if hero_full_height %}
+              {% if block.settings.image == blank %}
+                <div class="placeholder-background">
+                  {% capture current %}{% cycle 1, 2 %}{% endcapture %}
+                  {{ 'lifestyle-' | append: current | placeholder_svg_tag: 'placeholder-svg' }}
+                </div>
+              {% else %}
+                <noscript>
+                  {% if forloop.first == true %}
+                    <div class="hero__image-no-js"{% if block.settings.image %} style="background-image: url('{{ block.settings.image | img_url: '2048x' }}');"{% endif %}></div>
+                  {% endif %}
+                </noscript>
+                {% assign img_url = block.settings.image | img_url: '1x1' | replace: '_1x1.', '_{width}x.' %}
+                <img class="hero__image hero__image--{{ block.id }} lazyload fade-in{% unless forloop.first == true %} lazypreload{% endunless %}"
+                  {% if forloop.first == true %}
+                    src="{{ block.settings.image | img_url: '300x' }}"
+                  {% endif %}
+                  data-src="{{ img_url }}"
+                  data-widths="[540, 720, 900, 1080, 1296, 1512, 1728, 1944, 2048, 4472]"
+                  data-aspectratio="{{ block.settings.image.aspect_ratio }}"
+                  data-sizes="auto"
+                  data-parent-fit="cover"
+                  alt="{{ block.settings.image.alt | escape }}">
+              {% endif %}
+            {% else %}
+              {% if block.settings.image != blank %}
+                <noscript>
+                  {% if forloop.first == true %}
+                    <div class="hero__image-no-js"{% if block.settings.image %} style="background-image: url('{{ block.settings.image | img_url: '2048x' }}');"{% endif %}></div>
+                  {% endif %}
+                </noscript>
+                <div class="hero__image">
+                  {% assign img_url = block.settings.image | img_url: '1x1' | replace: '_1x1.', '_{width}x.' %}
+                  <img class="hero__image lazyload fade-in"
+                    src="{{ block.settings.image | img_url: '300x' }}"
+                    data-src="{{ img_url }}"
+                    data-widths="[540, 720, 900, 1080, 1296, 1512, 1728, 1944, 2048]"
+                    data-aspectratio="{{ block.settings.image.aspect_ratio }}"
+                    data-sizes="auto"
+                    data-parent-fit="contain"
+                    alt="{{ block.settings.image.alt | escape }}">
+                </div>
+              {% else %}
+                <div class="hero__image">
+                  {% capture current %}{% cycle 1, 2 %}{% endcapture %}
+                  {{ 'lifestyle-' | append: current | placeholder_svg_tag: 'placeholder-svg' }}
+                </div>
+              {% endif %}
+            {% endif %}
+            <div class="hero__text-wrap">
+              <div class="hero__text-align">
+                <div class="hero__text-content">
+                  {% unless block.settings.slide_subheading == blank %}
+                    <p class="hero__subtitle">
+                      {{ block.settings.slide_subheading | escape }}
+                    </p>
+                  {% endunless %}
+                  {% unless block.settings.slide_heading == blank %}
+                    <h2 class="h1 hero__title">
+                      {{ block.settings.slide_heading | escape }}
+                    </h2>
+                  {% endunless %}
+                  {% unless block.settings.slide_cta == blank %}
+                    <a href="{{ block.settings.slide_link }}" class="btn hero__cta">
+                      {{ block.settings.slide_cta | escape }} <span class="icon icon-arrow-right" aria-hidden="true"></span>
+                    </a>
+                  {% endunless %}
+                </div>
+              </div>
+            </div>
+          </div>
+
+      {% endfor %}
+    </div>
+  {% endif %}
+</div>
+
+{% schema %}
+  {
+    "name": "Slideshow",
+    "max_blocks": 6,
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "hero_home_auto",
+        "label": "Auto rotate between slides",
+        "default": true
+      },
+      {
+        "type": "select",
+        "id": "home_hero_auto_speed",
+        "label": "Slide changes every",
+        "options": [
+          {
+            "value": "5000",
+            "label": "5 seconds"
+          },
+          {
+            "value": "7000",
+            "label": "7 seconds"
+          },
+          {
+            "value": "10000",
+            "label": "10 seconds"
+          }
+        ]
+      }
+    ],
+    "blocks" : [
+      {
+        "type": "slide",
+        "name": "Slide",
+        "settings": [
+          {
+            "type": "image_picker",
+            "id": "image",
+            "label": "Image"
+          },
+          {
+            "type": "select",
+            "id": "slide_text_color",
+            "label": "Text color",
+            "default": "is-dark",
+            "options": [
+              {
+                "value": "is-light",
+                "label": "Light"
+              },
+              {
+                "value": "is-dark",
+                "label": "Dark"
+              }
+            ]
+          },
+          {
+            "type": "text",
+            "id": "slide_subheading",
+            "label": "Subheading text",
+            "default": "An introductory"
+          },
+          {
+            "type": "text",
+            "id": "slide_heading",
+            "label": "Heading text",
+            "default": "Hero Banner"
+          },
+          {
+            "type": "text",
+            "id": "slide_cta",
+            "label": "Button text",
+            "default": "Shop now"
+          },
+          {
+            "type": "url",
+            "id": "slide_link",
+            "label": "Slide link"
+          }
+        ]
+      }
+    ]
+  }
+{% endschema %}

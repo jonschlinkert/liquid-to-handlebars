@@ -1,0 +1,211 @@
+{%- assign product = all_products[section.settings.featured_product] -%}
+{%- assign current_variant = product.selected_or_first_available_variant -%}
+{%- assign current_variant_sale = false -%}
+
+{%- if product == empty -%}
+  {%- assign section_onboarding = true -%}
+  {%- assign vendor = 'homepage.onboarding.product_vendor' | t -%}
+  {%- assign title = 'homepage.onboarding.product_title' | t -%}
+  {%- assign compare_at_price = 2999 -%}
+  {%- assign price = 1999 -%}
+{%- else -%}
+  {%- assign section_onboarding = false -%}
+  {%- assign vendor = product.vendor -%}
+  {%- assign title = product.title -%}
+  {%- assign compare_at_price = current_variant.compare_at_price -%}
+  {%- assign price = current_variant.price -%}
+{%- endif -%}
+
+<div id="FeaturedProduct-{{ section.id }}" class="featured-product" data-section-id="{{ section.id }}" data-section-type="featured-product" data-variant-id="{{ current_variant.id }}" {% if section_onboarding %}data-onboarding{% endif %}>
+  <div class="featured-product__wrapper{% if section.settings.layout == 'full' %} featured-product__wrapper--full-width{% endif %}">
+
+    <div class="featured-product__image-column">
+
+      {% unless section_onboarding %}
+        {% assign featured_image = current_variant.featured_image | default: product.featured_image %}
+        {% for image in product.images %}
+          {% if image.attached_to_variant? or image == featured_image %}
+            <div class="featured-product__image-container {% unless featured_image == image %} hide{% endunless %}" data-id="{{ image.id }}" data-variant-image-toggle-hide>
+              <div class="feature-product__image-padding"></div>
+              {% assign img_url = image | img_url: '1x1' | replace: '_1x1.', '_{width}x.' %}
+
+              {% if section.settings.image_size == "contain" %}
+                {% assign parentFit = 'data-parent-fit="contain"' %}
+
+                <style>
+                  #FeaturedProduct-{{ section.id }} .featured-product__image.lazyloaded {
+                    object-fit: contain;
+                    font-family: "object-fit: contain";
+                    background-color: {{ section.settings.background_color }};
+                  }
+                </style>
+
+              {% else %}
+                {% assign parentFit = 'data-parent-fit="cover"' %}
+
+                <style>
+                  #FeaturedProduct-{{ section.id }} .featured-product__image.lazyloaded {
+                    object-fit: cover;
+                    font-family: "object-fit: cover";
+                    background-color: {{ section.settings.background_color }};
+                  }
+                </style>
+              {% endif %}
+
+              <img class="featured-product__image lazyload"
+                  {% if featured_image == image %}src="{{ image | img_url: '300x'}}"{% endif %}
+                  data-src="{{ img_url }}"
+                  data-widths="[360, 540, 720, 900, 1080, 1296, 1512, 1728, 2048]"
+                  data-aspectratio="{{ image.aspect_ratio }}"
+                  data-sizes="auto"
+                  data-parent-fit="contain"
+                  alt="{{ image.alt | escape }}"
+                  data-variant-image>
+            </div>
+          {% endif %}
+        {% endfor %}
+      {% else %}
+        {{ 'product-1' | placeholder_svg_tag: 'placeholder-svg' }}
+      {% endunless %}
+    </div>
+
+    <div class="featured-product__content-column">
+      <div class="featured-product__content-wrapper">
+        <div class="featured-product__content-header {% if section.settings.show_share_buttons %}featured-product__content-header--sharing{% endif %}">
+
+          {% if section.settings.show_vendor %}
+            <p class="product__vendor text-small text-center" itemprop="brand">{{ vendor }}</p>
+          {% endif %}
+
+          <h2 class="product__title text-center" itemprop="name">{{ title }}</h2>
+
+          <p class="product__price text-center">
+            {% if compare_at_price > price %}
+              {%- assign current_variant_sale = true -%}
+            {% endif %}
+
+            <p class="product__price text-center {% if current_variant_sale %}product__price--sale{% endif %}" data-product-price aria-live="polite">
+
+                <span class="product__sale-price-label visually-hidden"> {{ 'products.product.sale_price' | t }} </span>
+                <span class="product__regular-price-label visually-hidden"> {{ 'products.product.price' | t }} </span>
+                <span class="product__current-price" data-regular-price>{{ price | money }}</span>
+
+                <span class="product__compare-price-label visually-hidden"> {{ 'products.product.regular_price' | t }} </span>
+                <s class="product__compare-price" data-compare-price>{{ compare_at_price | money }}</s>
+            </p>
+          </p>
+        </div>
+
+        {% include 'product-form' %}
+
+        <div class="featured-product__share-wrapper">
+          <a class="product__more-details btn btn--secondary btn--primary-color btn--clear" {% unless section_onboarding %}href="{{ product.url }}?variant={{ current_variant.id }}"{% endunless %}>
+            <span class="product__more-details-icon">{% include 'icon-details' %}</span>
+            <span>{{ 'sections.featured_product.full_details' | t }}</span>
+          </a>
+          {% if section.settings.show_share_buttons %}
+            {% if settings.share_facebook or settings.share_twitter or settings.share_pinterest %}
+              {% include 'social-sharing', type: "product", links: 'bottom' share_title: product.title, share_permalink: product.url, share_image: product %}
+            {% endif %}
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {% unless section_onboarding %}
+    <script type="application/json" data-product-json>
+      {{ product | json }}
+    </script>
+
+    <script type="application/json" data-variant-json>
+      {{ current_variant | json }}
+    </script>
+  {% endunless %}
+</div>
+
+{% schema %}
+{
+    "name": "Featured product",
+    "class": "index-section index-section--featured-product",
+    "settings": [
+      {
+        "type": "product",
+        "id": "featured_product",
+        "label": "Product"
+      },
+      {
+        "type": "select",
+        "id": "layout",
+        "label": "Layout",
+        "default": "square",
+        "options": [
+          {
+            "value": "square",
+            "label": "Square"
+          },
+          {
+            "value": "full",
+            "label": "Full-width"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "image_size",
+        "label": "Image layout",
+        "default": "cover",
+        "options": [
+          {
+            "value": "cover",
+            "label": "Fill"
+          },
+          {
+            "value": "contain",
+            "label": "Contain"
+          }
+        ]
+      },
+      {
+        "type": "color",
+        "id": "background_color",
+        "label": "Image background",
+        "default": "transparent"
+      },
+      {
+        "type": "header",
+        "content": "Text"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_quantity_selector",
+        "label": "Show quantity selector",
+        "default": false
+      },
+      {
+        "type": "checkbox",
+        "id": "show_variant_labels",
+        "label": "Show variant labels",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "show_vendor",
+        "label": "Show vendor",
+        "default": false
+      },
+      {
+        "type": "checkbox",
+        "id": "show_share_buttons",
+        "label": "Show social sharing buttons",
+        "default": true
+      }
+    ],
+    "presets": [
+      {
+        "name": "Featured product",
+        "category": "Product"
+      }
+    ]
+  }
+{% endschema %}

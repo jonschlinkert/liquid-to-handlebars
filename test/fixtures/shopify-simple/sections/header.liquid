@@ -1,0 +1,227 @@
+{% if section.settings.show_announcement and section.settings.home_page_only == false or template.name == 'index' %}
+  <style>
+    .announcement-bar--link:hover {
+      {% assign brightness = settings.color_primary_color | color_brightness %}
+
+      {% if brightness <= 224 %}
+        background-color: {{ settings.color_primary_color | color_lighten: 4 }};
+      {% else %}
+        background-color: {{ settings.color_primary_color | color_darken: 8 }};
+      {% endif %}
+    }
+  </style>
+
+  {% if section.settings.announcement_link == blank %}
+    <div class="announcement-bar">
+  {% else %}
+    <a href="{{ section.settings.announcement_link }}" class="announcement-bar announcement-bar--link">
+  {% endif %}
+
+    <p class="announcement-bar__message site-wrapper">{{ section.settings.announcement_text | escape }}</p>
+
+  {% if section.settings.announcement_link == blank %}
+    </div>
+  {% else %}
+    </a>
+  {% endif %}
+{% else %}
+  <div class="page-border"></div>
+{% endif %}
+
+{% unless section.settings.logo == blank %}
+  {%- assign logo_max_height = section.settings.logo_max_width | divided_by: section.settings.logo.aspect_ratio -%}
+  {% if logo_max_height > 600 %}
+    {%- assign logo_max_width = 600 | times: section.settings.logo.aspect_ratio -%}
+  {% else %}
+    {%- assign logo_max_width = section.settings.logo_max_width -%}
+  {% endif %}
+
+  <style>
+    .site-header__logo {
+      width: {{ logo_max_width | escape | default: '150' | remove: 'px' | append: 'px'}};
+    }
+    #HeaderLogoWrapper {
+      max-width: {{ logo_max_width | escape | default: '150' | remove: 'px' | append: 'px'}} !important;
+    }
+  </style>
+{% endunless %}
+
+<div class="site-wrapper">
+  <div class="top-bar grid">
+
+    <div class="grid__item medium-up--one-fifth small--one-half">
+      <div class="top-bar__search">
+        <a href="/search" class="medium-up--hide">
+          {% include 'icon-search' %}
+        </a>
+        <form action="/search" method="get" class="search-bar small--hide" role="search">
+          {% comment %}<input type="hidden" name="type" value="product">{% endcomment %}
+          <button type="submit" class="search-bar__submit">
+            {% include 'icon-search' %}
+            <span class="icon__fallback-text">{{ 'general.search.submit' | t }}</span>
+          </button>
+          <input type="search" name="q" class="search-bar__input" value="{{ search.terms | escape }}" placeholder="{{ 'general.search.placeholder' | t }}" aria-label="{{ 'general.search.placeholder' | t }}">
+        </form>
+      </div>
+    </div>
+
+    {% if shop.customer_accounts_enabled %}
+      <div class="grid__item medium-up--two-fifths small--hide">
+        <span class="customer-links small--hide">
+          {% if customer %}
+            {% if customer.first_name != blank %}
+              {% capture first_name %}<a href="/account">{{ customer.first_name }}</a>{% endcapture %}
+              {{ 'layout.customer.logged_in_as_html' | t: first_name: first_name }}
+            {% else %}
+              <a href="/account">{{ 'layout.customer.account' | t }}</a>
+            {% endif %}
+            <span class="vertical-divider"></span>
+            {{ 'layout.customer.log_out' | t | customer_logout_link }}
+          {% else %}
+            {{ 'layout.customer.log_in' | t | customer_login_link }}
+            <span class="vertical-divider"></span>
+            {{ 'layout.customer.create_account' | t | customer_register_link }}
+          {% endif %}
+        </span>
+      </div>
+    {% endif %}
+
+    <div class="grid__item {% if shop.customer_accounts_enabled %} medium-up--two-fifths {% else %} medium-up--four-fifths {% endif %} small--one-half text-right">
+      <a href="/cart" class="site-header__cart">
+        {% include 'icon-cart' %}
+        <span class="small--hide">
+          {{ 'layout.cart.title' | t }}
+          (<span id="CartCount">{{ cart.item_count }}</span>)
+        </span>
+      </a>
+      <span class="vertical-divider small--hide"></span>
+      <a href="/cart" class="site-header__cart small--hide">
+        {{ 'cart.general.checkout' | t }}
+      </a>
+    </div>
+  </div>
+
+  <hr class="small--hide hr--border">
+
+  <header class="site-header grid medium-up--grid--table" role="banner">
+    <div class="grid__item small--text-center">
+      <div itemscope itemtype="http://schema.org/Organization">
+        {% comment %}
+          Use the uploaded logo from theme settings if enabled.
+          Site name uses `h1` tag on homepage, div on other pages.
+        {% endcomment %}
+        {%- assign img_url = section.settings.logo | img_url: '1x1' | replace: '_1x1.', '_{width}x.' -%}
+        {% assign width = section.settings.logo_max_width | times: 1 %}
+        {% include 'image-style' with image: section.settings.logo, width: width, height: 600, small_style: false, wrapper_id: 'HeaderLogoWrapper', img_id: 'HeaderLogo' %}
+
+        {% if section.settings.logo %}
+          <div id="HeaderLogoWrapper" class="supports-js">
+            <a href="/" itemprop="url" style="padding-top:{{ 1 | divided_by: section.settings.logo.aspect_ratio | times: 100}}%; display: block;">
+              <img id="HeaderLogo"
+                   class="lazyload"
+                   src="{{ section.settings.logo | img_url: '150x150' }}"
+                   data-src="{{ img_url }}"
+                   data-widths="[180, 360, 540, 720, 900, 1080, 1296, 1512, 1728, 2048]"
+                   data-aspectratio="{{ product.featured_image.aspect_ratio }}"
+                   data-sizes="auto"
+                   alt="{{ section.settings.logo.alt | default: shop.name }}"
+                   itemprop="logo">
+            </a>
+          </div>
+          <noscript>
+            {% capture image_size %}{{ section.settings.logo_max_width | escape }}x{% endcapture %}
+            <a href="/" itemprop="url">
+              <img class="site-header__logo" src="{{ section.settings.logo | img_url: image_size }}"
+              srcset="{{ section.settings.logo | img_url: image_size }} 1x, {{ section.settings.logo | img_url: image_size, scale: 2 }} 2x"
+              alt="{{ section.settings.logo.alt | default: shop.name }}"
+              itemprop="logo">
+            </a>
+          </noscript>
+          {% if template.name == 'index' %}
+            <h1 class="visually-hidden">{{ shop.name }}</h1>
+          {% endif %}
+        {% else %}
+          {% if template.name == 'index' %}
+            <h1 class="site-header__site-name">
+              <a href="/" itemprop="url">{{ shop.name }}</a>
+            </h1>
+          {% else %}
+            <a href="/" class="site-header__site-name h1" itemprop="url">
+              {{ shop.name }}
+            </a>
+            {% if template.name == 'index' %}
+              <h1 class="visually-hidden">{{ shop.name }}</h1>
+            {% endif %}
+          {% endif %}
+        {% endif %}
+      </div>
+    </div>
+    {% unless section.settings.tagline == blank %}
+      <div class="grid__item medium-up--text-right small--text-center">
+        <div class="rte tagline">
+          {{ section.settings.tagline }}
+        </div>
+      </div>
+    {% endunless %}
+  </header>
+</div>
+
+{% schema %}
+  {
+    "name": "Header",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Logo"
+      },
+      {
+        "type": "image_picker",
+        "id": "logo",
+        "label": "Logo image"
+      },
+      {
+        "type": "text",
+        "id": "logo_max_width",
+        "label": "Custom logo width (in pixels)",
+        "default": "150"
+      },
+      {
+        "type": "header",
+        "content": "Announcement bar"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_announcement",
+        "label": "Show announcement",
+        "default": false
+      },
+      {
+        "type": "checkbox",
+        "id": "home_page_only",
+        "label": "Home page only",
+        "default": true
+      },
+      {
+        "type": "text",
+        "id": "announcement_text",
+        "label": "Announcement text",
+        "default": "Announce something here"
+      },
+      {
+        "type": "url",
+        "id": "announcement_link",
+        "label": "Announcement link",
+        "info": "Optional"
+      },
+      {
+        "type": "header",
+        "content": "Tagline"
+      },
+      {
+        "type": "richtext",
+        "id": "tagline",
+        "label": "Text"
+      }
+    ]
+  }
+{% endschema %}

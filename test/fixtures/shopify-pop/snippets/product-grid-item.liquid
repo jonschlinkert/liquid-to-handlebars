@@ -1,0 +1,128 @@
+<!-- snippets/product-grid-item.liquid -->
+{% comment %}
+
+  This snippet is used to showcase each product during the loop,
+  'for product in collection.products' in collection.liquid.
+
+  A liquid variable (grid_item_width) is set just before the this
+  snippet is included to change the size of the container.
+  Once the variable is set on a page, all future instances of this
+  snippet will use that width. Overwrite the variable to adjust this.
+
+  Example
+    - assign grid_item_width = 'large--one-quarter medium--one-half'
+
+{% endcomment %}
+
+{% comment %}
+  Set the default grid_item_width if no variable is set
+{% endcomment %}
+{% unless grid_item_width %}
+  {% assign grid_item_width = 'large--one-third medium--one-half' %}
+{% endunless %}
+
+{% if featured.title == '' %}
+  {% comment %}add default state for product block in storefront editor{% endcomment %}
+  {% capture product_title %}{{ 'home_page.onboarding.product_title' | t }}{% endcapture %}
+{% else %}
+  {% capture product_title %}{{ featured.title | escape }}{% endcapture %}
+{% endif %}
+
+{% comment %}
+  Check if the product is on sale and set a variable to be used below.
+{% endcomment %}
+{% assign on_sale = false %}
+{% if featured.compare_at_price > featured.price %}
+  {% assign on_sale = true %}
+{% endif %}
+
+{% comment %}
+  Check if the product is sold out and set a variable to be used below.
+{% endcomment %}
+{% assign sold_out = true %}
+{% if featured.available  %}
+  {% assign sold_out = false %}
+{% endif %}
+
+{% comment %}
+  Set a class for sold-out and on-sale items
+{% endcomment %}
+<div class="{% if sold_out %} sold-out{% endif %}{% if on_sale %} on-sale{% endif %}{% if forloop.last %} last{% endif %}">
+  <div class="product-wrapper">
+    <a href="{{ featured.url | within: collection }}" class="product">
+      {% if featured.title != '' %}
+        {% unless featured.featured_image == blank %}
+          {% capture img_id %}ProductImage-{{ featured.featured_image.id }}{% endcapture %}
+          {% capture wrapper_id %}ProductImageWrapper-{{ featured.featured_image.id }}{% endcapture %}
+          {%- assign img_url = featured.featured_image | img_url: '1x1' | replace: '_1x1.', '_{width}x.' -%}
+
+          {% include 'image-style' with image: featured.featured_image, width: product_size, height: 480, small_style: true, wrapper_id: wrapper_id, img_id: img_id %}
+          <div id="{{ wrapper_id }}" class="product__img-wrapper js">
+            <div style="padding-top:{{ 1 | divided_by: featured.featured_image.aspect_ratio | times: 100}}%;">
+              <img id="{{ img_id }}"
+                   class="product__img lazyload"
+                   data-src="{{ img_url }}"
+                   data-widths="[180, 360, 470, 600, 750, 940, 1080, 1296, 1512, 1728, 2048]"
+                   data-aspectratio="{{ featured.featured_image.aspect_ratio }}"
+                   data-sizes="auto"
+                   alt="{{ featured.featured_image.alt | escape }}">
+            </div>
+          </div>
+        {% else %}
+          <img src="{{ featured.featured_image.src | img_url: 'large' }}" alt="{{ featured.featured_image.alt | escape }}" class="product__img">
+        {% endunless %}
+        <noscript>
+          <img src="{{ featured.featured_image.src | img_url: 'large' }}" alt="{{ featured.featured_image.alt | escape }}" class="product__img">
+        </noscript>
+      {% else %}
+        {% capture current %}{% cycle 1, 2, 3, 4, 5, 6 %}{% endcapture %}
+        {{ 'product-' | append: current | placeholder_svg_tag: 'placeholder-svg' }}
+      {% endif %}
+      <div class="product__cover"></div>
+      {% comment %}
+        Link to your product with the 'within: collection' filter for the link to be aware of the collection.
+        This allows you to create collection-based navigation on the product page.
+
+        Results of using 'within: collection':
+        - Instead of a URL with /products/product-handle
+          you would get /collections/collection-handle/products/product-handle
+
+        For more info on navigation within a collection
+          - http://docs.shopify.com/support/your-store/collections/how-to-navigate-within-a-collection
+
+      {% endcomment %}
+
+      <div class="product__details text-center">
+        <div class="table-contain">
+          <div class="table-contain__inner">
+            <p class="h4 product__title">{{ product_title }}</p>
+            <p class="product__price">
+              {% if on_sale %}
+                <span class="visuallyhidden">{{ 'products.general.sale_price' | t }}</span>
+              {% else %}
+                <span class="visuallyhidden">{{ 'products.general.regular_price' | t }}</span>
+              {% endif %}
+              {% assign price = featured.price | money %}
+              {% if featured.price_varies %}{{ 'products.general.from_text_html' | t: price: price }}{% else %}{{ price }}{% endif %}
+              {% if on_sale %}
+                {% assign original_price =  featured.compare_at_price | money %}
+                <span class="visuallyhidden">{{ 'products.general.regular_price' | t }}</span>
+                <del>{{ original_price }}</del>
+              {% endif %}
+            </p>
+          </div>
+        </div>
+      </div>
+    {% if sold_out %}
+      <div class="sold-out-tag text-center">
+        <span class="tag">{{ 'products.product.sold_out' | t }}</span>
+      </div>
+    {% endif %}
+    {% if on_sale and sold_out != true %}
+      <div class="on-sale-tag text-center">
+        <span class="tag" aria-hidden="true">{{ 'products.product.on_sale' | t }}</span>
+      </div>
+    {% endif %}
+    </a>
+  </div>
+</div>

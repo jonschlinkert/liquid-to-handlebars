@@ -1,0 +1,12 @@
+{% if settings.type_base_family contains 'Google' %}
+  {% assign type_base_parts = settings.type_base_family | split: '_' %}
+  {% capture base_google_url %}{{ type_base_parts[1] }}:400,700{% endcapture %}
+  {{ '//fonts.googleapis.com/css?family=' | append: base_google_url | stylesheet_tag }}
+{% endif %}
+{% if settings.type_accent_family contains 'Google' %}
+  {% unless settings.type_accent_family contains type_base_parts[1] %}
+    {% assign type_accent_parts = settings.type_accent_family | split: '_' %}
+    {% capture accent_google_url %}{{ type_accent_parts[1] }}:400,700{% endcapture %}
+    {{ '//fonts.googleapis.com/css?family=' | append: accent_google_url | stylesheet_tag }}
+  {% endunless %}
+{% endif %}

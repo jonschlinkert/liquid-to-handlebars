@@ -1,0 +1,199 @@
+<style>
+{% if section.settings.product_details_display_method == 'hover' %}
+  @media screen and (min-width: 769px) {
+    .product__cover,
+    .product__details {
+      height: 100%;
+      left: 0;
+      opacity: 0;
+      position: absolute;
+      top: 0;
+      width: 100%;
+      z-index: 1;
+    }
+    /*================ Remove hover in IE8 and below ================*/
+    .lt-ie9 .product__cover {
+      height: auto;
+      position: relative;
+      opacity: 1;
+      width: auto;
+    }
+    .lt-ie9 .product__details {
+      height: auto;
+      position: relative;
+      opacity: 1;
+      width: auto;
+    }
+  }
+{% endif %}
+
+@media screen and (min-width: 769px) {
+  .product__details {
+    {% if section.settings.product_details_display_method == 'always' %}
+      margin-top: 15px;
+    {% endif %}
+
+    z-index: 2;
+  }
+}
+
+{% if section.settings.product_details_display_method == 'always' %}
+  .product__price {
+    margin-bottom: 0;
+  }
+  @include at-query($min, $large) {
+    .product:hover .product__price {
+      color: {{ settings.color_accent }};
+    }
+  }
+{% endif %}
+</style>
+
+{% assign product_rows = section.settings.collection_rows_per_page %}
+{% assign products_per_row = section.settings.collection_products_per_row %}
+{% assign products_per_page = product_rows | times: products_per_row %}
+
+<div data-section-id="{{ section.id }}" data-section-type="collection-template">
+  {% paginate collection.products by products_per_page %}
+
+  <header class="section-header text-center">
+    <h1 class="section-header__title">{{ collection.title }}</h1>
+    {% if collection.description != blank or section.settings.collection_tags_enable or section.settings.collection_sort_enable %}
+      <hr class="hr--small">
+    {% endif %}
+    {% if collection.description != blank %}
+      <div class="rte rte--header">
+        {{ collection.description }}
+      </div>
+    {% endif %}
+    {% if section.settings.collection_tags_enable or section.settings.collection_sort_enable %}
+      <div class="grid--full collection-sorting{% if section.settings.collection_tags_enable %} collection-tags--enabled{% endif %}{% if section.settings.collection_sort_enable %} collection-sorting--enabled{% endif %}">
+        {% if section.settings.collection_tags_enable %}
+          {% include 'collection-tags' %}
+        {% endif %}
+        {% if section.settings.collection_sort_enable %}
+          {% include 'collection-sorting' %}
+        {% endif %}
+      </div>
+    {% endif %}
+  </header>
+
+  {% comment %}
+    Use class grid-uniform to have evenly sized columns clear
+    each other properly at each breakpoint.
+  {% endcomment %}
+  <div class="grid-uniform product-grid">
+
+    {% comment %}
+      Loop through our products in the current collection.
+      See the snippet 'product-grid-item' for the layout.
+    {% endcomment %}
+    
+    {% case products_per_row %}
+      {% when '3' %}
+        {% assign grid_item_width = 'medium--one-third large--one-third' %}
+        {% assign product_size = 335 %}
+      {% when '4' %}
+        {% assign grid_item_width = 'medium-down--one-half large--one-quarter' %}
+        {% assign product_size = 460 %}
+    {% endcase %}
+
+    {% for product in collection.products %}
+      {% assign featured = product %}
+      <div class="grid-item {{ grid_item_width }}">
+        {% include 'product-grid-item' with product_size: product_size %}
+      </div>
+
+    {% else %}
+      {% if collection.handle == 'all' %}
+        {% include 'onboarding-empty-collection' %}
+      {% else %}
+        {% comment %}
+          If collection exists but is empty, display message
+        {% endcomment %}
+        <div class="grid-item">
+          <p>{{ 'collections.general.no_matches' | t }}</p>
+        </div>
+      {% endif %}
+    {% endfor %}
+
+  </div>
+
+  {% if paginate.pages > 1 %}
+    <div class="text-center">
+      {% include 'pagination-custom' %}
+    </div>
+  {% endif %}
+  {% endpaginate %}
+</div>
+
+{% schema %}
+  {
+    "name": "Collection page",
+    "settings": [
+      {
+        "type": "select",
+        "id": "collection_products_per_row",
+        "label": "Products per row",
+        "options": [
+          {
+            "value": "3",
+            "label": "3"
+          },
+          {
+            "value": "4",
+            "label": "4"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "collection_rows_per_page",
+        "label": "Rows per page",
+        "options": [
+          {
+            "value": "3",
+            "label": "3"
+          },
+          {
+            "value": "4",
+            "label": "4"
+          },
+          {
+            "value": "5",
+            "label": "5"
+          },
+          {
+            "value": "6",
+            "label": "6"
+          }
+        ]
+      },
+      {
+        "type": "checkbox",
+        "id": "collection_tags_enable",
+        "label": "Enable tag filtering"
+      },
+      {
+        "type": "checkbox",
+        "id": "collection_sort_enable",
+        "label": "Enable collection sorting"
+      },
+      {
+        "type": "select",
+        "id": "product_details_display_method",
+        "label": "Show product title and price",
+        "options": [
+          {
+            "value": "always",
+            "label": "Always"
+          },
+          {
+            "value": "hover",
+            "label": "On hover"
+          }
+        ]
+      }
+    ]
+  }
+{% endschema %}

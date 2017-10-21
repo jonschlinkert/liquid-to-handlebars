@@ -1,0 +1,310 @@
+{%- assign current_variant = product.selected_or_first_available_variant -%}
+{%- assign current_variant_sale = false -%}
+{% if current_variant.compare_at_price > current_variant.price %}
+  {%- assign current_variant_sale = true -%}
+{% endif %}
+
+<div class="product-template" data-section-id="{{ section.id }}" data-section-type="product-template" data-variant-id="{{ current_variant.id }}" itemscope itemtype="http://schema.org/Product">
+
+  <meta itemprop="name" content="{{ product.title }}">
+  <meta itemprop="url" content="{{ shop.url }}{{ product.url }}">
+  <meta itemprop="image" content="{{ product.featured_image.src | img_url: 'grande' }}">
+
+  {% comment %}
+  ------------------------------------------------------------------------------
+  Product Featured Image
+  ------------------------------------------------------------------------------
+  {% endcomment %}
+  <div class="page-width page-width--no-gutter">
+    {% assign featured_image = current_variant.featured_image | default: product.featured_image %}
+    {% for image in product.images %}
+      {% if image.attached_to_variant? or image == featured_image %}
+
+        {% assign max_height = 650 %}
+        {% assign max_width = 980 %}
+        {% assign max_aspect_ratio = 1.50769 %}
+
+        {% comment %}
+        We need to figure out the max width we want the image to be on the page
+        based on the aspect ratio of the image and based on the size of the
+        image.
+        {% endcomment %}
+        {% if image.aspect_ratio < max_aspect_ratio%}
+          {% if image.height < max_height %}
+            {% assign max_width = image.width | times: image.aspect_ratio | round %}
+          {% else %}
+            {% assign max_width = max_height | times: image.aspect_ratio | round %}
+          {% endif %}
+        {% else %}
+          {% if image.width < max_width %}
+            {% assign max_width = image.width %}
+          {% endif %}
+        {% endif %}
+
+        {% comment %}
+        Create a container for the image that will never go wider than the
+        max width we determined above, and that will keep the same aspect ratio
+        of the image by using 'padding-top'.
+        {% endcomment %}
+        <div class="product__image-container {% unless featured_image == image %} hide{% endunless %}" style="max-width: {{ max_width }}px" data-id="{{ image.id }}" data-variant-image-toggle-hide>
+          <a class="product__image-wrapper product-slideshow__open" href="{{ featured_image | img_url: 'master' }}" style="padding-top:{{ 1 | divided_by: image.aspect_ratio | times: 100}}%" aria-label="{{ 'sections.product_template.open_image_slideshow' | t }}" data-id="{{ image.id }}">
+
+            {% comment %}
+            Only give the visible variant image a src so that it shows an image
+            as quickly as possible. Let lazysizes.js load in the other images when
+            they become visible.
+            {% endcomment %}
+            {% assign img_url = image | img_url: '1x1' | replace: '_1x1.', '_{width}x.' %}
+            <img class="product__image lazyload"
+                {% if featured_image == image %}src="{{ image | img_url: '300x'}}"{% endif %}
+                data-src="{{ img_url }}"
+                data-widths="[360, 540, 720, 900, 1080, 1296, 1512, 1728, 2048]"
+                data-aspectratio="{{ image.aspect_ratio }}"
+                data-sizes="auto"
+                alt="{{ image.alt | escape }}"
+                data-variant-image>
+          </a>
+        </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+
+  {% comment %}
+  ------------------------------------------------------------------------------
+  Product Form & Description
+  ------------------------------------------------------------------------------
+  {% endcomment %}
+  <div class="product__content page-width">
+    <div class="grid">
+      <div class="grid__item medium-up--push-one-twelfth medium-up--ten-twelfths">
+        <div class="product__content-header">
+
+          {% if section.settings.show_vendor %}
+            <p class="product__vendor text-small text-center" itemprop="brand">{{ product.vendor }}</p>
+          {% endif %}
+
+          <h1 class="product__title h2 text-center" itemprop="name">{{ product.title }}</h1>
+          <p class="product__price text-center {% if current_variant_sale %}product__price--sale{% endif %}" data-product-price aria-live="polite">
+
+              <span class="product__sale-price-label visually-hidden"> {{ 'products.product.sale_price' | t }} </span>
+              <span class="product__regular-price-label visually-hidden"> {{ 'products.product.price' | t }} </span>
+              <span class="product__current-price" data-regular-price>{{ current_variant.price | money }}</span>
+
+              <span class="product__compare-price-label visually-hidden"> {{ 'products.product.regular_price' | t }} </span>
+              <s class="product__compare-price" data-compare-price>{{ current_variant.compare_at_price | money }}</s>
+          </p>
+        </div>
+
+        <div class="product__content-main">
+          <div class="product__description rte" itemprop="description" class="rte">
+            {{ product.description }}
+          </div>
+
+          <div class="product__form-container" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+            <div class="product__form-wrapper">
+              <meta itemprop="price" content="{{ current_variant.price | divided_by: 100.00 }}">
+              <meta itemprop="priceCurrency" content="{{ shop.currency }}">
+              <link itemprop="availability" href="http://schema.org/{% if current_variant.available %}InStock{% else %}OutOfStock{% endif %}">
+
+              {% include 'product-form' %}
+
+              {% if section.settings.show_share_buttons %}
+                {% if settings.share_facebook or settings.share_twitter or settings.share_pinterest %}
+                  <div class="product__share-wrapper small--hide">
+                    <div class="product__share">
+                        {% include 'social-sharing', type: "product", links: 'bottom' share_title: product.title, share_permalink: product.url, share_image: product %}
+                    </div>
+                  </div>
+                {% endif %}
+              {% endif %}
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {% comment %}
+  ------------------------------------------------------------------------------
+  Product Share Buttons
+  ------------------------------------------------------------------------------
+  {% endcomment %}
+  {% if section.settings.show_share_buttons %}
+    {% if settings.share_facebook or settings.share_twitter or settings.share_pinterest %}
+      <div class="product__share-wrapper product__share-wrapper--mobile medium-up--hide">
+        <div class="product__share">
+            {% include 'social-sharing', type: 'mobile', share_title: product.title, share_permalink: product.url, share_image: product %}
+        </div>
+      </div>
+    {% endif %}
+  {% endif %}
+
+
+  {% comment %}
+  ------------------------------------------------------------------------------
+  Product Image Gallery
+  ------------------------------------------------------------------------------
+  {% endcomment %}
+  {% if product.images.size > 1 %}
+
+    {% comment %}
+      If we are hiding variant images which are displayed at the top of the
+      page, then find total number images not set as a variant image or as the
+      featured image.
+
+      We need the total number of images to be displayed so that we know what
+      arrangement the images need to be positioned in, i.e. rows of 3 or 2
+      images.
+    {% endcomment %}
+
+    {% if section.settings.hide_variant_images %}
+      {% assign totalImages = 0 %}
+      {% for image in product.images %}
+        {% unless image.attached_to_variant? %}
+          {% assign totalImages = totalImages | plus: 1 %}
+        {% endunless %}
+      {% endfor %}
+    {% else %}
+      {% assign totalImages = product.images.size %}
+    {% endif %}
+
+    {% comment %}
+      Insert images into rows of 3 and/or 2 depending on the total number of
+      images.
+    {% endcomment %}
+    {% assign totalModulus = totalImages | modulo:3 %}
+
+    {% if totalImages == 1 %}<div class="page-width">{% endif %}
+
+    <div class="product__subimage-list product__subimage-list--r{{ totalModulus }}{% if totalImages == 1 %} product__subimage-list--single{% endif %}">
+
+      {% for image in product.images %}
+
+        {% unless image.attached_to_variant? and section.settings.hide_variant_images %}
+
+          <div class="product__subimage-list-item">
+            <a href="{{ image.src | img_url: 'master' }}" class="product__subimage-container product-slideshow__open" aria-label="{{ 'sections.product_template.open_image_slideshow' | t }}" data-id="{{ image.id }}">
+              {% assign img_url = image | img_url: '1x1' | replace: '_1x1.', '_{width}x.' %}
+              <img class="product__subimage lazyload"
+                  data-src="{{ img_url }}"
+                  data-widths="[180, 360, 540, 720, 900, 1080, 1296, 1512, 1728, 2048]"
+                  data-aspectratio="{{ image.aspect_ratio }}"
+                  data-sizes="auto"
+                  data-parent-fit="cover"
+                  alt="{{ image.alt | escape }}">
+
+              <noscript>
+                <img src="{{ image | img_url: 'master' }}" alt="{{ image.alt | escape }}" class="product__subimage">
+              </noscript>
+            </a>
+          </div>
+
+        {%  endunless %}
+      {% endfor %}
+    </div>
+
+    {% if totalImages == 1 %}</div>{% endif %}
+  {% endif %}
+
+  {% comment %}
+  ------------------------------------------------------------------------------
+  Product Slideshow
+  ------------------------------------------------------------------------------
+  {% endcomment %}
+  {% unless product.images.size == 0 %}
+    <div class="product-slideshow{% if product.images.size == 1 %} product-slideshow--single{% endif %} critical-hide" aria-hidden="true">
+      <button class="product-slideshow__close btn btn--clear btn--square" tabindex="-1" data-product-slideshow-close>{% include 'icon-close' %}</button>
+
+      <div class="product-slideshow__content">
+        <div class="product-slideshow__slide-list slider">
+          {% for image in product.images %}
+            <div class="product-slideshow__slide slider__slide{% if forloop.first %} slider__slide--active {% endif %}" data-id="{{ image.id }}" data-product-slideshow-slide>
+              <div class="product-slideshow__slide-image-wrapper">
+                {% assign img_url = image | img_url: '1x1' | replace: '_1x1.', '_{width}x.' %}
+                <img class="product-slideshow__slide-image lazyload fade-in"
+                    data-src="{{ img_url }}"
+                    data-widths="[180, 360, 540, 720, 900, 1080, 1296, 1512, 1728, 2048]"
+                    data-aspectratio="{{ image.aspect_ratio }}"
+                    data-sizes="auto"
+                    data-parent-fit="contain"
+                    alt="{{ image.alt | escape }}">
+                {% include 'spinner' %}
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+
+        {% unless product.images.size == 1 %}
+          <div class="product-slideshow__controls">
+            <button class="product-slideshow__previous btn btn--secondary btn--square" tabindex="-1" data-product-slideshow-previous>
+              {% include 'icon-arrow-left' %}
+              <span class="visually-hidden">{{ 'general.pagination.previous' | t }}</span>
+            </button>
+
+            <div class="product-slideshow__slide-select-list">
+              {% for image in product.images %}
+                <button class="product-slideshow__slide-select {% if forloop.first %} product-slideshow__slide-select--active{% endif %}" tabindex="-1" data-product-slideshow-select="{{ forloop.index0 }}">
+                  <span class="visually-hidden">{{ 'sections.product_template.slide' | t: number: forloop.index}}</span>
+                </button>
+              {% endfor %}
+            </div>
+
+            <button class="product-slideshow__next btn btn--secondary btn--square" tabindex="-1" data-product-slideshow-next>
+              {% include 'icon-arrow-right' %}
+              <span class="visually-hidden">{{ 'general.pagination.next' | t }}</span>
+            </button>
+          </div>
+        {% endunless %}
+      </div>
+    </div>
+  {% endunless %}
+
+  {% comment %}
+  ------------------------------------------------------------------------------
+  Product Data
+  ------------------------------------------------------------------------------
+  {% endcomment %}
+  <script type="application/json" data-product-json>
+    {{ product | json }}
+  </script>
+</div>
+
+{% schema %}
+{
+  "name": "Product pages",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_quantity_selector",
+      "label": "Show quantity selector",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_variant_labels",
+      "label": "Show variant labels",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_vendor",
+      "label": "Show product vendor",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "hide_variant_images",
+      "label": "Hide variant images in gallery",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_share_buttons",
+      "label": "Show social sharing buttons",
+      "info": "Make sure you have enabled social sharing in general settings",
+      "default": true
+    }
+  ]
+}
+{% endschema %}

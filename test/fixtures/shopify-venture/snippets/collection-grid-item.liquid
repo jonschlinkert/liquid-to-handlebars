@@ -1,0 +1,83 @@
+<div class="grid__item {{ grid_item_width }}" {{ block.shopify_attributes }}>
+  {% if featured_collection == empty %}
+    {% assign block_title = 'homepage.onboarding.collection_title' | t %}
+    {% assign image_src = '' %}
+  {% else %}
+    {% assign block_title = featured_collection.title %}
+    {% if featured_collection.image %}
+      {% assign image_src = featured_collection.image.src | img_url: '480x480' %}
+    {% else %}
+      {% assign image_src = featured_collection.products.first.featured_image | img_url: '480x480' %}
+    {% endif %}
+  {% endif %}
+
+  <noscript>
+    <a href="{{ featured_collection.url }}" title="{{ 'collections.general.link_title' | t: title: featured_collection.title }}" class="featured-card{% if stretch_collection_image %} featured-card--cover{% endif %}"{% if stretch_collection_image %} style="background-image: url('{{ image_src }}')"{% endif %}>
+      {% if stretch_collection_image and featured_collection == empty %}
+        <div class="placeholder-background">
+          {% capture current %}{% cycle 1, 2, 3, 4, 5, 6 %}{% endcapture %}
+          {{ 'collection-' | append: current | placeholder_svg_tag: 'placeholder-svg' }}
+        </div>
+      {% endif %}
+      <div class="featured-card__header{% if stretch_collection_image %} featured-card__header--background{% endif %}">
+        <p class="h1 featured-card__title">{{ block_title }}</p>
+        <span class="featured-card__action">{{ 'collections.general.view_all' | t }}</span>
+      </div>
+      {% unless stretch_collection_image %}
+        <div class="featured-card__image-wrapper">
+          {% if featured_collection == empty %}
+            <div class="featured-card__image">
+              {% capture current %}{% cycle 1, 2, 3, 4, 5, 6 %}{% endcapture %}
+              {{ 'collection-' | append: current | placeholder_svg_tag: 'placeholder-svg' }}
+            </div>
+          {% else %}
+            <img src="{{ image_src }}" alt="{{ featured_collection.image.alt | escape }}" class="featured-card__image">
+          {% endif %}
+        </div>
+      {% endunless %}
+    </a>
+  </noscript>
+  {% if featured_collection.image %}
+    {% assign image_src = featured_collection.image %}
+  {% else %}
+    {% assign image_src = featured_collection.products.first.featured_image %}
+  {% endif %}
+  <a href="{{ featured_collection.url }}" title="{{ 'collections.general.link_title' | t: title: featured_collection.title }}" class="featured-card lazyload{% if stretch_collection_image %} featured-card--cover{% endif %}"
+  {% if stretch_collection_image %}
+    {% unless image_src == blank %}
+      style="background-image: url('{{ image_src | img_url: '300x300' }});"
+    {% endunless %}
+    data-bgset="{% include 'bgset', image: image_src %}"
+    data-sizes="auto"
+    data-parent-fit="cover"
+  {% endif %}>
+    {% if stretch_collection_image and featured_collection == empty %}
+      <div class="placeholder-background">
+        {{ 'collection-' | append: current | placeholder_svg_tag: 'placeholder-svg' }}
+      </div>
+    {% endif %}
+    <div class="featured-card__header{% if stretch_collection_image %} featured-card__header--background{% endif %}">
+      <p class="h1 featured-card__title">{{ block_title }}</p>
+      <span class="featured-card__action">{{ 'collections.general.view_all' | t }}</span>
+    </div>
+    {% unless stretch_collection_image %}
+      <div class="featured-card__image-wrapper">
+        {% if featured_collection == empty %}
+          <div class="featured-card__image">
+            {{ 'collection-' | append: current | placeholder_svg_tag: 'placeholder-svg' }}
+          </div>
+        {% elsif image_src == blank %}
+          <img class="featured-card__image" src="{{ image_src.src | img_url: '540x' }}" alt="{{ image_src.alt | escape }}">
+        {% else %}
+          <img class="featured-card__image"
+            src="{{ image_src | img_url: '420x' }}" alt="{{ image_src.alt | escape }}"
+            srcset="
+            {% if image_src.width > 640 %}{{ image_src | img_url: '640x' }} 640w{% endif %}
+            {% if image_src.width > 720 %},{{ image_src | img_url: '720x' }} 720w{% endif %}
+            {% if image_src.width > 900 %},{{ image_src | img_url: '900x' }} 900w{% endif %}"
+            sizes="(min-width: 960px) 450px, (min-width: 720px) 50vw, 100vw"/>
+        {% endif %}
+      </div>
+    {% endunless %}
+  </a>
+</div>

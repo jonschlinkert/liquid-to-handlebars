@@ -1,0 +1,155 @@
+{% assign header_title = article.title %}
+{% include 'page_header' with header_title %}
+
+<div class="wrapper wrapper--margins wrapper--mini">
+
+  <article itemscope itemtype="http://schema.org/Article">
+
+    <div class="article__content rte" itemprop="articleBody">
+      {{ article.content }}
+    </div>
+
+    {% if section.settings.blog_sharing_enabled or section.settings.blog_rss_enabled %}
+
+      <div class="article__sharing">
+
+        {% if section.settings.blog_sharing_enabled %}
+          {% include 'page_share' %}
+        {% endif %}
+
+        {% if section.settings.blog_rss_enabled %}
+          <div class="subscribe-link"><span class="label">{{ 'general.sharing.rss_subscribe' | t }}</span><a href="{{ blog.url }}.atom" target="_blank">{% include 'asset_svg' with 'rss' %}</a></div>
+        {% endif %}
+
+      </div>
+
+    {% endif %}
+
+    {% if blog.comments_enabled? %}
+
+      {% paginate article.comments by 10 %}
+
+        <div id="Comments">
+
+          <h2 class="h3 home-section-title">{{ 'blogs.comments.with_count' | t: count: article.comments_count }}</h2>
+
+          {% if comment and comment.created_at %}
+            <p class="note form-success">
+              {% if blog.moderated? %}
+                {{ 'blogs.comments.success_moderated' | t }}
+              {% else %}
+                {{ 'blogs.comments.success' | t }}
+              {% endif %}
+            </p>
+          {% endif %}
+
+          {% if article.comments_count > 0 %}
+
+            <ul class="comments-list">
+
+              {% for comment in article.comments %}
+
+                <li id="{{ comment.id }}" class="comment grid">
+
+                  <div class="comment__meta grid__item one-quarter medium-down--one-whole">
+                    <strong>{{ comment.author }}</strong>
+                    <time datetime="{{ comment.created_at | date: '%Y-%m-%d' }}">{{ comment.created_at | date: format: 'month_day_year' }}</time>
+                  </div>
+
+                  <div class="comment__content rte grid__item three-quarters medium-down--one-whole right">
+                    {{ comment.content }}
+                  </div>
+
+                </li>
+
+              {% endfor %}
+
+            </ul>
+
+            {% include 'page_pagination' %}
+
+          {% else %}
+
+            <ul class="comments-list">
+              <li class="comment grid">
+                <div class="comment__content rte grid__item one-whole left">
+                  {{ 'blogs.comments.no_comments' | t }}
+                </div>
+              </li>
+            </ul>
+
+          {% endif %}
+
+          <div>
+
+            {% form 'new_comment', article %}
+
+              <h2 id="AddCommentTitle" class="h3 home-section-title">{{ 'blogs.comments.title' | t }}</h2>
+
+              {{ form.errors | default_errors }}
+
+              <div class="form__row">
+
+                <div class="form__column half">
+                  <label for="CommentAuthor">{{ 'blogs.comments.name' | t }}</label>
+                  <input type="text" name="comment[author]" id="CommentAuthor" class="input-full{% if form.errors contains 'author' %} error{% endif %}" value="{{ form.author }}" autocapitalize="words">
+                </div>
+
+                <div class="form__column half">
+                  <label for="CommentEmail">{{ 'blogs.comments.email' | t }}</label>
+                  <input type="email" name="comment[email]" id="CommentEmail" class="input-full{% if form.errors contains 'email' %} error{% endif %}" value="{{ form.email }}" autocorrect="off" autocapitalize="off">
+                </div>
+
+                <div class="form__column full">
+                  <label for="CommentBody">{{ 'blogs.comments.message' | t }}</label>
+                  <textarea name="comment[body]" id="CommentBody" class="input-full{% if form.errors contains 'body' %} error{% endif %}">{{ form.body }}</textarea>
+                </div>
+
+              </div>
+
+              {% if blog.moderated? %}
+                <p>{{ 'blogs.comments.moderated' | t }}</p>
+              {% endif %}
+
+              <input type="submit" class="btn btn--regular btn--dark btn--outline" value="{{ 'blogs.comments.post' | t }}">
+
+              {% if form.errors %}
+                {% assign newHash = 'AddCommentTitle' %}
+              {% endif %}
+
+              {% if form.posted_successfully? %}
+                {% assign newHash = 'Comments' %}
+              {% endif %}
+
+            {% endform %}
+
+          </div>
+
+        </div>
+
+      {% endpaginate %}
+
+    {% endif %}
+
+  </article>
+
+</div>
+
+{% schema %}
+  {
+    "name": "Article pages",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "blog_sharing_enabled",
+        "label": "Enable blog post sharing",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "blog_rss_enabled",
+        "label": "Enable rss link"
+      }
+    ]
+  }
+{% endschema %}

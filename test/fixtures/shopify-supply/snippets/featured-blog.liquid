@@ -1,0 +1,32 @@
+<h2 class="h3"><a href="{{ article.url }}">{{ article.title }}</a></h2>
+{% if section.settings.blog_show_date or section.settings.blog_show_author %}
+  <div class="featured-blog__meta">
+    {% if section.settings.blog_show_date %}
+      {% capture date %}<strong><time pubdate datetime="{{ article.published_at | date: '%Y-%m-%d' }}">{{ article.published_at | date: format: 'month_day_year' }}</time></strong>{% endcapture %}
+    {% endif %}
+    {% if section.settings.blog_show_author %}
+      {% capture author %}<strong>{{ article.author }}</strong>{% endcapture %}
+    {% endif %}
+    {% if section.settings.blog_show_date and section.settings.blog_show_author %}
+      <p class="text-light">
+        {{ 'blogs.article.author_on_date_html' | t: author: author, date: date }}
+      </p>
+    {% elsif section.settings.blog_show_author %}
+       <p class="text-light">
+        {{ 'blogs.article.author_html' | t: author: author }}
+      </p>
+    {% elsif section.settings.blog_show_date %}
+      <p class="text-light">
+        {{ date }}
+      </p>
+    {% endif %}
+  </div>
+{% endif %}
+
+{% if section.settings.blog_show_excerpt %}
+  <div class="rte rte--indented-images">
+    {{ article.excerpt_or_content | strip_html | truncatewords: 30 }}
+  </div>
+{% endif %}
+
+<p><a href="{{ article.url }}">{{ 'blogs.article.read_more' | t }} &rarr;</a></p>

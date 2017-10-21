@@ -1,0 +1,112 @@
+<div id="home-imagebox" class="index-section home-section">
+	{% for block in section.blocks %}
+	<div class="home-imagebox" {{ block.shopify_attributes }}>
+		{% if block.settings.image %}
+			<noscript>
+				<div class="grid__item one-half medium-down--one-whole image {% if block.settings.home-featured-align == 'right-img' %} push--large--one-half {% endif %}"
+					style="background-image: url('{{ block.settings.image | img_url: '1024x1024' }}');display: block;"></div>
+				</noscript>
+			{% endif %}
+		<div class="grid__item one-half medium-down--one-whole image no-js lazyload {% if block.settings.home-featured-align == 'right-img' %} push--large--one-half {% endif %}"
+		 {% if block.settings.image != blank %}
+	      data-bgset="{% include 'bgset', image: block.settings.image %}"
+	      data-widths="[320, 360, 375, 414, 568, 684, 720, 732, 736, 768, 1024, 1200]"
+	      data-sizes="auto"
+	      data-parent-fit="cover">
+      {% else %}>
+		  <div class="placeholder-background imagebox">
+		    {{ 'image' | placeholder_svg_tag: 'placeholder-image' }}
+		  </div>
+		{% endif %}
+		</div>
+		<div class="content wrapper">
+			<div class="grid__item one-half medium-down--one-whole content {% if block.settings.home-featured-align == 'left-img' %} push--large--one-half {% else %} pull--no {% endif %}">
+				<div class="large--display-table">
+					<div class="large--display-table-cell">
+
+						  {% unless block.settings.home-featured-title == blank %}
+							<h3>{{ block.settings.home-featured-title | escape }}</h3>
+						  {% endunless %}
+						  {% unless block.settings.home-featured-content == blank %}
+							{{ block.settings.home-featured-content }}
+						  {% endunless %}
+						  {% unless block.settings.home-featured-btn-label == blank %}
+							<a class="btn btn--regular btn--outline btn--light" href="{{ block.settings.home-featured-btn-url }}">{{ block.settings.home-featured-btn-label | escape }}</a>
+						  {% endunless %}
+
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+  {% endfor %}
+</div>
+
+{% schema %}
+	{
+		"name": "Image with text",
+		"blocks": [
+			{
+				"type": "text",
+				"name": "Image with text",
+				"settings": [
+					{
+						"type": "select",
+						"id": "home-featured-align",
+						"label": "Image alignment",
+						"default": "left-img",
+						"options": [
+							{
+								"value": "left-img",
+								"label": "Left"
+							},
+							{
+								"value": "right-img",
+								"label": "Right"
+							}
+						]
+					},
+					{
+						"type": "image_picker",
+						"id": "image",
+						"label": "Image"
+					},
+					{
+						"type": "text",
+						"id": "home-featured-title",
+						"label": "Heading",
+						"default": "Talk about your brand"
+					},
+					{
+						"type": "richtext",
+						"id": "home-featured-content",
+						"label": "Text",
+						"default": "<p>Use this text to share information about your brand with your customers. <b>Describe a product, share announcements, or welcome customers to your store.</b></p>"
+					},
+					{
+						"type": "text",
+						"id": "home-featured-btn-label",
+						"label": "Button label"
+					},
+					{
+						"type": "url",
+						"id": "home-featured-btn-url",
+						"label": "Button link"
+					}
+				]
+			}
+		],
+		"presets": [
+			{
+				"name": "Image and text",
+				"category": "Image",
+				"blocks": [
+					{
+						"type": "text"
+					}
+				]
+			}
+		]
+	}
+{% endschema %}

@@ -1,0 +1,85 @@
+<!-- /templates/blog.liquid -->
+{% paginate blog.articles by 5 %}
+
+<div>
+
+  {% if current_tags %}
+    <h1>{{ blog.title | link_to: blog.url }} &mdash; {{ current_tags.first }}</h1>
+  {% else %}
+    <h1>{{ blog.title }}</h1>
+  {% endif %}
+
+  {% for article in blog.articles %}
+
+    <div class="article">
+
+      <h2 class="h3"><a href="{{ article.url }}">{{ article.title }}</a></h2>
+      {% capture author %}<strong>{{ article.author }}</strong>{% endcapture %}
+      {% capture date %}<time datetime="{{ article.published_at | date: '%Y-%m-%d' }}">{{ article.published_at | date: format: 'month_day_year' }}</time>{% endcapture %}
+      <p class="txt--minor">{{ 'blogs.article.author_on_date_html' | t: author: author, date: date }}</p>
+
+      {% if article.image %}
+        {%- assign img_url = article.image | img_url: '1x1' | replace: '_1x1.', '_{width}x.' -%}
+        {%- capture wrapper_id -%}ArticleImageWrapper--{{ article.image.id }}{%- endcapture -%}
+        {%- capture img_id -%}ArticleImage--{{ article.image.id }}{%- endcapture -%}
+        {% include 'image-style' with image: article.image, width: 970, height: 1024, small_style: false, wrapper_id: wrapper_id, img_id: img_id %}
+        <div id="{{ wrapper_id }}" class="supports-js">
+          <a class="article__image-wrapper" href="{{ article.url }}" style="padding-top:{{ 1 | divided_by: article.image.aspect_ratio | times: 100}}%;">
+            <img id="{{ img_id }}"
+                 class="article__image lazyload"
+                 src="{{ article.image | img_url: '300x300' }}"
+                 data-src="{{ img_url }}"
+                 data-widths="[180, 360, 540, 720, 900, 1080, 1296, 1512, 1728, 2048]"
+                 data-aspectratio="{{ article.image.aspect_ratio }}"
+                 data-sizes="auto"
+                 alt="{{ article.title | escape }}"
+                 itemprop="image">
+          </a>
+        </div>
+
+        <noscript>
+          <a class="article__image" href="{{ article.url }}">
+            {{ article | img_url: '1024x1024' | img_tag: article.title }}
+          </a>
+        </noscript>
+      {% endif %}
+
+      <div class="rte">
+        {% if article.excerpt.size > 0 %}
+          {{ article.excerpt }}
+        {% else %}
+          <p>{{ article.content | strip_html | truncatewords: 100 }}</p>
+        {% endif %}
+      </div>
+
+      {% if blog.comments_enabled? or article.tags.size > 0 %}
+        <ul class="list--inline txt--minor">
+          {% if blog.comments_enabled? and article.comments_count > 0 %}
+            <li>
+              <a href="{{ article.url }}#comments">
+                {{ 'blogs.comments.with_count' | t: count: article.comments_count }}
+              </a>
+            </li>
+          {% endif %}
+        </ul>
+      {% endif %}
+
+      <p class="read-more"><a href="{{ article.url }}">{{ 'blogs.article.read_more' | t }} &rarr;</a></p>
+
+    </div>
+
+    {% unless forloop.last %}
+      <hr>
+    {% endunless %}
+
+  {% endfor %}
+
+  {% if paginate.pages > 1 %}
+    <div class="pagination text-center">
+      {{ paginate | default_pagination | replace: '&laquo; Previous', '&larr;' | replace: 'Next &raquo;', '&rarr;' }}
+    </div>
+  {% endif %}
+
+</div>
+
+{% endpaginate %}

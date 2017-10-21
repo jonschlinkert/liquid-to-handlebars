@@ -1,0 +1,212 @@
+
+{% paginate collection.products by 24 %}
+
+{% if collection.description != blank %}
+  <div class="rte rte--description">
+    {{ collection.description }}
+  </div>
+{% endif %}
+
+
+{% if section.settings.collection_sort_enable or section.settings.collection_tags_enable %}
+  <div class="action-bar-secondary">
+    {% if section.settings.collection_tags_enable and collection.all_tags.size > 1 %}
+      <div class="action-bar-secondary__dropdown action-bar-secondary--left">
+        <label for="SortTags" class="label--hidden">{{ 'collections.general.tags' | t }}</label>
+        <select name="SortTags" id="SortTags">
+          {% if current_tags %}
+            {% if collection.handle %}
+              <option value="/collections/{{ collection.handle }}">{{ 'collections.general.all_tags' | t }}</option>
+            {% elsif collection.current_type %}
+              <option value="{{ collection.current_type | url_for_type }}">{{ 'collections.general.all_tags' | t }}</option>
+            {% elsif collection.current_vendor %}
+              <option value="{{ collection.current_vendor | url_for_vendor }}">{{ 'collections.general.all_tags' | t }}</option>
+            {% endif %}
+          {% else %}
+            <option value="">{{ 'collections.general.tags' | t }}</option>
+          {% endif %}
+          {% for tag in collection.all_tags %}
+            <option value="/collections/{% if collection.handle != blank %}{{ collection.handle }}{% else %}all{% endif %}/{{ tag | handleize }}"{% if current_tags contains tag %} selected="selected"{% endif %}>{{ tag }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    {% endif %}
+    {% if section.settings.collection_sort_enable and collection.products.size > 1 %}
+      <div class="action-bar-secondary__dropdown action-bar-secondary--right">
+        <label for="SortBy" class="label--hidden">{{ 'collections.sorting.title' | t }}</label>
+        <select name="SortBy" id="SortBy" data-value="{{ collection.sort_by | default: collection.default_sort_by | escape }}">
+          <option value="manual">{{ 'collections.sorting.featured' | t }}</option>
+          <option value="best-selling">{{ 'collections.sorting.best_selling' | t }}</option>
+          <option value="title-ascending">{{ 'collections.sorting.az' | t }}</option>
+          <option value="title-descending">{{ 'collections.sorting.za' | t }}</option>
+          <option value="price-ascending">{{ 'collections.sorting.price_ascending' | t }}</option>
+          <option value="price-descending">{{ 'collections.sorting.price_descending' | t }}</option>
+          <option value="created-descending">{{ 'collections.sorting.date_descending' | t }}</option>
+          <option value="created-ascending">{{ 'collections.sorting.date_ascending' | t }}</option>
+        </select>
+      </div>
+    {% endif %}
+  </div>
+{% endif %}
+
+{% comment %}
+  Set grid item widths based on settings
+{% endcomment %}
+
+{% include 'product-grid-width' with product_image_type: section.settings.product_image_type, product_image_size: section.settings.product_image_size %}
+
+<div class="grid collection-grid grid--uniform grid--no-gutters" data-section-id="{{ section.id }}" data-section-type="collection-template-section" data-sort-enabled="{{ section.settings.collection_sort_enable }}" data-tags-enabled="{{ section.settings.collection_tags_enable }}">
+  {% for product in collection.products %}
+    {% assign price = product.price | money_without_trailing_zeros %}
+    {% include 'product-grid-item' with product_image_spacing: section.settings.product_image_spacing, vendor_enable: section.settings.vendor_enable %}
+  {% else %}
+    {% comment %}
+      Add default products to help with onboarding for collections/all only.
+
+      The onboarding styles and products are only loaded if the
+      store has no products.
+    {% endcomment %}
+    {% if collection.handle == 'all' %}
+      <div class="grid__item">
+        <div class="helper-section">
+          <div class="grid grid--uniform grid--no-gutters helper-content">
+            {% assign collection_onboarding_index = 1 %}
+            {% for i in (1..8) %}
+              {% case i %}
+                {% when 7 %}
+                  {% assign collection_onboarding_index = 1 %}
+                {% when 8 %}
+                  {% assign collection_onboarding_index = 2 %}
+              {% endcase %}
+              <div class="product-item grid__item {{ grid_item_width }}">
+                <a class="product-item__link" href="/admin/products">
+                  {{ 'product-' | append: collection_onboarding_index | placeholder_svg_tag: 'product-item__image icon icon--placeholder' }}
+                  <span class="product-item__meta">
+                    <span class="product-item__meta__inner">
+                      <p class="product-item__title">{{ 'homepage.onboarding.product_title' | t }}</p>
+                      <p>$19.99</p>
+                    </span>
+                  </span>
+                </a>
+              </div>
+              {% assign collection_onboarding_index = collection_onboarding_index | plus: 1 %}
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    {% else %}
+      {% comment %}
+        If collection exists but is empty, display message
+      {% endcomment %}
+      <div class="grid__item text-center">
+        <p>{{ 'collections.general.no_matches' | t }}</p>
+      </div>
+    {% endif %}
+  {% endfor %}
+</div>
+
+{% if paginate.pages > 1 %}
+  {% if section.settings.pagination_type == 'numbers' %}
+    {% include 'pagination' %}
+  {% else %}
+    <div class="pagination--infinite">
+      <a href="{{ paginate.next.url }}" class="btn js-show-more">{{ 'collections.general.show_more' | t }}</a>
+    </div>
+  {% endif %}
+{% endif %}
+
+{% endpaginate %}
+
+{% schema %}
+  {
+    "name": "Collection",
+    "class": "collection-template-section",
+    "settings": [{
+        "type": "header",
+        "content": "Appearance"
+      },
+      {
+        "type": "select",
+        "id": "product_image_type",
+        "label": "Image style",
+        "options": [
+          {
+            "value": "portrait",
+            "label": "Tall/square"
+          },
+          {
+            "value": "landscape",
+            "label": "Wide"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "product_image_size",
+        "label": "Image size",
+        "default": "medium",
+        "options": [
+          {
+            "value": "small",
+            "label": "Small"
+          },
+          {
+            "value": "medium",
+            "label": "Medium"
+          },
+          {
+            "value": "large",
+            "label": "Large"
+          },
+          {
+            "value": "xlarge",
+            "label": "Extra large"
+          }
+        ]
+      },
+      {
+        "type": "checkbox",
+        "id": "product_image_spacing",
+        "label": "Add spacing between images"
+      },
+      {
+        "type": "checkbox",
+        "id": "vendor_enable",
+        "label": "Show product vendor"
+      },
+      {
+        "type": "header",
+        "content": "Sorting & filtering"
+      },
+      {
+        "type": "checkbox",
+        "id": "collection_sort_enable",
+        "label": "Show sorting options"
+      },
+      {
+        "type": "checkbox",
+        "id": "collection_tags_enable",
+        "label": "Show tag filtering"
+      },
+      {
+        "type": "header",
+        "content": "Pagination"
+      },
+      {
+        "type": "select",
+        "id": "pagination_type",
+        "label": "Pagination Type",
+        "default": "numbers",
+        "options": [
+          {
+            "value": "numbers",
+            "label": "Numbered pages"
+          },
+          {
+            "value": "show_more",
+            "label": "\"View more\" button"
+          }
+        ]
+      }]
+  }
+{% endschema %}

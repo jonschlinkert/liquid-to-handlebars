@@ -1,0 +1,312 @@
+<style>
+  .site-header__logo img {
+    max-width: {{ section.settings.logo_max_width | escape | default: '180' | remove: 'px' | append: 'px' }};
+  }
+
+  @media screen and (max-width: 768px) {
+    .site-header__logo img {
+      max-width: 100%;
+    }
+  }
+</style>
+
+{% assign hero_full_height = true %}
+<div data-section-id="{{ section.id }}" data-section-type="header-section" data-template="{{ template.name }}">
+  <div class="header-container">
+    <div class="header-wrapper{% unless hero_full_height %} header-wrapper--over-hero{% endunless %}">
+      {% if section.settings.show_announcement %}
+        {% if section.settings.home_page_only == false or template.name == 'index' %}
+          <style>
+            .announcement-bar {
+              background-color: {{ section.settings.color_bg }};
+            }
+
+            .announcement-bar--link:hover {
+              {% assign brightness = section.settings.color_bg | color_brightness %}
+
+              {% if brightness <= 192 %}
+                {% assign lightenAmount = 255 | minus: brightness | divided_by: 255 | times: 16 %}
+                background-color: {{ section.settings.color_bg | color_lighten: lightenAmount }};
+              {% else %}
+                {% assign darkenAmount = 255 | divided_by: brightness | times: 8 %}
+                background-color: {{ section.settings.color_bg | color_darken: darkenAmount }};
+              {% endif %}
+            }
+
+            .announcement-bar__message {
+              color: {{ section.settings.color_text }};
+            }
+          </style>
+
+          {% if section.settings.link == blank %}
+            <div class="announcement-bar">
+          {% else %}
+            <a href="{{ section.settings.link }}" class="announcement-bar announcement-bar--link">
+          {% endif %}
+
+            <p class="announcement-bar__message">{{ section.settings.text | escape }}</p>
+
+          {% if section.settings.link == blank %}
+            </div>
+          {% else %}
+            </a>
+          {% endif %}
+
+        {% endif %}
+      {% endif %}
+
+      <header class="site-header" role="banner">
+        <div class="wrapper">
+          <div class="grid--full grid--table">
+            <div class="grid__item large--hide one-quarter">
+              <div class="site-nav--mobile">
+                <button type="button" class="icon-fallback-text site-nav__link js-drawer-open-left" aria-controls="NavDrawer">
+                  <span class="icon icon-hamburger" aria-hidden="true"></span>
+                  <span class="fallback-text">{{ 'general.drawers.navigation' | t }}</span>
+                </button>
+              </div>
+            </div>
+            <div class="grid__item large--one-third medium-down--one-half">
+              {% comment %}
+                Use the uploaded logo from theme settings if enabled.
+                Site name gets precedence with H1 tag on homepage, div on other pages.
+              {% endcomment %}
+              {% if template.name == 'index' %}
+                <h1 class="site-header__logo large--left" itemscope itemtype="http://schema.org/Organization">
+              {% else %}
+                <div class="h1 site-header__logo large--left" itemscope itemtype="http://schema.org/Organization">
+              {% endif %}
+                {% if section.settings.logo %}
+                  {% comment %}
+                    .logo--has-inverted is only applied to the default logo if the inverted logo exists. That way it'll only be hidden on the slider when it has a backup.
+                  {% endcomment %}
+                  <a href="/" itemprop="url" class="site-header__logo-link{% if section.settings.logo-inverted %} logo--has-inverted{% endif %}">
+                    {% if section.settings.logo_max_width != empty %}
+                      {% capture image_size %}{{ section.settings.logo_max_width | escape }}x{% endcapture %}
+                    {% else %}
+                      {% assign image_size = "180x" %}
+                    {% endif %}
+                     <img src="{{ section.settings.logo | img_url: image_size }}"
+                     srcset="{{ section.settings.logo | img_url: image_size }} 1x, {{ section.settings.logo | img_url: image_size, scale: 2 }} 2x"
+                     alt="{{ section.settings.logo.alt | default: shop.name }}"
+                     itemprop="logo">
+                  </a>
+                  {% if section.settings.logo-inverted %}
+                    <a href="/" itemprop="url" class="logo--inverted">
+                      <img src="{{ section.settings.logo-inverted | img_url: image_size }}"
+                      srcset="{{ section.settings.logo-inverted | img_url: image_size }} 1x, {{ section.settings.logo-inverted | img_url: image_size, scale: 2 }} 2x"
+                      alt="{{ section.settings.logo-inverted.alt | default: shop.name }}"
+                      itemprop="logo">
+                    </a>
+                  {% endif %}
+                {% else %}
+                  <a href="/" itemprop="url">{{ shop.name }}</a>
+                {% endif %}
+              {% if template.name == 'index' %}
+                </h1>
+              {% else %}
+                </div>
+              {% endif %}
+            </div>
+            <div class="grid__item large--two-thirds large--text-right medium-down--hide">
+              {% comment %}
+                List out your main-menu linklist (default)
+
+                More info on linklists:
+                  - http://docs.shopify.com/themes/liquid-variables/linklists
+              {% endcomment %}
+              <!-- begin site-nav -->
+              <ul class="site-nav" id="AccessibleNav">
+                {% if section.settings.search == "box" %}
+                <li class="site-nav__item site-nav--search__bar medium-down--hide ">
+                  {% include 'search-bar', search_btn_style: 'btn', search_bar_location: 'search-bar--header' %}
+                </li>
+                {% endif %}
+
+                <li class="site-nav__item site-nav--compress__menu">
+                  <button type="button" class="icon-fallback-text site-nav__link site-nav__link--icon js-drawer-open-left" aria-controls="NavDrawer">
+                    <span class="icon icon-hamburger" aria-hidden="true"></span>
+                    <span class="fallback-text">{{ 'general.drawers.navigation' | t }}</span>
+                  </button>
+                </li>
+                {% for link in linklists[section.settings.main_menu_link_list].links %}
+                  {% comment %}
+                    Create a dropdown menu by naming a linklist the same as a link in the parent nav
+
+                    More info on dropdowns:
+                      - http://docs.shopify.com/manual/your-website/navigation/create-drop-down-menu
+                  {% endcomment %}
+                  {% assign child_list_handle = link.title | handleize %}
+                  {% if linklists[child_list_handle].links != blank %}
+                    <li class="site-nav__item site-nav__expanded-item site-nav--has-dropdown{% unless template.name == 'index' %}{% if link.active %} site-nav--active{% endif %}{% endunless%}" aria-haspopup="true">
+                      <a href="{{ link.url }}" class="site-nav__link">
+                        {{ link.title }}
+                        <span class="icon icon-arrow-down" aria-hidden="true"></span>
+                      </a>
+                      <ul class="site-nav__dropdown text-left">
+                        {% for childlink in linklists[child_list_handle].links %}
+                          <li{% if childlink.active %} class="site-nav--active"{% endif %}>
+                            <a href="{{ childlink.url }}" class="site-nav__dropdown-link">{{ childlink.title | escape }}</a>
+                          </li>
+                        {% endfor %}
+                      </ul>
+                    </li>
+                  {% else %}
+                    <li class="site-nav__item site-nav__expanded-item{% unless template.name == 'index' %}{% if link.active %} site-nav--active{% endif %}{% endunless%}">
+                      <a href="{{ link.url }}" class="site-nav__link">{{ link.title }}</a>
+                    </li>
+                  {% endif %}
+                {% endfor %}
+
+                {% if shop.customer_accounts_enabled %}
+                  <li class="site-nav__item site-nav__expanded-item">
+                    <a class="site-nav__link site-nav__link--icon" href="/account">
+                      <span class="icon-fallback-text">
+                        <span class="icon icon-customer" aria-hidden="true"></span>
+                        <span class="fallback-text">
+                          {% if customer %}
+                            {{ 'layout.customer.account' | t }}
+                          {% else %}
+                            {{ 'layout.customer.log_in' | t }}
+                          {% endif %}
+                        </span>
+                      </span>
+                    </a>
+                  </li>
+                {% endif %}
+
+                {% if section.settings.search == 'page' or section.settings.search == 'modal' %}
+                  {% assign search_modal = true %}
+                  {% if section.settings.search == 'page' %}
+                    {% assign search_modal = false %}
+                  {% endif %}
+                  <li class="site-nav__item">
+                    <a href="/search" class="site-nav__link site-nav__link--icon{% if search_modal %} js-toggle-search-modal{% endif %}" data-mfp-src="#SearchModal">
+                      <span class="icon-fallback-text">
+                        <span class="icon icon-search" aria-hidden="true"></span>
+                        <span class="fallback-text">{{ 'general.search.title' | t }}</span>
+                      </span>
+                    </a>
+                  </li>
+                {% endif %}
+
+                <li class="site-nav__item">
+                  <a href="/cart" class="site-nav__link site-nav__link--icon cart-link js-drawer-open-right" aria-controls="CartDrawer">
+                    <span class="icon-fallback-text">
+                      <span class="icon icon-cart" aria-hidden="true"></span>
+                      <span class="fallback-text">{{ 'layout.cart.title' | t }}</span>
+                    </span>
+                    <span class="cart-link__bubble{% if cart.item_count > 0 %} cart-link__bubble--visible{% endif %}"></span>
+                  </a>
+                </li>
+
+              </ul>
+              <!-- //site-nav -->
+            </div>
+            <div class="grid__item large--hide one-quarter">
+              <div class="site-nav--mobile text-right">
+                <a href="/cart" class="site-nav__link cart-link js-drawer-open-right" aria-controls="CartDrawer">
+                  <span class="icon-fallback-text">
+                    <span class="icon icon-cart" aria-hidden="true"></span>
+                    <span class="fallback-text">{{ 'layout.cart.title' | t }}</span>
+                  </span>
+                  <span class="cart-link__bubble{% if cart.item_count > 0 %} cart-link__bubble--visible{% endif %}"></span>
+                </a>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </header>
+    </div>
+  </div>
+</div>
+
+{% schema %}
+  {
+    "name": "Header",
+    "settings": [
+      {
+        "type": "link_list",
+        "id": "main_menu_link_list",
+        "label": "Menu",
+        "default": "main-menu"
+      },
+      {
+        "type": "image_picker",
+        "id": "logo",
+        "label": "Logo image"
+      },
+      {
+        "type": "image_picker",
+        "id": "logo-inverted",
+        "label": "Inverted logo",
+        "info": "Use a lighter-colored logo when a dark slideshow image is displayed."
+      },
+      {
+        "type": "text",
+        "id": "logo_max_width",
+        "label": "Custom logo width (in pixels)",
+        "default": "180"
+      },
+      {
+        "type": "select",
+        "id": "search",
+        "options": [
+           { "value": "modal",
+             "label": "Modal"
+           },
+           { "value": "page",
+             "label": "Page"
+           },
+           { "value": "box",
+             "label": "Box"
+           },
+           { "value": "none",
+             "label": "None"
+           }
+        ],
+        "label": "Search type"
+      },
+      {
+        "type": "header",
+        "content": "Announcement bar"
+      },
+      {
+        "type": "checkbox",
+        "id": "show_announcement",
+        "label": "Show announcement",
+        "default": false
+      },
+      {
+        "type": "checkbox",
+        "id": "home_page_only",
+        "label": "Home page only",
+        "default": true
+      },
+      {
+        "type": "text",
+        "id": "text",
+        "label": "Text",
+        "default": "Announce something here"
+      },
+      {
+        "type": "url",
+        "id": "link",
+        "label": "Link"
+      },
+      {
+        "type": "color",
+        "id": "color_bg",
+        "label": "Bar",
+        "default": "#1c1d1d"
+      },
+      {
+        "type": "color",
+        "id": "color_text",
+        "label": "Text",
+        "default": "#fff"
+      }
+    ]
+  }
+{% endschema %}

@@ -1,0 +1,140 @@
+<style>
+  .highlight--{{ section.id }} .highlight__line {
+    background-color: {{ section.settings.border_color }};
+  }
+</style>
+
+<div class="highlight highlight--{{ section.id }} highlight--align-{{ section.settings.content_alignment }}" data-section-id="{{ section.id }}" data-section-type="highlight-section">
+  <div class="page-width page-width--narrow">
+    <div class="highlight__wrapper">
+      <div class="highlight__image-container highlight__image-container--{{ section.settings.image_position }}">
+        {% if section.settings.image == blank %}
+          {{ 'product-1' | placeholder_svg_tag: 'placeholder-svg highlight__image highlight__image--placeholder' }}
+        {% else %}
+          <div class="highlight__image-wrapper" style="padding-top:{{ 1 | divided_by: section.settings.image.aspect_ratio | times: 100}}%">
+            {% assign img_url = section.settings.image | img_url: '1x1' | replace: '_1x1.', '_{width}x.' %}
+            <img class="highlight__image lazyload"
+              data-src="{{ img_url }}"
+              data-widths="[180, 360, 540, 720, 900, 1080, 1296, 1512, 1728, 2048]"
+              data-aspectratio="{{ section.settings.image.aspect_ratio }}"
+              data-sizes="auto"
+              alt="{{ section.settings.image.alt | escape }}">
+          </div>
+        {% endif %}
+      </div>
+      <div class="highlight__content-container">
+        <h2 class="h3">{{ section.settings.heading }}</h2>
+        <p>{{ section.settings.text }}</p>
+        {% if section.settings.button_text != blank %}
+          <a class="btn{% if section.settings.use_second_button %} btn--secondary{% endif %}" href="{{ section.settings.button_link }}">{{ section.settings.button_text }}</a>
+        {% endif %}
+      </div>
+
+      <div class="highlight__border" data-animate>
+        <div class="highlight__line highlight__line--top"></div>
+        <div class="highlight__line highlight__line--right"></div>
+        <div class="highlight__line highlight__line--bottom"></div>
+        <div class="highlight__line highlight__line--left"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Highlight",
+  "class": "index-section index-section--highlight",
+  "settings": [
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Border Color",
+      "default": "#cbc8c1"
+    },
+    {
+      "type": "select",
+      "id": "content_alignment",
+      "label": "Content alignment",
+      "default": "middle",
+      "options": [
+        {
+          "label": "Top",
+          "value": "top"
+        },
+        {
+          "label": "Middle",
+          "value": "middle"
+        },
+        {
+          "label": "Bottom",
+          "value": "bottom"
+        }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "Image"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image"
+    },
+    {
+      "type": "select",
+      "id": "image_position",
+      "label": "Image position",
+      "default": "back",
+      "options": [
+        {
+          "label": "Front",
+          "value": "front"
+        },
+        {
+          "label": "Back",
+          "value": "back"
+        }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "Text"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Gift card"
+    },
+    {
+      "type": "textarea",
+      "id": "text",
+      "label": "Text",
+      "default": "Looking for something for someone special? A gift card to our store is the perfect idea!"
+    },
+    {
+      "type": "checkbox",
+      "id": "use_second_button",
+      "label": "Use secondary button style",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Button label",
+      "default": "View"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button link"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Highlight",
+      "category": "Image"
+    }
+  ]
+}
+{% endschema %}

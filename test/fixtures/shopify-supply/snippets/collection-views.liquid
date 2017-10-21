@@ -1,0 +1,38 @@
+{% comment %}
+  Toggle between collection.liquid and collection.list.liquid with the
+  ?view= parameter.
+{% endcomment %}
+
+<div class="collection-view">
+  <a title="Grid view" class="change-view{% unless template.suffix == 'list' %} collection-view--active{% endunless %}" data-view="grid">
+    <span class="icon icon-collection-view-grid"></span>
+  </a>
+  <a title="List view" class="change-view{% if template.suffix == 'list' %} collection-view--active{% endif %}" data-view="list">
+    <span class="icon icon-collection-view-list"></span>
+  </a>
+</div>
+
+<script>
+  function replaceUrlParam(url, paramName, paramValue) {
+    var pattern = new RegExp('('+paramName+'=).*?(&|$)'),
+        newUrl = url.replace(pattern,'$1' + paramValue + '$2');
+    if ( newUrl == url ) {
+      newUrl = newUrl + (newUrl.indexOf('?')>0 ? '&' : '?') + paramName + '=' + paramValue;
+    }
+    return newUrl;
+  }
+
+  $(function() {
+    $('.change-view').on('click', function() {
+      var view = $(this).data('view'),
+          url = document.URL,
+          hasParams = url.indexOf('?') > -1;
+
+      if (hasParams) {
+        window.location = replaceUrlParam(url, 'view', view);
+      } else {
+        window.location = url + '?view=' + view;
+      }
+    });
+  });
+</script>

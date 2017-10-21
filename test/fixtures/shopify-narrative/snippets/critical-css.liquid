@@ -1,0 +1,568 @@
+{% comment %}
+
+Critical Styles for Super Fast First Render
+--------------------------------------------------------------------------------
+
+First render is an important metric when considering perceived performance. The
+faster the browser can get something on the page, the faster that page feels.
+
+When a browser starts processing a webpage, one thing that prevents it from
+starting to render that page is the external style sheet. Most of the time, not
+all the styles included in the external style sheet are needed for the first
+render of the page. Critical styles are the solution to this problem.
+
+Critical styles are the absolute bare minimum styles needed to get something
+useful on the page. In the case of Narrative, we are including the styles for
+header, background color, and slideshow container.
+
+Currently the process of including these styles is very manual. Hopefully #soon
+we'll be able to generate these critical styles automatically.
+
+{% endcomment %}
+
+
+{% comment %}
+  Font Settings - copied from `theme-settings.scss.liquid`
+{% endcomment %}
+{% if settings.type_base_family contains 'Google' %}
+  {% assign type_base_parts = settings.type_base_family | split: '_' %}
+  {% assign type_base_name = type_base_parts[1] %}
+  {% capture base_family %}"{{ type_base_name | split: ':' | first | replace: '+', ' ' }}"{% if type_base_parts.last == 'serif' %}, serif {% else %}, "HelveticaNeue", "Helvetica Neue", sans-serif{% endif %}{% endcapture %}
+{% else %}
+  {% assign base_family = settings.type_base_family %}
+{% endif %}
+
+{% if settings.type_header_family contains 'Google' %}
+  {% assign type_header_parts = settings.type_header_family | split: '_' %}
+  {% assign type_header_name = type_header_parts[1] %}
+  {% capture header_family %}"{{ type_header_name | split: ':' | first | replace: '+', ' ' }}"{% if type_header_parts.last == 'serif' %}, serif {% else %}, "HelveticaNeue", "Helvetica Neue", sans-serif{% endif %}{% endcapture %}
+  {% assign header_weight = type_header_parts[2] | split: ',' %}
+{% else %}
+  {% assign header_family = settings.type_header_family %}
+  {% assign header_weight = 400 %}
+{% endif %}
+
+<style>
+
+/* ------------------------ Critical Helper Classes ------------------------- */
+.critical-hide {
+  display: none;
+}
+
+.critical-clear {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.drawer-cover {
+  opacity: 0;
+}
+
+.main-content .shopify-section {
+  display: none;
+}
+
+.main-content .shopify-section:first-child {
+  display: inherit;
+}
+
+body:not(.template-index) .main-content {
+  opacity: 0;
+}
+
+
+/* ----------------------------- Global Styles ------------------------------ */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: {{ settings.type_base_size }};
+  background-color: {{ settings.color_main_bg }};
+}
+
+body {
+  margin: 0;
+  font-size: 1.6rem;
+  font-family: {{ base_family }};
+  color: {{ settings.color_primary_body_text }};
+  line-height: 1.625;
+}
+
+.page-width {
+  max-width: 980px;
+  padding: 0 20px;
+  margin: 0 auto;
+}
+
+/* ---------------------------- Helper Classes ------------------------------ */
+.visually-hidden,
+.icon__fallback-text {
+  position: absolute !important;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  height: 1px;
+  width: 1px;
+  padding: 0;
+  border: 0;
+}
+
+/* ----------------------------- Typography --------------------------------- */
+body {
+  -webkit-font-smoothing: antialiased;
+  -webkit-text-size-adjust: 100%;
+}
+
+.h4 {
+  letter-spacing: inherit;
+  text-transform: inherit;
+  font-family: {{ header_family }};
+  font-weight: {{ header_weight }};
+}
+
+
+.h4 a {
+  color: inherit;
+  text-decoration: none;
+  font-weight: inherit;
+}
+
+.h4 {
+  font-size: 2.2rem;
+}
+
+@media only screen and (min-width: 750px) {
+  .h4 {
+    font-size: 2.4rem;
+    line-height: 1.5;
+  }
+}
+
+/* ------------------------------ Buttons ----------------------------------- */
+.btn,
+.btn--secondary {
+  -moz-user-select: "none";
+  -ms-user-select: "none";
+  -webkit-user-select: "none";
+  user-select: "none";
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  display: inline-block;
+  position: relative;
+  width: auto;
+  background-color: {{ settings.color_primary }};
+  border-radius: 0;
+  color: {{ settings.color_button_text }};
+  border: 2px solid {{ settings.color_primary }};
+  font-size: 1.4rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-decoration: none;
+  text-align: center;
+  text-transform: uppercase;
+  padding: 10px 30px;
+  line-height: 2.2;
+  vertical-align: middle;
+  cursor: pointer;
+  transition: outline 0.1s linear;
+  box-sizing: border-box;
+}
+
+.btn--square {
+  width: 50px;
+  height: 50px;
+  padding: 0;
+  text-align: center;
+  line-height: 50px;
+}
+
+.btn--clear {
+  position: relative;
+  background-color: transparent;
+  border: 0;
+  color: {{ settings.color_primary_body_text }};
+  transition: 0.15s opacity ease-out;
+}
+
+.btn--clear:hover::after,
+.btn--clear::after {
+  outline: 0 !important;
+}
+
+.btn::after,
+.btn--secondary::after {
+  content: '';
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  outline: 2px solid {{ settings.color_primary }};
+  transition: outline 0.1s linear;
+}
+
+/* -------------------------------- Icons ----------------------------------- */
+.icon {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  vertical-align: middle;
+}
+
+/* ----------------------------- Site Header -------------------------------- */
+.site-header {
+  position: relative;
+  transition: transform 0.25s ease-out;
+  z-index: 10;
+}
+
+.site-header--transparent,
+.site-header--homepage {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
+}
+
+.site-header__wrapper {
+  position: relative;
+  min-height: 60px;
+  width: 100%;
+  background-color: {{ settings.color_header_bg }};
+  z-index: 10;
+}
+
+.site-header--transparent .site-header__wrapper {
+  background-color: transparent;
+}
+
+.site-header__wrapper svg {
+  fill: {{ settings.color_header_text }};
+}
+
+.site-header__wrapper--transitioning {
+  transition: background-color 0.25s ease-out, margin-top 0.25s ease-out;
+}
+
+.announcement-bar {
+  display: none;
+  text-align: center;
+  position: relative;
+  text-decoration: none;
+  z-index: 10;
+}
+
+.announcement-bar--visible {
+  display: block;
+}
+
+.announcement-bar__message {
+  font-size: 16px;
+  font-weight: {{ header_weight }};
+  padding: 10px 20px;
+  margin-bottom: 0;
+}
+
+.announcement-bar__message .icon {
+  fill: currentColor;
+}
+
+.announcement-bar__close {
+  position: absolute;
+  right: 20px;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  line-height: 100%;
+  top: 50%;
+  -ms-transform: translateY(-50%);
+  -webkit-transform: translateY(-50%);
+  transform: translateY(-50%);
+}
+
+.announcement-bar__close .icon {
+  width: 12px;
+  height: 12px;
+  fill: currentColor;
+}
+
+.site-header-sections {
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  width: 100%;
+  -ms-flex-align: center;
+  -webkit-align-items: center;
+  -moz-align-items: center;
+  -ms-align-items: center;
+  -o-align-items: center;
+  align-items: center;
+  min-height: 60px;
+}
+
+.site-header__section--title {
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  width: 100%;
+  -webkit-justify-content: center;
+  -ms-justify-content: center;
+  justify-content: center;
+}
+
+.ie9 .site-header__section--title {
+  width: 100%;
+  padding: 10px 0 2px;
+  text-align: center;
+}
+
+.site-header__logo-wrapper {
+  display: inline-block;
+  margin: 0;
+  padding: 10px 0;
+  text-align: center;
+  line-height: 1.2;
+}
+
+.site-header__logo {
+  display: block;
+}
+
+.site-header__logo-image {
+  display: block;
+  margin: 0 auto;
+}
+
+.site-header--transparent .site-header__logo-image {
+  display: none;
+}
+
+@media only screen and (max-width: 749px) {
+  .site-header__logo-image {
+    max-height: 30px;
+  }
+}
+
+.site-header__logo-image--transparent {
+  display: none;
+}
+
+.site-header--transparent .site-header__logo-image--transparent {
+  display: block;
+}
+
+.navigation-open .site-header__logo-image--transparent,
+html.supports-no-js .site-header__logo-image--transparent {
+  display: none;
+}
+
+.site-header__cart svg {
+  width: 22px;
+  height: 30px;
+  margin: -2px 0 0 -2px;
+}
+
+@media only screen and (min-width: 750px) {
+  .site-header__cart svg {
+    width: 26px;
+  }
+}
+
+.site-header__cart::after {
+  border-color: {{ settings.color_primary_body_text }};
+}
+
+.site-header__cart-bubble {
+  position: absolute;
+  top: 15px;
+  right: 10px;
+  width: 10px;
+  height: 10px;
+  background-color: {{ settings.color_cart_flag }};
+  border-radius: 50%;
+  opacity: 0;
+  transition: all 0.25s ease-out;
+  -ms-transform: scale(0);
+  -webkit-transform: scale(0);
+  transform: scale(0);
+}
+
+@media only screen and (min-width: 750px) {
+  .site-header__cart-bubble {
+    top:15px;
+    right: 9px;
+  }
+}
+
+.site-header__cart .site-header__cart-bubble {
+  top: 13px;
+}
+
+@media only screen and (min-width: 750px) {
+  .site-header__cart .site-header__cart-bubble {
+    top: 12px;
+  }
+}
+
+.site-header__cart-bubble--visible {
+  opacity: 1;
+  -ms-transform: scale(1);
+  -webkit-transform: scale(1);
+  transform: scale(1);
+}
+
+.burger-icon {
+  display: block;
+  height: 2px;
+  width: 16px;
+  left: 50%;
+  margin-left: -8px;
+  background: {{ settings.color_header_text }};
+  position: absolute;
+  transition: all 0.25s ease-out;
+}
+
+@media only screen and (min-width: 750px) {
+  .burger-icon {
+    height:2px;
+    width: 24px;
+    left: 50%;
+    margin-left: -12px;
+  }
+}
+
+.burger-icon--top {
+  top: 18px;
+}
+
+@media only screen and (min-width: 750px) {
+  .burger-icon--top {
+    top: 16px;
+  }
+}
+
+.site-header__navigation--active .burger-icon--top {
+  top: 25px;
+  transform: rotate(45deg);
+}
+
+.burger-icon--mid {
+  top: 24px;
+}
+
+@media only screen and (min-width: 750px) {
+  .burger-icon--mid {
+    top: 24px;
+  }
+}
+
+.site-header__navigation--active .burger-icon--mid {
+  opacity: 0;
+}
+
+.burger-icon--bottom {
+  top: 30px;
+}
+
+@media only screen and (min-width: 750px) {
+  .burger-icon--bottom {
+    top: 32px;
+  }
+}
+
+.site-header__navigation--active .burger-icon--bottom {
+  top: 25px;
+  transform: rotate(-45deg);
+}
+
+.site-header__navigation {
+  position: relative;
+}
+
+.site-header__navigation svg {
+  width: 20px;
+  height: 30px;
+}
+
+.site-header__navigation::after {
+  border-color: #4a4a4a;
+}
+
+/* ----------------------------- Slideshow --------------------------------- */
+.slideshow-wrapper {
+  background-color: {{ settings.color_main_bg }};
+}
+
+.slideshow {
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+  height: calc(100vh - 35px);
+  background-color: {{ settings.color_main_bg | color_darken: 15}};
+}
+
+.slideshow__slide {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  opacity: 0;
+  z-index: 0;
+  transition: all 0.5s cubic-bezier(0, 0, 0, 1);
+}
+
+.slideshow__slide--active {
+  transition: all 0.5s cubic-bezier(0, 0, 0, 1);
+  opacity: 1;
+  z-index: 2;
+}
+
+.slideshow__overlay::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 3;
+}
+
+.slideshow__image {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+  z-index: 1;
+  transition: opacity 0.8s cubic-bezier(0.44, 0.13, 0.48, 0.87),filter 400ms,-webkit-filter 400ms;
+  font-family: "object-fit: cover";
+}
+
+.slideshow__image .placeholder-svg {
+  display: block;
+  fill: rgba(74,74,74,0.35);
+  background-color: #f1eee6;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  height: 100%;
+  width: auto;
+  max-height: none;
+  max-width: none;
+  -ms-transform: translate(-50%, -50%);
+  -webkit-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+}
+
+.slideshow__image .placeholder-background {
+  background-color: #faf9f6;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+</style>

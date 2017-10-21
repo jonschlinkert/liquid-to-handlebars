@@ -1,0 +1,84 @@
+<style>
+  .site-header__logo img {
+    max-width: {{ section.settings.logo_width | escape | default: '180' | remove: 'px' | append: 'px' }};
+  }
+  @media screen and (max-width: 749px) {
+    .site-header__logo img {
+      max-width: 100%;
+    }
+  }
+</style>
+
+<header class="site-header" role="banner" data-section-id="{{ section.id }}" data-section-type="header-section">
+  <div class="grid grid--no-gutters grid--table site-header__inner">
+    <div class="grid__item one-third medium-up--one-sixth">
+      <button type="button" class="site-header__link text-link site-header__toggle-nav js-drawer-open-left">
+        <span class="icon icon-hamburger" aria-hidden="true"></span>
+        <span class="icon__fallback-text">{{ 'layout.navigation.menu' | t }}</span>
+      </button>
+    </div>
+    <div class="grid__item one-third medium-up--two-thirds">
+
+      {% comment %}
+        Use the uploaded logo from theme settings if enabled.
+        Site name gets precedence with H1 tag on homepage, div on other pages.
+      {% endcomment %}
+      {% if template.name == 'index' %}
+        <h1 class="site-header__logo" itemscope itemtype="http://schema.org/Organization">
+      {% else %}
+        <div class="site-header__logo h1" itemscope itemtype="http://schema.org/Organization">
+      {% endif %}
+
+        {% if section.settings.logo != blank %}
+          <a href="/" itemprop="url" class="site-header__logo-link text-center">
+            {% capture image_size %}{{ section.settings.logo_width | escape }}x{% endcapture %}
+            <img class="site-header__logo-image" src="{{ section.settings.logo | img_url: image_size }}"
+            srcset="{{ section.settings.logo | img_url: image_size }} 1x, {{ section.settings.logo | img_url: image_size, scale: 2 }} 2x" alt="{{ shop.name }}" itemprop="logo">
+          </a>
+        {% else %}
+          <a href="/" class="site-header__link site-header__logo-link" itemprop="url">{{ shop.name }}</a>
+        {% endif %}
+
+      {% if template.name == 'index' %}
+        </h1>
+      {% else %}
+        </div>
+      {% endif %}
+
+    </div>
+
+    <div class="grid__item one-third medium-up--one-sixth text-right">
+      <a href="/search" class="site-header__link site-header__search js-drawer-open-top">
+        <span class="icon icon-search" aria-hidden="true"></span>
+        <span class="icon__fallback-text">{{ 'layout.navigation.search' | t }}</span>
+      </a>
+      <a href="/cart" class="site-header__link site-header__cart cart-link{% if settings.cart_type == 'drawer' %} js-drawer-open-right{% endif %}{% if cart.item_count > 0 %} cart-bubble--visible{% endif %}">
+        <span class="icon icon-cart" aria-hidden="true"></span>
+        <span class="icon__fallback-text">{{ 'layout.cart.title' | t }}</span>
+      </a>
+    </div>
+  </div>
+</header>
+
+{% schema %}
+  {
+    "name": "Header",
+    "class": "header-section",
+    "settings": [{
+      "type": "header",
+      "content": "Logo"
+    },
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "Logo image",
+      "info": "450 x 200px max"
+    },
+    {
+      "type": "text",
+      "id": "logo_width",
+      "label": "Custom logo width (in pixels)",
+      "default": "180"
+    }]
+  }
+{% endschema %}

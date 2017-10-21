@@ -1,0 +1,170 @@
+{% comment %}
+
+  This page represents the /collections and /products pages.
+  It is an optional, but highly recommended, template for your theme.
+
+  More info:
+    - http://docs.shopify.com/manual/configuration/store-customization/taking-control-of-collections-listing
+
+  Loop through each collection, except 'frontpage'.
+{% endcomment %}
+
+<header class="section-header text-center">
+  <h1>{{ 'collections.general.catalog_title' | t }}</h1>
+  <hr class="hr--small">
+</header>
+
+{%- assign collection_count = 0 -%}
+{%- assign isEmpty = true -%}
+
+{% comment %}
+  Count how many collections we have to show
+{% endcomment %}
+{% if section.settings.display_type == 'all' %}
+  {% case section.settings.sort %}
+    {% when 'products_high' or 'products_low' %}
+      {%- assign list_collections = collections | sort: 'all_products_count' -%}
+    {% when 'date' or 'date_reversed' %}
+      {%- assign list_collections = collections | sort: 'published_at' -%}
+    {% else %}
+      {%- assign list_collections = collections -%}
+  {% endcase %}
+  {% for collection in list_collections %}
+    {% unless collection.handle == 'frontpage' %}
+      {%- assign collection_count = collection_count | plus: 1 -%}
+    {% endunless %}
+  {% endfor %}
+{% else %}
+  {%- assign collection_count = section.blocks.size -%}
+{% endif %}
+
+{% if collection_count > 0 %}
+  {%- assign isEmpty = false -%}
+{% endif %}
+
+{%- assign collection_index = 0 -%}
+{%- assign divisible_by_three = collection_count | modulo: 3 -%}
+{%- assign divisible_by_two = collection_count | modulo: 2 -%}
+
+<div class="grid collection-grid">
+  {% if section.settings.display_type == 'all' %}
+    {% if section.settings.sort == 'products_low' or section.settings.sort == 'date' or section.settings.sort == 'alphabetical' %}
+      {% if isEmpty %}
+        {% comment %}
+          Add default collections to help with onboarding
+        {% endcomment %}
+        {% include 'onboarding-featured-collections' %}
+      {% else %}
+        {% for collection in list_collections %}
+          {%- assign collection_handle = collection.handle -%}
+
+          {% if collection_handle == 'frontpage' %}
+            {% continue %}
+          {% else %}
+            {%- assign collection_index = collection_index | plus: 1 -%}
+          {% endif %}
+          {% include 'collection-grid-collage' %}
+        {% endfor %}
+      {% endif %}
+    {% else %}
+      {% if isEmpty %}
+        {% comment %}
+          Add default collections to help with onboarding
+        {% endcomment %}
+        {% include 'onboarding-featured-collections' %}
+      {% else %}
+        {% for collection in list_collections reversed %}
+          {%- assign collection_handle = collection.handle -%}
+
+          {% if collection_handle == 'frontpage' %}
+            {% continue %}
+          {% else %}
+            {%- assign collection_index = collection_index | plus: 1 -%}
+          {% endif %}
+          {% include 'collection-grid-collage' %}
+        {% endfor %}
+      {% endif %}
+    {% endif %}
+  {% else %}
+    {% for block in section.blocks %}
+      {%- assign collection = collections[block.settings.collection] -%}
+      {%- assign collection_handle = collection.handle -%}
+      {%- assign collection_index = forloop.index -%}
+      {% include 'collection-grid-collage' %}
+    {% endfor %}
+  {% endif %}
+</div>
+
+{% schema %}
+  {
+    "name": "Collections list page",
+    "settings": [
+      {
+        "type": "paragraph",
+        "content": "All of your collections are listed by default. To customize your list, choose 'Selected' and add collections."
+      },
+      {
+        "type": "radio",
+        "id": "display_type",
+        "label": "Select collections to show",
+        "default": "all",
+        "options": [
+          {
+            "value": "all",
+            "label": "All"
+          },
+          {
+            "value": "selected",
+            "label": "Selected"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "sort",
+        "label": "Sort collections by:",
+        "info": "Sorting only applies when 'All' is selected",
+        "default": "alphabetical",
+        "options": [
+          {
+            "value": "products_high",
+            "label": "Product count, high to low"
+          },
+          {
+            "value": "products_low",
+            "label": "Product count, low to high"
+          },
+          {
+            "value": "alphabetical",
+            "label": "Alphabetically, A-Z"
+          },
+          {
+            "value": "alphabetical_reversed",
+            "label": "Alphabetically, Z-A"
+          },
+          {
+            "value": "date",
+            "label": "Date, old to new"
+          },
+          {
+            "value": "date_reversed",
+            "label": "Date, new to old"
+          }
+        ]
+      }
+    ],
+    "blocks": [
+      {
+        "type": "collection",
+        "name": "Collection",
+        "settings": [
+          {
+            "label": "Collection",
+            "id": "collection",
+            "type": "collection"
+          }
+        ]
+      }
+    ]
+  }
+{% endschema %}

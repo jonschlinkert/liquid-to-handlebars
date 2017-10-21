@@ -1,0 +1,235 @@
+<style>
+  .hero__site-header .site-header__link {
+      color: {{ section.settings.hero_text_color }};
+  }
+
+  .hero__logo {
+    color: {{ section.settings.hero_text_color }};
+  }
+
+  .hero__logo:after {
+    content: '';
+    display: block;
+    width: 20px;
+    height: 20px;
+    position: absolute;
+    top: 50%;
+    margin-left: -20px;
+    margin-top: - 20px;
+    border-radius: 50%;
+    border: 3px solid {{ section.settings.hero_text_color }};
+    border-top-color: transparent;
+  }
+
+  .hero__logo-text {
+    color: {{ section.settings.hero_text_color }};
+  }
+
+  .hero__logo-image {
+    {% if section.settings.hero_logo_max_width != blank %}
+    width: {{ section.settings.hero_logo_max_width | escape | abs }}px;
+    {% else %}
+    width: initial;
+    {% endif %}
+  }
+
+  .hero-wrapper:after {
+    background-color: {{ section.settings.hero_overlay_color }};
+    opacity: {{ section.settings.hero_overlay_amount }};
+  }
+
+</style>
+
+<div data-section-id="{{ section.id }}" data-section-type="slideshow-section">
+  {% unless section.settings.hero_logo_type == '' %}
+    <div class="hero__logo-wrapper">
+        <h1 class="hero__logo" itemscope itemtype="http://schema.org/Organization">
+          <span class="hero__logo-centered">
+            {% case section.settings.hero_logo_type %}
+              {% when 'custom' %}
+                <img class="hero__logo-image" src="{{ section.settings.hero-logo | img_url: '1024x1024'  }}" alt="{{ shop.name }}" itemprop="logo">
+              {% when 'text' %}
+                <h1 class="hero__logo-text" itemprop="url">{{ shop.name }}</h1>
+            {% endcase %}
+          </span>
+        </h1>
+    </div>
+  {% endunless %}
+  <div class="hero slideshow-{{ section.id }}" id="Hero">
+    {% if section.blocks.size > 0 %}
+      {% for block in section.blocks %}
+        {% if block.settings.hero_slide  == blank %}
+          <div class="placeholder-background hero__slide hero__slide--{{ block.id }}" {{ block.shopify_attributes }}>
+            {% capture current %}{% cycle 1, 2 %}{% endcapture %}
+            {{ 'lifestyle-' | append: current | placeholder_svg_tag: 'icon icon--placeholder' }}
+          </div>
+        {% else %}
+        <div class="hero__slide hero__slide--{{ block.id }}" {{ block.shopify_attributes }}>
+          {% assign img_url = block.settings.hero_slide | img_url: '1x1' | replace: '_1x1.', '_{width}x.' %}
+          <img class="hero__image hero__image--{{ block.id }} lazyload{% unless forloop.first == true %} lazypreload{% endunless %}"
+            {% if forloop.first == true %}
+              src="{{ block.settings.hero_slide | img_url: '300x' }}"
+            {% endif %}
+            data-src="{{ img_url }}"
+            data-widths="[540, 720, 900, 1080, 1296, 1512, 1728, 1944, 2048, 4472]"
+            data-aspectratio="{{ block.settings.hero_slide.aspect_ratio }}"
+            data-sizes="auto"
+            data-parent-fit="cover"
+            alt="{{ block.settings.hero_slide.alt | escape }}">
+          <noscript>
+            {% if forloop.first == true %}
+              <div class="hero__image-no-js hero__image--{{ block.id }}" data-image="{{ block.id }}" style="background-image: url('{{ block.settings.hero_slide | img_url: "2048x2048" }}');"></div>
+            {% endif %}
+          </noscript>
+        </div>
+        {% endif %}
+      {% endfor %}
+    {% else %}
+      <div class="hero__slide" {{ block.shopify_attributes }}>
+        {% assign img_url = 'hero_slide_1.jpg' | asset_img_url: '1x1' | replace: '_1x1.', '_{width}x.' %}
+        <img class="hero__image hero__image--{{ block.id }} lazyload"
+          data-src="{{ img_url }}"
+          data-widths="[540, 720, 900, 1080, 1296, 1512, 1728, 1944, 2048]"
+          data-sizes="auto"
+          data-parent-fit="cover">
+        <noscript>
+          <div class="hero__image-no-js hero__image--{{ block.id }}" data-image="{{ block.id }}" style="background-image: url('{{ "hero_slide_1.jpg" | asset_img_url: "2048x2048" }}')"></div>
+        </noscript>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+{% schema %}
+  {
+    "name": "Slideshow",
+    "max_blocks": 6,
+    "settings": [{
+      "type": "header",
+      "content": "Logo"
+    },
+    {
+      "type": "color",
+      "id": "hero_text_color",
+      "label": "Text color",
+      "default": "#000"
+    },
+    {
+      "type": "select",
+      "id": "hero_logo_type",
+      "label": "Logo type",
+      "default": "text",
+      "options": [
+        {
+          "value": "",
+          "label": "No logo"
+        },
+        {
+          "value": "custom",
+          "label": "Custom logo"
+        },
+        {
+          "value": "text",
+          "label": "Store name text"
+        }
+      ]
+    },
+    {
+      "type": "image_picker",
+      "id": "hero-logo",
+      "label": "Custom logo image",
+      "info": "1000 x 1000px recommended"
+    },
+    {
+      "type": "text",
+      "id": "hero_logo_max_width",
+      "label": "Logo width (in pixels)",
+      "default": "400"
+    },
+    {
+      "type": "header",
+      "content": "Overlay"
+    },
+    {
+      "type": "color",
+      "id": "hero_overlay_color",
+      "label": "Image overlay color",
+      "default": "#000"
+    },
+    {
+      "type": "select",
+      "id": "hero_overlay_amount",
+      "label": "Opacity",
+      "default": "0.05",
+      "options": [
+        {
+          "value": "0.01",
+          "label": "1%"
+        },
+        {
+          "value": "0.02",
+          "label": "2%"
+        },
+        {
+          "value": "0.03",
+          "label": "3%"
+        },
+        {
+          "value": "0.04",
+          "label": "4%"
+        },
+        {
+          "value": "0.05",
+          "label": "5%"
+        },
+        {
+          "value": "0.08",
+          "label": "8%"
+        },
+        {
+          "value": "0.10",
+          "label": "10%"
+        },
+        {
+          "value": "0.15",
+          "label": "15%"
+        },
+        {
+          "value": "0.20",
+          "label": "20%"
+        },
+        {
+          "value": "0.25",
+          "label": "25%"
+        },
+        {
+          "value": "0.50",
+          "label": "50%"
+        },
+        {
+          "value": "0.80",
+          "label": "80%"
+        },
+        {
+          "value": "0.90",
+          "label": "90%"
+        },
+        {
+          "value": "0.95",
+          "label": "95%"
+        }
+      ]
+  }],
+    "blocks": [{
+      "type": "image",
+      "name": "Image",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "hero_slide",
+          "label": "Image"
+        }
+      ]
+    }]
+  }
+{% endschema %}

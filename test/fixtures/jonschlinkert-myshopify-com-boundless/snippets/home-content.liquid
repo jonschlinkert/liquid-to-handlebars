@@ -1,0 +1,22 @@
+<!-- /snippets/home-content.liquid -->
+{% if settings.home_page_content != blank %}
+  <hr class="hr--clear">
+
+  <div class="featured-page-content">
+    <div class="rte text-center">
+      {{ pages[settings.home_page_content].content }}
+    </div>
+  </div>
+{% endif %}
+
+{% comment %}
+  Add bottom spacing if it's the last index section
+  
+  
+  // come back to this to add spacing if it's the last section
+  
+  
+{% endcomment %}
+{% if section_number == number_of_index_sections %}
+  <hr class="hr--clear">
+{% endif %}

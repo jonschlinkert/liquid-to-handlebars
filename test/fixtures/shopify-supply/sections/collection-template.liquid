@@ -1,0 +1,216 @@
+{% assign limit = section.settings.grid | times: section.settings.rows %}
+
+{% paginate collection.products by limit %}
+
+{% include 'breadcrumb' %}
+
+{% assign has_sidebar = false %}
+{% if collection.all_tags.size > 0 and section.settings.enable_sidebar %}
+  {% assign has_sidebar = true %}
+{% endif %}
+
+<div class="grid grid-border">
+
+  {% if has_sidebar %}
+  <aside class="sidebar grid-item large--one-fifth collection-filters" id="collectionFilters">
+    {% include 'collection-sidebar' %}
+  </aside>
+  {% endif %}
+
+  <div class="grid-item{% if has_sidebar %} large--four-fifths grid-border--left{% endif %}">
+
+    {% comment %}
+      Different markup if description is set
+    {% endcomment %}
+    {% if collection.description != blank %}
+      <header class="section-header">
+        <h1 class="section-header--title h1">{{ collection.title }}</h1>
+        <div class="rte rte--header">
+          {{ collection.description }}
+        </div>
+      </header>
+      <hr{% if has_sidebar %} class="hr--offset-left"{% endif %}>
+      <div class="section-header">
+        <div class="section-header--right">
+          {% include 'collection-sorting' %}
+          {% include 'collection-views' %}
+          {% include 'toggle-filters' %}
+        </div>
+      </div>
+    {% else %}
+    <header class="section-header">
+      <h1 class="section-header--title section-header--left h1">{{ collection.title }}</h1>
+      <div class="section-header--right">
+        {% include 'collection-sorting' %}
+        {% include 'collection-views' %}
+        {% include 'toggle-filters' %}
+      </div>
+    </header>
+    {% endif %}
+
+    <div class="grid-uniform">
+    {% case section.settings.grid %}
+      {% when '2' %}
+        {%- assign grid_item_width = 'medium--one-half large--one-half' -%}
+        {%- assign image_size = '540x600' -%}
+        {%- assign width = '540' -%}
+        {%- assign height = '600' -%}
+      {% when '3' %}
+        {%- assign grid_item_width = 'small--one-half medium--one-third large--one-third' -%}
+         {%- assign image_size = '345x550' -%}
+         {%- assign width = '345' -%}
+         {%- assign height = '550' -%}
+      {% when '4' %}
+        {%- assign grid_item_width = 'small--one-half medium--one-quarter large--one-quarter' -%}
+        {%- assign image_size = '250x' -%}
+        {%- assign width = '250' -%}
+        {%- assign height = '225' -%}
+      {% when '5' %}
+        {%- assign grid_item_width = 'small--one-half medium--one-fifth large--one-fifth' -%}
+        {%- assign image_size = '195x' -%}
+        {%- assign width = '195' -%}
+        {%- assign height = '125' -%}
+      {% endcase %}
+
+      {% for product in collection.products %}
+        {% comment %}
+        {% if has_sidebar %}
+          {% assign grid_item_width = 'large--one-quarter medium--one-third small--one-half' %}
+        {% else %}
+          {% assign grid_item_width = 'large--one-fifth medium--one-third small--one-half' %}
+        {% endif %}
+        {% endcomment %}
+        {% include 'product-grid-item' with grid_item_width %}
+
+      {% else %}
+
+        <div class="grid-item">
+          <p>{{ 'collections.general.no_matches' | t }}</p>
+        </div>
+
+      {% endfor %}
+
+    </div>
+
+  </div>
+
+  {% if paginate.pages > 1 %}
+  <div class="grid-item pagination-border-top">
+    <div class="grid">
+      <div class="grid-item{% if has_sidebar %} large--four-fifths push--large--one-fifth{% endif %}">
+          <div class="text-center">
+            {% include 'pagination-custom' %}
+          </div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+</div>
+
+{% endpaginate %}
+
+{% schema %}
+  {
+    "name": "Collection",
+    "class": "collection-template-section",
+    "settings": [
+      {
+        "type": "select",
+        "id": "grid",
+        "label": "Products per row",
+        "default": "4",
+        "options": [
+          {
+            "value": "2",
+            "label": "2"
+          },
+          {
+            "value": "3",
+            "label": "3"
+          },
+          {
+            "value": "4",
+            "label": "4"
+          },
+          {
+            "value": "5",
+            "label": "5"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "rows",
+        "label": "Rows per page",
+        "default": "6",
+        "options": [
+          {
+            "value": "3",
+            "label": "3"
+          },
+          {
+            "value": "4",
+            "label": "4"
+          },
+          {
+            "value": "5",
+            "label": "5"
+          },
+          {
+            "value": "6",
+            "label": "6"
+          },
+          {
+            "value": "7",
+            "label": "7"
+          },
+          {
+            "value": "8",
+            "label": "8"
+          }
+        ]
+      },
+      {
+        "type": "radio",
+        "id": "collection_sidebar_filters",
+        "label": "Sidebar product filters",
+        "options": [
+          {
+            "value": "tags",
+            "label": "By tag"
+          },
+          {
+            "value": "groups",
+            "label": "By group"
+          }
+        ],
+        "info": "[Learn how to set up filter groups](https:\/\/help.shopify.com\/manual\/using-themes\/themes-by-shopify\/supply#product-tips-tips-specific)."
+      },
+      {
+        "type": "checkbox",
+        "id": "product_show_compare_at_price",
+        "label": "Show compare at price",
+        "default": false
+      },
+      {
+        "type": "checkbox",
+        "id": "product_show_saved_amount",
+        "label": "Show saved amount",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "product_reviews_enable",
+        "label": "Enable product reviews",
+        "info": "Install the free Shopify [Product Reviews](https:\/\/apps.shopify.com\/product-reviews) app to add product reviews."
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_sidebar",
+        "label": "Enable sidebar",
+        "default": true
+      }
+    ]
+  }
+{% endschema %}

@@ -1,0 +1,83 @@
+{% if settings.social_twitter != '' %}
+  <li><a href="{{ settings.social_twitter | escape }}">
+    <span aria-hidden="true">{% include 'asset_svg' with 'twitter' %}</span>
+    <span class="fallback-text">Twitter</span>
+  </a></li>
+{% endif %}
+
+{% if settings.social_facebook != '' %}
+  <li><a href="{{ settings.social_facebook | escape }}">
+    <span aria-hidden="true">{% include 'asset_svg' with 'facebook' %}</span>
+    <span class="fallback-text">Facebook</span>
+  </a></li>
+{% endif %}
+
+{% if settings.social_google != '' %}
+  <li><a href="{{ settings.social_google | escape }}">
+    <span aria-hidden="true">{% include 'asset_svg' with 'google_plus' %}</span>
+    <span class="fallback-text">Google Plus</span>
+  </a></li>
+{% endif %}
+
+{% if settings.social_youtube != '' %}
+  <li><a href="{{ settings.social_youtube | escape }}">
+    <span aria-hidden="true">{% include 'asset_svg' with 'youtube' %}</span>
+    <span class="fallback-text">YouTube</span>
+  </a></li>
+{% endif %}
+
+{% if settings.social_vimeo != '' %}
+  <li><a href="{{ settings.social_vimeo | escape }}">
+    <span aria-hidden="true">{% include 'asset_svg' with 'vimeo' %}</span>
+    <span class="fallback-text">Vimeo</span>
+  </a></li>
+{% endif %}
+
+{% if settings.social_pinterest != '' %}
+  <li><a href="{{ settings.social_pinterest | escape }}">
+    <span aria-hidden="true">{% include 'asset_svg' with 'pinterest' %}</span>
+    <span class="fallback-text">Pinterest</span>
+  </a></li>
+{% endif %}
+
+{% if settings.social_snapchat != '' %}
+  <li><a href="{{ settings.social_snapchat }}">
+    <span aria-hidden="true">{% include 'asset_svg' with 'snapchat' %}</span>
+    <span class="fallback-text">Snapchat</span>
+  </a></li>
+{% endif %}
+
+{% if settings.social_tumblr != '' %}
+  <li><a href="{{ settings.social_tumblr | escape }}">
+    <span aria-hidden="true">{% include 'asset_svg' with 'tumblr' %}</span>
+    <span class="fallback-text">Tumblr</span>
+  </a></li>
+{% endif %}
+
+{% if settings.social_instagram != '' %}
+  <li><a href="{{ settings.social_instagram | escape }}">
+    <span aria-hidden="true">{% include 'asset_svg' with 'instagram' %}</span>
+    <span class="fallback-text">Instagram</span>
+  </a></li>
+{% endif %}
+
+{% if settings.social_linkedin != '' %}
+  <li><a href="{{ settings.social_linkedin | escape }}">
+    <span aria-hidden="true">{% include 'asset_svg' with 'linkedin' %}</span>
+    <span class="fallback-text">LinkedIn</span>
+  </a></li>
+{% endif %}
+
+{% if settings.social_flickr != '' %}
+  <li><a href="{{ settings.social_flickr | escape }}">
+    <span aria-hidden="true">{% include 'asset_svg' with 'flickr' %}</span>
+    <span class="fallback-text">Flickr</span>
+  </a></li>
+{% endif %}
+
+{% if settings.social_email != '' %}
+  <li><a href="mailto:{{ settings.social_email | escape }}">
+    <span aria-hidden="true">{% include 'asset_svg' with 'email' %}</span>
+    <span class="fallback-text">Email</span>
+  </a></li>
+{% endif %}

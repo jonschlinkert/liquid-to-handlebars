@@ -1,0 +1,121 @@
+<div class="index-section home-section feature-collection feature-collection--{{ section.id }}" data-section-id="{{ section.id }}" data-section-type="feature-collection">
+  <div class="wrapper wrapper--margins">
+
+    {%- assign collection = collections[section.settings.collection] -%}
+
+    {% if section.settings.heading != blank %}
+      {% if section.settings.show_view_all %}
+        <div class="grid">
+          <div class="grid__item large--three-quarters small--one-whole medium--one-whole">
+      {% endif %}
+      <h2 class="home-section-title">{{ section.settings.heading | escape }}</h2>
+      {% if section.settings.show_view_all %}
+        </div>
+          <div class="grid__item large--one-quarter small--one-whole medium--one-whole text-right medium-down--text-center view-all">
+            <a href="{{ collection.url }}">
+              <span>{{ 'collections.general.view_all' | t }}</span>
+              {% include "asset_svg" with "arrow_right" %}</a>
+          </div>
+        </div>
+      {% endif %}
+    {% endif %}
+
+    {% case section.settings.grid %}
+      {% when 2 %}
+        {%- assign grid_item_width = 'small--one-whole medium--one-half large--one-half' -%}
+      {% when 3 %}
+        {%- assign grid_item_width = 'small--one-whole medium--one-third large--one-third' -%}
+      {% when 4 %}
+        {%- assign grid_item_width = 'small--one-half medium--one-quarter large--one-quarter' -%}
+      {% when 5 %}
+        {%- assign grid_item_width = 'small--one-half medium--one-third large--one-fifth' -%}
+      {% else %}
+        {%- assign grid_item_width = 'small--one-whole medium--one-third large--one-third' -%}
+    {% endcase %}
+
+    {%- assign product_limit = section.settings.grid | times: section.settings.rows -%}
+
+     <div class="collection-list grid-uniform {% unless shop.products_count == 0 %} small-gutter {% endunless %}">
+
+      {% for product in collection.products limit:product_limit %}
+        {% include 'product-grid-item', grid_item_width: grid_item_width %}
+      {% else %}
+        <div class="grid__item">
+          <div class="helper-section">
+            <div class="grid-uniform helper-content">
+              {% assign index = 1 %}
+              {% for i in (1..product_limit) %}
+                <div class="product grid__item {{ grid_item_width }} text-center">
+                  <a href="/admin/products" class="grid__image">
+                    {% capture current %}{% cycle 1, 2, 3, 4, 5, 6 %}{% endcapture %}
+                    {{ 'product-' | append: current | placeholder_svg_tag: 'placeholder-svg' }}
+                  </a>
+                  <h3>{{ 'homepage.onboarding.product_title' | t }}</h3>
+                  <p class="price">
+                    $19.99
+                  </p>
+                </div>
+                {% assign index = index | plus: 1 %}
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+
+  </div>
+</div>
+
+{% schema %}
+  {
+    "name": "Featured collection",
+    "settings": [
+      {
+        "type": "text",
+        "id": "heading",
+        "label": "Heading",
+        "default": "Featured collection"
+      },
+      {
+        "type": "collection",
+        "id": "collection",
+        "label": "Collection"
+      },
+      {
+        "type": "range",
+        "id": "grid",
+        "label": "Products per row",
+        "min": 2,
+        "max": 5,
+        "step": 1,
+        "default": 3
+      },
+      {
+        "type": "range",
+        "id": "rows",
+        "label": "Rows",
+        "min": 1,
+        "max": 10,
+        "step": 1,
+        "default": 1
+      },
+      {
+        "type": "checkbox",
+        "id": "show_view_all",
+        "label": "Show 'View all' button",
+        "default": false
+      }
+    ],
+    "presets":
+    [
+      {
+        "name": "Featured collection",
+        "category": "Collections",
+        "settings":
+        {
+          "collection": "frontpage"
+        }
+      }
+    ]
+  }
+{% endschema %}

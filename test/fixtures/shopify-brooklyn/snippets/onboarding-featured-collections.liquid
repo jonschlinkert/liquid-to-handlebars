@@ -1,0 +1,19 @@
+<!-- snippets/onboarding-featured-collections.liquid -->
+{% for i in (1..5) %}
+  {% capture width %}
+    {% cycle 'one-whole medium--one-half large--one-half', 'one-half medium--one-half large--one-half', 'one-half medium--one-third large--one-third', 'one-half medium--one-third large--one-third', 'one-half medium--one-third large--one-third' %}
+  {% endcapture %}
+  <div class="grid__item {{ width }} collection-collage__item text-center">
+    <a href="/admin/collections" class="collection-grid__item-link collection-collage__item-wrapper">
+      <div class="collection-grid__item-overlay grid__image">
+        {% capture current %}{% cycle 1, 2, 3, 4, 5 %}{% endcapture %}
+        {{ 'collection-' | append: current | placeholder_svg_tag: 'placeholder-svg' }}
+      </div>
+      <div class="collection-grid__item-title--wrapper">
+        <span class="collection-grid__item-title">
+          {{ 'home_page.onboarding.collection_title' | t }}
+        </span>
+      </div>
+    </a>
+  </div>
+{% endfor %}

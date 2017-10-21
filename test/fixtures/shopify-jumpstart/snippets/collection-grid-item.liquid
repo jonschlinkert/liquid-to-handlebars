@@ -1,0 +1,64 @@
+{% if collection.image %}
+{% capture collection_image %}
+{%- assign img_url = collection.image | img_url: '1x1' | replace: '_1x1.', '_{width}x.' -%}
+<div class="product__image-wrapper" style="padding-top:{{ 1 | divided_by: collection.image.aspect_ratio | times: 100}}%;">
+  <img class="no-js lazyload"
+    data-src="{{ img_url }}"
+    data-widths="[108, 360, 375, 414, 568, 684, 720, 732, 736, 768, 1024, 1200, 1296, 1512, 1728, 1944, 2048]"
+    data-aspectratio="{{ collection.image.aspect_ratio }}"
+    data-sizes="auto"
+    data-parent-fit="width"
+    alt="{{ collection.image.alt | escape }}">
+    <noscript>
+      <img src="{{ collection.image | img_url: '580x' }}"
+        srcset="{{ collection.image | img_url: '580x' }} 1x, {{ collection.image | img_url: '580x', scale: 2 }} 2x"
+        alt="{{ collection.image.alt }}" style="opacity:1;">
+    </noscript>
+</div>
+{% endcapture %}
+{% else %}
+{% capture collection_image %}
+  {% if collection.products.first.featured_image != blank %}
+  {%- assign img_url = collection.products.first.featured_image | img_url: '1x1' | replace: '_1x1.', '_{width}x.' -%}
+  <div class="product__image-wrapper supports-no-js" style="padding-top:{{ 1 | divided_by: collection.products.first.featured_image.aspect_ratio | times: 100}}%;">
+  <img class="no-js lazyload"
+    data-src="{{ img_url }}"
+    data-widths="[108, 360, 375, 414, 568, 684, 720, 732, 736, 768, 1024, 1200, 1296, 1512, 1728, 1944, 2048]"
+    data-aspectratio="{{ collection.products.first.featured_image.aspect_ratio }}"
+    data-sizes="auto"
+    data-parent-fit="width"   
+    alt="{{ collection.products.first.featured_image.alt | escape }}">
+    <noscript>
+      <img src="{{ collection.products.first.featured_image | img_url: '580x' }}"
+        srcset="{{ collection.products.first.featured_image | img_url: '580x' }} 1x, {{ collection.products.first.featured_image | img_url: '580x', scale: 2 }} 2x"
+        alt="{{ collection.products.first.featured_image.alt }}" style="opacity:1;">
+    </noscript>
+</div>
+{% else %}
+  {% capture current %}{% cycle 1, 2, 3, 4, 5, 6 %}{% endcapture %}
+  {{ 'collection-' | append: current | placeholder_svg_tag: 'placeholder-svg' }}
+{% endif %}
+{% endcapture %}
+{% endif %}
+
+{% if collection == empty %}
+  {% comment %}add default state for collection block in storefront editor{% endcomment %}
+  {% capture collection_title %}{{ 'homepage.onboarding.collection_title' | t }}{% endcapture %}
+{% else %}
+  {% capture collection_title %}{{ collection.title | escape }}{% endcapture %}
+{% endif %}
+
+<div class="product grid__item {{ grid_item_width }} text-center">
+
+  <a href="{{ collection.url }}" class="grid__image">
+  {% if collection == blank %}
+    {% capture current %}{% cycle 1, 2, 3, 4, 5, 6 %}{% endcapture %}
+    {{ 'collection-' | append: current | placeholder_svg_tag: 'placeholder-svg' }}
+  {% else %}
+    {{ collection_image }}
+  {% endif %}
+  </a>
+
+  <p class="h3"><a href="{{ collection.url }}">{{ collection_title }}</a></p>
+
+</div>

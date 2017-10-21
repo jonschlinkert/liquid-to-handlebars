@@ -1,0 +1,58 @@
+<hr>
+<div class="text-centre">
+  <div class="section-header text-center">
+    {% if section.settings.heading != blank %}
+      <label for="Email" class="h1">{{ section.settings.heading | escape }}</label>
+    {% endif %}
+    {% if section.settings.subtext != blank %}
+      <p>{{ section.settings.subtext | escape }}</p>
+    {% endif %}
+  </div>
+  {% form 'customer' %}
+    {{ form.errors | default_errors }}
+    {% if form.posted_successfully? %}
+      <p class="note form-success">{{ 'layout.footer.newsletter_confirmation' | t }}</p>
+    {% else %}
+      <input type="hidden" name="contact[tags]" value="newsletter">
+      <div class="input-group">
+        <label for="Email" class="visually-hidden">{{ 'contact.form.email' | t }}</label>
+        <input type="email" value="{% if customer %}{{ customer.email }}{% endif %}" placeholder="{{ 'layout.footer.newsletter_email_placeholder' | t }}" name="contact[email]" id="Email" class="input-group-field" aria-label="{{ 'layout.footer.newsletter_email_placeholder' | t }}" autocorrect="off" autocapitalize="off">
+        <span class="input-group-btn">
+          <button type="submit" class="btn btn--small" name="commit" id="subscribe">{{ 'layout.footer.newsletter_sign_up' | t }}</button>
+        </span>
+      </div>
+    {% endif %}
+  {% endform %}
+</div>
+
+
+{% schema %}
+  {
+    "name": "Newsletter",
+    "class": "newsletter-section",
+    "settings": [
+      {
+        "type": "text",
+        "id": "heading",
+        "label": "Heading",
+        "default": "Subscribe to our newsletter"
+      },
+      {
+        "type": "text",
+        "id": "subtext",
+        "label": "Subtext",
+        "default": "Promotions, new products and sales. Directly to your inbox."
+      },
+      {
+        "type": "paragraph",
+        "content": "Any customers who sign up will have an account created for them in Shopify. [View customers](/admin/customers?query=&accepts_marketing=1)"
+      }
+    ],
+    "presets": [
+      {
+        "name": "Newsletter",
+        "category": "Promotional"
+      }
+    ]
+  }
+{% endschema %}

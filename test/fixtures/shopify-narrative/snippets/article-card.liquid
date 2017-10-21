@@ -1,0 +1,33 @@
+<div class="card critical-clear" data-animate>
+  <a href="{{ article.url }}" class="card__wrapper card--article">
+    {% if article.image %}
+      {% assign article_image = article.image %}
+    {% else %}
+      {% assign article_image = article.products.first %}
+    {% endif %}
+
+    {% if article_image != blank %}
+      {% include 'card-image', type: article_image %}
+    {% endif %}
+
+    <div class="card__info">
+      {% if section.settings.blog_show_date %}
+        <span class="card__date text-small--uppercase">
+          {{ article.published_at | time_tag: format: 'month_day_year' }}
+        </span>
+      {% endif %}
+      <h3 class="card__name">{{ article.title }}</h3>
+      <div class="card__excerpt rte">
+        {% if article.excerpt.size > 0 %}
+          {{ article.excerpt }}
+        {% else %}
+          {{ article.content | strip_html | truncatewords: 30 }}
+        {% endif %}
+      </div>
+      <span class="card__read-more">
+        {{ 'blogs.article.read_more' | t }}
+        {% include 'icon-arrow-right' %}
+      </span>
+    </div>
+  </a>
+</div>

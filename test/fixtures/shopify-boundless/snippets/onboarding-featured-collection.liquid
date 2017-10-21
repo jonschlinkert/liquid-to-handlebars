@@ -1,0 +1,24 @@
+ <div class="grid__item">
+  <div class="helper-section featured-collection">
+    <div class="grid grid--uniform grid--no-gutters helper-content">
+      {% for i in (1..8) %}
+        <div class="product-item grid__item {{ grid_item_width }}">
+          <div class="product-item__link-wrapper">
+            <a class="product-item__link {% if product_image_spacing %} product-item__image--margins{% endif %}" href="/admin/products">
+            <span class="image-wrapper">
+              {% capture current %}{% cycle 1, 2, 3 %}{% endcapture %}
+              {{ 'product-' | append: current | placeholder_svg_tag: 'placeholder-svg product-item__image-no-js' }}
+                <span class="product-item__meta">
+                  <span class="product-item__meta__inner">
+                    <p class="product-item__title">{{ 'homepage.onboarding.product_title' | t }}</p>
+                    <p class="product-item__price-wrapper">$19.99</p>
+                  </span>
+                </span>
+              </span>
+            </a>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>

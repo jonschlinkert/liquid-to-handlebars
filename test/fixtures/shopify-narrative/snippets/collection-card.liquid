@@ -1,0 +1,31 @@
+<div class="card critical-clear" data-animate>
+  <a href="{{ collection.url }}" class="card__wrapper{% if section.settings.show_spacing %} card__wrapper--padding{% endif %} text-center">
+
+    {% if collection.title == blank %}
+      {% assign collection_image = blank %}
+    {% elsif collection.image %}
+      {% assign collection_image = collection.image %}
+    {% else %}
+      {% assign collection_image = collection.products.first.featured_image %}
+    {% endif %}
+
+    {% unless collection.title == blank %}
+      {% include 'card-image', type: collection_image %}
+    {% else %}
+      <div class="card__image-wrapper">
+        {% capture current %}{% cycle 1, 2, 3, 4, 5, 6 %}{% endcapture %}
+        {{ 'collection-' | append: current | placeholder_svg_tag: 'placeholder-svg' }}
+      </div>
+    {% endunless %}
+
+    <div class="card__info">
+      <h3 class="card__name h4">{% if collection.title != blank %}{{ collection.title }}{% else %}{{ 'homepage.onboarding.collection_title' | t }}{% endif %}</h3>
+
+      {% if section.settings.show_description and collection.description != blank %}
+        <div class="rte card__description{% if width == '2' %} card__description--padding{% endif %}">
+          {{ collection.description | strip_html | truncatewords: 15 }}
+        </div>
+      {% endif %}
+    </div>
+  </a>
+</div>

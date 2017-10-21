@@ -1,0 +1,60 @@
+<!-- /templates/search.liquid -->
+{% paginate search.results by 12 %}
+
+  <h1 class="h2 small--text-center">
+    {% if search.performed %}
+      {% if search.results_count == 0 %}
+        {{ 'general.search.no_results_html' | t: terms: search.terms }}
+      {% else %}
+        {{ 'general.search.results_for_html' | t: terms: search.terms }}
+      {% endif %}
+    {% else %}
+      {{ 'general.search.title' | t }}
+    {% endif %}
+  </h1>
+
+  {% unless search.performed %}
+    <form action="/search" method="get" class="search-bar medium-up--one-half" role="search">
+      {% comment %}<input type="hidden" name="type" value="product">{% endcomment %}
+      <div class="input-group">
+        <input type="search" name="q" value="{{ search.terms | escape }}" placeholder="{{ 'general.search.placeholder' | t }}" aria-label="{{ 'general.search.placeholder' | t }}" class="input-group__field">
+        <div class="input-group__btn">
+          <button type="submit" class="btn">
+            {% include 'icon-search' %}
+            <span class="icon__fallback-text">{{ 'general.search.submit' | t }}</span>
+          </button>
+        </div>
+      </div>
+    </form>
+  {% endunless %}
+
+  {% if search.performed %}
+    <div class="grid grid--uniform">
+      {% for item in search.results %}
+
+        {% if item.object_type == 'product' %}
+
+          {% assign product = item %}
+          {% include 'product-grid-item' %}
+
+        {% else %}
+
+          <div class="grid__item medium-up--one-third small--one-half">
+            <h2 class="h3">{{ item.title | link_to: item.url }}</h2>
+            <p>{{ item.content | strip_html | truncatewords: 50 }}</p>
+          </div>
+
+        {% endif %}
+
+      {% endfor %}
+    </div>
+
+    {% if paginate.pages > 1 %}
+      <div class="pagination">
+        {{ paginate | default_pagination }}
+      </div>
+    {% endif %}
+
+  {% endif %}
+
+{% endpaginate %}

@@ -1,0 +1,415 @@
+[
+  {
+    "name": "theme_info",
+    "theme_name": "Jumpstart",
+    "theme_author": "Shopify",
+    "theme_version": "2.4.1",
+    "theme_documentation_url": "https://help.shopify.com/manual/using-themes/sections",
+    "theme_support_url": "https://support.shopify.com/"
+  },
+  {
+    "name": "Colors",
+    "settings": [
+      {
+        "type": "header",
+        "content": "General"
+      },
+      {
+        "type": "color",
+        "id": "color_body_bg",
+        "label": "Background",
+        "default": "#ffffff"
+      },
+      {
+        "type": "color",
+        "id": "color_body_bg_alt",
+        "label": "Alternate background",
+        "default": "#f9f9f9"
+      },
+      {
+        "type": "color",
+        "id": "color_primary",
+        "label": "Accent color",
+        "default": "#429C80",
+        "info": "Used for text links, primary buttons, lines, and some backgrounds"
+      },
+      {
+        "type": "color",
+        "id": "color_secondary",
+        "label": "Secondary color",
+        "default": "#141414",
+        "info": "Used for secondary buttons, social icons and home page - image and text first section background"
+      },
+      {
+        "type": "color",
+        "id": "color_borders",
+        "label": "Border colors",
+        "default": "#e9e9e9"
+      },
+      {
+        "type": "header",
+        "content": "Text"
+      },
+      {
+        "type": "color",
+        "id": "color_text_titles",
+        "label": "Headings",
+        "default": "#111111"
+      },
+      {
+        "type": "color",
+        "id": "color_text_general",
+        "label": "Regular text",
+        "default": "#343434"
+      },
+      {
+        "type": "color",
+        "id": "color_text_alternate",
+        "label": "Alternate text",
+        "default": "#7a7a7a",
+        "info": "Used for subtitles and meta information"
+      },
+      {
+        "type": "color",
+        "id": "color_text_buttons",
+        "label": "Button text",
+        "default": "#ffffff"
+      },
+      {
+        "type": "header",
+        "content": "Drawer"
+      },
+      {
+        "type": "color",
+        "id": "color_drawer_background",
+        "label": "Background",
+        "default": "#000000"
+      },
+      {
+        "type": "color",
+        "id": "color_drawer_text",
+        "label": "Text",
+        "default": "#ffffff"
+      },
+      {
+        "type": "header",
+        "content": "Footer"
+      },
+      {
+        "type": "color",
+        "id": "color_footer_bg",
+        "label": "Background",
+        "default": "#000000"
+      },
+      {
+        "type": "color",
+        "id": "color_footer_text",
+        "label": "Text",
+        "default": "#757575"
+      }
+    ]
+  },
+  {
+    "name": "Typography",
+    "settings": [
+      {
+        "type": "select",
+        "id": "typography_headings",
+        "label": "Headings",
+        "default": "Montserrat,sans-serif",
+        "options": [
+          {
+            "value": "Helvetica,Arial,sans-serif/*regular*/",
+            "label": "Helvetica, Arial",
+            "group": "Sans-serif"
+          },
+          {
+            "value": "Tahoma,Geneva,sans-serif/*regular*/",
+            "label": "Tahoma, Geneva",
+            "group": "Sans-serif"
+          },
+          {
+            "value": "Dosis,sans-serif",
+            "label": "Dosis",
+            "group": "Sans-serif | Google Web Fonts"
+          },
+          {
+            "value": "Inconsolata,sans-serif",
+            "label": "Inconsolata",
+            "group": "Sans-serif | Google Web Fonts"
+          },
+          {
+            "value": "Montserrat,sans-serif",
+            "label": "Montserrat",
+            "group": "Sans-serif | Google Web Fonts"
+          },
+          {
+            "value": "'Merriweather Sans',sans-serif",
+            "label": "Merriweather Sans",
+            "group": "Sans-serif | Google Web Fonts"
+          },
+          {
+            "value": "'Open Sans',sans-serif",
+            "label": "Open Sans",
+            "group": "Sans-serif | Google Web Fonts"
+          },
+          {
+            "value": "Raleway,sans-serif",
+            "label": "Raleway",
+            "group": "Sans-serif | Google Web Fonts"
+          },
+          {
+            "value": "Quicksand,sans-serif",
+            "label": "Quicksand",
+            "group": "Sans-serif | Google Web Fonts"
+          },
+          {
+            "value": "Roboto,sans-serif",
+            "label": "Roboto",
+            "group": "Sans-serif | Google Web Fonts"
+          },
+          {
+            "value": "'Roboto Condensed',sans-serif",
+            "label": "Roboto Condensed",
+            "group": "Sans-serif | Google Web Fonts"
+          },
+          {
+            "value": "Cambria,Georgia,serif/*regular*/",
+            "label": "Cambria, Georgia",
+            "group": "Serif"
+          },
+          {
+            "value": "Garamond,'Hoefler Text',serif/*regular*/",
+            "label": "Garamond, Hoefler Text",
+            "group": "Serif"
+          },
+          {
+            "value": "Arvo,serif",
+            "label": "Arvo",
+            "group": "Serif | Google Web Fonts"
+          },
+          {
+            "value": "'Libre Baskerville',serif",
+            "label": "Libre Baskerville",
+            "group": "Serif | Google Web Fonts"
+          },
+          {
+            "value": "Lora,serif",
+            "label": "Lora",
+            "group": "Serif | Google Web Fonts"
+          },
+          {
+            "value": "'Noto Serif',serif",
+            "label": "Noto Serif",
+            "group": "Serif | Google Web Fonts"
+          },
+          {
+            "value": "'Roboto Slab',serif",
+            "label": "Roboto Slab",
+            "group": "Serif | Google Web Fonts"
+          },
+          {
+            "value": "Sanchez,serif",
+            "label": "Sanchez",
+            "group": "Serif | Google Web Fonts"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "typography_body",
+        "label": "Body text",
+        "default": "Raleway,sans-serif",
+        "options": [
+          {
+            "value": "Helvetica,Arial,sans-serif/*regular*/",
+            "label": "Helvetica, Arial",
+            "group": "Sans-serif"
+          },
+          {
+            "value": "Tahoma,Geneva,sans-serif/*regular*/",
+            "label": "Tahoma, Geneva",
+            "group": "Sans-serif"
+          },
+          {
+            "value": "Dosis,sans-serif",
+            "label": "Dosis",
+            "group": "Sans-serif | Google Web Fonts"
+          },
+          {
+            "value": "Inconsolata,sans-serif",
+            "label": "Inconsolata",
+            "group": "Sans-serif | Google Web Fonts"
+          },
+          {
+            "value": "Montserrat,sans-serif",
+            "label": "Montserrat",
+            "group": "Sans-serif | Google Web Fonts"
+          },
+          {
+            "value": "'Merriweather Sans',sans-serif",
+            "label": "Merriweather Sans",
+            "group": "Sans-serif | Google Web Fonts"
+          },
+          {
+            "value": "'Open Sans',sans-serif",
+            "label": "Open Sans",
+            "group": "Sans-serif | Google Web Fonts"
+          },
+          {
+            "value": "Raleway,sans-serif",
+            "label": "Raleway",
+            "group": "Sans-serif | Google Web Fonts"
+          },
+          {
+            "value": "Quicksand,sans-serif",
+            "label": "Quicksand",
+            "group": "Sans-serif | Google Web Fonts"
+          },
+          {
+            "value": "Roboto,sans-serif",
+            "label": "Roboto",
+            "group": "Sans-serif | Google Web Fonts"
+          },
+          {
+            "value": "'Roboto Condensed',sans-serif",
+            "label": "Roboto Condensed",
+            "group": "Sans-serif | Google Web Fonts"
+          },
+          {
+            "value": "Cambria,Georgia,serif/*regular*/",
+            "label": "Cambria, Georgia",
+            "group": "Serif"
+          },
+          {
+            "value": "Garamond,'Hoefler Text',serif/*regular*/",
+            "label": "Garamond, Hoefler Text",
+            "group": "Serif"
+          },
+          {
+            "value": "Arvo,serif",
+            "label": "Arvo",
+            "group": "Serif | Google Web Fonts"
+          },
+          {
+            "value": "'Libre Baskerville',serif",
+            "label": "Libre Baskerville",
+            "group": "Serif | Google Web Fonts"
+          },
+          {
+            "value": "Lora,serif",
+            "label": "Lora",
+            "group": "Serif | Google Web Fonts"
+          },
+          {
+            "value": "'Noto Serif',serif",
+            "label": "Noto Serif",
+            "group": "Serif | Google Web Fonts"
+          },
+          {
+            "value": "'Roboto Slab',serif",
+            "label": "Roboto Slab",
+            "group": "Serif | Google Web Fonts"
+          },
+          {
+            "value": "Sanchez,serif",
+            "label": "Sanchez",
+            "group": "Serif | Google Web Fonts"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Favicon",
+    "settings": [
+      {
+        "type": "image_picker",
+        "id": "favicon",
+        "label": "Favicon image",
+        "info": "Will be scaled down to 32 x 32px"
+      }
+    ]
+  },
+  {
+    "name": "Social media",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Accounts"
+      },
+      {
+        "type": "text",
+        "id": "social_twitter",
+        "label": "Twitter",
+        "info": "https://twitter.com/shopify"
+      },
+      {
+        "type": "text",
+        "id": "social_facebook",
+        "label": "Facebook",
+        "info": "https://www.facebook.com/shopify"
+      },
+      {
+        "type": "text",
+        "id": "social_google",
+        "label": "Google+",
+        "info": "https://plus.google.com/+shopify"
+      },
+      {
+        "type": "text",
+        "id": "social_youtube",
+        "label": "YouTube",
+        "info": "https://www.youtube.com/user/shopify"
+      },
+      {
+        "type": "text",
+        "id": "social_vimeo",
+        "label": "Vimeo",
+        "info": "https://vimeo.com/shopify"
+      },
+      {
+        "type": "text",
+        "id": "social_pinterest",
+        "label": "Pinterest",
+        "info": "https://www.pinterest.com/shopify"
+      },
+      {
+        "type": "text",
+        "id": "social_snapchat",
+        "label": "Snapchat",
+        "info": "https://www.snapchat.com/add/shopify"
+      },
+      {
+        "type": "text",
+        "id": "social_tumblr",
+        "label": "Tumblr",
+        "info": "http://shopify.tumblr.com"
+      },
+      {
+        "type": "text",
+        "id": "social_instagram",
+        "label": "Instagram",
+        "info": "https://instagram.com/shopify"
+      },
+      {
+        "type": "text",
+        "id": "social_linkedin",
+        "label": "LinkedIn",
+        "info": "https://www.linkedin.com/company/shopify"
+      },
+      {
+        "type": "text",
+        "id": "social_flickr",
+        "label": "Flickr",
+        "info": "https://www.flickr.com/photos/shopify/"
+      },
+      {
+        "type": "text",
+        "id": "social_email",
+        "label": "Email",
+        "info": "contact@shopify.com"
+      }
+    ]
+  }
+]

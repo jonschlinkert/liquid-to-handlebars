@@ -1,0 +1,32 @@
+{% assign header_title = page_header %}
+
+<div class="header__custom display-table parallax-bg">
+	<div class="display-table-cell prlx-txt">
+		<div class="wrapper wrapper--margins">
+
+			<h1 itemprop="name">{{ header_title }}</h1>
+
+			{% if template.name == 'article' %}
+				{% include 'blog_meta' with blog.comments_enabled? %}
+			{% elsif template.name == 'cart' %}
+				<span class="cart-count"> {{ 'cart.general.items_count' | t: count: cart.item_count }} </span>
+			{% elsif template.name == 'collection' %}
+				{% unless collection.description == blank %} <span> {{ collection.description }}</span> {% endunless %}
+			{% elsif template.name == 'search' %}
+			    {% if search.performed %}
+			      {% if search.results_count == 0 %}
+			        <span>{{ 'general.search.no_results' | t: terms: search.terms }}</span>
+			      {% else %}
+			        <span>{{ 'general.search.results_for' | t: terms: search.terms, count: search.results_count }}</span>
+			      {% endif %}
+			    {% endif %}
+			{% elsif template.name == 'password' %}
+				<span>{{ shop.password_message }}</span>
+			{% endif %}
+
+   			<hr />
+
+		</div>
+	</div>
+	<span class="prlx-bg" style="background-color: {{ settings.color_body_bg_alt }}"></span>
+</div>

@@ -1,0 +1,18 @@
+<h2 class="h3"><a href="{{ article.url }}">{{ article.title }}</a></h2>
+{% if section.settings.blog_show_date %}
+  <p class="featured-blog__meta txt--minor">
+    <time datetime="{{ article.published_at | date: '%Y-%m-%d' }}">{{ article.published_at | date: format: 'month_day_year' }}</time>
+  </p>
+{% endif %}
+{% if section.settings.blog_show_date and section.settings.blog_show_author %}
+  <span class="meta__dot txt--minor" aria-hidden="true"></span>
+{% endif %}
+{% if section.settings.blog_show_author %}
+  <p class="featured-blog__meta txt--minor">{{ article.author }}</p>
+{% endif %}
+{% if section.settings.blog_show_excerpt %}
+  <div class="rte rte--indented-images">
+    {{ article.excerpt_or_content | strip_html | truncatewords: 30 }}
+  </div>
+{% endif %}
+<p class="read-more"><a href="{{ article.url }}">{{ 'blogs.article.read_more' | t }} &rarr;</a></p>

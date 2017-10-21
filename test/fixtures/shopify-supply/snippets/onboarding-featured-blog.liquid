@@ -1,0 +1,36 @@
+<div class="grid-uniform placeholder">
+  {% for i in (1..section.settings.post_limit)  %}
+    <div class="grid-item {{ width }}">
+      <div class="featured-blog__post">
+        {% if section.settings.blog_show_image %}
+          <div class="article__featured-link">
+            {% capture current %}{% cycle 1, 2, 3 %}{% endcapture %}
+            {{ 'collection-' | append: current | placeholder_svg_tag: 'placeholder-svg' }}
+          </div>
+        {% endif %}
+        {% unless section.settings.post_limit == 1 and section.settings.blog_show_image %}
+          <h2 class="h3"><a href="#">{{ 'homepage.onboarding.blog_title' | t }}</a></h2>
+          {% if section.settings.blog_show_excerpt %}
+            <div class="rte rte--indented-images">
+              {{ 'homepage.onboarding.blog_excerpt' | t }}
+            </div>
+          {% endif %}
+          <p><a href="#">{{ 'blogs.article.read_more' | t }} →</a></p>
+        {% endunless %}
+      </div>
+    </div>
+    {% if section.settings.post_limit == 1 and section.settings.blog_show_image %}
+      <div class="grid-item {{ width }}">
+        <div class="featured-blog__post">
+          <h2 class="h3"><a href="#">{{ 'homepage.onboarding.blog_title' | t }}</a></h2>
+          {% if section.settings.blog_show_excerpt %}
+            <div class="rte rte--indented-images">
+              {{ 'homepage.onboarding.blog_excerpt' | t }}
+            </div>
+          {% endif %}
+          <p><a href="#">{{ 'blogs.article.read_more' | t }} &rarr;</a></p>
+        </div>
+      </div>
+    {% endif %}
+  {% endfor %}
+</div>

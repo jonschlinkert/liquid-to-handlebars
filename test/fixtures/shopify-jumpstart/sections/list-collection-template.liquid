@@ -1,0 +1,157 @@
+<div data-section-id="{{ section.id }}" data-section-type="list-collection-template">
+
+{% assign header_title = page_title %}
+{% include 'page_header' with header_title %}
+
+<div class="wrapper wrapper--margins">
+
+  <div class="collection-list grid-uniform small-gutter">
+    {% case section.settings.grid %}
+      {% when '2' %}
+        {%- assign grid_item_width = 'small--one-whole medium--one-half large--one-half' -%}
+      {% when '3' %}
+        {%- assign grid_item_width = 'small--one-whole medium--one-third large--one-third' -%}
+      {% when '4' %}
+        {%- assign grid_item_width = 'small--one-half medium--one-quarter large--one-quarter' -%}
+      {% when '5' %}
+        {%- assign grid_item_width = 'small--one-half medium--one-third large--one-fifth' -%}
+    {% endcase %}
+
+    {% unless grid_item_width %}
+      {%- assign grid_item_width = 'one-third medium--one-half small--one-whole' -%}
+    {% endunless %}
+
+    {% if section.settings.display_type == 'all' %}
+      {% case section.settings.sort %}
+        {% when 'products_high' or 'products_low' %}
+          {%- assign list_collections = collections | sort: 'all_products_count' -%}
+        {% when 'date' or 'date_reversed' %}
+          {%- assign list_collections = collections | sort: 'published_at' -%}
+        {% else %}
+          {%- assign list_collections = collections -%}
+      {% endcase %}
+      {% if section.settings.sort == 'products_low' or section.settings.sort == 'date' or section.settings.sort == 'alphabetical' %}
+        {% for collection in list_collections %}
+        {% unless collection.handle == 'frontpage' %}
+          {% include 'collection-grid-item' %}
+        {% endunless %}
+        {% endfor %}
+      {% else %}
+        {% for collection in list_collections reversed %}
+          {% unless collection.handle == 'frontpage' %}
+            {% include 'collection-grid-item' %}
+          {% endunless %}
+        {% endfor %}
+      {% endif %}
+    {% else %}
+      {% for block in section.blocks %}
+        {%- assign collection = collections[block.settings.collection] -%}
+        {% unless collection.handle == 'frontpage' %}
+          {% include 'collection-grid-item' %}
+        {% endunless %}
+      {% endfor %}
+    {% endif %}
+
+  </div>
+
+</div>
+
+</div>
+
+{% schema %}
+  {
+    "name": "Collections list page",
+    "settings": [
+      {
+        "type": "paragraph",
+        "content": "All of your collections are listed by default. To customize your list, choose 'Selected' and add collections."
+      },
+      {
+        "type": "radio",
+        "id": "display_type",
+        "label": "Select collections to show",
+        "default": "all",
+        "options": [
+          {
+            "value": "all",
+            "label": "All"
+          },
+          {
+            "value": "selected",
+            "label": "Selected"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "sort",
+        "label": "Sort collections by:",
+        "info": "Sorting only applies when 'All' is selected",
+        "default": "alphabetical",
+        "options": [
+          {
+            "value": "products_high",
+            "label": "Product count, high to low"
+          },
+          {
+            "value": "products_low",
+            "label": "Product count, low to high"
+          },
+          {
+            "value": "alphabetical",
+            "label": "Alphabetically, A-Z"
+          },
+          {
+            "value": "alphabetical_reversed",
+            "label": "Alphabetically, Z-A"
+          },
+          {
+            "value": "date",
+            "label": "Date, old to new"
+          },
+          {
+            "value": "date_reversed",
+            "label": "Date, new to old"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "grid",
+        "label": "Collections per row",
+        "default": "3",
+        "options": [
+          {
+            "value": "2",
+            "label": "2"
+          },
+          {
+            "value": "3",
+            "label": "3"
+          },
+          {
+            "value": "4",
+            "label": "4"
+          },
+          {
+            "value": "5",
+            "label": "5"
+          }
+        ]
+      }
+    ],
+    "blocks": [
+      {
+        "type": "collection",
+        "name": "Collection",
+        "settings": [
+          {
+            "label": "Collection",
+            "id": "collection",
+            "type": "collection"
+          }
+        ]
+      }
+    ]
+  }
+{% endschema %}

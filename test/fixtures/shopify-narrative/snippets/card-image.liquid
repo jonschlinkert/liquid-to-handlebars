@@ -1,0 +1,16 @@
+<div class="card__image-wrapper" style="padding-top:{{ 1 | divided_by: type.aspect_ratio | times: 100}}%">
+  <div class="card__preloader"></div>
+
+  {% assign img_url = type | img_url: '1x1' | replace: '_1x1.', '_{width}x.' %}
+  <img class="card__image lazyload fade-in"
+    data-src="{{ img_url }}"
+    data-widths="[180, 220, 300, 360, 460, 540, 720, 900, 1080, 1296, 1512, 1728, 2048]"
+    data-aspectratio="{{ type.aspect_ratio }}"
+    data-sizes="auto"
+    alt="{{ type.alt | escape }}">
+
+  <noscript>
+    {% assign card_image = type | img_url: '1024x1024' %}
+    <img src="{{ card_image }}" alt="{{ type.alt | escape }}" class="card__image">
+  </noscript>
+</div>

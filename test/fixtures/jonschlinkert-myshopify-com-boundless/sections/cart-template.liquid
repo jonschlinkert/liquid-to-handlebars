@@ -1,0 +1,142 @@
+
+<div class="page-width--wide page-container">
+  {% if cart.item_count > 0 %}
+
+    <h1 class="visually-hidden">{{ 'cart.general.title' | t }}</h1>
+    <form action="/cart" method="post" novalidate class="cart">
+      <table class="responsive-table">
+        <thead class="cart__row cart__header-labels small--hide">
+          <th colspan="2">{{ 'cart.label.product' | t }}</th>
+          <th>{{ 'cart.label.price' | t }}</th>
+          <th class="text-center">{{ 'cart.label.quantity' | t }}</th>
+          <th class="text-right">{{ 'cart.label.total' | t }}</th>
+        </thead>
+        <tbody>
+          {% for item in cart.items %}
+            <tr class="cart__row responsive-table__row">
+              <td class="cart__table-cell--image small--text-center">
+                <a href="{{ item.url | within: collections.all }}">
+                  {% comment %}
+                    More image size options at:
+                      - http://docs.shopify.com/themes/filters/product-img-url
+                  {% endcomment %}
+                  <img class="cart__image" src="{{ item | img_url: 'medium' }}" alt="{{ item.title | escape }}">
+                </a>
+              </td>
+              <td class="cart__table-cell--meta small--text-left">
+                <p class="h3">
+                  <a href="{{ item.url }}">{{ item.product.title }}</a>
+                </p>
+                {% unless item.variant.title contains 'Default' %}
+                  <p class="txt--minor">{{ item.variant.title }}</p>
+                {% endunless %}
+
+                {% comment %}
+                  Optional, loop through custom product line items if available
+
+                  Line item properties come in as having two parts. The first part will be passed with the default form,
+                  but p.last is the actual custom property and may be blank. If it is, don't show it.
+
+                  For more info on line item properties, visit:
+                    - http://docs.shopify.com/support/your-store/products/how-do-I-collect-additional-information-on-the-product-page-Like-for-a-monogram-engraving-or-customization
+                {% endcomment %}
+                {% assign property_size = item.properties | size %}
+                {% if property_size > 0 %}
+                  {% for p in item.properties %}
+                    {% assign first_character_in_key = p.first | truncate: 1, '' %}
+                    {% unless p.last == blank or first_character_in_key == '_' %}
+                      {% if forloop.first %}
+                        {{ p.first }}:
+                      {% else %}
+                        <br/>{{ p.first }}:
+                      {% endif %}
+
+                      {% comment %}
+                        Check if there was an uploaded file associated
+                      {% endcomment %}
+                      {% if p.last contains '/uploads/' %}
+                        <a href="{{ p.last }}">{{ p.last | split: '/' | last }}</a>
+                      {% else %}
+                        {{ p.last }}
+                      {% endif %}
+
+                    {% endunless %}
+                  {% endfor %}
+                {% endif %}
+
+                <p class="txt--minor">
+                  <a href="/cart/change?line={{ forloop.index }}&amp;quantity=0" class="cart__remove">{{ 'cart.general.remove' | t }}</a>
+                </p>
+              </td>
+              <td data-label="{{ 'cart.label.price' | t }}">
+                <span>
+                  {{ item.price | money }}
+                </span>
+              </td>
+              <td data-label="{{ 'cart.label.quantity' | t }}" class="large-up--text-center">
+                <input type="number" data-ajax-qty name="updates[]" id="updates_{{ item.key }}" value="{{ item.quantity }}" min="0" data-id="{{ item.key }}">
+              </td>
+              <td data-label="{{ 'cart.label.total' | t }}" class="text-right">
+                {% if item.original_line_price != item.line_price %}
+                  <p class="cart-item__original-price"><small><s>{{ item.original_line_price | money }}</s></small></p>
+                {% endif %}
+                <span>
+                  {{ item.line_price | money }}
+                </span>
+                {% for discount in item.discounts %}
+                  <p class="cart-item__discount"><small>{{ discount.title }}</small></p>
+                {% endfor %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      <footer class="cart__footer">
+        <div class="grid">
+          {% if settings.cart_notes_enable %}
+            <div class="grid__item medium-up--one-half">
+              <label for="CartSpecialInstructions" class="label--block">{{ 'cart.general.note' | t }}</label>
+              <textarea name="note" id="CartSpecialInstructions" class="input--block">{{ cart.note }}</textarea>
+            </div>
+          {% endif %}
+          <div class="grid__item text-center {% if settings.cart_notes_enable %} medium-up--one-half medium-up--text-right{% endif %}">
+            <p>
+              <span class="cart__subtotal-title h4">{{ 'cart.general.subtotal' | t }}</span>
+              <span class="cart__subtotal">{{ cart.total_price | money }}</span>
+            </p>
+            {% if cart.total_discounts > 0 %}
+              {% assign savings = cart.total_discounts | money %}
+              <p>
+                <span class="cart-subtotal__savings"><em>{{ 'cart.general.savings_html' | t: price: savings }}</em></span>
+              </p>
+            {% endif %}
+            <p class="txt--minor txt--emphasis">{{ 'cart.general.shipping_at_checkout' | t }}</p>
+            <p>
+              <button type="submit" name="checkout" class="btn">{{ 'cart.general.checkout' | t }}</button>
+            </p>
+            <button type="submit" name="update" class="text-link txt--minor">{{ 'cart.general.update' | t }}</button>
+          </div>
+        </div>
+      </footer>
+    </form>
+  {% else %}
+    {% comment %}
+      The cart is empty
+    {% endcomment %}
+    <div class="text-center">
+      <h1>{{ 'cart.general.title' | t }}</h1>
+      <p class="cart--empty-message">{{ 'cart.general.empty' | t }}</p>
+      <p class="cart--cookie-message">{{ 'cart.general.cookies_required' | t }}</p>
+      <p class="cart--continue-browsing">{{ 'cart.general.continue_browsing_html' | t }}</p>
+    </div>
+  {% endif %}
+</div>
+
+{% schema %}
+  {
+    "name": "Cart",
+    "class": "cart-template-section",
+    "settings": []
+  }
+{% endschema %}

@@ -1,0 +1,157 @@
+<div class="featured-blog featured-blog--{{ section.id }}" data-section-id="{{ section.id }}">
+
+  {%- assign blog = blogs[section.settings.blog] -%}
+
+  {% case section.settings.post_limit %}
+    {% when 3 %}
+      {%- assign width = 'small--one-whole medium--one-third large--one-third' -%}
+    {% when 2 %}
+      {%- assign width = 'small--one-whole medium--one-half large--one-half' -%}
+    {% when 1 %}
+      {% if section.settings.blog_show_image %}
+        {%- assign width = 'small--one-whole medium--one-half large--one-half' -%}
+      {% else %}
+        {%- assign width = 'text-center one-whole' -%}
+      {% endif %}
+    {% else %}
+      {%- assign width = 'small--one-whole medium--one-third large--one-third' -%}
+  {% endcase %}
+
+  <hr>
+
+  {% if section.settings.title != blank %}
+    <div class="section-header">
+      <h2 class="section-header--left h1">{{ section.settings.title | escape }}</h2>
+    </div>
+  {% endif %}
+
+  {% unless blog.articles_count == 0 %}
+    <div class="grid-uniform">
+      {% for article in blog.articles limit: section.settings.post_limit %}
+        <div class="grid-item {{ width }}">
+          <div class="featured-blog__post">
+
+            {% if section.settings.blog_show_image %}
+              {% unless article.image == blank %}
+                <a class="article__featured-link" href="{{ article.url }}">
+                  <noscript>
+                    <div class="article__featured-image-wrapper-nojs">
+                      {{ article.image | img_url: '1024x1024' | img_tag: article.title | escape }}
+                    </div>
+                  </noscript>
+                  <div class="article__featured-image-wrapper" style="padding-top:{{ 1 | divided_by: article.image.aspect_ratio | times: 100}}%;">
+                    {% assign img_url = article.image | img_url: '1x1' | replace: '_1x1.', '_{width}x.' %}
+                    <img class="article__featured-image lazyload"
+                      src="{{ article.image | img_url: '300x300' }}"
+                      data-src="{{ img_url }}"
+                      data-widths="[310, 360, 480, 540, 720, 900, 1080, 1296, 1512, 1728, 2048]"
+                      data-aspectratio="{{ article.image.aspect_ratio }}"
+                      data-sizes="auto"
+                      alt="{{ article.title | escape }}">
+                  </div>
+                </a>
+              {% endunless %}
+            {% endif %}
+
+            {% unless section.settings.post_limit == 1 and section.settings.blog_show_image %}
+              {% include 'featured-blog', article: article %}
+            {% endunless %}
+
+          </div>
+        </div>
+
+        {% if section.settings.post_limit == 1 and section.settings.blog_show_image %}
+          <div class="grid-item {{ width }}">
+            <div class="featured-blog__post">
+               {% include 'featured-blog', article: article %}
+            </div>
+          </div>
+        {% endif %}
+
+      {% endfor %}
+    </div>
+
+  {% else %}
+    {% include 'onboarding-featured-blog' %}
+  {% endunless %}
+
+  {% if blog == empty %}
+    {% include 'onboarding-featured-blog' %}
+  {% endif %}
+
+  {% if section.settings.show_view_all %}
+    <div class="section-header text-center">
+      <a href="{{ blog.url }}" class="btn">
+        {{ 'blogs.article.view_all' | t }}
+      </a>
+    </div>
+  {% endif %}
+
+</div>
+
+{% schema %}
+  {
+    "name": "Blog posts",
+    "settings": [
+      {
+        "type": "text",
+        "id": "title",
+        "label": "Heading",
+        "default": "Blog"
+      },
+      {
+        "id": "blog",
+        "type": "blog",
+        "label": "Blog"
+      },
+      {
+        "type": "range",
+        "id": "post_limit",
+        "label": "Posts",
+        "min": 1,
+        "max": 3,
+        "step": 1,
+        "default": 3
+      },
+      {
+        "type": "checkbox",
+        "id": "blog_show_date",
+        "label": "Show date",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "blog_show_author",
+        "label": "Show author",
+        "default": false
+      },
+      {
+        "type": "checkbox",
+        "id": "blog_show_image",
+        "label": "Show cover image",
+        "default": false
+      },
+      {
+        "type": "checkbox",
+        "id": "blog_show_excerpt",
+        "label": "Show excerpt",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "show_view_all",
+        "label": "Show 'View all' button",
+        "default": false
+      }
+    ],
+    "presets": [
+      {
+        "name": "Blog posts",
+        "category": "Blog",
+        "settings": {
+          "blog": "News"
+        }
+      }
+    ]
+  }
+{% endschema %}

@@ -1,0 +1,74 @@
+<div id="home-faq" class="index-section home-section" data-section-id="{{ section.id }}" data-section-type="home-faq">
+	<div class="home-faq-list">
+		<div class="wrapper wrapper--margins">
+
+			{% if section.settings.title != blank %}
+			  <h2 class="home-section-title">{{ section.settings.title | escape }}</h2>
+			{% endif %}
+
+			<div class="jumpstart-accordion">
+			  {% for block in section.blocks %}
+
+					<div class="section section-{{ block.id }} {% if forloop.first == true %}opened{% endif %}" data-block-id="{{ block.id }}" {{ block.shopify_attributes }}>
+						<h3 class="h4 title">{{ block.settings.home-faq-title | escape }}</h3>
+						<div class="content">{{ block.settings.home-faq-content }}</div>
+					</div>
+
+			  {% endfor %}
+			</div>
+
+		</div>
+	</div>
+</div>
+
+{% schema %}
+	{
+		"name": "FAQs",
+		"max_blocks": 20,
+		"settings": [
+			{
+				"type": "text",
+				"id": "title",
+				"label": "Header",
+				"default": "FAQ"
+			}
+		],
+		"blocks" : [
+			{
+				"type": "text",
+				"name": "FAQ",
+				"settings": [
+					{
+						"type": "text",
+						"id": "home-faq-title",
+						"default": "Question and answer",
+						"label": "Heading"
+					},
+					{
+						"type": "richtext",
+						"id": "home-faq-content",
+						"default": "<p>This section doesn’t currently include any content. <b>Add content to this section using the sidebar.</b></p>",
+						"label": "Text"
+					}
+				]
+			}
+		],
+		"presets": [
+			{
+				"name": "FAQs",
+				"category": "Text",
+				"blocks": [
+					{
+						"type": "text"
+					},
+					{
+						"type": "text"
+					},
+					{
+						"type": "text"
+					}
+				]
+			}
+		]
+	}
+{% endschema %}

@@ -1,0 +1,97 @@
+{%- assign limit = section.settings.articles | times: section.settings.rows -%}
+
+<div class="blog-template" data-section-id="{{ section.id }}" data-section-type="blog-template">
+  {% paginate blog.articles by limit %}
+
+    <div class="page-width">
+      <header class="section-header section-header--small text-center">
+        <h1 class="section-header__title h2">{{ page_title }}</h1>
+      </header>
+
+      {%- assign desktopColumns = section.settings.articles -%}
+      {%- assign mobileColumns = '1' -%}
+
+      {%- capture gridClasses -%}
+        {% if desktopColumns == '3' %}medium-up--one-third {% else %}medium-up--one-half {% endif %}
+        {% if mobileColumns == '2' %}small--one-half {% endif %}
+      {%- endcapture -%}
+
+      <div class="card-list grid" data-desktop-columns="{{ desktopColumns }}" data-mobile-columns="{{ mobileColumns }}">
+        <div class="card-list__column grid__item {% if blog.articles.size == 1 %}card-list__column--center{% endif %} {{ gridClasses }}">
+          {% for article in blog.articles %}
+            {% include 'article-card', article: article %}
+          {% endfor %}
+        </div>
+      </div>
+
+      {% if blog.articles.size == 0 %}
+        <p class="text-center">{{ 'blogs.article.no_matches' | t }}</p>
+      {% endif %}
+
+      {% if paginate.pages > 1 %}
+        <div class="card-list__sub-actions">
+          {% include 'pagination' %}
+        </div>
+      {% endif %}
+    </div>
+
+  {% endpaginate %}
+</div>
+
+{% schema %}
+{
+  "name": "Blog",
+  "settings": [
+    {
+      "type": "select",
+      "id": "articles",
+      "label": "Articles per row",
+      "default": "2",
+      "options": [
+        {
+          "value": "2",
+          "label": "2"
+        },
+        {
+          "value": "3",
+          "label": "3"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "rows",
+      "label": "Rows per page",
+      "default": "4",
+      "options": [
+        {
+          "value": "2",
+          "label": "2"
+        },
+        {
+          "value": "3",
+          "label": "3"
+        },
+        {
+          "value": "4",
+          "label": "4"
+        },
+        {
+          "value": "5",
+          "label": "5"
+        },
+        {
+          "value": "6",
+          "label": "6"
+        }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "blog_show_date",
+      "label": "Show date",
+      "default": true
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,11 @@
+{% assign blog_comments = blog_meta %}
+
+<ul class="article__meta">
+  <li><time datetime="{{ article.published_at | date: '%Y-%m-%d' }}">{{ article.published_at | date: format: 'month_day_year' }}</time></li>
+  {% if blog_comments %}
+    <li>{{ 'blogs.comments.with_count' | t: count: article.comments_count }}</li>
+  {% endif %}
+  {% if article.tags.size > 0 and template.name == 'article' %}
+    <li>{{ 'blogs.article.tags' | t }}: {% for tag in article.tags %}{{ tag | link_to_tag: tag }}{% unless forloop.last %}, {% endunless %}{% endfor %}</li>
+  {% endif %}
+</ul>

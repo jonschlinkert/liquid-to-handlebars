@@ -1,0 +1,37 @@
+{% assign blog_comments = blog_item %}
+
+<a class="article {% unless article.image %} no-image {% endunless %}" href="{{ article.url }}">
+
+  <div class="article__content display-table">
+
+    <div class="display-table-cell">
+
+      <h2 class="h3 article__title">{{ article.title }}</h2>
+
+      {% if article.image %}
+        <figure class="article__img lazyload no-js"
+          data-bgset="{% include 'bgset', image: article.image %}"
+          data-widths="[220,440,880]"
+          data-sizes="auto"
+          data-parent-fit="cover">
+        </figure>  
+        <noscript>
+        <figure class="article__img" style="background-image:url('{{ article.image | img_url: '440x440', scale: 2 }}')">
+          <img src="{{ article.image | img_url: '440x440' }}"
+            srcset="{{ article.image | img_url: '440x440' }} 1x, {{ article.image | img_url: '440x440', scale: 2 }} 2x"
+            alt="{{ article.image.alt }}">
+          </figure>
+        </noscript>
+      {% endif %}
+
+      {% include 'blog_meta' with blog_comments %}
+
+      <div class="article__excerpt rte">
+        <p>{{ article.excerpt_or_content | strip_html | truncatewords: 25 }}</p>
+      </div>
+
+    </div>
+
+  </div>
+
+</a>

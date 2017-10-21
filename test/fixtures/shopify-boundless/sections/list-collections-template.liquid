@@ -1,0 +1,167 @@
+{% comment %}
+
+  This page represents the /collections and /products pages.
+
+  More info:
+    - http://docs.shopify.com/manual/configuration/store-customization/taking-control-of-collections-listing
+
+{% endcomment %}
+
+{% comment %}
+  Loop through each collection, except 'frontpage'
+{% endcomment %}
+
+{% assign collection_count = 0 %}
+{% for collection in collections %}
+  {% unless collection.handle == 'frontpage' %}
+    {% assign collection_count = collection_count | plus:1 %}
+  {% endunless %}
+{% endfor %}
+
+{% comment %}
+  Set grid item widths based on settings
+{% endcomment %}
+
+{% include 'product-grid-width' with product_image_type: section.settings.collection_image_type, product_image_size: section.settings.collection_image_size %}
+
+<div class="grid grid--no-gutters collection-grid">
+  {% if section.settings.display_type == 'all' %}
+    {% case section.settings.sort %}
+      {% when 'products_high' or 'products_low' %}
+        {%- assign collections = collections | sort: 'all_products_count' -%}
+      {% when 'date' or 'date_reversed' %}
+        {%- assign collections = collections | sort: 'published_at' -%}
+    {% endcase %}
+    {% if section.settings.sort == 'products_low' or section.settings.sort == 'date' or section.settings.sort == 'alphabetical' %}
+      {% for collection in collections %}
+        {% unless collection.handle == 'frontpage' %}
+          {% include 'collection-grid-item' %}
+        {% endunless %}
+      {% endfor %}
+    {% else %}
+      {% for collection in collections reversed %}
+        {% unless collection.handle == 'frontpage' %}
+          {% include 'collection-grid-item' %}
+        {% endunless %}
+      {% endfor %}
+    {% endif %}
+  {% else %}
+    {% for block in section.blocks %}
+      {%- assign collection = collections[block.settings.collection] -%}
+      {% include 'collection-grid-item' %}
+    {% endfor %}
+  {% endif %}
+</div>
+
+{% schema %}
+  {
+    "name": "Collections list page",
+    "settings": [
+      {
+        "type": "paragraph",
+        "content": "All of your collections are listed by default. To customize your list, choose 'Selected' and add collections."
+      },
+      {
+        "type": "radio",
+        "id": "display_type",
+        "label": "Select collections to show",
+        "default": "all",
+        "options": [
+          {
+            "value": "all",
+            "label": "All"
+          },
+          {
+            "value": "selected",
+            "label": "Selected"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "sort",
+        "label": "Sort collections by:",
+        "info": "Sorting only applies when 'All' is selected",
+        "default": "alphabetical",
+        "options": [
+          {
+            "value": "products_high",
+            "label": "Product count, high to low"
+          },
+          {
+            "value": "products_low",
+            "label": "Product count, low to high"
+          },
+          {
+            "value": "alphabetical",
+            "label": "Alphabetically, A-Z"
+          },
+          {
+            "value": "alphabetical_reversed",
+            "label": "Alphabetically, Z-A"
+          },
+          {
+            "value": "date",
+            "label": "Date, old to new"
+          },
+          {
+            "value": "date_reversed",
+            "label": "Date, new to old"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "collection_image_type",
+        "label": "Image style",
+        "options": [
+          {
+            "value": "portrait",
+            "label": "Tall/square"
+          },
+          {
+            "value": "landscape",
+            "label": "Wide"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "collection_image_size",
+        "label": "Image size",
+        "default": "medium",
+        "options": [
+          {
+            "value": "small",
+            "label": "Small"
+          },
+          {
+            "value": "medium",
+            "label": "Medium"
+          },
+          {
+            "value": "large",
+            "label": "Large"
+          },
+          {
+            "value": "xlarge",
+            "label": "Extra large"
+          }
+        ]
+      }
+    ],
+    "blocks": [
+      {
+        "type": "collection",
+        "name": "Collection",
+        "settings": [
+          {
+            "label": "Collection",
+            "id": "collection",
+            "type": "collection"
+          }
+        ]
+      }
+    ]
+  }
+{% endschema %}

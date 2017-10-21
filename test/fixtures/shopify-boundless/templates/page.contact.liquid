@@ -1,0 +1,49 @@
+<!-- /templates/page.contact.liquid -->
+
+<div class="page-width page-container">
+  <header>
+    <h1>{{ page.title }}</h1>
+  </header>
+
+  <div class="rte rte--indented-images">
+    {{ page.content }}
+  </div>
+
+  <div class="contact-form form-vertical">
+    {% form 'contact' %}
+
+      {% if form.posted_successfully? %}
+        <p class="note form-success">
+          {{ 'contact.form.post_success' | t }}
+        </p>
+      {% endif %}
+
+      {{ form.errors | default_errors }}
+
+      <div class="grid">
+        <div class="grid__item medium-up--one-half">
+          <label for="ContactFormName" class="label--hidden">{{ 'contact.form.name' | t }}</label>
+          <input type="text" id="ContactFormName" name="contact[name]" placeholder="{{ 'contact.form.name' | t }}" value="{% if form.name %}{{ form.name }}{% elsif customer %}{{ customer.name }}{% endif %}" class="input-full">
+        </div>
+
+        <div class="contact-form__email grid__item medium-up--one-half">
+          <label for="ContactFormEmail" class="label--hidden">{{ 'contact.form.email' | t }}</label>
+          <input type="email" id="ContactFormEmail" name="contact[email]" placeholder="{{ 'contact.form.email' | t }}" autocorrect="off" value="{% if form.email %}{{ form.email }}{% elsif customer %}{{ customer.email }}{% endif %}" class="input-full">
+        </div>
+
+        <div class="grid__item">
+          <label for="ContactFormPhone" class="label--hidden">{{ 'contact.form.phone' | t }}</label>
+          <input type="tel" id="ContactFormPhone" name="contact[phone]" placeholder="{{ 'contact.form.phone' | t }}" pattern="[0-9\-]*" value="{% if form.phone %}{{ form.phone }}{% elsif customer %}{{ customer.phone }}{% endif %}" class="input-full">
+        </div>
+
+        <div class="grid__item">
+          <label for="ContactFormMessage" class="label--hidden">{{ 'contact.form.message' | t }}</label>
+          <textarea id="ContactFormMessage" name="contact[body]" placeholder="{{ 'contact.form.message' | t }}" class="input-full">{% if form.body %}{{ form.body }}{% endif %}</textarea>
+        </div>
+      </div>
+
+      <input type="submit" class="btn" value="{{ 'contact.form.send' | t }}">
+
+    {% endform %}
+  </div>
+</div>

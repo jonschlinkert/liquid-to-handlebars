@@ -1,0 +1,181 @@
+<style>
+  #VideoSection--{{ section.id }} .video-section__cover-background {
+    background-color: {{ section.settings.background_color }};
+    background-position: {{ section.settings.cover_image_position }};
+  }
+
+  #VideoSection--{{ section.id }} .video-section__cover-text {
+    color: {{ section.settings.cover_text_color }}
+  }
+
+  #VideoSection--{{ section.id }} .video-section__load-player-button-triangle {
+    border-left-color: {{ section.settings.cover_text_color }}
+  }
+
+  #VideoSection--{{ section.id }} .video-section__load-player-button-circle {
+    border-color: {{ section.settings.cover_text_color }}
+  }
+</style>
+
+{% if section.settings.show_overlay %}
+  <style>
+    #VideoSection--{{ section.id }} .video-section__cover-text {
+      color: {{ section.settings.overlay_text }};
+    }
+
+    #VideoSection--{{ section.id }} .video-section__load-player-button-triangle {
+      border-left-color: {{ section.settings.overlay_text }};
+    }
+
+    #VideoSection--{{ section.id }} .video-section__load-player-button.animated .video-section__load-player-button-circle,
+    #VideoSection--{{ section.id }} .video-section__load-player-button-circle {
+      border-color: {{ section.settings.overlay_text }};
+    }
+
+    #VideoSection--{{ section.id }} .video-section__cover-overlay {
+      background-color: {{ section.settings.overlay_color }};
+      opacity: {{ section.settings.overlay_opacity | divided_by: 100.0 }};
+    }
+  </style>
+{% endif %}
+
+<div id="VideoSection--{{ section.id }}" class="video-section lazyload" data-section-id="{{ section.id }}" data-section-type="video-section" data-video-id="{{ section.settings.video_url.id }}" data-video-type="{{ section.settings.video_url.type }}" data-bgset="{% include 'bgset', image: section.settings.cover_image %}">
+  <div class="video-section__body-overlay"></div>
+  <button class="btn btn--clear btn--square video-section__player-close">
+    <span class="visually-hidden">{{ 'video.close' | t }}</span>
+    {% include 'icon-close' %}
+  </button>
+  <div class="video-section__player"></div>
+  <div class="video-section__cover">
+    <div class="video-section__cover-background">
+      {% if section.settings.cover_image == blank %}
+        {% capture current %}{% cycle 1, 2 %}{% endcapture %}
+        {{ 'lifestyle-' | append: current | placeholder_svg_tag: 'placeholder-svg' }}
+      {% endif %}
+    </div>
+    <div class="video-section__cover-overlay"></div>
+    <div class="video-section__cover-content">
+      {% if section.settings.cover_text != blank %}
+        <h3 class="video-section__cover-text">{{ section.settings.cover_text }}</h3>
+      {% endif %}
+      <button class="btn btn--clear video-section__load-player-button">
+        <span class="visually-hidden">{{ 'video.play' | t }}</span>
+        <div class="video-section__load-player-button-triangle"></div>
+        <div class="video-section__load-player-button-circle"></div>
+      </button>
+      <p class="video-section__error"></p>
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Video",
+  "class": "index-section index-section--video",
+  "settings": [
+    {
+      "type": "text",
+      "id": "cover_text",
+      "label": "Heading"
+    },
+    {
+      "type": "video_url",
+      "id": "video_url",
+      "label": "Video link",
+      "accept": ["youtube", "vimeo"],
+      "default": "https:\/\/www.youtube.com\/watch?v=_9VUPq3SxOc"
+    },
+    {
+      "type": "header",
+      "content": "Cover"
+    },
+    {
+      "type": "image_picker",
+      "id": "cover_image",
+      "label": "Image"
+    },
+    {
+      "type": "select",
+      "id": "cover_image_position",
+      "label": "Image position",
+      "default": "center center",
+      "options": [
+        {
+          "label": "Top left",
+          "value": "top left"
+        },
+        {
+          "label": "Top center",
+          "value": "top center"
+        },
+        {
+          "label": "Top right",
+          "value": "top right"
+        },
+        {
+          "label": "Middle left",
+          "value": "center left"
+        },
+        {
+          "label": "Middle center",
+          "value": "center center"
+        },
+        {
+          "label": "Middle right",
+          "value": "center right"
+        },
+        {
+          "label": "Bottom left",
+          "value": "bottom left"
+        },
+        {
+          "label": "Bottom center",
+          "value": "bottom center"
+        },
+        {
+          "label": "Bottom right",
+          "value": "bottom right"
+        }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "Overlay"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_overlay",
+      "label": "Show overlay",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "overlay_color",
+      "label": "Overlay",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "overlay_text",
+      "label": "Text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "label": "Opacity",
+      "default": 30
+    }
+  ],
+  "presets": [
+    {
+      "name": "Video",
+      "category": "Video"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,78 @@
+<div class="page-width">
+  {% assign blocks_count = section.blocks.size %}
+
+  {% case blocks_count %}
+    {% when 1 %}
+      {% assign grid_item_width = 'medium-up--one-half' %}
+    {% when 2 %}
+      {% assign grid_item_width = 'one-half' %}
+    {% when 3 %}
+      {% assign grid_item_width = 'medium-up--one-third' %}
+    {% when 4 %}
+      {% assign grid_item_width = 'one-half medium-up--one-quarter' %}
+    {% when 5 %}
+      {% assign grid_item_width = 'medium-up--one-third' %}
+    {% when 6 %}
+      {% assign grid_item_width = 'medium-up--one-third' %}
+  {% endcase %}
+
+  <div class="grid grid--no-gutters">
+    {% for block in section.blocks %}
+      {% if blocks_count == 5 and forloop.index > 3 %}
+        {% assign grid_item_width = 'medium-up--one-half' %}
+      {% endif %}
+
+      {% assign featured_collection = collections[block.settings.collection] %}
+      {% include 'collection-grid-item' with stretch_collection_image: section.settings.stretch_collection_image %}
+    {% endfor %}
+  </div>
+
+  {% if section.blocks.size == 0 %}
+    {% include 'no-blocks' %}
+  {% endif %}
+</div>
+
+{% schema %}
+  {
+    "name": "Collection list",
+    "class": "index-section",
+    "max_blocks": 6,
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "stretch_collection_image",
+        "label": "Use secondary image layout"
+      }
+    ],
+    "blocks": [
+      {
+        "type": "collection",
+        "name": "Collection",
+        "settings": [
+          {
+            "id": "collection",
+            "type": "collection",
+            "label": "Collection"
+          }
+        ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "Collection list",
+        "category": "Collection",
+        "blocks": [
+          {
+            "type": "collection"
+          },
+          {
+            "type": "collection"
+          },
+          {
+            "type": "collection"
+          }
+        ]
+      }
+    ]
+  }
+{% endschema %}

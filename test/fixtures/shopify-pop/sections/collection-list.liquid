@@ -1,0 +1,92 @@
+{% unless section.settings.title == blank %}
+  <h2 class="section-header__title text-center">{{ section.settings.title | escape }}</h2>
+{% endunless %}
+
+<div class="grid-uniform text-center collection-grid" data-section-id="{{ section.id }}">
+  {% case section.blocks.size %}
+    {% when 1 %}
+      {% assign featured_collection_width = 'one-whole' %}
+      {% assign featured_collection_size = 1000 %}
+    {% when 2 %}
+      {% assign featured_collection_width = 'small--one-whole medium--one-half large--one-half' %}
+      {% assign featured_collection_size = 480 %}
+    {% when 3 %}
+      {% assign featured_collection_width = 'small--one-whole one-third' %}
+      {% assign featured_collection_size = 240 %}
+    {% when 4 %}
+      {% assign featured_collection_width = 'small--one-whole medium--one-half large--one-half' %}
+      {% assign featured_collection_size = 480 %}
+    {% when 5 %}
+      {% assign featured_collection_width = 'small--one-whole medium--one-third large--one-third' %}
+      {% assign featured_collection_size = 240 %}
+    {% when 6 %}
+      {% assign featured_collection_width = 'small--one-whole medium--one-third large--one-third' %}
+      {% assign featured_collection_size = 240 %}
+    {% else %}
+      {% assign dividable_by_3 = section.blocks.size | modulo: 3 %}
+      {% assign dividable_by_2 = section.blocks.size | modulo: 2 %}
+      {% if dividable_by_3 == 0 %}
+        {% assign featured_collection_width = 'small--one-whole medium--one-third large--one-third' %}
+        {% assign featured_collection_size = 240 %}
+      {% elsif dividable_by_2 == 0 %}
+        {% assign featured_collection_width = 'small--one-whole medium--one-half large--one-half' %}
+        {% assign featured_collection_size = 480 %}
+      {% else %}
+        {% assign featured_collection_width = 'small--one-whole medium--one-third large--one-third' %}
+        {% assign featured_collection_size = 240 %}
+      {% endif %}
+  {% endcase %}
+
+  {% for block in section.blocks limit: section.blocks.size %}
+    {% assign featured = block.settings.collection %}
+    <div class="grid-item {{ featured_collection_width }}" {{ block.shopify_attributes }}>
+      {% include 'featured-collection' %}
+    </div>
+  {% endfor %}
+</div>
+
+{% schema %}
+  {
+    "name": "Collection list",
+    "class": "index-section",
+    "max_blocks": 6,
+    "settings": [
+      {
+        "type": "text",
+        "id": "title",
+        "label": "Heading",
+        "default": "Collection list"
+      }
+    ],
+    "blocks" : [
+      {
+        "type": "featured_collection",
+        "name": "Collection",
+        "settings": [
+          {
+            "label": "Collection",
+            "id": "collection",
+            "type": "collection"
+          }
+        ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "Collection list",
+        "category": "Collection",
+        "blocks": [
+          {
+            "type": "featured_collection"
+          },
+          {
+            "type": "featured_collection"
+          },
+          {
+            "type": "featured_collection"
+          }
+        ]
+      }
+    ]
+  }
+{% endschema %}

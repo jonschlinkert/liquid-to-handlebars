@@ -1,0 +1,131 @@
+<hr>
+<div id="collection-rows--{{ section.id }}" data-section-id="{{ section.id }}" data-section-type="collection-row-section">
+{% assign featured_row = section.settings.home_featured_row %}
+{% assign row_limit_setting = section.settings.grid %}
+{% case section.settings.grid %}
+  {% when 2 %}
+    {%- assign grid_item_width = 'medium--one-half large--one-half' -%}
+    {%- assign image_size = '540x' -%}
+    {% assign width = '540' %}
+    {% assign height = '600' %}
+  {% when 3 %}
+    {%- assign grid_item_width = 'small--one-half medium--one-third large--one-third' -%}
+     {%- assign image_size = '345x' -%}
+     {% assign width = '345' %}
+    {% assign height = '550' %}
+  {% when 4 %}
+    {%- assign grid_item_width = 'small--one-half medium--one-quarter large--one-quarter' -%}
+    {%- assign image_size = '250x' -%}
+    {% assign width = '250' %}
+    {% assign height = '225' %}
+  {% when 5 %}
+    {%- assign grid_item_width = 'small--one-half medium--one-fifth large--one-fifth' -%}
+    {%- assign image_size = '195x' -%}
+    {% assign width = '195' %}
+    {% assign height = '175' %}
+{% endcase %}
+
+{%- assign product_limit = section.settings.grid | times: section.settings.rows -%}
+{% assign header_title = collections[featured_row].title %}
+{%- assign more_link = collections[featured_row].url -%}
+
+{% if collections[featured_row].all_products_count != 0 and section.settings.home_featured_row != blank %}
+
+  {% if section.settings.title != blank %}
+    <div class="section-header">
+      <p class="h1{% if more_link %} section-header--left{% endif %}">{{ section.settings.title | escape }}</p>
+      {% if more_link %}
+        <div class="section-header--right">
+          {% assign header_title = header_title | downcase %}
+          <a href="{{ more_link }}">{{ 'homepage.featured_collection_rows.more_in_collection' | t: collection_title: header_title }} &rsaquo;</a>
+        </div>
+      {% endif %}
+    </div>
+  {% endif %}
+
+  <div class="grid-uniform row-negative-bottom">
+    {% for product in collections[featured_row].products limit: product_limit %}
+      {% assign current_collection = collections[featured_row] %}
+        {% include 'product-grid-item' %}
+    {% endfor %}
+  </div>
+
+{% else %}
+  <div class="section-header">
+    <p class="h1 section-header--left">{{ section.settings.title | escape }}</p>
+    <div class="section-header--right">
+      <a href="{{ collections[featured_row].url }}">{{ 'homepage.featured_collection_rows.more' | t }} &rsaquo;</a>
+    </div>
+  </div>
+
+  <div class="grid text-center row-negative-bottom">
+    <div class="grid-item">
+      <div class="grid-uniform">
+        {% for i in (1..product_limit) %}
+          <div class="grid-item {{ grid_item_width }} text-center">
+            {% capture current %}{% cycle 1, 2, 3, 4 %}{% endcapture %}
+              {{ 'product-' | append: current | placeholder_svg_tag: 'placeholder-svg' }}
+            <p><a href="/admin/products">{{ 'homepage.onboarding.product_title' | t }}</a> $19.99</p>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+{% endif %}
+</div>
+{% schema %}
+  {
+    "name": "Featured collection",
+    "class": "clearfix",
+    "settings": [
+      {
+        "type": "text",
+        "id": "title",
+        "label": "Heading",
+        "default": "Featured collection"
+      },
+      {
+        "type": "collection",
+        "id": "home_featured_row",
+        "label": "Collection"
+      },
+      {
+        "type": "range",
+        "id": "grid",
+        "label": "Products per row",
+        "min": 2,
+        "max": 5,
+        "step": 1,
+        "default": 4
+      },
+      {
+        "type": "range",
+        "id": "rows",
+        "label": "Rows",
+        "min": 1,
+        "max": 5,
+        "step": 1,
+        "default": 1
+      },
+      {
+        "type": "checkbox",
+        "id": "product_show_saved_amount",
+        "label": "Show saved amount",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "product_show_compare_at_price",
+        "label": "Show compare at price",
+        "default": false
+      }
+    ],
+    "presets":
+    [
+      {
+        "name": "Featured collection",
+        "category": "Collections"
+      }
+    ]
+  }
+{% endschema %}

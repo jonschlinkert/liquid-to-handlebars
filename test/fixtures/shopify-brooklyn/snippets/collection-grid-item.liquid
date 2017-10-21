@@ -1,0 +1,84 @@
+<!-- /snippets/collection-grid-item.liquid -->
+{% comment %}
+
+  This snippet is used to showcase each collection during the loop,
+  'for product in collections[collection_handle].products' in list-collections.liquid.
+
+{% endcomment %}
+
+{% comment %}
+  Set the default grid_item_width if no variable is set
+{% endcomment %}
+{% unless grid_item_width %}
+  {% assign grid_item_width = 'medium--one-half large--one-third' %}
+{% endunless %}
+
+{% comment %}
+  Set the default image_size if no variable is set
+{% endcomment %}
+{% unless image_size %}
+  {% assign image_size = 'grande' %}
+{% endunless %}
+
+{% assign no_collection_image = true %}
+<div class="grid__item {{ grid_item_width }} collection-collage__item text-center" {{ block.shopify_attributes }}>
+  <a href="{{ collections[collection_handle].url }}" class="collection-grid__item-link collection-collage__item-wrapper">
+    {% comment %}
+      Use capture to put the collection title in a variable that is used in liquid filters
+    {% endcomment %}
+
+    {% if collection == blank %}
+      {% assign collection_title = 'home_page.onboarding.collection_title' | t %}
+    {% else %}
+      {% assign collection_title = collections[collection_handle].title | escape %}
+    {% endif %}
+
+    {% if collection.image %}
+      {%- assign collection_image = collection.image -%}
+    {% elsif collection.products.first and collection.products.first.images != empty %}
+      {%- assign collection_image = collection.products.first.featured_image -%}
+    {% else %}
+      {%- assign collection_image = blank -%}
+    {% endif %}
+
+    {% if grid_item_responsive %}
+      {% if collection == blank %}
+        <div class="collection-grid__item-overlay grid__image">{{ 'collection-1' | placeholder_svg_tag: 'placeholder-svg' }}</div>
+      {% else %}
+        <noscript>
+          <div class="collection-grid__item-overlay grid__image grid__image--responsive{% if block.settings.collection != blank %}--{{ block.id }}{% endif %}" style="background-image: url('{{ collection_image | img_url: image_size }})"></div>
+        </noscript>
+        <div class="collection-grid__item-overlay grid__image lazyload"
+          {% unless collection_image == blank %}
+            style="background-image: url('{{ collection_image | img_url: '300x300' }});"
+          {% endunless %}
+          data-bgset="{% include 'bgset', image: collection_image %}"
+          data-sizes="auto"
+          data-parent-fit="cover">
+        </div>
+      {% endif %}
+    {% else %}
+      {% if collection == blank %}
+        {% capture current %}{% cycle 1, 2, 3, 4, 5, 6 %}{% endcapture %}
+        <div class="collection-grid__item-overlay grid__image">{{ 'collection-' | append: current | placeholder_svg_tag: 'placeholder-svg' }}</div>
+      {% else %}
+        <noscript>
+          <div class="collection-grid__item-overlay grid__image"{% unless collection_image == blank %} style="background-image: url({{ collection_image  | img_url: image_size }})"{% endunless %}></div>
+        </noscript>
+        <div class="collection-grid__item-overlay grid__image lazyload"
+          {% unless collection_image == blank %}
+            style="background-image: url('{{ collection_image | img_url: '300x' }});"
+          {% endunless %}
+          data-bgset="{% include 'bgset', image: collection_image %}"
+          data-sizes="auto"
+          data-parent-fit="cover">
+        </div>
+      {% endif %}
+    {% endif %}
+    <div class="collection-grid__item-title--wrapper">
+      <span class="collection-grid__item-title">
+        {{ collection_title }}
+      </span>
+    </div>
+  </a>
+</div>

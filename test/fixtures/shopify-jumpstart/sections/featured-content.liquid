@@ -1,0 +1,111 @@
+<div id="home-page" class="index-section home-section">
+
+	<div class="home-page-content overlay-{{ section.settings.home-page-background-overlay }}">
+		{% if section.settings.home-page-bg %}
+			<span class="prlx-bg prlx-bg--{{ section.id }} no-js lazyload overlay-{{ section.settings.home-page-background-overlay }}"
+				data-bgset="{% include 'bgset', image: section.settings.home-page-bg %}"
+				data-sizes="auto"
+				data-parent-fit="cover"></span>
+			<noscript>
+				<span class="prlx-bg prlx-bg--{{ section.id }} overlay-{{ section.settings.home-page-background-overlay }}" style="background-image: url('{{ section.settings.home-page-bg | img_url: '2048x2048' }}')"></span>
+			</noscript>
+		{% endif %}
+			{% for block in section.blocks %}
+			<div class="wrapper wrapper--margins" {{ block.shopify_attributes }}>
+
+				{% case block.type %}
+
+					{% when "text" %}
+
+						{% if block.settings.title != blank %}<h2 class="home-section-title">{{ block.settings.title | escape }}</h2>{% endif %}
+							<div class="rte">
+								{{ block.settings.content }}
+							</div>
+
+					{% when "page" %}
+
+						{% if block.settings.page == blank or pages[block.settings.page] == empty %}
+
+							<p>{{ 'homepage.onboarding.no_content' | t }}</p>
+
+						{% else %}
+
+							{% if block.settings.show_heading %}<h2 class="home-section-title">{{ pages[block.settings.page].title }}</h2>{% endif %}
+							<div class="rte">
+								{{ pages[block.settings.page].content }}
+							</div>
+
+						{% endif %}
+
+				{% endcase %}
+
+			</div>
+
+		{% endfor %}
+
+	</div>
+</div>
+
+{% schema %}
+	{
+		"name": "Rich text",
+		"settings": [
+			{
+				"type": "image_picker",
+				"id": "home-page-bg",
+				"label": "Background image"
+			},
+			{
+				"type": "checkbox",
+				"id": "home-page-background-overlay",
+				"label": "Add white overlay on background image"
+			}
+		],
+		"blocks": [
+			{
+			 "type": "text",
+			 "name": "Text",
+			 "settings": [
+				{
+					"type": "text",
+					"id": "title",
+					"label": "Heading",
+					"default": "Talk about your brand"
+				},
+				{
+				 "type": "richtext",
+				 "id": "content",
+				 "label": "Text",
+				 "default": "<p>Use this text to share information about your brand with your customers. Describe a product, share announcements, or welcome customers to your store.</p>"
+			 }
+		 ]
+		 },
+		 {
+			 "type": "page",
+			 "name": "Page",
+			 "settings": [
+				{
+					"type": "checkbox",
+					"id": "show_heading",
+					"label": "Show heading",
+					"default": true
+				},
+				{
+					"type": "page",
+					"id": "page",
+					"label": "Page"
+				}
+			]
+		 }
+	 ],
+		"presets": [{
+			"name": "Rich Text",
+			"category": "Text",
+			"blocks": [
+				{
+					"type": "text"
+				}
+			]
+		}]
+	}
+{% endschema %}

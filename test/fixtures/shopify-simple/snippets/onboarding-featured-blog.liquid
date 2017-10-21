@@ -1,0 +1,36 @@
+<div class="grid grid--uniform helper">
+  {% for i in (1..section.settings.post_limit) %}
+    <div class="grid__item {{ width }} slide-up-animation animated{% if forloop.index > 3 %} hide-post__mobile{% endif %}">
+      <div class="featured-blog__post">
+        {% if section.settings.blog_show_image %}
+          <a class="article__featured-link" href="#">
+            {% capture current %}{% cycle 1, 2, 3, 4, 5, 6 %}{% endcapture %}
+            {{ 'collection-' | append: current | placeholder_svg_tag: 'placeholder-svg' }}
+          </a>
+        {% endif %}
+        {% unless section.settings.post_limit == 1 and section.settings.blog_show_image %}
+          <h2 class="h3"><a href="#">{{ 'homepage.onboarding.blog_title' | t }}</a></h2>
+            {% if section.settings.blog_show_excerpt %}
+              <div class="rte rte--indented-images">
+                {{ 'homepage.onboarding.blog_excerpt' | t }}
+              </div>
+            {% endif %}
+            <p class="read-more"><a href="{{ article.url }}">{{ 'blogs.article.read_more' | t }} &rarr;</a></p>
+        {% endunless %}
+      </div>
+    </div>
+    {% if section.settings.post_limit == 1 and section.settings.blog_show_image %}
+      <div class="grid__item {{ width }}">
+        <div class="featured-blog__post">
+          <h2 class="h3"><a href="#">{{ 'homepage.onboarding.blog_title' | t }}</a></h2>
+          {% if section.settings.blog_show_excerpt %}
+            <div class="rte rte--indented-images">
+              {{ 'homepage.onboarding.blog_excerpt' | t }}
+            </div>
+          {% endif %}
+          <p class="read-more"><a href="{{ article.url }}">{{ 'blogs.article.read_more' | t }} &rarr;</a></p>
+        </div>
+      </div>
+    {% endif %}
+  {% endfor %}
+</div>

@@ -1,0 +1,187 @@
+<!-- /templates/cart.liquid -->
+{% comment %}
+
+  For info on test orders:
+    - General http://docs.shopify.com/manual/your-store/orders/test-orders
+    - Shopify Payments - http://docs.shopify.com/manual/more/shopify-payments/testing-shopify-payments
+
+{% endcomment %}
+<div class="grid">
+  <div class="grid__item large--five-sixths push--large--one-twelfth">
+    {% if cart.item_count > 0 %}
+      <header class="section-header text-center">
+        <h1 class="text-center">{{ 'cart.general.title' | t }}</h1>
+        <hr class="hr--small">
+      </header>
+
+      <form action="/cart" method="post" novalidate class="cart">
+
+        <div class="cart__row medium-down--hide cart__header-labels">
+          <div class="grid--full">
+            <div class="grid__item large--two-fifths push--large--three-fifths">
+              <div class="grid--full">
+                <div class="grid__item one-third medium-down--half text-center">
+                  {{ 'cart.label.quantity' | t }}
+                </div>
+                <div class="grid__item two-thirds medium-down--half text-right">
+                  {{ 'cart.label.total' | t }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {% comment %}
+          Loop through products in the cart
+        {% endcomment %}
+        {% for item in cart.items %}
+          <div class="cart__row">
+            <div class="grid--full cart__row--table-large">
+
+              <div class="grid__item large--three-fifths">
+                <div class="grid">
+
+                  <div class="grid__item one-third">
+                    <a href="{{ item.url | within: collections.all }}" class="cart__image">
+
+                      {% comment %}
+                        More image size options at:
+                          - http://docs.shopify.com/themes/filters/product-img-url
+                      {% endcomment %}
+                      <img src="{{ item | img_url: 'medium' }}" alt="{{ item.title | escape }}">
+                    </a>
+                  </div>
+
+                  <div class="grid__item two-thirds">
+                    <a href="{{ item.url }}" class="h4 cart__product-name">
+                      {{ item.product.title }}
+                    </a>
+                    {% unless item.variant.title contains 'Default' %}
+                      <p class="cart__product-meta">
+                        {{ item.variant.title }}
+                      </p>
+                    {% endunless %}
+
+                    {% if settings.product_vendor_enable %}
+                      <p class="cart__product-meta">{{ item.vendor }}</p>
+                    {% endif %}
+
+                    {% assign property_size = item.properties | size %}
+                    {% if property_size > 0 %}
+                      {% for p in item.properties %}
+                        {% assign first_character_in_key = p.first | truncate: 1, '' %}
+                        {% unless p.last == blank or first_character_in_key == '_' %}
+                          {{ p.first }}:
+
+                          {% if p.last contains '/uploads/' %}
+                            <a href="{{ p.last }}">{{ p.last | split: '/' | last }}</a>
+                          {% else %}
+                            {{ p.last }}
+                          {% endif %}
+
+                          <br>
+                        {% endunless %}
+                      {% endfor %}
+                    {% endif %}
+
+                    <p class="cart__product-meta">
+                      <a href="/cart/change?line={{ forloop.index }}&amp;quantity=0">
+                        {{ 'cart.general.remove' | t }}
+                      </a>
+                    </p>
+                  </div>
+
+                </div>
+              </div>
+
+              <div class="grid__item large--two-fifths">
+                <div class="grid--full cart__row--table">
+
+                  <div class="grid__item one-third text-center">
+
+                    <label for="updates_{{ item.key }}" class="visually-hidden">{{ 'cart.label.quantity' | t }}</label>
+                    <input type="number" name="updates[]" id="updates_{{ item.key }}" class="cart__product-qty" value="{{ item.quantity }}" min="0" data-id="{{ item.key }}">
+
+                  </div>
+
+                  <div class="grid__item two-thirds text-right">
+                    {% if item.original_line_price != item.line_price %}
+                      <small class="cart__price cart__price--strikethrough">{{ item.original_line_price | money }}</small>
+                    {% endif %}
+
+                    <span class="cart__price">{{ item.line_price | money }}</span>
+
+                    {% assign discounts_size = item.discounts | size %}
+                    {% if discounts_size > 0 %}
+                      {% for discount in item.discounts %}
+                        <small class="cart__discount">{{ discount.title }}</small>
+                      {% endfor %}
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        {% endfor %}
+
+        <div class="cart__row">
+          <div class="grid--full cart__row--table-large">
+            {% comment %}
+              Optional, add a textarea for special notes
+                - Your theme settings can turn this on or off. Default is on.
+                - Make sure you have name="note" for the message to be submitted properly
+            {% endcomment %}
+            {% if settings.cart_notes_enable %}
+              <div class="grid__item large--seven-twelfths">
+                <div class="cart__note">
+                  <label for="CartSpecialInstructions">{{ 'cart.general.note' | t }}</label>
+                  <textarea name="note" class="input-full" id="CartSpecialInstructions">{{ cart.note }}</textarea>
+                </div>
+              </div>
+            {% endif %}
+            <div class="grid__item large--five-twelfths text-center large--text-right{% unless settings.cart_notes_enable %} push--large--seven-twelfths{% endunless %}">
+              <div class="grid--full cart__row--table">
+                <div class="grid__item one-half large--two-thirds large--text-center">
+                  <p class="cart__subtotal">{{ 'cart.general.subtotal' | t }}</p>
+                </div>
+                <div class="grid__item one-half large--one-third">
+                  <p class="cart__subtotal">{{ cart.total_price | money }}</p>
+                </div>
+              </div>
+
+              {% if cart.total_discounts > 0 %}
+                {% assign cartTotalDiscounts = cart.total_discounts | money %}
+                <p class="cart__savings">{{ 'cart.general.savings_html' | t: savings: cartTotalDiscounts }}</p>
+              {% endif %}
+              <p><em>{{ 'cart.general.shipping_at_checkout' | t }}</em></p>
+              <button type="submit" name="update" class="btn--secondary update-cart">{{ 'cart.general.update' | t }}</button>
+              <button type="submit" name="checkout" class="btn cart__checkout">
+                {{ 'cart.general.checkout' | t }} <span class="icon icon-arrow-right" aria-hidden="true"></span>
+              </button>
+
+              {% if additional_checkout_buttons and settings.cart_type != 'drawer' %}
+                <div class="additional_checkout_buttons">{{ content_for_additional_checkout_buttons }}</div>
+              {% endif %}
+            </div>
+          </div>
+
+        </div>
+
+      </form>
+
+    {% else %}
+      {% comment %}
+        The cart is empty
+      {% endcomment %}
+      <header class="section-header text-center">
+        <h1 class="text-center">{{ 'cart.general.title' | t }}</h1>
+        <hr class="hr--small">
+        <p class="cart--empty-message">{{ 'cart.general.empty' | t }}</p>
+        <p class="cart--continue-browsing">{{ 'cart.general.continue_browsing_html' | t }}</p>
+        <p class="cookie-message">{{ 'cart.general.cookies_required' | t }}</p>
+      </header>
+
+    {% endif %}
+  </div>
+</div>

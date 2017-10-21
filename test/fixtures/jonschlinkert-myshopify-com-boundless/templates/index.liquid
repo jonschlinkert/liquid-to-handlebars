@@ -1,0 +1,38 @@
+<!-- /templates/index.liquid -->
+{% comment %}
+  Define your section markup, using `section.settings.[setting_name]` to access specific settings.
+  * Sections do not have access to global liquid variables.
+{% endcomment %}
+
+{% assign slider_enabled = true %}
+<div class="hero-wrapper">
+  <div class="hero__site-header">
+    <div class="grid grid--no-gutter grid--table site-header__inner">
+      <div class="grid__item one-half">
+        <button type="button" class="site-header__link text-link site-header__toggle-nav js-drawer-open-left">
+          <span class="icon icon-hamburger" aria-hidden="true"></span>
+          <span class="icon__fallback-text">{{ 'layout.navigation.menu' | t }}</span>
+        </button>
+      </div>
+      <div class="grid__item one-half text-right">
+        <a href="/search" class="site-header__link site-header__search js-drawer-open-top">
+          <span class="icon icon-search" aria-hidden="true"></span>
+          <span class="icon__fallback-text">{{ 'layout.navigation.search' | t }}</span>
+        </a>
+        <a href="/cart" class="site-header__link site-header__cart cart-link{% if settings.cart_type == 'drawer' %} js-drawer-open-right{% endif %}{% if cart.item_count > 0 %} cart-bubble--visible{% endif %}">
+          <span class="icon icon-cart" aria-hidden="true"></span>
+          <span class="icon__fallback-text">{{ 'layout.cart.title' | t }}</span>
+        </a>
+      </div>
+    </div>
+  </div>
+  
+  {% section 'slideshow' %}
+  
+  <div class="hero__header">
+   <div class="action-area">
+     {% include 'action-bar' %}
+   </div>
+ </div>
+</div>
+{{ content_for_index }}

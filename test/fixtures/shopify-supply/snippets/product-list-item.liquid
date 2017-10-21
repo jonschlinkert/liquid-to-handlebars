@@ -1,0 +1,90 @@
+{% unless image_size %}
+  {%- assign image_size = '600x600' -%}
+{% endunless %}
+
+{% unless current_collection %}
+  {% assign current_collection = collection %}
+{% endunless %}
+
+{% assign on_sale = false %}
+{% if product.compare_at_price > product.price %}
+  {% assign on_sale = true %}
+{% endif %}
+
+{% assign sold_out = true %}
+{% if product.available  %}
+  {% assign sold_out = false %}
+{% endif %}
+
+<div class="grid-item{% if sold_out %} sold-out{% endif %}{% if on_sale %} on-sale{% endif %}">
+  <a href="{{ product.url | within: current_collection }}" class="product-grid-item product-list-item">
+    <div class="grid">
+      <div class="grid-item large--one-fifth medium--one-third">
+        <div class="product-list-image">
+          {% if sold_out %}
+            <div class="badge badge--sold-out"><span class="badge-label">{{ 'products.product.sold_out' | t }}</span></div>
+          {% endif %}
+          {% if product.featured_image %}
+          {%- assign img_url = product.featured_image | img_url: '1x1' | replace: '_1x1.', '_{width}x.' -%}
+          <div class="lazyload__image-wrapper" style="padding-top:{{ 1 | divided_by: product.featured_image.aspect_ratio | times: 100}}%;">
+            <img id="{{ img_id }}"
+                class="lazyload js"
+                data-src="{{ img_url }}"
+                data-widths="[180, 360, 540, 720, 900, 1080, 1296, 1512, 1728, 2048]"
+                data-aspectratio="{{ product.featured_image.aspect_ratio }}"
+                data-sizes="auto"
+                alt="{{ product.featured_image.alt | escape }}">
+               
+          </div>
+          <noscript>
+          <img src="{{ product.featured_image | img_url: '580x' }}"
+              srcset="{{ product.featured_image | img_url: '580x' }} 1x, {{ product.featured_image | img_url: '580x', scale: 2 }} 2x"
+              alt="{{ product.featured_image.alt }}" style="opacity:1;">
+            </noscript> 
+          {% else %}
+            {% capture current %}{% cycle 1, 2, 3, 4 %}{% endcapture %}
+            {{ 'product-' | append: current | placeholder_svg_tag: 'placeholder-svg' }}
+            {% endif %}
+        </div>
+      </div>
+      <div class="grid-item large--three-fifths medium--two-thirds">
+        <p class="h6">{{ product.title }}</p>
+        <div class="rte">
+          <p>{{ product.content | strip_html | truncatewords: 30 }}</p>
+        </div>
+      </div>
+      <div class="grid-item large--one-fifth medium--two-thirds">
+        <div class="product-item--price text-center">
+          <p class="h1 medium-down--left">
+            {% if on_sale %}
+              <span class="visually-hidden">{{ "products.general.sale_price" | t }}</span>
+            {% else %}
+              <span class="visually-hidden">{{ "products.general.regular_price" | t }}</span>
+            {% endif %}
+            {% include 'price' with product.price %}
+            {% if on_sale and section.settings.product_show_compare_at_price %}
+              <small>
+                <s>
+                  <span class="visually-hidden">{{ "products.general.regular_price" | t }}</span>
+                  {% include 'price' with product.compare_at_price %}
+                </s>
+              </small>
+            {% endif %}
+          </p>
+
+          {% if on_sale and section.settings.product_show_saved_amount %}
+            <span class="sale-tag medium-down--right{% if section.settings.product_reviews_enable %} has-reviews{% endif %}">
+              {% assign compare_price = product.compare_at_price %}
+              {% assign product_price = product.price %}
+              {% include 'price-sale' %}
+            </span>
+          {% endif %}
+
+          {% if section.settings.product_reviews_enable %}
+            <span class="shopify-product-reviews-badge" data-id="{{ product.id }}"></span>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </a>
+</div>

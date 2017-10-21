@@ -1,0 +1,80 @@
+{% capture header_title %} {{ 'general.search.title' | t }} {% endcapture %}
+{% include 'page_header' with header_title %}
+
+<div class="wrapper wrapper--margins">
+
+{% assign respond_js_secret_key = shop.domain | md5 %}
+{% unless search.terms == respond_js_secret_key %}
+
+  {% paginate search.results by 24 %}
+
+    {% if search.performed %}
+
+      <div class="collection-list grid-uniform small-gutter">
+      {%- assign grid_item_width = 'small--one-whole medium--one-third large--one-third' -%}
+
+        {% for item in search.results %}
+
+          {% if item.object_type == 'product' %}
+            {% assign product = item %}
+            {% include 'product-grid-item', grid_item_width: grid_item_width %}
+          {% else %}
+            <div class="product grid__item {{ grid_item_width }} text-center">
+
+              {% if item.featured_image %}
+                {% assign img = item.featured_image %}
+              {% elsif item.image %}
+                {% assign img = item.image %}
+              {% else %}
+                {% assign img = '' %}
+              {% endif %}
+
+              {% if img != blank %}
+                <a href="{{ item.url }}" class="grid__image">
+                  <div class="product__image-wrapper" style="padding-top:{{ 1 | divided_by: img.aspect_ratio | times: 100}}%;">
+                  {% assign img_url = item | img_url: '1x1' | replace: '_1x1.', '_{width}x.' %}
+                    <img class="no-js lazyload"
+                      data-src="{{ img_url }}"
+                      data-widths="[108, 360, 375, 414, 568, 684, 720, 732, 736, 768, 1024, 1200, 1296, 1512, 1728, 1944, 2048]"
+                      data-aspectratio="{{ img.aspect_ratio }}"
+                      data-sizes="auto"
+                      data-parent-fit="width"
+                      alt="{{ img.alt | escape | default: item.title }}">
+                  </div>
+                      <noscript>
+                        <img src="{{ img | img_url: '580x' }}"
+                          srcset="{{ img | img_url: '580x' }} 1x, {{ img | img_url: '580x', scale: 2 }} 2x"
+                          alt="{{ img.alt | escape | default: item.title }}" style="opacity:1;">
+                      </noscript>
+
+                </a>
+              {% endif %}
+
+              <p class="h3">{{ item.title | link_to: item.url }}</p>
+
+              {% if img == blank %}
+                <p class="excerpt">{{ item.content | strip_html | truncatewords: 50 }}</p>
+              {% endif %}
+
+            </div>
+          {% endif %}
+
+        {% endfor %}
+
+      </div>
+
+      {% include 'page_pagination' %}
+
+    {% endif %}
+
+    <form action="/search" method="get" class="search-bar text-center" role="search">
+      <h2 class="home-section-title less-margin">{{ 'general.search.label' | t }}</h2>
+      <input type="search" name="q" value="{{ search.terms | escape }}">
+      <button type="submit" class="btn btn--regular btn--dark btn--fill">
+        {{ 'general.search.submit' | t }}
+      </button>
+    </form>
+
+  {% endpaginate %}
+
+{% endunless %}

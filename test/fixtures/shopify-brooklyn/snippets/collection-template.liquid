@@ -1,0 +1,138 @@
+{% comment %}
+  Collection template, used on collection.liquid and collection.image.liquid
+{% endcomment %}
+
+{% paginate collection.products by 12 %}
+
+<header class="section-header text-center">
+  <h1>{{ collection.title }}</h1>
+  <hr class="hr--small">
+  {% if collection.description != blank %}
+    <div class="grid">
+      <div class="grid__item">
+        <div class="rte">
+          {{ collection.description }}
+        </div>
+      </div>
+    </div>
+  {% endif %}
+
+  {% if section.settings.collection_tags_enable %}
+    {% if collection.all_tags.size > 0 %}
+      {% comment %}
+        To provide a 'catch-all' link at the top of the list,
+        check against the collection.handle, product type, and vendor.
+      {% endcomment %}
+      <ul class="tags tags--collection inline-list">
+        <li{% unless current_tags %} class="tag--active"{% endunless %}>
+          {% comment %}
+            Good for /collections/all collection and regular collections
+          {% endcomment %}
+          {% if collection.handle %}
+            <a href="/collections/{{ collection.handle }}">
+              {{ 'collections.general.all_of_collection' | t }}
+            </a>
+
+          {% comment %}
+            Good for automatic type collections
+          {% endcomment %}
+          {% elsif collection.current_type %}
+            <a href="{{ collection.current_type | url_for_type }}">
+              {{ 'collections.general.all_of_collection' | t }}
+            </a>
+
+          {% comment %}
+            Good for automatic vendor collections
+          {% endcomment %}
+          {% elsif collection.current_vendor %}
+            <a href="{{ collection.current_vendor | url_for_vendor }}">
+              {{ 'collections.general.all_of_collection' | t }}
+            </a>
+          {% endif %}
+        </li>
+
+        {% for tag in collection.all_tags %}
+          {% if current_tags contains tag %}
+            <li class="tag--active">
+              {{ tag | link_to_remove_tag: tag }}
+            </li>
+          {% else %}
+            <li>
+              {% comment %}
+                Use link_to_add_tag if you want to allow filtering
+                by multiple tags
+              {% endcomment %}
+              {{ tag | link_to_tag: tag }}
+            </li>
+          {% endif %}
+        {% endfor %}
+      </ul>
+    {% endif %}
+  {% endif %}
+
+  {% if section.settings.collection_tags_enable %}
+    <hr class="hr--small hr--clear">
+  {% endif %}
+</header>
+
+{% if section.settings.collection_products_grid == 'collage' %}
+  <div class="grid grid-collage">
+    {% comment %}
+      Loop through our products in the current collection.
+      See the snippet 'snippets/product-grid-collage.liquid'.
+
+      `is_reverse_row__product`, `three_row_index__product`, `collection_product_count`, and `divisible_by_three__product` are
+      all used by 'snippets/product-grid-collage.liquid'
+    {% endcomment %}
+    {% assign is_reverse_row__product = false %}
+    {% assign three_row_index__product = 0 %}
+    {% assign collection_product_count__product = collection.products.size %}
+    {% assign divisible_by_three__product = collection_product_count__product | modulo:3 %}
+    {% for product in collection.products %}
+      {% include 'product-grid-collage' %}
+    {% else %}
+
+      {% if shop.products_count == 0 %}
+        {% comment %}
+          Add default products to help with onboarding for collections/all only
+        {% endcomment %}
+        {% include 'onboarding-featured-products' %}
+      {% else %}
+        {% comment %}
+          If collection exists but is empty, display message
+        {% endcomment %}
+        <div class="grid__item text-center">
+          <p>{{ 'collections.general.no_matches' | t }}</p>
+        </div>
+      {% endif %}
+    {% endfor %}
+
+  </div>
+{% elsif section.settings.collection_products_grid == 'grid' %}
+  <div class="grid-uniform">
+    {% assign grid_item_width = 'medium--one-half large--one-third' %}
+    {% for product in collection.products %}
+      {% include 'product-grid-item' %}
+    {% else %}
+      {% if collection.handle == 'all' %}
+        {% comment %}
+          Add default products to help with onboarding for collections/all only
+        {% endcomment %}
+        {% include 'onboarding-featured-products' %}
+      {% else %}
+        {% comment %}
+          If collection exists but is empty, display message
+        {% endcomment %}
+        <div class="grid__item text-center">
+          <p>{{ 'collections.general.no_matches' | t }}</p>
+        </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+{% endif %}
+
+{% if paginate.pages > 1 %}
+  {% include 'pagination' %}
+{% endif %}
+
+{% endpaginate %}

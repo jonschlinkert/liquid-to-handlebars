@@ -1,0 +1,119 @@
+<div data-section-id="{{ section.id }}" data-section-type="collections-list-template">
+  <hr>
+  <div class="section-header">
+    <h2 class="h1  section-header--left">{{ 'homepage.featured_collections.heading' | t }}</h2>
+    <div class="section-header--right">
+      <a href="/collections">{{ 'homepage.featured_collections.more_categories' | t }} &rsaquo;</a>
+    </div>
+  </div>
+  <div class="grid-uniform text-center">
+
+    {%- assign index = 0 -%}
+    {%- assign index = section.blocks.size -%}
+
+    {% case index %}
+      {% when 1 %}
+        {%- assign featured_collection_width = 'one-whole' -%}
+        {%- assign featured_collection_size = '1024x' -%}
+        {%- assign width = '1000' %}
+        {%- assign height = '1000' %}
+      {% when 2 %}
+        {%- assign featured_collection_width = 'one-half' -%}
+        {%- assign featured_collection_size = '540x' -%}
+        {%- assign width = '480' %}
+        {%- assign height = '480' %}
+      {% when 3 %}
+        {%- assign featured_collection_width = 'small--one-half one-third' -%}
+        {%- assign featured_collection_size = '345x' -%}
+        {%- assign width = '310' -%}
+        {%- assign height = '310' -%}
+      {% when 4 %}
+        {%- assign featured_collection_width = 'small--one-half one-quarter' -%}
+        {%- assign featured_collection_size = '250x' -%}
+        {%- assign width = '225' -%}
+        {%- assign height = '225' -%}
+      {% when 5 %}
+        {%- assign featured_collection_width = 'small--one-half medium--one-third large--one-fifth' -%}
+        {%- assign featured_collection_size = '195x' -%}
+        {%- assign width = '175' -%}
+        {%- assign height = '175' -%}
+      {% when 6 %}
+        {%- assign featured_collection_width = 'small--one-half medium--one-third large--one-sixth' -%}
+        {%- assign featured_collection_size = '195x' -%}
+        {%- assign width = '140' -%}
+        {%- assign height = '140' -%}
+    {% endcase %}
+
+    {% if index > 0 %}
+      {% for block in section.blocks %}
+        {%- assign featured = block.settings.collection %}
+        {% include 'featured-collection' with width: width, height: height %}
+      {% endfor %}
+    {% comment %}
+    {% else %}
+      {%- assign index = 0 %}
+      {% for collection in collections limit:7 %}
+        {% unless index >= 6 %}
+          {% unless collection.handle == 'frontpage' %}
+            {%- assign featured = collection.handle %}
+            {% include 'featured-collection' %}
+            {%- assign index = index | plus: 1 %}
+          {% endunless %}
+        {% endunless %}
+      {% endfor %}
+      {% endcomment %}
+    {% endif %}
+
+    {% if index == 0 %}
+      <div class="grid-item text-center">
+        <p>{{ 'homepage.featured_collections.no_collections_html' | t }}</p>
+      </div>
+      <div class="grid-item">
+        <div class="grid-uniform">
+          {% for i in (1..6) %}
+            <div class="grid-item small--one-half medium--one-third large--one-sixth text-center">
+              {% capture current %}{% cycle 1, 2, 3, 4, 5, 6 %}{% endcapture %}
+              {{ 'collection-' | append: current | placeholder_svg_tag: 'placeholder-svg' }}
+              <p><a href="/admin/collections">{{ 'homepage.featured_collections.example_collection' | t }}</a></p>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+{% schema %}
+  {
+    "name": "Collection list",
+    "class": "collection-list-section",
+    "max_blocks": 6,
+    "presets": [
+      {
+        "name": "Collection list",
+        "category": "Collections",
+        "blocks" : [
+          {
+            "type": "collection"
+          },
+          {
+            "type": "collection"
+          }
+        ]
+      }
+    ],
+    "blocks" : [
+      {
+        "type": "collection",
+        "name": "Collection",
+        "settings": [
+          {
+            "id": "collection",
+            "type": "collection",
+            "label": "Collection"
+          }
+        ]
+      }
+    ]
+  }
+{% endschema %}

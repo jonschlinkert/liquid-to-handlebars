@@ -1,0 +1,118 @@
+<!doctype html>
+<html class="no-js">
+<head>
+  <script>(function(H){H.className=H.className.replace(/\bno-js\b/,'js')})(document.documentElement)</script>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+  {% if settings.favicon != blank %}
+    <link rel="shortcut icon" href="{{ settings.favicon | img_url: '32x32' }}" type="image/png">
+  {% endif %}
+
+  <title>
+    {% if template.name == 'password' %}{{ shop.name }}{% else %}{{ page_title }}{% if current_tags %}{% assign meta_tags = current_tags | join: ', ' %} &ndash; {{ 'general.meta.tags' | t: tags: meta_tags }}{% endif %}{% if current_page != 1 %} &ndash; {{ 'general.meta.page' | t: page: current_page }}{% endif %}{% unless page_title contains shop.name %} &ndash; {{ shop.name }}{% endunless %}{% endif %}
+  </title>
+
+  {% if page_description %}
+    <meta name="description" content="{{ page_description | escape }}">
+  {% endif %}
+
+  {% include 'social-meta-tags' %}
+  <link rel="canonical" href="{{ canonical_url }}">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="{{ settings.color_primary }}">
+
+  {% include 'head_fonts' %}
+  {{ '//maxcdn.bootstrapcdn.com/font-awesome/4.6.0/css/font-awesome.min.css' | stylesheet_tag }}
+  {{ 'theme.scss.css' | asset_url | stylesheet_tag }}
+
+  <script>
+    var theme = {
+      strings:{
+        sold_out: {{ 'products.product.sold_out' | t | json }},
+        add_to_cart: {{ 'products.product.add_to_cart' | t | json }},
+        unavailable: {{ 'products.product.unavailable' | t | json }},
+        increase_quantity: {{ 'cart.general.increase_quantity' | t | json }},
+        reduce_quantity: {{ 'cart.general.reduce_quantity' | t | json }},
+        addressError: {{ 'map.address_error' | t | json }},
+        addressNoResults: {{ 'map.address_no_results' | t | json }},
+        addressQueryLimit: {{ 'map.address_query_limit_html' | t | json }},
+        authError: {{ 'map.auth_error_html' | t | json }}
+      },
+      settings: {
+        ajax_cart_enable: {% if settings.ajax_cart_enable %}{{ settings.ajax_cart_enable | json }}{% else %}null{% endif %},
+        moneyFormat: {{ shop.money_format | json }}
+      }
+    };
+  </script>
+
+  {{ '//ajax.googleapis.com/ajax/libs/jquery/2.2.3/jquery.min.js' | script_tag }}
+
+  <!--[if (gt IE 9)|!(IE)]><!--><script src="{{ 'lazysizes.min.js' | asset_url }}" async="async"></script><!--<![endif]-->
+  <!--[if lte IE 9]><script src="{{ 'lazysizes.min.js' | asset_url }}"></script><![endif]-->
+
+
+  <!--[if (gt IE 9)|!(IE)]><!--><script src="{{ 'vendor.js' | asset_url }}" defer="defer"></script><!--<![endif]-->
+  <!--[if lte IE 9]><script src="{{ 'vendor.js' | asset_url }}"></script><![endif]-->
+
+  <!--[if (gt IE 9)|!(IE)]><!--><script src="{{ 'theme.js' | asset_url }}" defer="defer"></script><!--<![endif]-->
+  <!--[if lte IE 9]><script src="{{ 'theme.js' | asset_url }}"></script><![endif]-->
+
+  {{ '//cdnjs.cloudflare.com/ajax/libs/packery/1.4.3/packery.pkgd.min.js' | script_tag }}
+
+  {{ content_for_header }}
+
+  {% if template.directory == 'customers' %}
+    {{ 'shopify_common.js' | shopify_asset_url | script_tag }}
+  {% endif %}
+
+</head>
+
+<body id="{{ page_title | handle }}" class="{% if customer %}customer-logged-in {% endif %}template-{{ template | replace: '.', ' ' | truncatewords: 1, '' | handle }}" >
+
+  <div id="PageContainer"{% if color %} class="{{ color }}"{% endif %}>
+
+    {% section 'header' %}
+
+    <main class="main-content" role="main">
+
+      {{ content_for_layout }}
+
+    </main>
+
+    {% section 'footer' %}
+
+  </div>
+
+  <script type="text/javascript">
+
+    {% capture jQuery_plus_icon %} {% include "asset_svg" with "plus" %} {% endcapture %}
+    {% capture jQuery_minus_icon %} {% include "asset_svg" with "minus" %} {% endcapture %}
+    {% capture jQuery_close_icon %} {% include "asset_svg" with "close" %} {% endcapture %}
+    {% capture jQuery_arrow_down_icon %} {% include "asset_svg" with "arrow_down" %} {% endcapture %}
+    {% capture jQuery_arrow_left_icon %} {% include "asset_svg" with "arrow_left" %} {% endcapture %}
+    {% capture jQuery_arrow_right_icon %} {% include "asset_svg" with "arrow_right" %} {% endcapture %}
+
+    jQuery.themeAssets = {
+      plus: '{{ jQuery_plus_icon | lstrip | rstrip }}',
+      minus: '{{ jQuery_minus_icon | lstrip | rstrip }}',
+      close: '{{ jQuery_close_icon | lstrip | rstrip }}',
+      arrow_down: '{{ jQuery_arrow_down_icon | lstrip | rstrip }}',
+      arrow_left: '{{ jQuery_arrow_left_icon | lstrip | rstrip }}',
+      arrow_right: '{{ jQuery_arrow_right_icon | lstrip | rstrip }}'
+    }
+
+    {% if newHash %}
+      $(function() {
+        timber.updateHash('{{ newHash }}');
+      });
+    {% endif %}
+    {% if resetPassword %}
+      $(function() {
+        timber.resetPasswordSuccess();
+      });
+    {% endif %}
+  </script>
+
+</body>
+</html>

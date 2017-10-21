@@ -1,0 +1,58 @@
+{% assign header_title = page.title %}
+{% include 'page_header' with header_title %}
+
+<div class="wrapper wrapper--margins">
+
+  <div class="rte">
+    {{ page.content }}
+  </div>
+
+  <div class="contact-form">
+
+    {% form 'contact' %}
+
+      <h2 class="home-section-title less-margin">{{ 'contact.form.title' | t }}</h2>
+
+      {% if form.posted_successfully? %}
+        <p class="note form-success">
+          {{ 'contact.form.post_success' | t }}
+        </p>
+      {% endif %}
+
+      {{ form.errors | default_errors }}
+
+      <div class="form__row">
+
+        <div class="form__column third">
+          {% assign name_attr = 'contact.form.name' | t | handle %}
+          <label for="ContactFormName">{{ 'contact.form.name' | t }}</label>
+          <input type="text" id="ContactFormName" class="input-full" name="contact[{{ name_attr }}]" autocapitalize="words" value="{% if form[name_attr] %}{{ form[name_attr] }}{% elsif customer %}{{ customer.name }}{% endif %}">
+        </div>
+
+        <div class="form__column third">
+          <label for="ContactFormEmail">{{ 'contact.form.email' | t }}</label>
+          <input type="email" id="ContactFormEmail" class="input-full" name="contact[email]" autocorrect="off" autocapitalize="off" value="{% if form.email %}{{ form.email }}{% elsif customer %}{{ customer.email }}{% endif %}">
+        </div>
+
+        <div class="form__column third">
+          {% assign name_attr = 'contact.form.phone' | t | handle %}
+          <label for="ContactFormPhone">{{ 'contact.form.phone' | t }}</label>
+          <input type="tel" id="ContactFormPhone" class="input-full" name="contact[{{ name_attr }}]" pattern="[0-9\-]*" value="{% if form[name_attr] %}{{ form[name_attr] }}{% elsif customer %}{{ customer.phone }}{% endif %}">
+        </div>
+
+      </div>
+
+      <div class="form__row">
+        <div class="form__column full">
+          <label for="ContactFormMessage">{{ 'contact.form.message' | t }}</label>
+          <textarea rows="10" id="ContactFormMessage" class="input-full" name="contact[body]">{% if form.body %}{{ form.body }}{% endif %}</textarea>
+        </div>
+      </div>
+
+      <input type="submit" class="btn btn--regular btn--color btn--fill" value="{{ 'contact.form.send' | t }}">
+
+    {% endform %}
+
+  </div>
+
+</div>

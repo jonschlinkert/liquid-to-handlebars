@@ -1,0 +1,172 @@
+{% comment %}
+
+  Comments will not appear right after they are submitted, either to be checked for spam
+  or to await moderation. When a comment is submitted, the browser is redirected to a page
+  that includes the new comment id in its URL.
+    Example: http://shopname.myshopify.com/blogs/news/2022072-my-post?comment=3721372
+
+  More information:
+    - http://docs.shopify.com/themes/liquid-variables/comment
+
+{% endcomment %}
+
+{%- assign new_comment = false -%}
+{% if comment and comment.created_at %}
+  {%- assign new_comment = true -%}
+  {%- assign new_comment_id = comment.id -%}
+{% endif %}
+
+{% if new_comment %}
+  {%- assign duplicate_comment = false %}
+  {% for comment in article.comments %}
+    {% if comment.id == new_comment_id %}
+      {%- assign duplicate_comment = true %}
+      {% break %}
+    {% endif %}
+  {% endfor %}
+
+  {% if duplicate_comment %}
+    {%- assign number_of_comments = article.comments_count -%}
+  {% else %}
+    {%- assign number_of_comments = article.comments_count | plus: 1 -%}
+  {% endif %}
+{% else %}
+  {%- assign number_of_comments = article.comments_count -%}
+{% endif %}
+
+<div class="page-width page-container" itemscope itemtype="http://schema.org/Article">
+  <header class="section-header">
+    <h1 class="h2">{{ article.title }}</h1>
+    <ul class="list--inline article-meta txt--minor">
+      <li>{{ article.author }}</li>
+      {% if article.tags.size > 0 %}
+        <li class="list--inline__separator">
+          {% for tag in article.tags %}
+            <a href="{{ blog.url }}/tagged/{{ tag | handle }}">{{ tag }}</a>{% unless forloop.last %}, {% endunless %}
+          {% endfor %}
+        </li>
+      {% endif %}
+      <li class="list--inline__separator"><time datetime="{{ article.published_at | date: '%Y-%m-%d' }}">{{ article.published_at | date: format: 'month_day_year' }}</time></li>
+    </ul>
+  </header>
+
+  <article class="rte rte--indented-images" itemprop="articleBody">
+    {{ article.content }}
+  </article>
+
+  {% if section.settings.social_sharing_blog %}
+    <hr class="hr--clear">
+    <h3 class="h2">{{ 'blogs.article.share_this_post' | t }}</h3>
+    {% include 'social-sharing', share_title: article.title, share_permalink: article.url, share_image: article.image %}
+  {% endif %}
+
+  {% if blog.comments_enabled? %}
+    <hr class="hr--clear">
+    <div class="comments-wrapper grid">
+      <div class="grid__item large-up--one-half">
+        {% comment %}
+          Comment submission form
+        {% endcomment %}
+        <div class="form-vertical">
+          {% form 'new_comment', article %}
+
+            {% comment %}
+              #AddCommentTitle is used simply as an anchor link when a comment error exists
+            {% endcomment %}
+            <h3 id="AddCommentTitle" class="h2">{{ 'blogs.comments.title' | t }}</h3>
+
+            {{ form.errors | default_errors }}
+
+            <label for="CommentAuthor" class="label--hidden">{{ 'blogs.comments.name' | t }}</label>
+            <input type="text" name="comment[author]" id="CommentAuthor" class="input-full{% if form.errors contains 'author' %} input--error{% endif %}" placeholder="{{ 'blogs.comments.name' | t }}" value="{{ form.author }}" autocapitalize="words">
+
+            <label for="CommentEmail" class="label--hidden">{{ 'blogs.comments.email' | t }}</label>
+            <input type="email" name="comment[email]" id="CommentEmail" class="input-full{% if form.errors contains 'email' %} input--error{% endif %}" placeholder="{{ 'blogs.comments.email' | t }}" value="{{ form.email }}" autocorrect="off" autocapitalize="off">
+
+            <label for="CommentBody" class="label--hidden">{{ 'blogs.comments.message' | t }}</label>
+            <textarea name="comment[body]" id="CommentBody" class="input-full comment__textarea{% if form.errors contains 'body' %} input--error{% endif %}" placeholder="{{ 'blogs.comments.message' | t }}">{{ form.body }}</textarea>
+
+            {% if blog.moderated? %}
+              <p><span class="txt--minor txt--emphasis">{{ 'blogs.comments.moderated' | t }}</span></p>
+            {% endif %}
+
+            <input type="submit" class="btn" value="{{ 'blogs.comments.post' | t }}">
+          {% endform %}
+        </div>
+      </div>
+      <div class="grid__item large-up--one-half">
+        {% if number_of_comments > 0 %}
+          <h3 class="h2">{{ 'blogs.comments.with_count' | t: count: number_of_comments }}</h3>
+        {% endif %}
+        {% paginate article.comments by 5 %}
+
+          {% comment %}
+            #comments is required, it is used as an anchor link by Shopify.
+          {% endcomment %}
+          <div id="comments">
+
+            {% if new_comment %}
+              <p class="note form--success">
+                {% if blog.moderated? %}
+                  {{ 'blogs.comments.success_moderated' | t }}
+                {% else %}
+                  {{ 'blogs.comments.success' | t }}
+                {% endif %}
+              </p>
+            {% endif %}
+
+            {% if number_of_comments > 0 %}
+              <ul class="comment-list">
+                {% comment %}
+                  If a comment was just submitted with no blank field, show it.
+                {% endcomment %}
+                {% if new_comment %}
+                  {% unless paginate.current_page > 1 %}
+                    <li id="{{ comment.id }}" class="comment">
+                      {% include 'comment' %}
+                    </li>
+                  {% endunless %}
+                {% endif %}
+
+                {% comment %}
+                  Showing the rest of the comments.
+                {% endcomment %}
+                {% for comment in article.comments %}
+                  {% unless comment.id == new_comment_id %}
+                    <li id="{{ comment.id }}" class="comment">
+                      {% include 'comment' %}
+                    </li>
+                  {% endunless %}
+                {% endfor %}
+              </ul>
+
+              {% if paginate.pages > 1 %}
+                {% include 'pagination' %}
+              {% endif %}
+            {% endif %}
+
+          </div>
+        {% endpaginate %}
+      </div>
+    </div>
+  {% endif %}
+
+  <hr class="hr--clear">
+  <p class="text-center action-link">
+    <a href="{{ blog.url }}"><span class="icon icon-arrow-left action-link__icon" aria-hidden="true"></span> {{ 'blogs.article.back_to_blog' | t: title: blog.title }}</a>
+  </p>
+</div>
+
+{% schema %}
+  {
+    "name": "Article",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "social_sharing_blog",
+        "label": "Show social sharing buttons",
+        "default": true
+      }
+    ]
+  }
+{% endschema %}

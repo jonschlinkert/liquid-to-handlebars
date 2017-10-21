@@ -1,0 +1,56 @@
+<div class="newsletter text-center" data-section-id="{{ section.id }}" data-section-type="newsletter-signup-section">
+  {% unless section.settings.heading == blank %}
+    <h2 {% if section.settings.subheading == blank %}class="section-title"{% endif %}>{{ section.settings.heading | escape }}</h2>
+  {% endunless %}
+  {% unless section.settings.subheading == blank %}
+    <p>{{ section.settings.subheading | escape }}</p>
+  {% endunless %}
+  <div class="wrapper">
+    {% form 'customer' %}
+      {{ form.errors | default_errors }}
+      {% if form.posted_successfully? %}
+        <p class="form--success">{{ 'general.newsletter_form.confirmation' | t }}</p>
+      {% else %}
+        <div class="input-group">
+          <input type="hidden" name="contact[tags]" value="newsletter">
+          <label for="Email" class="newsletter__label label--hidden">{{ 'general.newsletter_form.email_placeholder' | t }}</label>
+          <input type="email" value="{% if customer %}{{ customer.email }}{% endif %}" placeholder="{{ 'general.newsletter_form.email_placeholder' | t }}" name="contact[email]" id="Email" class="input-group__field newsletter__input" autocorrect="off" autocapitalize="off">
+          <span class="input-group__btn">
+            <button type="submit" class="btn newsletter__submit" name="commit" id="Subscribe">
+              <span class="newsletter__submit-text--large">{{ 'general.newsletter_form.submit' | t }}</span>
+            </button>
+          </span>
+        </div>
+      {% endif %}
+    {% endform %}
+  </div>
+</div>
+
+{% schema %}
+  {
+    "name": "Newsletter",
+    "class": "index-section newsletter-signup",
+    "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Subscribe to our newsletter"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "A short sentence describing what someone will receive by subscribing"
+    },
+    {
+        "type": "paragraph",
+        "content": "Any customers who sign up, will have an account created for them in Shopify. [View customers](/admin/customers?query=&accepts_marketing=1)"
+      }
+    ],
+    "presets": [{
+      "name": "Newsletter",
+      "category": "Promotional"
+    }]
+  }
+{% endschema %}

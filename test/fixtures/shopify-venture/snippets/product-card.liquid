@@ -1,0 +1,71 @@
+<!-- /snippets/product-card.liquid -->
+
+{% comment %}
+  The product card snippet is passed a liquid object, used in this file
+  as "product". The object is either "product" or "item", the latter if
+  it is from search results.
+{% endcomment %}
+
+<a href="{{ product.url | within: collection }}" class="product-card">
+  <div class="product-card__image-wrapper">
+    <img src="{{ product.featured_image.src | img_url: '480x480' }}" alt="{{ product.featured_image.alt | escape }}" class="product-card__image">
+  </div>
+  <div class="product-card__info">
+    {% if settings.product_vendor_enable %}
+      <div class="product-card__brand">{{ product.vendor }}</div>
+    {% endif %}
+
+    <div class="product-card__name">{{ product.title }}</div>
+
+    {% if product.available %}
+      <div class="product-card__price">
+        {% if product.compare_at_price > product.price %}
+          {% comment %}
+            Product is on sale
+          {% endcomment %}
+          {% if product.price_varies %}
+            {% assign sale_price = product.price | money_without_trailing_zeros %}
+            {{ 'products.product.on_sale_from_html' | t: price: sale_price }}
+          {% else %}
+            <span class="visually-hidden">{{ 'products.product.regular_price' | t }}</span>
+            <s class="product-card__regular-price">{{ product.compare_at_price | money_without_trailing_zeros }}</s>
+
+            <span class="visually-hidden">{{ 'products.product.sale_price' | t }}</span>
+            {{ product.price | money_without_trailing_zeros }}
+          {% endif %}
+
+        {% else %}
+          {% comment %}
+            Not on sale, but could still have varying prices
+          {% endcomment %}
+          {% if product.price_varies %}
+            {% assign price = product.price | money_without_trailing_zeros %}
+            {{ 'products.product.from_text_html' | t: price: price }}
+          {% else %}
+            <span class="visually-hidden">{{ 'products.product.regular_price' | t }}</span>
+            {{ product.price | money_without_trailing_zeros }}
+          {% endif %}
+
+        {% endif %}
+      </div>
+    {% else %}
+      <div class="product-card__availability">
+        {{ 'products.product.sold_out' | t }}
+      </div>
+    {% endif %}
+  </div>
+
+  {% if product.compare_at_price > product.price %}
+    {% comment %}
+      A visually-hidden label before regular/sale prices clarifies
+      prices for screen readers, so hide the sale tag from them.
+    {% endcomment %}
+    <div class="product-tag product-tag--absolute" aria-hidden="true">
+      {{ 'products.product.on_sale' | t }}
+    </div>
+  {% endif %}
+  <div class="product-card__overlay">
+    {% assign view_string_length = 'products.product.view' | t | size %}
+    <span class="btn product-card__overlay-btn {% if view_string_length > 8 %} btn--narrow{% endif %}">{{ 'products.product.view' | t }}</span>
+  </div>
+</a>

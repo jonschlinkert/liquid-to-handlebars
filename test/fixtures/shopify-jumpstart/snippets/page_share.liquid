@@ -1,0 +1,57 @@
+{% if template.name == 'article' %}
+
+  {% capture share_link %}{{ shop.url }}{{ article.url }}{% endcapture %}
+  {% capture share_title %}{{ article.title | url_param_escape }}{% endcapture %}
+  {% if article.image %}
+    {% capture share_img %}{{ article.image.src | img_url: '1024x1024' }}{% endcapture %}
+  {% endif %}
+
+{% elsif template.name == 'product' %}
+
+  {% capture share_link %}{{ shop.url }}{{ product.url }}{% endcapture %}
+  {% capture share_title %}{{ product.title | url_param_escape }}{% endcapture %}
+  {% capture share_img %}{{ product.featured_image | product_img_url: '1024x1024' }}{% endcapture %}
+
+{% elsif template.name == 'password' %}
+
+  {% capture share_link %}{{ shop.url }}{% endcapture %}
+  {% capture share_title %}{% unless shop.metafields.global.description_tag == blank %}{{ shop.metafields.global.description_tag | url_param_escape }}{% else %}{{ shop.name | url_param_escape }}{% endunless %}{% endcapture %}
+  {% assign share_img = '' %}
+
+{% endif %}
+
+<ul class="page__sharing">
+
+  <li class="label">{{ 'general.sharing.social_sharing.title' | t }}</li>
+
+  <li>
+    <a class="share-on-facebook" target="_blank" href="//www.facebook.com/sharer.php?u={{ share_link }}">
+      <span aria-hidden="true">{% include 'asset_svg' with 'facebook' %}</span>
+      <span class="fallback-text">{{ 'general.sharing.social_sharing.facebook' | t }}</span>
+    </a>
+  </li>
+
+  <li>
+    <a class="share-on-twitter" target="_blank" href="//twitter.com/share?text={{ share_title }}&amp;url={{ share_link }}">
+      <span aria-hidden="true">{% include 'asset_svg' with 'twitter' %}</span>
+      <span class="fallback-text">{{ 'general.sharing.social_sharing.twitter' | t }}</span>
+    </a>
+  </li>
+
+  <li>
+    <a class="share-on-google" target="_blank" href="//plus.google.com/share?url={{ share_link }}">
+      <span aria-hidden="true">{% include 'asset_svg' with 'google_plus' %}</span>
+      <span class="fallback-text">{{ 'general.sharing.social_sharing.google' | t }}</span>
+    </a>
+  </li>
+
+  {% unless share_img == blank %}
+    <li>
+      <a class="share-on-pinterest" target="_blank" href="http://pinterest.com/pin/create/button/?url={{ share_link }}&amp;media={{ share_img }}&amp;description={{ share_title }}">
+        <span aria-hidden="true">{% include 'asset_svg' with 'pinterest' %}</span>
+        <span class="fallback-text">{{ 'general.sharing.social_sharing.pinterest' | t }}</span>
+      </a>
+    </li>
+  {% endunless %}
+
+</ul>

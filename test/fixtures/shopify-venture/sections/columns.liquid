@@ -1,0 +1,119 @@
+<div class="page-width">
+  <div class="section-block">
+    {% if section.settings.title_enable %}
+      <div class="section-block__header section-block__header--padded text-center">
+        <h4 class="h1--mini section-block__title">{{ section.settings.title | escape }}</h4>
+      </div>
+    {% endif %}
+
+    <div class="flex column-flex">
+      {% for block in section.blocks %}
+        {% if block.settings.image != blank %}
+          {% assign img_url = block.settings.image | img_url: '600x600' %}
+        {% endif %}
+        <div class="flex__item text-center" {{ block.shopify_attributes }}>
+          {% if block.settings.image != blank %}
+            <noscript>
+              <div class="column-flex__image" style="background-image: url({{ block.settings.image | img_url: '600x600' }}); background-position: {{ block.settings.image_align }};"></div>
+            </noscript>
+            <div class="column-flex__image lazyload"
+              style="background-position: {{ block.settings.image_align }}; background-image: url('{{ block.settings.image | img_url: '300x300' }});"
+              data-bgset="{% include 'bgset', image: block.settings.image %}"
+              data-sizes="auto"
+              data-parent-fit="cover">
+            </div>
+          {% else %}
+            <div class="column-flex__image">
+              <div class="placeholder-background">
+                {{ 'collection-1' | placeholder_svg_tag: 'placeholder-svg' }}
+              </div>
+            </div>
+          {% endif %}
+          <div class="column-flex__content">
+            <p class="h5">{{ block.settings.title | escape }}</p>
+            <div class="rte-setting">{{ block.settings.text }}</div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+
+    {% if section.blocks.size == 0 %}
+      {% include 'no-blocks' %}
+    {% endif %}
+  </div>
+</div>
+
+{% schema %}
+  {
+    "name": "Text columns with images",
+    "class": "index-section",
+    "max_blocks": 3,
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "title_enable",
+        "label": "Show header",
+        "default": true
+      },
+      {
+        "type": "text",
+        "id": "title",
+        "label": "Heading",
+        "default": "Text columns with images"
+      }
+    ],
+    "blocks": [
+      {
+        "type": "text_block",
+        "name": "Text",
+        "settings": [
+          {
+            "type": "text",
+            "id": "title",
+            "label": "Heading",
+            "default": "Add a title or tagline"
+          },
+          {
+            "type": "richtext",
+            "id": "text",
+            "label": "Text",
+            "default": "<p>Share blog posts, products, or promotions with your customers. Use this text to describe products, share details on availability and style, or as a space to display recent reviews or FAQs.</p>"
+          },
+          {
+            "type": "image_picker",
+            "id": "image",
+            "label": "Image"
+          },
+          {
+            "type": "radio",
+            "id": "image_align",
+            "label": "Image alignment",
+            "options": [
+              { "value": "top center", "label": "Top center" },
+              { "value": "center center", "label": "Center" },
+              { "value": "bottom center", "label": "Bottom center" }
+            ],
+            "default": "top center"
+          }
+        ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "Text columns with images",
+        "category": "Text",
+        "blocks": [
+          {
+            "type": "text_block"
+          },
+          {
+            "type": "text_block"
+          },
+          {
+            "type": "text_block"
+          }
+        ]
+      }
+    ]
+  }
+{% endschema %}

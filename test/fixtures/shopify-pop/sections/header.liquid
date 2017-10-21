@@ -1,0 +1,338 @@
+{% capture navSize %}250px{% endcapture %}
+{% capture navHeaderSize %}{{ section.settings.menu_mobile | escape }}px{% endcapture %}
+{% capture logoMaxHeight %}{{ section.settings.menu_mobile | escape | minus: 30 }}px{% endcapture %}
+{% capture borderWidth %}{{ settings.border_width }}px{% endcapture %}
+{% capture colorBorder %}{{ settings.color_borders }}{% endcapture %}
+
+<style>
+.site-header {
+  {% if section.settings.border_menu %}
+    border-bottom: {{ borderWidth }} solid {{ colorBorder }};
+  {% endif %}
+}
+
+@media screen and (max-width: 1024px) {
+  .site-header {
+    height: {{ navHeaderSize }};
+  }
+}
+
+{% if section.settings.border_menu %}
+  @media screen and (min-width: 1025px) {
+    .site-header {
+      border-right: {{ borderWidth }} solid {{ colorBorder }};
+      border-width: 0 {{ borderWidth }} 0 0;
+    }
+  }
+{% endif %}
+
+@media screen and (min-width: 1025px) {
+  .main-content {
+    margin: 90px 0 0 0;
+  }
+
+  .site-header {
+    height: 100%;
+    width: {{ navSize }};
+    overflow-y: auto;
+    left: 0;
+    position: fixed;
+  }
+}
+
+.nav-mobile {
+  width: {{ navSize }};
+}
+
+.page-move--nav .page-element {
+  left: {{ navSize }};
+}
+
+@media screen and (min-width: 1025px) {
+  .page-wrapper {
+    left: {{ navSize }};
+    width: calc(100% - {{ navSize }});
+  }
+}
+
+.supports-csstransforms .page-move--nav .page-element {
+  left: 0;
+  -webkit-transform: translateX({{ navSize }});
+  -moz-transform: translateX({{ navSize }});
+  -ms-transform: translateX({{ navSize }});
+  -o-transform: translateX({{ navSize }});
+  transform: translateX({{ navSize }});
+}
+
+@media screen and (min-width: 1025px) {
+  .supports-csstransforms .page-move--cart .page-element {
+    left: calc({{ navSize }} / 2);
+  }
+}
+
+@media screen and (max-width: 1024px) {
+  .page-wrapper {
+    top: {{ navHeaderSize }};
+  }
+}
+
+.page-move--nav .ajaxify-drawer {
+  right: -{{ navSize }};
+}
+
+.supports-csstransforms .page-move--nav .ajaxify-drawer {
+  right: 0;
+  -webkit-transform: translateX({{ navSize }});
+  -moz-transform: translateX({{ navSize }});
+  -ms-transform: translateX({{ navSize }});
+  -o-transform: translateX({{ navSize }});
+  transform: translateX({{ navSize }});
+}
+
+@media screen and (max-width: 1024px) {
+  .header-logo img {
+    max-height: {{ logoMaxHeight }};
+  }
+}
+
+@media screen and (min-width: 1025px) {
+  .header-logo img {
+    max-height: none;
+  }
+}
+
+.nav-bar {
+  height: {{ navHeaderSize }};
+}
+
+@media screen and (max-width: 1024px) {
+  .cart-toggle,
+  .nav-toggle {
+    height: {{ navHeaderSize }};
+  }
+}
+</style>
+
+{% assign navMenu = linklists[section.settings.nav_menu] %}
+
+<div class="nav-mobile">
+  <nav class="nav-bar" role="navigation">
+    <div class="wrapper">
+      {% include 'site-nav' with navMenu %}
+    </div>
+  </nav>
+</div>
+
+<header class="site-header page-element" role="banner" data-section-id="{{ section.id }}" data-section-type="header">
+  <div class="nav-bar grid--full large--hide">
+
+    <div class="grid-item one-quarter">
+      <button type="button" class="text-link nav-toggle" id="navToggle">
+        <div class="table-contain">
+          <div class="table-contain__inner">
+            <span class="icon-fallback-text">
+              <span class="icon icon-hamburger" aria-hidden="true"></span>
+              <span class="fallback-text">{{ 'general.navigation.menu' | t }}</span>
+            </span>
+          </div>
+        </div>
+      </button>
+    </div>
+
+    <div class="grid-item two-quarters">
+
+      <div class="table-contain">
+        <div class="table-contain__inner">
+
+        {% if template.name == 'index' %}
+          <h1 class="header-logo" itemscope itemtype="http://schema.org/Organization">
+        {% else %}
+          <div class="h1 header-logo" itemscope itemtype="http://schema.org/Organization">
+        {% endif %}
+
+        {% if section.settings.logo != blank %}
+          <a href="/" itemprop="url">
+            <img src="{{ section.settings.logo | img_url: '450x' }}" alt="{{ shop.name }}" itemprop="logo">
+          </a>
+        {% else %}
+          <a href="/" itemprop="url">{{ shop.name }}</a>
+        {% endif %}
+
+        {% if template.name == 'index' %}
+          </h1>
+        {% else %}
+          </div>
+        {% endif %}
+
+        </div>
+      </div>
+
+    </div>
+
+    <div class="grid-item one-quarter">
+      <a href="/cart" class="cart-toggle">
+      <div class="table-contain">
+        <div class="table-contain__inner">
+          <span class="icon-fallback-text">
+            <span class="icon icon-cart" aria-hidden="true"></span>
+            <span class="fallback-text">{{ 'layout.cart.title' | t }}</span>
+          </span>
+        </div>
+      </div>
+      </a>
+    </div>
+
+  </div>
+
+  <div class="wrapper">
+
+    {% comment %}
+      Use the uploaded logo from section settings if enabled.
+      Site name gets precedence with H1 tag on homepage, div on other pages.
+    {% endcomment %}
+    <div class="grid--full">
+      <div class="grid-item medium-down--hide">
+      {% if template.name == 'index' %}
+        <h1 class="header-logo" itemscope itemtype="http://schema.org/Organization">
+      {% else %}
+        <div class="h1 header-logo" itemscope itemtype="http://schema.org/Organization">
+      {% endif %}
+
+      {% if section.settings.logo != blank %}
+        {% capture img_id %}Logo-{{ section.id }}{% endcapture %}
+        {% capture img_wrapper_id %}LogoWrapper-{{ section.id }}{% endcapture %}
+        {%- assign img_url = section.settings.logo | img_url: '1x1' | replace: '_1x1.', '_{width}x.' -%}
+        {% include 'image-style' with image: section.settings.logo, small_style: true, width: 195, height: 505, wrapper_id: img_wrapper_id, img_id: img_id %}
+
+        <div id="{{ img_wrapper_id }}" class="logo-wrapper js">
+          <a href="/" itemprop="url" style="padding-top:{{ 1 | divided_by: section.settings.logo.aspect_ratio | times: 100}}%;">
+            <img id="{{ img_id }}"
+                 class="logo lazyload"
+                 data-src="{{ img_url }}"
+                 data-widths="[195, 380, 575, 720, 900, 1080, 1296, 1512, 1728, 2048]"
+                 data-aspectratio="{{ section.settings.image.aspect_ratio }}"
+                 data-sizes="auto"
+                 alt="{{ shop.name | escape }}"
+                 itemprop="logo">
+          </a>
+        </div>
+
+        <noscript>
+          <a href="/" itemprop="url">
+            <img src="{{ section.settings.logo | img_url: '450x' }}" alt="{{ shop.name }}" itemprop="logo">
+          </a>
+        </noscript>
+      {% else %}
+        <a href="/" itemprop="url">{{ shop.name }}</a>
+      {% endif %}
+
+      {% if template.name == 'index' %}
+        </h1>
+      {% else %}
+        </div>
+      {% endif %}
+      </div>
+    </div>
+
+    {% comment %}
+      Show number of items in the cart and total cost in the /cart link
+
+      Ajaxify Cart Notes:
+        - #cartToggle toggles cart visibility (drawer or modal)
+        - #cartCount updates the total number of items in the cart
+        - #cartCost updates the total cost of the cart
+        - Documentation:  http://shopify.com/timber#ajax-cart
+    {% endcomment %}
+
+    <div class="medium-down--hide">
+      <ul class="site-nav">
+        <li>
+          <a href="/cart" class="cart-toggle site-nav__link">
+            <span class="icon icon-cart" aria-hidden="true"></span>
+            {{ 'layout.cart.title' | t }}
+            <span id="cartCount"{% if cart.item_count == 0 %} class="hidden-count"{% endif %}>({{ cart.item_count }})</span>
+          </a>
+        </li>
+        {% if shop.customer_accounts_enabled %}
+          {% if customer %}
+            <li>
+              {% if customer.first_name != blank %}
+                {% capture first_name %}<a href="/account" class="site-nav__link">{{ customer.first_name }}</a>{% endcapture %}
+                {{ 'layout.customer.logged_in_as_html' | t: first_name: first_name }}
+              {% else %}
+                <a href="/account" class="site-nav__link">{{ 'layout.customer.account' | t }}</a>
+            </li>
+              {% endif %}
+            <li>
+              <a href="/account/logout" class="site-nav__link">{{ 'layout.customer.log_out' | t }}</a>
+            </li>
+          {% else %}
+            <li>
+              <a href="/account/login" class="site-nav__link">{{ 'layout.customer.log_in' | t }}</a>
+            </li>
+            <li>
+              <a href="/account/register" class="site-nav__link">{{ 'layout.customer.create_account' | t }}</a>
+            </li>
+          {% endif %}
+        {% endif %}
+      </ul>
+
+      <hr class="hr--small">
+    </div>
+
+    {% comment %}
+      If customer accounts are enabled, provide login and create account links
+    {% endcomment %}
+
+    <nav class="medium-down--hide" role="navigation">
+      {% include 'site-nav' with navMenu %}
+    </nav>
+
+  </div>
+</header>
+
+{% schema %}
+  {
+    "name": "Logo and menu",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Logo"
+      },
+      {
+        "type": "image_picker",
+        "id": "logo",
+        "label": "Custom logo",
+        "info": "450 x 250px max"
+      },
+      {
+        "type": "header",
+        "content": "Main Menu"
+      },
+      {
+        "type": "link_list",
+        "id": "nav_menu",
+        "label": "Menu",
+        "default": "main-menu"
+      },
+      {
+        "type": "header",
+        "content": "Sizing"
+      },
+      {
+        "type": "text",
+        "id": "menu_mobile",
+        "label": "Mobile main menu height (in pixels)"
+      },
+      {
+        "type": "header",
+        "content": "Border"
+      },
+      {
+        "type": "checkbox",
+        "id": "border_menu",
+        "label": "Show border"
+      }
+    ]
+  }
+{% endschema %}

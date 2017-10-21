@@ -1,0 +1,100 @@
+{% comment %}
+  This snippet controls the collage collection grid.  Depending on the number of
+  collections we want to display them in rows of 1, 2, or 3.
+
+  You will have at most 2 rows of 2 items and the rest should be rows of 3
+
+  The pattern applied to collections is:
+
+  1 = full width
+  2 = 2 row
+  3 = 3 row
+  4 = 2 row, 2 row
+  5 = 2 row, 3 row
+  6 = 3 row, 3 row
+  7 = 2 row, 2 row, 3 row
+  8 = 2 row, 3 row, 3 row
+  9 = 3 row, 3 row, 3 row
+  10 = 2 row, 2 row, 3 row, 3 row
+  11 = 2 row, 3 row, 3 row, 3 row
+
+  Change the grid item width by using classes from the grid in
+  the grid_item_width variable.
+
+  Example:
+    - {% assign grid_item_width = 'large--one-third medium--one-half' %}
+{% endcomment %}
+
+{% assign previous_index = collection_index | minus: 1 %}
+{% assign remaining_length = collection_count | minus: collection_index %}
+{% assign previous__remaining_length = remaining_length | minus: 1 %}
+{% assign remaining_divisible_by_three = previous__remaining_length | modulo:3 %}
+{% assign image_size = 'grande' %}
+
+{% if collection_index < 4 %}
+  {% assign is_three_row = false %}
+
+  {% comment %}
+    check to see if the remaining items are divisible by three
+    after the first row of 2.
+  {% endcomment %}
+  {% if previous_index == 2 and remaining_divisible_by_three > 0 %}
+    {% assign is_three_row = true %}
+  {% endif %}
+
+{% endif %}
+
+{% comment %}
+  Once we have set the first 4 items in the grid we can
+  place the rest in rows of three
+{% endcomment %}
+{% if collection_index > 4 %}
+  {% assign is_three_row = true %}
+{% endif %}
+
+{% comment %}
+  If the total number of collections is divisible by 3, use 3 rows
+{% endcomment %}
+{% if divisible_by_three == 0 %}
+  {% assign is_three_row = true %}
+{% endif %}
+{% if is_three_row == false %}
+  {% comment %}
+    If we are on the first collection we need to set the small BP column width
+    depending on whether the total number of collections is divisible by 2.
+
+    Or we want to set the width to one-whole if it is the only collection being
+    shown.
+  {% endcomment %}
+  {% if collection_index == 1 and remaining_length == 0 %}
+    {% assign grid_item_width = "one-whole" %}
+    {% assign grid_item_responsive = true %}
+  {% elsif collection_index == 1 and divisible_by_two > 0 %}
+    {% assign grid_item_width = "one-whole medium--one-half large--one-half" %}
+  {% else %}
+    {% assign grid_item_width = "one-half medium--one-half large--one-half" %}
+  {% endif %}
+  {% comment %} Set item with to half if it isn't in a 3 row. {% endcomment %}
+  {% include 'collection-grid-item' %}
+{% endif %}
+
+{% comment %}
+  If we set is_three_row to true based on the
+  conditionals above.
+{% endcomment %}
+{% if is_three_row == true %}
+  {% comment %}
+    Assign grid classes for 3 rows.
+
+    If we are on the first collection we need to set the small BP column width
+    depending on whether the total number of collections is divisible by 2.
+  {% endcomment %}
+  {% if collection_index == 1 and divisible_by_two > 0 %}
+    {% assign grid_item_width = "one-whole medium--one-third large--one-third" %}
+  {% else %}
+    {% assign grid_item_width = "one-half medium--one-third large--one-third" %}
+  {% endif %}
+
+  {% comment %}Product Grid Item{% endcomment %}
+  {% include 'collection-grid-item' %}
+{% endif %}

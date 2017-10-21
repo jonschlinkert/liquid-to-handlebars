@@ -1,0 +1,58 @@
+{% assign t = template | split: '.' | first  %}
+<nav class="breadcrumb-nav small--text-center" aria-label="{{ 'general.breadcrumbs.you_are_here' | t }}">
+  <span itemscope itemtype="http://data-vocabulary.org/Breadcrumb">
+    <a href="/" itemprop="url" title="{{ 'general.breadcrumbs.home_link_title' | t }}">
+      <span itemprop="title">{{ 'general.breadcrumbs.home' | t }}</span>
+    </a>
+    <span class="breadcrumb-nav__separator" aria-hidden="true">›</span>
+  </span>
+  {% case t %}
+  {% when 'collection' %}
+    {% if current_tags %}
+      <span itemscope itemtype="http://data-vocabulary.org/Breadcrumb">
+        {% assign collection_url = current_tags.first | link_to_remove_tag: current_tags.first | split: 'href="' | last | split: '"' | first %}
+        <a href="{{ collection_url }}" itemprop="url">
+          <span itemprop="title">{{ collection.title }}</span>
+        </a>
+        <span class="breadcrumb-nav__separator" aria-hidden="true">›</span>
+      </span>
+      {{ current_tags.first }}
+    {% else %}
+      {{ collection.title }}
+    {% endif %}
+  {% when 'product' %}
+    {% if collection %}
+      <span itemscope itemtype="http://data-vocabulary.org/Breadcrumb">
+        <a href="{{ collection.url }}" itemprop="url">
+          <span itemprop="title">{{ collection.title }}</span>
+        </a>
+        <span class="breadcrumb-nav__separator" aria-hidden="true">›</span>
+      </span>
+    {% endif %}
+    {{ product.title }}
+  {% when 'blog' %}
+    {% if current_tags %}
+      <span itemscope itemtype="http://data-vocabulary.org/Breadcrumb">
+        <a href="{{ blog.url }}" itemprop="url">
+          <span itemprop="title">{{ blog.title }}</span>
+        </a>
+        <span class="breadcrumb-nav__separator" aria-hidden="true">›</span>
+      </span>
+      {{ current_tags.first }}
+    {% else %}
+      {{ blog.title }}
+    {% endif %}
+  {% when 'article' %}
+    <span itemscope itemtype="http://data-vocabulary.org/Breadcrumb">
+      <a href="{{ blog.url }}" itemprop="url">
+        <span itemprop="title">{{ blog.title }}</span>
+      </a>
+      <span class="breadcrumb-nav__separator" aria-hidden="true">›</span>
+    </span>
+    {{ article.title }}
+  {% when 'page' %}
+    {{ page.title }}
+  {% else %}
+    {{ page_title }}
+  {% endcase %}
+</nav>

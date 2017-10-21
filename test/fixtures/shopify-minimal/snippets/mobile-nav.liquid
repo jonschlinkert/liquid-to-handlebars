@@ -1,0 +1,52 @@
+<ul id="MobileNav" class="mobile-nav post-large--hide">
+  
+  {% for link in mobile-nav.links %}
+  {% assign child_list_handle = link.title | handleize %}
+  <li class="mobile-nav__link" aria-haspopup="true">
+    {% if linklists[child_list_handle].links != blank %}
+      <a href="{{ link.url }}" class="mobile-nav__sublist-trigger">
+        {{ link.title }}
+        {% include 'mobile-nav-icons' %}
+      </a>
+      <ul class="mobile-nav__sublist">  
+        {% for link in linklists[child_list_handle].links %}
+          <li class="mobile-nav__sublist-link">
+            <a href="{{ link.url }}">{{ link.title }}</a>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <a href="{{ link.url }}" class="mobile-nav">
+        {{ link.title }}
+      </a>
+    {% endif %}
+  </li>
+  {% endfor %}
+
+  {% if shop.customer_accounts_enabled %}
+    {% if customer %}
+      <li class="mobile-nav__link">
+        <a href="/account">{{ 'layout.customer.account' | t }}</a>
+      </li>
+      <li class="mobile-nav__link">
+        {{ 'layout.customer.log_out' | t | customer_logout_link }}
+      </li>
+    {% else %}
+      <li class="mobile-nav__link">
+        {{ 'layout.customer.log_in' | t | customer_login_link }}
+      </li>
+      <li class="mobile-nav__link">
+        {{ 'layout.customer.create_account' | t | customer_register_link }}
+      </li>
+    {% endif %}
+  {% endif %}
+  
+  <li class="mobile-nav__link">
+    {% if section.settings.header_search_enable %}
+      <div class="header-bar__module header-bar__search">
+        {% include 'search-bar' with 'header' %}
+      </div>
+    {% endif %}
+  </li>
+  
+</ul>

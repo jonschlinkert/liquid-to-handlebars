@@ -1,0 +1,164 @@
+<div class="featured-blog featured-blog--{{ section.id }}">
+
+  {%- assign blog = blogs[section.settings.blog] -%}
+
+  {%  case section.settings.post_limit %}
+    {% when 3 %}
+      {%- assign width = 'small--one-whole medium-up--one-third' -%}
+    {% when 2 %}
+      {%- assign width = 'small--one-whole medium-up--one-half' -%}
+    {% when 1 %}
+      {%- assign width = 'one-whole' -%}
+    {% else %}
+      {%- assign width = 'small--one-whole medium-up--one-third' -%}
+  {% endcase %}
+
+  {% if section.settings.title != blank %}
+    <div class="section-title text-center">
+      <h2>{{ section.settings.title | escape }}</h2>
+    </div>
+  {% endif %}
+
+  {% unless blog.articles_count == 0 %}
+    <div class="{% if section.settings.post_limit == 1 or blog.articles_count == 1 %}page-width{% else %}grid grid--uniform{% endif %}">
+      {% for article in blog.articles limit: section.settings.post_limit %}
+        <div class="{% unless section.settings.post_limit == 1 or blog.articles_count == 1 %}grid__item {% endunless %}{{ width }}">
+          <div class="featured-blog__post{% if section.settings.post_limit == 1 and section.settings.blog_show_image == false %} text-center{% endif %}">
+
+            {% if section.settings.blog_show_image %}
+              {% unless article.image == blank %}
+                <a class="article__featured-link" href="{{ article.url }}">
+                  <noscript>
+                    {{ article.image | img_url: '2048x2048' | img_tag: article.title | escape }}
+                  </noscript>
+                  <div class="article__featured-image-wrapper" style="padding-top:{{ 1 | divided_by: article.image.aspect_ratio | times: 100}}%;">
+                    {% assign img_url = article.image | img_url: '1x1' | replace: '_1x1.', '_{width}x.' %}
+                    <img class="article__featured-image lazyload"
+                      src="{{ article.image | img_url: '300x300' }}"
+                      data-src="{{ img_url }}"
+                      data-widths="[310, 360, 480, 540, 720, 900, 1080, 1296, 1512, 1728, 2048]"
+                      data-aspectratio="{{ article.image.aspect_ratio }}"
+                      data-sizes="auto"
+                      alt="{{ article.title | escape }}">
+                  </div>
+                </a>
+              {% endunless %}
+            {% endif %}
+
+            <div class="featured-blog__post-inner">
+              <h2 class="h3 featured-blog__title{% if section.settings.post_limit == 1 and section.settings.blog_show_image == false %} title--one-post{% endif %}"><a href="{{ article.url }}">{{ article.title }} &rarr;</a></h2>
+              {% if section.settings.blog_show_author or section.settings.blog_show_date %}
+                <div class="featured-blog__meta">
+                  {% if section.settings.blog_show_author %}
+                    <span class="featured-blog__meta-list">
+                      {{ article.author }}
+                    </span>
+                  {% endif %}
+                  {% if section.settings.blog_show_author and section.settings.blog_show_date %}
+                    <span class="featured-blog__meta-dot"></span>
+                  {% endif %}
+                  {% if section.settings.blog_show_date %}
+                    <div class="featured-blog__meta-list">
+                      <time datetime="{{ article.published_at | date: '%Y-%m-%d' }}" class="date">{{ article.published_at | date: format: 'month_day_year' }}</time>
+                    </div>
+                  {% endif %}
+                </div>
+              {% endif %}
+              {% if section.settings.blog_show_excerpt %}
+                <div class="rte rte--indented-images{% unless section.settings.blog_show_date %} featured-blog__rte{% endunless %}">
+                  {{ article.excerpt_or_content | strip_html | truncatewords: 30 }}
+                </div>
+              {% endif %}
+            </div>
+
+          </div>
+        </div>
+
+      {% endfor %}
+    </div>
+
+  {% else %}
+    {% include 'onboarding-featured-blog' %}
+  {% endunless %}
+
+  {% if blog == empty %}
+    {% include 'onboarding-featured-blog' %}
+  {% endif %}
+
+  {% if section.settings.show_view_all %}
+    <div class="section-header text-center">
+      <a href="{{ blog.url }}" class="btn">
+        {{ 'blogs.article.view_all' | t }}
+      </a>
+    </div>
+  {% endif %}
+
+</div>
+
+{% schema %}
+  {
+    "name": "Blog posts",
+    "class": "index-section",
+    "settings": [
+      {
+        "type": "text",
+        "id": "title",
+        "label": "Heading",
+        "default": "Blog"
+      },
+      {
+        "id": "blog",
+        "type": "blog",
+        "label": "Blog"
+      },
+      {
+        "type": "range",
+        "id": "post_limit",
+        "label": "Posts",
+        "min": 1,
+        "max": 3,
+        "step": 1,
+        "default": 3
+      },
+      {
+        "type": "checkbox",
+        "id": "blog_show_date",
+        "label": "Show date",
+        "default": true
+      },
+      {
+       "type": "checkbox",
+        "id": "blog_show_author",
+        "label": "Show author",
+        "default": false
+      },
+      {
+        "type": "checkbox",
+        "id": "blog_show_image",
+        "label": "Show cover image",
+        "default": false
+      },
+      {
+        "type": "checkbox",
+        "id": "blog_show_excerpt",
+        "label": "Show excerpt",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "show_view_all",
+        "label": "Show 'View all' button",
+        "default": false
+      }
+    ],
+    "presets": [
+      {
+        "name": "Blog posts",
+        "category": "Blog",
+        "settings": {
+          "blog": "News"
+        }
+      }
+    ]
+  }
+{% endschema %}

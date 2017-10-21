@@ -1,0 +1,32 @@
+{% capture collection_title %}{{ collection.title }}{% endcapture %}
+
+<div class="section-header">
+  <h1 class="section-header--left">{{ collection_title }}</h1>
+  <div class="section-header--right">
+    <a href="{{ collection.url }}" title="{{ 'collections.general.link_title' | t: title: collection_title }}">{{ 'homepage.featured_collection_rows.more_in_collection' | t: collection_title: collection_title }} &rsaquo;</a>
+  </div>
+</div>
+
+{% assign grid_item_width = 'large--one-fifth medium--one-half' %}
+{% assign width = '195' %}
+{% assign height = '175' %}
+
+<div class="grid">
+  {% if collection.products %}
+    {% comment %}
+      Default collection order
+    {% endcomment %}
+    {% for product in collection.products limit:5 %}
+      {% include 'product-grid-item' with height: height, width: width %}
+    {% endfor %}
+
+  {% else %}
+    {% comment %}
+      Custom order collections by 'all-collections' linklist
+    {% endcomment %}
+    {% for product in collections[collection.handle].products limit:5 %}
+      {% include 'product-grid-item' with height: height, width: width %}
+    {% endfor %}
+                                                                                                     
+  {% endif %}
+</div>

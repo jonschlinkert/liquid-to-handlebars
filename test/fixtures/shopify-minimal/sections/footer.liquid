@@ -1,0 +1,222 @@
+<footer class="site-footer small--text-center" role="contentinfo">
+
+<div class="wrapper">
+
+  <div class="grid-uniform">
+
+    {% if settings.social_twitter_link != blank or settings.social_facebook_link != blank or settings.social_pinterest_link != blank or settings.social_google_plus_link != blank or settings.social_instagram_link != blank or settings.social_snapchat_link != blank or settings.social_tumblr_link != blank or settings.social_youtube_link != blank or settings.social_vimeo_link != blank or settings.social_fancy_link != blank or settings.social_rss_link != blank %}
+      {% assign show_social_icons = true %}
+    {% else %}
+      {% assign show_social_icons = false %}
+    {% endif %}
+
+    {% case section.blocks.size %}
+      {% when 0 %}
+      {% when 1 %}
+        {% assign column_width = 'text-center' %}
+        {%- assign article_width = 480 -%}
+      {% when 2 %}
+        {% assign column_width = 'post-large--one-half medium--one-half' %}
+        {%- assign article_width = 480 -%}
+      {% when 3 %}
+        {% assign column_width = 'post-large--one-third medium--one-third' %}
+        {%- assign article_width = 435 -%}
+      {% when 4 %}
+        {% assign column_width = 'post-large--one-quarter medium--one-half' %}
+        {%- assign article_width = 410 -%}
+      {% when 5 %}
+        {% assign column_width = 'post-large--one-fifth medium--one-half' %}
+        {%- assign article_width = 335 -%}
+      {% when 6 %}
+        {% assign column_width = 'post-large--one-sixth medium--one-half' %}
+        {%- assign article_width = 335 -%}
+    {% endcase %}
+
+    {% for block in section.blocks %}
+      {% case block.type %}
+        {% when 'blog' %}
+          <div class="grid__item {{ column_width }} site-footer__links">
+            <h3 class="h4"><a href="/blogs/{{ block.settings.blog }}">{{ 'layout.footer.blog_title' | t }}</a></h3>
+            {% assign article = blogs[block.settings.blog].articles.first %}
+            <p class="h5">{{ article.title | link_to: article.url }}</p>
+            {% if article.image %}
+              {% capture img_id %}ArticleImage-{{ section.id }}--{{ article.image.id }}{% endcapture %}
+              {% capture wrapper_id %}ArticleImageWrapper-{{ section.id }}--{{ article.image.id }}{% endcapture %}
+              {%- assign img_url = article.image | img_url: '1x1' | replace: '_1x1.', '_{width}x.' -%}
+              {%- assign image_alt = article.title | escape -%}
+              {% include 'image-style' with image: article.image, width: article_width, height: 480, wrapper_id: wrapper_id, img_id: img_id %}
+              <p>
+                <div id="{{ wrapper_id }}" class="article__image-wrapper supports-js">
+                  <div style="padding-top:{{ 1 | divided_by: article.image.aspect_ratio | times: 100}}%;">
+                    <img id="{{ img_id }}"
+                         class="article__image lazyload"
+                         src="{{ article.image | img_url: '300x300' }}"
+                         data-src="{{ img_url }}"
+                         data-widths="[90, 120, 150, 180, 360, 480, 600, 750, 940, 1080, 1296]"
+                         data-aspectratio="{{ article.image.aspect_ratio }}"
+                         data-sizes="auto"
+                         alt="{{ image_alt }}">
+                  </div>
+                </div>
+              </p>
+
+              <noscript>
+                <p>{{ article | img_url: 'large' | img_tag: image_alt, 'article__image' | link_to: article.url }}</p>
+              </noscript>
+            {% endif %}
+            {% if article.excerpt.size > 0 %}
+            <div class="clearfix">
+              {{ article.excerpt }}
+            </div>
+            {% else %}
+              <p>{{ article.content | strip_html | truncatewords: 30 }}</p>
+            {% endif %}
+          </div>
+
+        {% when 'menu' %}
+          <div class="grid__item {{ column_width }}">
+            {% unless num_columns == 1 %}
+            <h3 class="h4">{{ block.settings.menu_title | escape }}</h3>
+            {% endunless %}
+            <ul class="site-footer__links{% if num_columns == 1 %} inline-list{% endif %}">
+              {% for link in linklists[block.settings.menu].links %}
+                <li><a href="{{ link.url }}">{{ link.title }}</a></li>
+              {% endfor %}
+            </ul>
+          </div>
+
+        {% when 'social' %}
+          <div class="grid__item {{ column_width }}">
+            <h3 class="h4">{{ 'layout.footer.social_title' | t }}</h3>
+              {% comment %}
+                Loop through the social network links
+              {% endcomment %}
+              {% include 'social-links' %}
+          </div>
+
+        {% when 'text' %}
+          <div class="grid__item {{ column_width }}">
+            <h3 class="h4">{{ block.settings.title | escape }}</h3>
+            <div class="rte">{{ block.settings.richtext }}</div>
+          </div>
+
+        {% when 'newsletter' %}
+          <div class="grid__item {{ column_width }}">
+            <h3 class="h4">{{ 'layout.footer.newsletter_title' | t }}</h3>
+            <p>{{ 'layout.footer.newsletter_caption' | t }}</p>
+            {% include 'newsletter-form' %}
+          </div>
+
+      {% endcase %}
+    {% endfor %}
+  </div>
+
+  <hr class="hr--small hr--clear">
+
+  <div class="grid">
+    <div class="grid__item text-center">
+      <p class="site-footer__links">{{ 'layout.footer.copyright' | t }} &copy; {{ 'now' | date: "%Y" }}, {{ shop.name | link_to: '/' }}. {{ powered_by_link }}</p>
+    </div>
+  </div>
+
+  {% if section.settings.show_methods_of_payment %}
+    {% unless shop.enabled_payment_types == empty %}
+    <div class="grid">
+      <div class="grid__item text-center">
+        {% assign payment_icons_available = 'amazon_payments,american_express,apple_pay,bitcoin,cirrus,dankort,diners_club,discover,dogecoin,dwolla,forbrugsforeningen,interac,jcb,litecoin,maestro,master,paypal,visa' | split: ',' %}
+        <ul class="inline-list payment-icons">
+          {% for type in shop.enabled_payment_types %}
+            {% if payment_icons_available contains type %}
+              <li>
+                <span class="icon-fallback-text">
+                  <span class="icon icon-{{type}}" aria-hidden="true"></span>
+                  <span class="fallback-text">{{ type | replace: '_', ' ' }}</span>
+                </span>
+              </li>
+            {% endif %}
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+    {% endunless %}
+  {% endif %}
+</div>
+
+</footer>
+
+{% schema %}
+  {
+    "name": "Footer",
+    "max_blocks": 6,
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "show_methods_of_payment",
+        "label": "Payment icons"
+      }
+    ],
+    "blocks": [
+      {
+        "type": "menu",
+        "name": "Menu",
+        "settings": [
+          {
+            "type": "text",
+            "id": "menu_title",
+            "label": "Heading",
+            "default": "Links"
+          },
+          {
+            "type": "link_list",
+            "id": "menu",
+            "label": "Menu"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "name": "Text",
+        "settings": [
+          {
+            "type": "text",
+            "id": "title",
+            "label": "Heading",
+            "default": "Contact us"
+          },
+          {
+            "type": "richtext",
+            "id": "richtext",
+            "label": "Text"
+          }
+        ]
+      },
+      {
+        "type": "blog",
+        "name": "Latest blog post",
+        "settings": [
+          {
+            "type": "blog",
+            "id": "blog",
+            "label": "Blog"
+          }
+        ]
+      },
+      {
+        "type": "social",
+        "name": "Social icons",
+        "limit": 1,
+        "settings": [
+          {
+            "type": "paragraph",
+            "content": "Edit your social settings and accounts in General settings"
+          }
+        ]
+      },
+      {
+        "type": "newsletter",
+        "name": "Newsletter signup",
+        "limit": 1
+      }
+    ]
+  }
+{% endschema %}

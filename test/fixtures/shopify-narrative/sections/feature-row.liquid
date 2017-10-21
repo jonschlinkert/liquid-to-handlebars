@@ -1,0 +1,255 @@
+{%- assign image_crop = false -%}
+
+{% if section.settings.image_crop == 'circle' or section.settings.image_crop == 'square' %}
+  {%- assign image_crop = true -%}
+{% endif %}
+
+<style>
+  .feature-row--{{ section.id }} {
+    {% if section.settings.background_color != blank %}
+      background-color: {{ section.settings.background_color }};
+    {% elsif section.settings.background_color == blank and image_crop %}
+      background-color: {{ settings.color_secondary_bg }};
+    {% endif %}
+  }
+
+  {% if image_crop %}
+    @media screen and (min-width: 750px) {
+      .feature-row--{{ section.id }} .feature-row__image-wrapper {
+        background-color: {{ section.settings.background_color | color_lighten: 5 }};
+      }
+    }
+  {% endif %}
+</style>
+
+{% if section.settings.image != blank %}
+  <style>
+    .feature-row__image--{{ section.id }} {
+      background-position: {{ section.settings.alignment }};
+    }
+  </style>
+{% endif %}
+
+{% capture image_layout %}
+  <div class="feature-row__item feature-row__image-wrapper">
+    {% if section.settings.image != blank %}
+      <div class="feature-row__image feature-row__image--{{ section.id }}{% if image_crop %} feature-row__image-crop{% endif %} lazyload" data-sizes="auto" data-bgset="{% include 'bgset', image: section.settings.image %}"></div>
+
+      <noscript>
+        <div class="feature-row__image feature-row__image--{{ section.id }}{% if image_crop %} feature-row__image-crop{% endif %}" style="background-image: {{ section.settings.image | img_url: 'master' }}"></div>
+      </noscript>
+    {% else %}
+      <div class="feature-row__image feature-row__image--{{ section.id }}{% if image_crop %} feature-row__image-crop{% endif %}">{{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}</div>
+    {% endif %}
+  </div>
+{% endcapture %}
+
+<div class="feature-row feature-row--{{ section.id }} feature-row--{{ section.settings.size }} feature-row__image-crop--{{ section.settings.image_crop }}{% if section.settings.mobile_layout == 'bottom' %} feature-row-mobile--bottom{% endif %}" data-section-id="{{ section.id }}" data-section-type="feature-row">
+  {% if section.settings.desktop_layout == 'left' %}
+    {{ image_layout }}
+  {% endif %}
+
+  <div class="feature-row__item feature-row__text">
+    {% if section.settings.title != blank %}
+      <h2 class="feature-row__heading h3 separator" data-animate>{{ section.settings.title | escape }}</h2>
+    {% endif %}
+    {% if section.settings.text != blank %}
+      <div class="rte-setting featured-row__subtext">{{ section.settings.text }}</div>
+    {% endif %}
+    {% if section.settings.button_label != blank %}
+      <a href="{{ section.settings.button_link }}" class="btn{% if section.settings.use_second_button %} btn--secondary{% endif %} feature-row__btn">
+        {{ section.settings.button_label }}
+      </a>
+    {% endif %}
+  </div>
+
+  {% if section.settings.desktop_layout == 'right' %}
+    {{ image_layout }}
+  {% endif %}
+</div>
+
+{% schema %}
+{
+  "name": "Image with text",
+  "class": "index-section index-section--image-with-text",
+  "settings": [
+    {
+      "type": "select",
+      "id": "size",
+      "label": "Section height",
+      "default": "medium",
+      "options": [
+        {
+          "label": "Small",
+          "value": "small"
+        },
+        {
+          "label": "Medium",
+          "value": "medium"
+        },
+        {
+          "label": "Large",
+          "value": "large"
+        },
+        {
+          "label": "Extra Large",
+          "value": "x-large"
+        }
+      ]
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color",
+      "default": "#faf9f6"
+    },
+    {
+      "type": "header",
+      "content": "Image"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image"
+    },
+    {
+      "type": "select",
+      "id": "image_crop",
+      "label": "Image style",
+      "default": "none",
+      "options": [
+        {
+          "label": "None",
+          "value": "none"
+        },
+        {
+          "label": "Circle",
+          "value": "circle"
+        },
+        {
+          "label": "Square",
+          "value": "square"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "alignment",
+      "label": "Image position",
+      "default": "center center",
+      "options": [
+        {
+          "label": "Top left",
+          "value": "top left"
+        },
+        {
+          "label": "Top center",
+          "value": "top center"
+        },
+        {
+          "label": "Top right",
+          "value": "top right"
+        },
+        {
+          "label": "Middle left",
+          "value": "center left"
+        },
+        {
+          "label": "Middle center",
+          "value": "center center"
+        },
+        {
+          "label": "Middle right",
+          "value": "center right"
+        },
+        {
+          "label": "Bottom left",
+          "value": "bottom left"
+        },
+        {
+          "label": "Bottom center",
+          "value": "bottom center"
+        },
+        {
+          "label": "Bottom right",
+          "value": "bottom right"
+        }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "Text"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading",
+      "default": "Image with text"
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Text",
+      "default": "<p>Pair large text with an image to give focus to your chosen product, collection, or blog post. Add details on availability, style, or even provide a review.</p>"
+    },
+    {
+      "type": "checkbox",
+      "id": "use_second_button",
+      "label": "Use secondary button style",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button label"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button link"
+    },
+    {
+      "type": "header",
+      "content": "Image alignment"
+    },
+    {
+      "type": "select",
+      "id": "desktop_layout",
+      "label": "Desktop",
+      "default": "right",
+      "options": [
+        {
+          "label": "Left",
+          "value": "left"
+        },
+        {
+          "label": "Right",
+          "value": "right"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "mobile_layout",
+      "label": "Mobile",
+      "default": "top",
+      "options": [
+        {
+          "label": "Top",
+          "value": "top"
+        },
+        {
+          "label": "Bottom",
+          "value": "bottom"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Image with text",
+      "category": "Image"
+    }
+  ]
+}
+{% endschema %}

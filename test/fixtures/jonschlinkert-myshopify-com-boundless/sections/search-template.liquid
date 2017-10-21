@@ -1,0 +1,200 @@
+<!-- /templates/search.liquid -->
+{% comment %}
+
+  To return only products or pages in results:
+    - http://docs.shopify.com/manual/configuration/store-customization/return-only-product-in-storefront-search-results
+    - Or manually add type=product or type=page to the search URL as a parameter
+
+{% endcomment %}
+{% include 'product-grid-width' with product_image_type: section.settings.product_image_type, product_image_size: section.settings.product_image_size %}
+
+{% paginate search.results by 10 %}
+
+  {% if search.performed %}
+    {% if search.results_count == 0 %}
+      <h1 class="search-title h2">{{ 'general.search.no_results_html' | t: terms: search.terms }}</h1>
+    {% endif %}
+  {% else %}
+    {% assign product_count = shop.products_count %}
+    <h1 class="search-title search-title--form h2">{{ 'general.search.title' | t: count: product_count }}</h1>
+    <hr class="hr--clear">
+      <div class="text-center">
+        <form action="/search" method="get" role="search">
+          <div class="input-group">
+            <input type="search" id="SearchInput" name="q" value="{{ search.terms | escape }}" placeholder="{{ 'general.search.placeholder' | t }}" aria-label="{{ 'general.search.placeholder' | t }}" class="input-group__field" autofocus>
+            <button class="btn input-group__btn" type="submit">{{ 'general.search.submit' | t }}</button>
+          </div>
+        </form>
+      </div>
+    <hr class="hr--clear">
+  {% endif %}
+
+  {% if search.performed %}
+    {% comment %}
+      Set grid item widths based on settings
+    {% endcomment %}
+
+    <div class="grid grid--uniform grid--no-gutters">
+      {% for item in search.results %}
+        {% comment %}
+          If a search item has a price, it's a product
+        {% endcomment %}
+
+        <div class="product-item search-item grid__item {{ grid_item_width }}">
+          {% if item.object_type == 'product' %}
+            <div class="product-item__link-wrapper">
+              <a class="product-item__link {% if section.settings.product_image_spacing %} product-item__image--margins{% endif %}" href="{{ item.url }}">
+                {% if item.featured_image %}
+                  <noscript>
+                    <img class="product-item__image-no-js" src="{{ item.featured_image | img_url: '1024x' }}" alt="{{ item.featured_image.alt | escape }}">
+                  </noscript>
+                  <div class="product-item__image-container" style="max-width: {{ 600 | times: item.featured_image.aspect_ratio | round }}px;">
+                    <div class="product-item__image-wrapper" style="padding-top:{{ 1 | divided_by: item.featured_image.aspect_ratio | times: 100}}%">
+                    {% assign img_url = item.featured_image | img_url: '1x1' | replace: '_1x1.', '_{width}x.' %}
+                      <img class="product-item__image lazyload"
+                        src="{{ item.featured_image | img_url: '300x300' }}"
+                        data-src="{{ img_url }}"
+                        data-widths="[360, 540, 720, 900, 1080, 1296, 1512, 1728, 1944, 2048, 4472]"
+                        data-aspectratio="{{ item.featured_image.aspect_ratio }}"
+                        data-sizes="auto"
+                        alt="{{ item.featured_image.alt | escape }}">
+                    </div>
+                  </div>
+                {% else %}
+                  <img src="{{ item.featured_image.src | img_url: '1024x' }}" alt="{{ item.featured_image.alt | escape }}">
+                {% endif %}
+
+                {% comment %}
+                  Product item details
+                {% endcomment %}
+                {% assign itemPrice = item.price | money_without_trailing_zeros %}
+                <div class="product-item__meta">
+                  <div class="product-item__meta__inner">
+                    {% if section.settings.vendor_enable %}
+                      <p class="product-item__vendor">{{ item.vendor }}</p>
+                    {% endif %}
+                    <p class="product-item__title">{{ item.title }}</p>
+                    <p>
+                      {% if item.compare_at_price > item.price %}
+                        <span class="visually-hidden">{{ 'products.general.regular_price' | t }}</span>
+                        <s class="product-item__price--reg">{{ item.compare_at_price | money_without_trailing_zeros }}</s>
+                        <span class="product-item__price--sale">{{ 'products.general.now_price_html' | t: price: itemPrice }}</span>
+                      {% else %}
+                        {% if item.price_varies %}
+                          {{ 'products.general.from_text_html' | t: price: itemPrice }}
+                        {% else %}
+                          {% if item.compare_at_price > item.price %}
+                            <span class="visually-hidden">{{ 'products.general.sale_price' | t }}</span>
+                          {% else %}
+                            <span class="visually-hidden">{{ 'products.general.regular_price' | t }}</span>
+                          {% endif %}
+                          {{ item.price | money_without_trailing_zeros }}
+                        {% endif %}
+                      {% endif %}
+                    </p>
+
+                    {% unless item.available %}
+                      <p class="product-item__sold-out">{{ 'products.product.sold_out' | t }}</p>
+                    {% endunless %}
+                  </div>
+                </div>
+
+                {% comment %}
+                  If on sale, add a badge
+                {% endcomment %}
+                {% if item.compare_at_price > item.price %}
+                  {% assign sale_text_length = 'products.product.on_sale' | t | size %}
+                  <span class="product-item__badge {% if sale_text_length > 6 %}product-item__badge--large{% endif %}">
+                    {{ 'products.product.on_sale' | t }}
+                  </span>
+                {% endif %}
+              </a>
+            </div>
+          {% else %}
+            <div class="grid grid--table search-item__table">
+              <div class="grid__item search-item__cell">
+                {% if item.image %}
+                  <a href="{{ item.url }}">{{ item | img_url: 'large' | img_tag: item.title }}</a>
+                {% endif %}
+                <h3>
+                  <a href="{{ item.url }}">{{ item.title }}</a>
+                </h3>
+                <p>
+                  {{ item.content | strip_html | truncate: 120 }}
+                  <a href="{{ item.url }}">{{ 'general.search.read_more' | t }}</a>
+                </p>
+              </div>
+            </div>
+          {% endif %}
+        </div>
+
+      {% endfor %}
+    </div>
+
+    {% if paginate.pages > 1 %}
+      {% include 'pagination' %}
+    {% endif %}
+
+  {% endif %}
+
+{% endpaginate %}
+
+{% schema %}
+  {
+    "name": "Search",
+    "class": "search-template-section",
+    "settings": [{
+      "type": "header",
+      "content": "Appearance"
+    },
+    {
+      "type": "select",
+      "id": "product_image_type",
+      "label": "Image style",
+      "options": [
+        {
+          "value": "portrait",
+          "label": "Tall/square"
+        },
+        {
+          "value": "landscape",
+          "label": "Wide"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "product_image_size",
+      "label": "Image size",
+      "default": "medium",
+      "options": [
+        {
+          "value": "small",
+          "label": "Small"
+        },
+        {
+          "value": "medium",
+          "label": "Medium"
+        },
+        {
+          "value": "large",
+          "label": "Large"
+        },
+        {
+          "value": "xlarge",
+          "label": "Extra large"
+        }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "product_image_spacing",
+      "label": "Add spacing between images"
+    },
+    {
+        "type": "checkbox",
+        "id": "vendor_enable",
+        "label": "Show product vendor"
+      }]
+  }
+{% endschema %}

@@ -1,0 +1,7 @@
+{% if paginate.pages > 1 %}
+  <div class="pagination text-center">
+    {% for part in paginate.parts %}
+      <a class="btn btn--small btn--dark btn--outline {% unless part.is_link %} btn--disabled-alt {% endunless %}" {% if part.is_link %} href="{{ part.url }}" {% endif %}>{{ part.title }}</a>
+    {% endfor %}
+  </div>
+{% endif %}

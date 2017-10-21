@@ -1,0 +1,126 @@
+{% if section.blocks.size > 0 %}
+  <div class="hero-wrapper">
+    <button type="button" class="visually-hidden hero__pause" aria-live="polite">
+      <span class="hero__pause-stop">
+        {% include 'icon-pause' %}
+        <span class="icon__fallback-text">{{ 'homepage.hero.pause_slideshow' | t }}</span>
+      </span>
+      <span class="hero__pause-play">
+        {% include 'icon-play' %}
+        <span class="icon__fallback-text">{{ 'homepage.hero.play_slideshow' | t }}</span>
+      </span>
+    </button>
+    <div class="hero" id="Slideshow-{{ section.id }}" data-section-id="{{ section.id }}" data-section-type="slideshow" data-autoplay="true" data-speed="7000">
+      {% for block in section.blocks %}
+        <div class="hero__slide hero__slide--{{ block.id }}" {{ block.shopify_attributes }}>
+          <div class="hero__slide">
+            {% if block.settings.image != blank %}
+              <noscript>
+                <div class="hero__image hero__image--{{ block.id }}"{% if block.settings.image %} style="background-image: url('{{ block.settings.image | img_url: '2048x' }}');"{% endif %}></div>
+              </noscript>
+              {% assign img_url = block.settings.image | img_url: '1x1' | replace: '_1x1.', '_{width}x.' %}
+              <img class="hero__image hero__image--{{ block.id }} lazyload {% unless forloop.first == true %} lazypreload{% endunless %}"
+                {% if forloop.first == true %}
+                  src="{{ block.settings.image | img_url: '300x' }}"
+                {% endif %}
+                data-src="{{ img_url }}"
+                data-widths="[540, 720, 900, 1080, 1296, 1512, 1728, 1944, 2048, 4472]"
+                data-aspectratio="{{ block.settings.image.aspect_ratio }}"
+                data-sizes="auto"
+                data-parent-fit="cover"
+                alt="{{ block.settings.image.alt | escape }}">
+            {% else %}
+              {% if block.settings.image == blank %}
+                <div class="placeholder-background">
+                  {{ 'lifestyle-1' | placeholder_svg_tag: 'placeholder-svg' }}
+                </div>
+              {% endif %}
+            {% endif %}
+            <div class="hero__text-wrap">
+              <div class="page-width">
+                <div class="hero__text-content">
+                  {% unless block.settings.title == blank %}
+                    <div class="hero__title-wrap">
+                      <h1 class="hero__title{% if block.settings.link != blank %} hero__title--has-link{% endif %}">
+                        {% if block.settings.link != blank %}
+                          <a href="{{ block.settings.link }}" class="hero__link">
+                        {% endif %}
+                        {{ block.settings.title | escape }}
+                        {% if block.settings.link != blank %}
+                          </a>
+                        {% endif %}
+                      </h1>
+                    </div>
+                  {% endunless %}
+                  <div class="hero__arrows small--hide" aria-controls="Hero">
+                    <a href="#" class="hero__arrow hero__arrow--prev">
+                      {% include 'icon-arrow-left' %}
+                      <span class="icon__fallback-text">{{ 'homepage.hero.previous_slide' | t }}</span>
+                    </a>
+                    <a href="#" class="hero__arrow hero__arrow--next">
+                      {% include 'icon-arrow-right' %}
+                      <span class="icon__fallback-text">{{ 'homepage.hero.next_slide' | t }}</span>
+                    </a>
+                  </div>
+
+                  {% unless block.settings.subheading == blank %}
+                    {% if block.settings.link != blank %}
+                      <a href="{{ block.settings.link }}" class="hero__subtitle hero__link">
+                        {{ block.settings.subheading | escape }}
+                      </a>
+                    {% else %}
+                      <span class="hero__subtitle">
+                        {{ block.settings.subheading | escape }}
+                      </span>
+                    {% endif %}
+                  {% endunless %}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+{% endif %}
+
+{% if section.blocks.size == 0 %}
+  {% include 'no-blocks' %}
+{% endif %}
+
+{% schema %}
+  {
+    "name": "Slideshow",
+    "max_blocks": 4,
+    "blocks": [
+      {
+        "type": "slide",
+        "name": "Slide",
+        "settings": [
+          {
+            "type": "image_picker",
+            "id": "image",
+            "label": "Image"
+          },
+          {
+            "type": "text",
+            "id": "title",
+            "label": "Heading",
+            "default": "Slide"
+          },
+          {
+            "type": "text",
+            "id": "subheading",
+            "label": "Subheading",
+            "default": "View all products"
+          },
+          {
+            "type": "url",
+            "id": "link",
+            "label": "Slide link"
+          }
+        ]
+      }
+    ]
+  }
+{% endschema %}

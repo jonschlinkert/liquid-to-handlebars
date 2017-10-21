@@ -1,0 +1,255 @@
+<div id="ProductSection" data-section-id="{{ section.id }}" data-section-type="product-template" data-zoom-toggle="zoom-in" data-zoom-enabled="{{ section.settings.product_image_zoom_enable }}" data-related-enabled="{{ section.settings.product_related_enable }}" data-social-sharing="{{ section.settings.social_sharing }}" data-show-compare-at-price="{{ section.settings.product_show_compare_at_price }}" data-stock="{{ section.settings.product_quantity_message }}" data-incoming-transfer="{{ section.settings.product_incoming_message }}" data-ajax-cart-method="{{ settings.ajax_cart_method }}">
+{% include 'breadcrumb' %}
+
+<div class="grid" itemscope itemtype="http://schema.org/Product">
+  <meta itemprop="url" content="{{ shop.url }}{{ product.url }}">
+  <meta itemprop="image" content="{{ product.featured_image.src | img_url: 'grande' }}">
+
+  <div class="grid-item large--two-fifths">
+    <div class="grid">
+      <div class="grid-item large--eleven-twelfths text-center">
+        <div class="product-photo-container" id="productPhotoContainer-{{ section.id }}">
+          {% assign featured_image = product.selected_or_first_available_variant.featured_image | default: product.featured_image %}
+          {% for image in product.images %}
+            {% capture img_wrapper_id %}productPhotoWrapper-{{ section.id }}-{{ image.id }}{% endcapture %}
+            {% capture img_id %}productPhotoImg-{{ section.id }}-{{ image.id }}{% endcapture %}
+
+            <div class="lazyload__image-wrapper no-js product__image-wrapper{% unless image == featured_image %} hide{% endunless %}" id="{{ img_wrapper_id }}" style="padding-top:{{ 1 | divided_by: image.aspect_ratio | times: 100}}%;" data-image-id="{{ image.id }}">
+              {%- assign img_url = image | img_url: '1x1' | replace: '_1x1.', '_{width}x.' -%}
+                <img id="{{ img_id }}"
+                  {% if forloop.first == true %}
+                  src="{{ featured_image | img_url: '300x300' }}"
+                  {% endif %}
+                  class="lazyload no-js lazypreload"
+                  data-src="{{ img_url }}"
+                  data-widths="[180, 360, 540, 720, 900, 1080, 1296, 1512, 1728, 2048]"
+                  data-aspectratio="{{ image.aspect_ratio }}"
+                  data-sizes="auto"
+                  alt="{{ image.alt | escape }}"
+                  {% if section.settings.product_image_zoom_enable %} data-zoom="{{ image | img_url: '1024x1024', scale: 2 }}"{% endif %}>
+            </div>
+            {% if forloop.first == true %}
+              <noscript>
+                <img src="{{ image | img_url: '580x' }}"
+                  srcset="{{ image | img_url: '580x' }} 1x, {{ image | img_url: '580x', scale: 2 }} 2x"
+                  alt="{{ image.alt }}" style="opacity:1;">
+              </noscript>
+            {% endif %}
+          {% endfor %}
+        </div>
+
+        {% if product.images.size > 1 %}
+          <ul class="product-photo-thumbs grid-uniform" id="productThumbs-{{ section.id }}">
+
+            {% for image in product.images %}
+              <li class="grid-item medium-down--one-quarter large--one-quarter">
+                <a href="{{ image.src | img_url: '1024x1024', scale: 2 }}" class="product-photo-thumb product-photo-thumb-{{ section.id }}" data-image-id="{{ image.id }}">
+                  <img src="{{ image.src | img_url: 'compact' }}" alt="{{ image.alt | escape }}">
+                </a>
+              </li>
+            {% endfor %}
+
+          </ul>
+        {% endif %}
+
+      </div>
+    </div>
+  </div>
+
+  <div class="grid-item large--three-fifths">
+
+    <h1 class="h2" itemprop="name">{{ product.title }}</h1>
+
+    {% if section.settings.product_vendor_enable %}
+      <p class="product-meta" itemprop="brand">{{ product.vendor }}</p>
+    {% endif %}
+
+    <div itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+
+      {% assign variant = product.selected_or_first_available_variant %}
+
+      <meta itemprop="priceCurrency" content="{{ shop.currency }}">
+      <meta itemprop="price" content="{{ variant.price | divided_by: 100.00 }}">
+
+      <ul class="inline-list product-meta">
+        <li>
+          <span id="productPrice-{{ section.id }}" class="h1">
+            {% include 'price' with variant.price %}
+          </span>
+        </li>
+        {% if product.compare_at_price_max > product.price and section.settings.product_show_saved_amount %}
+        <li>
+          <span id="comparePrice-{{ section.id }}" class="sale-tag large">
+            {% assign compare_price = variant.compare_at_price %}
+            {% assign product_price = variant.price %}
+            {% include 'price-sale' %}
+          </span>
+        </li>
+        {% endif %}
+        {% if section.settings.product_reviews_enable %}
+          <li class="product-meta--review">
+            <span class="shopify-product-reviews-badge" data-id="{{ product.id }}"></span>
+          </li>
+        {% endif %}
+      </ul>
+
+      <hr id="variantBreak" class="hr--clear hr--small">
+
+      <link itemprop="availability" href="http://schema.org/{% if product.available %}InStock{% else %}OutOfStock{% endif %}">
+
+      <form action="/cart/add" method="post" enctype="multipart/form-data" id="addToCartForm-{{ section.id }}">
+        <select name="id" id="productSelect-{{ section.id }}" class="product-variants product-variants-{{ section.id }}">
+          {% for variant in product.variants %}
+            {% if variant.available %}
+
+              <option {% if variant == product.selected_or_first_available_variant %} selected="selected" {% endif %} data-sku="{{ variant.sku }}" value="{{ variant.id }}">{{ variant.title }} - {{ variant.price | money_with_currency }}</option>
+
+            {% else %}
+              <option disabled="disabled">
+                {{ variant.title }} - {{ 'products.product.sold_out' | t }}
+              </option>
+            {% endif %}
+          {% endfor %}
+        </select>
+
+        {% if section.settings.product_quantity_enable %}
+          <label for="quantity" class="quantity-selector quantity-selector-{{ section.id }}">{{ 'products.product.quantity' | t }}</label>
+          <input type="number" id="quantity" name="quantity" value="1" min="1" class="quantity-selector">
+        {% endif %}
+
+        <button type="submit" name="add" id="addToCart-{{ section.id }}" class="btn">
+          <span class="icon icon-cart"></span>
+          <span id="addToCartText-{{ section.id }}">{{ 'products.product.add_to_cart' | t }}</span>
+        </button>
+
+        {% if section.settings.product_quantity_message%}
+          <span id="variantQuantity-{{ section.id }}" class="variant-quantity {% if variant.inventory_management and variant.inventory_quantity < 10 and variant.inventory_quantity > 0 %} is-visible{% endif %}">
+           {% if variant.inventory_management and variant.inventory_quantity < 10 and variant.inventory_quantity > 0 %}
+              {% assign qty = variant.inventory_quantity %}
+              {{ 'products.product.only_left' | t: count: qty }}
+            {% endif %}
+          </span>
+        {% endif %}
+
+        {% if section.settings.product_incoming_message %}
+          <span id="variantIncoming-{{ section.id }}" class="variant-quantity {% if variant.inventory_management and variant.inventory_quantity <= 0 and variant.incoming %} is-visible{% endif %}">
+            {% if variant.inventory_management and variant.inventory_quantity == 0 or variant.inventory_quantity < 0 and current_variant.incoming %}
+              {% if variant.available %}
+                {% assign date = variant.next_incoming_date | date: "month_day_year" %}
+                {{ 'products.product.will_not_ship_until' | t: date: date  }}
+              {% else %}
+                {% assign date = variant.next_incoming_date | date: "month_day_year" %}
+                {{ 'products.product.will_be_in_stock_after' | t: date: date }}
+              {% endif %}
+            {% endif %}
+          </span>
+        {% endif %}
+
+      </form>
+
+      <hr>
+
+    </div>
+
+    <div class="product-description rte" itemprop="description">
+      {{ product.description }}
+    </div>
+
+    {% if section.settings.social_sharing_products %}
+      {% include 'social-sharing' %}
+    {% endif %}
+
+  </div>
+</div>
+
+{% if section.settings.related_products_enable %}
+  {% assign grid_item_width = 'large--one-fifth medium--one-third small--one-half' %}
+  {% include 'related-products' %}
+{% endif %}
+
+{% if section.settings.product_reviews_enable %}
+  <hr>
+  <div id="shopify-product-reviews" data-id="{{ product.id }}">{{ product.metafields.spr.reviews }}</div>
+{% endif %}
+
+{% unless product == empty %}
+  <script type="application/json" id="ProductJson-{{ section.id }}">
+    {{ product | json }}
+  </script>
+  {% if section.settings.product_quantity_message or section.settings.product_incoming_message %}
+    <script type="application/json" id="VariantJson-{{ section.id }}">
+      [
+        {% for variant in product.variants %}
+          {
+             "incoming": {% if variant.incoming == 'null' or variant.next_incoming_date == null %}false{% else %}{{ variant.incoming | default: false | json }}{% endif %},
+             "next_incoming_date": {{ variant.next_incoming_date | date: format: 'month_day_year' | json }}
+          }{% unless forloop.last %},{% endunless %}
+        {% endfor %}
+      ]
+    </script>
+  {% endif %}
+{% endunless %}
+</div>
+
+{% schema %}
+  {
+    "name": "Product",
+    "class": "product-template-section",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "product_image_zoom_enable",
+        "label": "Enable image zoom"
+      },
+      {
+        "type": "checkbox",
+        "id": "product_quantity_enable",
+        "label": "Show quantity selector"
+      },
+      {
+        "type": "checkbox",
+        "id": "product_quantity_message",
+        "label": "Show remaining quantity message"
+      },
+      {
+        "type": "checkbox",
+        "id": "product_incoming_message",
+        "label": "Show incoming stock transfer message when sold out"
+      },
+      {
+        "type": "checkbox",
+        "id": "product_vendor_enable",
+        "label": "Show product vendor"
+      },
+      {
+        "type": "checkbox",
+        "id": "product_show_saved_amount",
+        "label": "Show saved amount",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "product_show_compare_at_price",
+        "label": "Show compare at price",
+        "default": false
+      },
+      {
+        "type": "checkbox",
+        "id": "related_products_enable",
+        "label": "Show related products"
+      },
+      {
+        "type": "checkbox",
+        "id": "social_sharing_products",
+        "label": "Enable product sharing",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "product_reviews_enable",
+        "label": "Enable product reviews",
+        "info": "Install the free Shopify [Product Reviews](https:\/\/apps.shopify.com\/product-reviews) app to add product reviews."
+      }
+    ]
+  }
+{% endschema %}

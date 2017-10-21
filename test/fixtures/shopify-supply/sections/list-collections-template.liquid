@@ -1,0 +1,193 @@
+{% include 'breadcrumb' %}
+
+{% if section.settings.layout == 'grid' %}
+  {% case section.settings.grid %}
+    {% when '2' %}
+      {%- assign featured_collection_width = 'one-half' -%}
+      {%- assign featured_collection_size = '485x' -%}
+      {%- assign width = '480' -%}
+      {%- assign height = '480' -%}
+    {% when '3' %}
+      {%- assign featured_collection_width = 'small--one-half one-third' %}
+      {%- assign featured_collection_size = '315x' %}
+      {%- assign width = '310' -%}
+      {%- assign height = '310' -%}
+    {% when '4' %}
+      {%- assign featured_collection_width = 'small--one-half one-quarter' %}
+      {%- assign featured_collection_size = '225x' %}
+      {%- assign width = '225' -%}
+      {%- assign height = '225' -%}
+    {% when '5' %}
+      {%- assign featured_collection_width = 'small--one-half medium--one-third large--one-fifth' %}
+      {%- assign featured_collection_size = '175x' %}
+      {%- assign width = '175' -%}
+      {%- assign height = '175' -%}
+  {% endcase %}
+{% endif %}
+
+{% if section.settings.display_type == 'all' %}
+  {% case section.settings.sort %}
+    {% when 'products_high' or 'products_low' %}
+      {%- assign list_collections = collections | sort: 'all_products_count' -%}
+    {% when 'date' or 'date_reversed' %}
+      {%- assign list_collections = collections | sort: 'published_at' -%}
+    {% else %}
+      {%- assign list_collections = collections -%}
+  {% endcase %}
+  {% if section.settings.sort == 'products_low' or section.settings.sort == 'date' or section.settings.sort == 'alphabetical' %}
+    <div class="{% if section.settings.layout == 'grid' %}grid text-center {% endif %}list-collections-template" data-section-id="{{ section.id }}" data-section-type="list-collections-template">
+      {% for collection in list_collections %}
+        {% unless collection.handle == 'frontpage' %}
+          {% if section.settings.layout == 'list' %}
+            {% include 'collection-list-item' %}
+            {% unless forloop.last %}<hr>{% endunless %}
+          {% else %}
+            {% assign featured = collection.handle %}
+            {% include 'featured-collection' %}
+          {% endif %}
+        {% endunless %}
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="{% if section.settings.layout == 'grid' %}grid text-center {% endif %}collection-grid" data-section-id="{{ section.id }}" data-section-type="list-collections-template">
+      {% for collection in list_collections reversed %}
+        {% unless collection.handle == 'frontpage' %}
+          {% if section.settings.layout == 'list' %}
+            {% include 'collection-list-item' %}
+            {% unless forloop.last %}<hr>{% endunless %}
+          {% else %}
+            {% assign featured = collection.handle %}
+            {% include 'featured-collection' %}
+          {% endif %}
+        {% endunless %}
+      {% endfor %}
+    </div>
+  {% endif %}
+{% else %}
+  <div class="{% if section.settings.layout == 'grid' %}grid text-center {% endif %}list-collections-template" data-section-id="{{ section.id }}" data-section-type="list-collections-template">
+    {% for block in section.blocks %}
+      {% if section.settings.layout == 'list' %}
+        {% assign collection = collections[block.settings.collection] %}
+        {% include 'collection-list-item' %}
+        {% unless forloop.last %}<hr>{% endunless %}
+      {% else %}
+        {% assign featured = block.settings.collection %}
+        {% include 'featured-collection' %}
+      {% endif %}
+    {% endfor %}
+  </div>
+{% endif %}
+
+{% schema %}
+  {
+    "name": "Collections list page",
+    "settings": [
+      {
+        "type": "paragraph",
+        "content": "All of your collections are listed by default. To customize your list, choose 'Selected' and add collections."
+      },
+      {
+        "type": "radio",
+        "id": "display_type",
+        "label": "Select collections to show",
+        "default": "all",
+        "options": [
+          {
+            "value": "all",
+            "label": "All"
+          },
+          {
+            "value": "selected",
+            "label": "Selected"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "layout",
+        "label": "Select layout",
+        "default": "grid",
+        "options": [
+          {
+            "value": "grid",
+            "label": "Grid"
+          },
+          {
+            "value": "list",
+            "label": "List"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "sort",
+        "label": "Sort collections by:",
+        "info": "Sorting only applies when 'All' is selected",
+        "default": "alphabetical",
+        "options": [
+          {
+            "value": "products_high",
+            "label": "Product count, high to low"
+          },
+          {
+            "value": "products_low",
+            "label": "Product count, low to high"
+          },
+          {
+            "value": "alphabetical",
+            "label": "Alphabetically, A-Z"
+          },
+          {
+            "value": "alphabetical_reversed",
+            "label": "Alphabetically, Z-A"
+          },
+          {
+            "value": "date",
+            "label": "Date, old to new"
+          },
+          {
+            "value": "date_reversed",
+            "label": "Date, new to old"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "grid",
+        "label": "Collections per row",
+        "default": "3",
+        "options": [
+          {
+            "value": "2",
+            "label": "2"
+          },
+          {
+            "value": "3",
+            "label": "3"
+          },
+          {
+            "value": "4",
+            "label": "4"
+          },
+          {
+            "value": "5",
+            "label": "5"
+          }
+        ]
+      }
+    ],
+    "blocks": [
+      {
+        "type": "collection",
+        "name": "Collection",
+        "settings": [
+          {
+            "label": "Collection",
+            "id": "collection",
+            "type": "collection"
+          }
+        ]
+      }
+    ]
+  }
+{% endschema %}

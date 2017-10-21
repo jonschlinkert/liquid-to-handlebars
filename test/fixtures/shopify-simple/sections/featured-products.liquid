@@ -1,0 +1,82 @@
+{% assign featured = section.settings.home_page_featured_products %}
+{% assign products_per_row = 3 %}
+{% assign rows = section.settings.home_featured_products_row_num %}
+{% assign total_products = products_per_row | times: rows %}
+
+{% unless settings.home_section_1 == 'banner-image' %}
+  <hr class="medium-up--hide hr--clear hr--small">
+{% endunless %}
+
+<div class="featured-products">
+
+  {% if section.settings.title != blank %}
+    <h2 class="small--text-center">{{ section.settings.title | escape }}</h2>
+  {% endif %}
+
+  <div class="grid grid--uniform" role="list">
+
+    {% for product in collections[featured].products limit: total_products %}
+      {% include 'product-grid-item' %}
+    {% else %}
+      {% comment %}
+        If collection is empty, show onboarding state
+        For onboarding new users to your theme, we add some default products and onboarding tutorials to help populate their store
+      {% endcomment %}
+
+      {% unless onboardingLoaded %}
+        {% comment %}
+          Only load onboarding styles if they have not already been loaded.
+        {% endcomment %}
+        {% assign onboardingLoaded = true %}
+      {% endunless %}
+
+      <div class="grid__item">
+        <div class="grid grid--uniform">
+          {% for i in (1..total_products) %}
+            <div class="grid__item product medium-up--one-third small--one-half text-center">
+              <a href="/admin/products" class="product__image-wrapper">
+                {% capture current %}{% cycle 1, 2, 3, 4, 5, 6 %}{% endcapture %}
+                {{ 'product-' | append: current | placeholder_svg_tag: 'placeholder-svg' }}
+              </a>
+              <div class="product__title"><a href="/admin/products">{{ 'homepage.onboarding.product_title' | t | capitalize }}</a></div>
+              <div class="product__price">$19.99</div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+
+{% schema %}
+  {
+    "name": "Featured collection",
+    "settings": [
+      {
+        "type": "text",
+        "id": "title",
+        "label": "Heading",
+        "default": "Featured collection"
+      },
+      {
+        "type": "collection",
+        "id": "home_page_featured_products",
+        "label": "Collection"
+      },
+      {
+        "type": "range",
+        "id": "home_featured_products_row_num",
+        "label": "Rows",
+        "min": 1,
+        "max": 10,
+        "step": 1,
+        "default": 2
+      }
+    ],
+    "presets": [{
+      "name": "Featured collection",
+      "category": "Collection"
+    }],
+    "blocks" : []
+  }
+{% endschema %}

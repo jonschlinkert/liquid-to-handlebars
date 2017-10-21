@@ -1,0 +1,16 @@
+<!-- /snippets/pagination.liquid -->
+{% capture previous_label %}
+  <span class="icon-fallback-text">
+    <span class="icon icon-arrow-left" aria-hidden="true"></span>
+    <span class="fallback-text">{{ 'general.pagination.previous' | t }}</span>
+  </span>
+{% endcapture %}
+{% capture next_label %}
+  <span class="icon-fallback-text">
+    <span class="icon icon-arrow-right" aria-hidden="true"></span>
+    <span class="fallback-text">{{ 'general.pagination.next' | t }}</span>
+  </span>
+{% endcapture %}
+<div class="pagination">
+  {{ paginate | default_pagination: previous: previous_label, next: next_label }}
+</div>

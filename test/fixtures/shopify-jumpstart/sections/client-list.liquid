@@ -1,0 +1,109 @@
+<div id="home-clients" class="index-section home-section">
+  <div class="home-clients">
+
+
+	{% assign cols = section.blocks.size %}
+	<!-- {{ cols }} -->
+	{% case cols %}
+	  {% when 1 %}
+	    {% assign grid_class = 'grid__item one-whole' %}
+	  {% when 2 %}
+	    {% assign grid_class = 'grid__item one-half' %}
+	  {% when 3 %}
+	    {% assign grid_class = 'grid__item one-third' %}
+	  {% when 4 %}
+	    {% assign grid_class = 'grid__item one-quarter' %}
+	  {% when 5 %}
+	    {% assign grid_class = 'grid__item one-fifth' %}
+	  {% else %}
+	    {% assign grid_class = 'grid__item one-sixth medium-down--one-third' %}
+	{% endcase %}
+
+	<div class="wrapper">
+
+	  <ul class="clients-list grid small-gutter">
+
+		{% for block in section.blocks %}
+
+			<li class="{{ grid_class }}" {{ block.shopify_attributes }}>
+        <div class="clients-list__center-wrap">
+        {% if block.settings.link != blank %}
+					  <a href="{{ block.settings.link }}" target="_blank">
+					{% endif %}
+					{% if block.settings.image != blank %}
+            {% assign img_url = block.settings.image | img_url: '1x1' | replace: '_1x1.', '_{width}x.' %}
+            <img class="no-js lazyload"
+              data-src="{{ img_url }}"
+              data-widths="[108, 360, 375, 414, 568, 684, 720, 732, 736, 768, 1024, 1200, 1296, 1512, 1728, 1944, 2048]"
+              data-aspectratio="{{ block.settings.image.aspect_ratio }}"
+              data-sizes="auto"
+              data-parent-fit="width"              
+              alt="{{ block.settings.image.alt | escape }}">
+              <noscript>
+                <img src="{{ block.settings.image | img_url: '580x' }}"
+                  srcset="{{ block.settings.image | img_url: '580x' }} 1x, {{ block.settings.image | img_url: '580x', scale: 2 }} 2x"
+                  alt="{{ block.settings.image.alt }}" style="opacity:1;">
+              </noscript>
+					{% else %}
+					  {{ 'logo' | placeholder_svg_tag: 'clients-list placeholder-svg' }}
+					{% endif %}
+          
+					{% if block.settings.link != blank %}
+					  </a>
+					{% endif %}
+
+        </div>
+			</li>
+		{% endfor %}
+	  </ul>
+	</div>
+  </div>
+</div>
+<style>
+
+</style>
+{% schema %}
+  {
+    "name": "Logo list",
+    "max_blocks": 20,
+    "blocks": [
+      {
+        "type": "logo_image",
+        "name": "Logo",
+        "settings": [
+          {
+            "type": "image_picker",
+            "id": "image",
+            "label": "Image"
+          },
+          {
+            "type": "url",
+            "id": "link",
+            "label": "Link",
+            "info": "Optional"
+          }
+        ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "Logo list",
+        "category": "Image",
+        "blocks": [
+          {
+            "type": "logo_image"
+          },
+          {
+            "type": "logo_image"
+          },
+          {
+            "type": "logo_image"
+          },
+          {
+            "type": "logo_image"
+          }
+        ]
+      }
+    ]
+  }
+{% endschema %}

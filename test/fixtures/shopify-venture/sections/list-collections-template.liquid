@@ -1,0 +1,166 @@
+{% if section.settings.layout == 'grid' %}
+  {% if section.settings.display_type == 'all' %}
+    {%- assign collection_count = 0 -%}
+    {% for collection in collections %}
+      {% unless collection.handle == 'frontpage' %}
+        {%- assign collection_count = collection_count | plus: 1 -%}
+      {% endunless %}
+    {% endfor %}
+  {% else %}
+    {%- assign collection_count = section.blocks.size -%}
+  {% endif %}
+  
+  {% case collection_count %}
+    {% when 1 %}
+      {% assign grid_item_width = 'medium-up--one-half' %}
+    {% when 2 %}
+      {% assign grid_item_width = 'one-half' %}
+    {% when 3 %}
+      {% assign grid_item_width = 'medium-up--one-third' %}
+    {% when 4 %}
+      {% assign grid_item_width = 'one-half medium-up--one-quarter' %}
+    {% else %}
+      {% assign grid_item_width = 'medium-up--one-third' %}
+  {% endcase %}
+{% endif %}
+
+<div class="page-width">
+  {% if section.settings.display_type == 'all' %}
+    {% case section.settings.sort %}
+      {% when 'products_high' or 'products_low' %}
+        {%- assign list_collections = collections | sort: 'all_products_count' -%}
+      {% when 'date' or 'date_reversed' %}
+        {%- assign list_collections = collections | sort: 'published_at' -%}
+      {% else %}
+        {%- assign list_collections = collections -%}
+    {% endcase %}
+    {% if section.settings.sort == 'products_low' or section.settings.sort == 'date' or section.settings.sort == 'alphabetical' %}
+      <div class="grid grid--no-gutters grid--uniform collection">
+        {% for collection in list_collections %}
+          {%- assign featured_collection = collection -%}
+          {% unless collection.handle == 'frontpage' %}
+            {% if section.settings.layout == 'list' %}
+              {% include 'collection-list-item' %}
+            {% else %}
+              {% include 'collection-grid-item' with stretch_collection_image: false %}
+            {% endif %}
+          {% endunless %}
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="grid grid--no-gutters grid--uniform collection">
+        {% for collection in list_collections reversed %}
+          {%- assign featured_collection = collection -%}
+          {% unless collection.handle == 'frontpage' %}
+            {% if section.settings.layout == 'list' %}
+              {% include 'collection-list-item' %}
+            {% else %}
+              {% include 'collection-grid-item' with stretch_collection_image: false %}
+            {% endif %}
+          {% endunless %}
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% else %}
+    <div class="grid grid--no-gutters grid--uniform collection">
+      {% for block in section.blocks %}
+        {%- assign featured_collection = collections[block.settings.collection] -%}
+        {% if section.settings.layout == 'list' %}
+          {% include 'collection-list-item' %}
+        {% else %}
+          {% include 'collection-grid-item' with stretch_collection_image: false %}
+        {% endif %}
+      {% endfor %}
+    </div>
+  {% endif %}
+</div>
+
+{% schema %}
+  {
+    "name": "Collections list page",
+    "settings": [
+      {
+        "type": "paragraph",
+        "content": "All of your collections are listed by default. To customize your list, choose 'Selected' and add collections."
+      },
+      {
+        "type": "radio",
+        "id": "display_type",
+        "label": "Select collections to show",
+        "default": "all",
+        "options": [
+          {
+            "value": "all",
+            "label": "All"
+          },
+          {
+            "value": "selected",
+            "label": "Selected"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "layout",
+        "label": "Select layout",
+        "default": "grid",
+        "options": [
+          {
+            "value": "grid",
+            "label": "Grid"
+          },
+          {
+            "value": "list",
+            "label": "List"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "sort",
+        "label": "Sort collections by:",
+        "info": "Sorting only applies when 'All' is selected",
+        "default": "alphabetical",
+        "options": [
+          {
+            "value": "products_high",
+            "label": "Product count, high to low"
+          },
+          {
+            "value": "products_low",
+            "label": "Product count, low to high"
+          },
+          {
+            "value": "alphabetical",
+            "label": "Alphabetically, A-Z"
+          },
+          {
+            "value": "alphabetical_reversed",
+            "label": "Alphabetically, Z-A"
+          },
+          {
+            "value": "date",
+            "label": "Date, old to new"
+          },
+          {
+            "value": "date_reversed",
+            "label": "Date, new to old"
+          }
+        ]
+      }
+    ],
+    "blocks": [
+      {
+        "type": "collection",
+        "name": "Collection",
+        "settings": [
+          {
+            "label": "Collection",
+            "id": "collection",
+            "type": "collection"
+          }
+        ]
+      }
+    ]
+  }
+{% endschema %}

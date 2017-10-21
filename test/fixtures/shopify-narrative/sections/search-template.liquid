@@ -1,0 +1,108 @@
+{%- assign limit = section.settings.results | times: section.settings.rows -%}
+
+{% paginate search.results by limit %}
+
+<div class="page-width" data-section-id="{{ section.id }}" data-section-type="search-template">
+  <header class="section-header section-header--small text-center">
+    {% if search.performed %}
+      <h1 class="section-header__title h2">{{ 'general.search.search_results_title' | t }}</h1>
+      <div class="section-header__description">
+        {{ 'general.search.results_count_html' | t: count: search.results_count, terms: search.terms }}
+      </div>
+    {% else %}
+      <h1 class="section-header__title h2">{{ 'general.search.title' | t }}</h1>
+      <div class="search-template__search-bar">
+        {% include 'search-bar' %}
+      </div>
+    {% endif %}
+  </header>
+
+  {% if search.performed %}
+
+    {%- assign desktopColumns = section.settings.results -%}
+    {%- assign mobileColumns = '1' -%}
+
+    {%- capture gridClasses -%}
+      {% if desktopColumns == '3' %}medium-up--one-third {% else %}medium-up--one-half {% endif %}
+      {% if mobileColumns == '2' %}small--one-half {% endif %}
+    {%- endcapture -%}
+
+    <div class="card-list grid" data-desktop-columns="{{ desktopColumns }}" data-mobile-columns="{{ mobileColumns }}">
+      <div class="card-list__column grid__item {% if search.results.size == 1 %} card-list__column--center{% endif %} {{ gridClasses }}">
+        {% for item in search.results %}
+          {% if item.object_type == 'article' %}
+            {% include 'article-card', article: item %}
+          {% elsif item.object_type == 'page' %}
+            {% include 'page-card', page: item %}
+          {% else %}
+            {% include 'product-card', product: item %}
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+
+    {% if paginate.pages > 1 %}
+      <div class="card-list__sub-actions">
+        {% include 'pagination' %}
+      </div>
+    {% endif %}
+
+    <div class="text-center card-list__sub-actions{% if product_count == 0 %} card-list__sub-actions--no-results{% endif %}">
+      {% include 'search-bar' %}
+    </div>
+  {% endif %}
+</div>
+
+{% endpaginate %}
+
+{% schema %}
+{
+  "name": "Search",
+  "settings": [
+    {
+      "type": "select",
+      "id": "results",
+      "label": "Results per row",
+      "default": "2",
+      "options": [
+        {
+          "value": "2",
+          "label": "2"
+        },
+        {
+          "value": "3",
+          "label": "3"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "rows",
+      "label": "Rows per page",
+      "default": "4",
+      "options": [
+        {
+          "value": "2",
+          "label": "2"
+        },
+        {
+          "value": "3",
+          "label": "3"
+        },
+        {
+          "value": "4",
+          "label": "4"
+        },
+        {
+          "value": "5",
+          "label": "5"
+        },
+        {
+          "value": "6",
+          "label": "6"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

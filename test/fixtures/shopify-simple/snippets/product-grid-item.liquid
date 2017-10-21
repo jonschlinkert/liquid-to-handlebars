@@ -1,0 +1,106 @@
+{% unless grid_item_width %}
+  {% assign grid_item_width = 'medium-up--one-third small--one-half' %}
+{% endunless %}
+
+{% unless current_collection == blank %}
+  {% assign current_collection = collection %}
+{% endunless %}
+
+{% assign on_sale = false %}
+{% assign sale_text = 'products.product.sale' | t %}
+{% if product.compare_at_price > product.price %}
+  {% assign on_sale = true %}
+{% endif %}
+
+{% assign sold_out = true %}
+{% assign sold_out_text = 'products.product.sold_out' | t %}
+{% if product.available %}
+  {% assign sold_out = false %}
+{% endif %}
+
+{%- assign img_url = product.featured_image | img_url: '1x1' | replace: '_1x1.', '_{width}x.' -%}
+
+<div class="product grid__item {{ grid_item_width }} slide-up-animation animated" role="listitem">
+  {% unless product.featured_image == blank %}
+    <div class="supports-js" style="max-width: {{ 600 | times: product.featured_image.aspect_ratio | round }}px; margin: 0 auto;">
+      <a href="{{ product.url | within: collection }}" class="product__image-wrapper" style="padding-top:{{ 1 | divided_by: product.featured_image.aspect_ratio | times: 100}}%;" title="{{ product.title | escape }}">
+        <img class="product__image lazyload"
+             src="{{ product.featured_image | img_url: '150x150' }}"
+             data-src="{{ img_url }}"
+             data-widths="[180, 360, 540, 720, 900, 1080, 1296, 1512, 1728, 2048]"
+             data-aspectratio="{{ product.featured_image.aspect_ratio }}"
+             data-sizes="auto"
+             alt="{{ product.featured_image.alt | escape }}"
+             style="max-width: {{ 600 | times: product.featured_image.aspect_ratio | round }}px; max-height: 600px;">
+      </a>
+    </div>
+  {% else %}
+    <a href="{{ product.url | within: collection }}" class=" supports-js product__image-wrapper" title="{{ product.title | escape }}">
+      <img src="{{ product.featured_image.src | img_url: 'grande' }}" alt="{{ product.featured_image.alt | escape }}">
+    </a>
+  {% endunless %}
+
+  <noscript>
+    <a href="{{ product.url | within: collection }}" class="product__image-wrapper" title="{{ product.title | escape }}">
+      <img src="{{ product.featured_image.src | img_url: 'grande' }}" alt="{{ product.featured_image.alt | escape }}">
+    </a>
+  </noscript>
+
+  <div class="product__title text-center">
+    <a href="{{ product.url | within: collection }}">{{ product.title }}</a>
+  </div>
+
+  {% if section.settings.vendor_show %}
+    <div class="product__vendor text-center">
+      {{ product.vendor }}
+    </div>
+  {% endif %}
+
+  <div class="product__prices text-center">
+    {% if product.compare_at_price > product.price %}
+
+      <span class="product__price--on-sale">
+        {% if product.price_varies %}
+          {% assign sale_price = product.price | money %}
+          {{ 'products.product.on_sale_from_html' | t: price: sale_price }}
+        {% else %}
+          <strong class="visually-hidden">{{ 'products.product.sale_price' | t }}</strong>
+          {{ product.price | money }}
+        {% endif %}
+      </span>
+
+    {% else %}
+
+      <span class="product__price">
+        {% if product.price_varies %}
+          {% assign price = product.price | money %}
+          {{ 'products.product.from_text_html' | t: price: price }}
+        {% else %}
+          <span class="visually-hidden">{{ 'products.product.regular_price' | t }}</span>
+          {{ product.price | money }}
+        {% endif %}
+      </span>
+
+    {% endif %}
+
+    {% if product.compare_at_price > product.price %}
+      <span class="visually-hidden">{{ 'products.product.regular_price' | t }}</span>
+      <s>{{ product.compare_at_price | money }}</s>
+    {% endif %}
+
+    {% if on_sale %}
+      <span class="badge badge--sale"><span>{{ 'products.product.on_sale' | t }}</span></span>
+    {% endif %}
+
+    {% comment %}
+    {% if sold_out %}
+      <span class="badge badge--sold-out"><span>{{ 'products.product.sold_out' | t }}</span></span>
+    {% endif %}
+    {% endcomment %}
+
+    {% if sold_out %}
+      — <strong class="sold-out-text">{{ 'products.product.sold_out' | t }}</strong>
+    {% endif %}
+
+  </div>
+</div>

@@ -1,0 +1,46 @@
+{% if product.description.size > 0 %}
+  {% unless section.settings.show_extra_tab == false or pages[section.settings.extra_tab_content] == empty %}
+    {% if section.settings.product_description_position == position %}
+      <div class="tabs">
+        <ul class="list--inline tab-switch__nav section-header">
+          <li>
+            <a href="#description" data-link="description" class="tab-switch__trigger h3 section-header__title">{{ 'products.product.description' | t }}</a>
+          </li>
+          <li>
+            <a href="#extra" data-link="extra" class="tab-switch__trigger h3 section-header__title">{{ pages[section.settings.extra_tab_content].title }}</a>
+          </li>
+        </ul>
+        <div id="description" class="tab-switch__content" data-content="description">
+          <div class="rte" itemprop="description">
+            {{ product.description }}
+          </div>
+        </div>
+        <div id="extra" class="tab-switch__content" data-content="extra">
+          <div class="rte">
+            {{ pages[section.settings.extra_tab_content].content }}
+          </div>
+        </div>
+      </div>
+    {% endif %}
+  {% else %}
+    {% if product.description contains '<!-- break -->' %}
+      {% if position == 'right' %}
+        <div class="product-single__description rte" itemprop="description">
+          {{ product.description | split: '<!-- break -->' | first }}
+        </div>
+      {% elsif position == 'below' %}
+        <div class="product-single__description rte">
+          {{ product.description | split: '<!-- break -->' | last }}
+        </div>
+      {% endif %}
+    {% elsif section.settings.product_description_position == 'right' and position == 'right' %}
+      <div class="product-single__description rte" itemprop="description">
+        {{ product.description }}
+      </div>
+    {% elsif section.settings.product_description_position == 'below' and position == 'below' %}
+      <div class="product-single__description rte" itemprop="description">
+        {{ product.description }}
+      </div>
+    {% endif %}
+  {% endunless %}
+{% endif %}

@@ -1,0 +1,24 @@
+{% capture header_title %}{{ blog.title }}{% if current_tags %} - {{ current_tags.first }}{% endif %}{% endcapture %}
+{% include 'page_header' with header_title %}
+
+<div class="wrapper wrapper--margins">
+
+  {% if settings.blog_rss_enabled %}
+    <div class="subscribe-link"><span class="label">{{ 'general.sharing.rss_subscribe' | t }}</span><a href="{{ blog.url }}.atom" target="_blank">{% include 'asset_svg' with 'rss' %}</a></div>
+  {% endif %}
+
+  {% paginate blog.articles by 5 %}
+
+    <div class="blog-list">
+      {% for article in blog.articles %}
+        {% include 'blog_item' with blog.comments_enabled? %}
+      {% endfor %}
+    </div>
+
+    {% if paginate.next.is_link %}
+      <div id="infinite-link"><a class="btn btn--large btn--outline btn--dark" href="{{ paginate.next.url }}">More posts</a></div>
+    {% endif %}
+
+  {% endpaginate %}
+
+</div>

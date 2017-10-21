@@ -1,0 +1,51 @@
+{% capture header_title %} {{ 'customer.register.title' | t }} {% endcapture %}
+{% include 'page_header' with header_title %}
+
+<div class="wrapper wrapper--margins wrapper--center">
+
+  <div class="form--customer">
+
+    {% form 'create_customer' %}
+
+      {{ form.errors | default_errors }}
+
+      <div class="form__row">
+        <div class="form__column full">
+          <label for="FirstName">{{ 'customer.register.first_name' | t }}</label>
+          <input type="text" name="customer[first_name]" id="FirstName" class="input-full" {% if form.first_name %}value="{{ form.first_name }}"{% endif %} autocapitalize="words" autofocus>
+        </div>
+      </div>
+
+      <div class="form__row">
+        <div class="form__column full">
+          <label for="LastName">{{ 'customer.register.last_name' | t }}</label>
+          <input type="text" name="customer[last_name]" id="LastName" class="input-full" {% if form.last_name %}value="{{ form.last_name }}"{% endif %} autocapitalize="words">
+        </div>
+      </div>
+
+      <div class="form__row">
+        <div class="form__column full">
+          <label for="Email">{{ 'customer.register.email' | t }}</label>
+          <input type="email" name="customer[email]" id="Email" class="input-full{% if form.errors contains 'email' %} error{% endif %}" {% if form.email %} value="{{ form.email }}"{% endif %} autocorrect="off" autocapitalize="off">
+        </div>
+      </div>
+
+      <div class="form__row">
+        <div class="form__column full">
+          <label for="CreatePassword">{{ 'customer.register.password' | t }}</label>
+          <input type="password" name="customer[password]" id="CreatePassword" class="input-full{% if form.errors contains 'password' %} error{% endif %}">
+        </div>
+      </div>
+
+      <input type="submit" value="{{ 'customer.register.submit' | t }}" class="btn btn--regular btn--color btn--fill">
+
+      <div class="submit--helper">
+        <span>{{ 'customer.register.returning_customer' | t }}</span>
+        <span>{{ 'customer.login.sign_in' | t | customer_login_link }}</span>
+      </div>
+
+    {% endform %}
+
+  </div>
+
+</div>

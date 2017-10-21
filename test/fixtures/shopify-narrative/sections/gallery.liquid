@@ -1,0 +1,356 @@
+{% if section.settings.show_overlay %}
+  <style>
+    .image-bar--{{ section.id }} .image-bar__caption {
+      color: {{ section.settings.overlay_text }}
+    }
+
+    .image-bar--{{ section.id }} .image-bar__overlay::after {
+      background-color: {{ section.settings.overlay_color }};
+      opacity: {{ section.settings.overlay_opacity }};
+    }
+  </style>
+{% endif %}
+
+<div class="image-bar image-bar--{{ section.id }} image-bar--{{ section.settings.section_height }}" data-section-id="{{ section.id }}" data-section-type="gallery">
+  {% for block in section.blocks %}
+    <div class="image-bar__flex image-bar__{{ section.blocks.size }}-column">
+
+      {% if block.settings.image != blank %}
+
+        <style>
+          .image-bar__item--{{ block.id }} {
+            background-position: {{ block.settings.alignment }};
+          }
+        </style>
+
+        {% if block.settings.link != blank %}
+          <a href="{{ block.settings.link }}" class="image-bar__item image-bar__link" {{ block.shopify_attributes }}>
+            <div class="image-bar__item image-bar__item--{{ block.id }} lazyload" data-bgset="{% include 'bgset', image: block.settings.image %}">
+        {% else %}
+          <div class="image-bar__item image-bar__item--{{ block.id }} lazyload" {{ block.shopify_attributes }} data-bgset="{% include 'bgset', image: block.settings.image %}">
+        {% endif %}
+
+      {% else %}
+        <div class="image-bar__item" {{ block.shopify_attributes }}>
+      {% endif %}
+
+        <div class="image-bar__content{% if section.settings.show_overlay %} image-bar__overlay{% endif %}">
+          {% if block.settings.image == blank %}
+            <div class="image-bar__placeholder">{{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}</div>
+          {% endif %}
+        </div>
+
+      {% if block.settings.link != blank %}
+          </div>
+        </a>
+      {% else %}
+        </div>
+      {% endif %}
+
+      {% if block.settings.cta_label != blank or block.settings.icon != 'none' %}
+        <div class="image-bar__text" data-animate>
+          {% if block.settings.icon != 'none' %}
+            {%- assign icon = 'icon-' | append: block.settings.icon -%}
+            {% include icon %}
+          {% endif %}
+          {% if block.settings.cta_label != blank %}
+            <h3 class="h2 text-title image-bar__caption">{{ block.settings.cta_label | escape }}</h2>
+          {% endif %}
+        </div>
+      {% endif %}
+    </div>
+  {% endfor %}
+</div>
+
+{% if section.blocks.size == 0 %}
+  {% include 'no-blocks' %}
+{% endif %}
+
+{% schema %}
+{
+  "name": "Gallery",
+  "class": "index-section index-section--gallery",
+  "max_blocks": 3,
+  "settings": [
+    {
+      "type": "select",
+      "id": "section_height",
+      "label": "Section height",
+      "default": "medium",
+      "options": [
+        {
+          "label": "Extra Small",
+          "value": "x-small"
+        },
+        {
+          "label": "Small",
+          "value": "small"
+        },
+        {
+          "label": "Medium",
+          "value": "medium"
+        },
+        {
+          "label": "Large",
+          "value": "large"
+        },
+        {
+          "label": "Extra Large",
+          "value": "x-large"
+        }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "Overlay"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_overlay",
+      "label": "Show overlay",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "overlay_color",
+      "label": "Overlay Color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "overlay_text",
+      "label": "Text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "select",
+      "id": "overlay_opacity",
+      "label": "Opacity",
+      "default": "0.3",
+      "options": [
+        {
+          "label": "100%",
+          "value": "1"
+        },
+        {
+          "label": "95%",
+          "value": "0.95"
+        },
+        {
+          "label": "90%",
+          "value": "0.9"
+        },
+        {
+          "label": "85%",
+          "value": "0.85"
+        },
+        {
+          "label": "80%",
+          "value": "0.8"
+        },
+        {
+          "label": "75%",
+          "value": "0.75"
+        },
+        {
+          "label": "70%",
+          "value": "0.7"
+        },
+        {
+          "label": "65%",
+          "value": "0.65"
+        },
+        {
+          "label": "60%",
+          "value": "0.6"
+        },
+        {
+          "label": "55%",
+          "value": "0.55"
+        },
+        {
+          "label": "50%",
+          "value": "0.5"
+        },
+        {
+          "label": "45%",
+          "value": "0.45"
+        },
+        {
+          "label": "40%",
+          "value": "0.4"
+        },
+        {
+          "label": "35%",
+          "value": "0.35"
+        },
+        {
+          "label": "30%",
+          "value": "0.3"
+        },
+        {
+          "label": "25%",
+          "value": "0.25"
+        },
+        {
+          "label": "20%",
+          "value": "0.2"
+        },
+        {
+          "label": "0%",
+          "value": "0"
+        }
+      ]
+    }
+  ],
+  "blocks": [
+    {
+      "type": "image",
+      "name": "Image",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "select",
+          "id": "alignment",
+          "label": "Image alignment",
+          "info": "Used when images are not cropped",
+          "default": "center center",
+          "options": [
+            {
+              "label": "Top left",
+              "value": "top left"
+            },
+            {
+              "label": "Top center",
+              "value": "top center"
+            },
+            {
+              "label": "Top right",
+              "value": "top right"
+            },
+            {
+              "label": "Middle left",
+              "value": "center left"
+            },
+            {
+              "label": "Middle center",
+              "value": "center center"
+            },
+            {
+              "label": "Middle right",
+              "value": "center right"
+            },
+            {
+              "label": "Bottom left",
+              "value": "bottom left"
+            },
+            {
+              "label": "Bottom center",
+              "value": "bottom center"
+            },
+            {
+              "label": "Bottom right",
+              "value": "bottom right"
+            }
+          ]
+        },
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "default": "checkmark",
+          "options": [
+            {
+              "label": "None",
+              "value": "none"
+            },
+            {
+              "label": "Box",
+              "value": "box"
+            },
+            {
+              "label": "Card",
+              "value": "card"
+            },
+            {
+              "label": "Cart",
+              "value": "cart"
+            },
+            {
+              "label": "Checkmark",
+              "value": "checkmark"
+            },
+            {
+              "label": "Clock",
+              "value": "clock"
+            },
+            {
+              "label": "Envelope",
+              "value": "envelope"
+            },
+            {
+              "label": "Globe",
+              "value": "globe"
+            },
+            {
+              "label": "Leaf",
+              "value": "leaf"
+            },
+            {
+              "label": "Padlock",
+              "value": "padlock"
+            },
+            {
+              "label": "Price Tag",
+              "value": "pricetag"
+            },
+            {
+              "label": "Silhouette",
+              "value": "silhouette"
+            },
+            {
+              "label": "Trophy",
+              "value": "trophy"
+            },
+            {
+              "label": "Truck",
+              "value": "truck"
+            }
+          ]
+        },
+        {
+          "type": "header",
+          "content": "Text"
+        },
+        {
+          "type": "text",
+          "id": "cta_label",
+          "label": "Caption",
+          "default": "Talk about your brand"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link",
+          "info": "Optional"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Gallery",
+      "category": "Image",
+      "blocks": [
+        { "type": "image" },
+        { "type": "image" },
+        { "type": "image" }
+      ]
+    }
+  ]
+}
+{% endschema %}

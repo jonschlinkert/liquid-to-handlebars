@@ -1,0 +1,10 @@
+{% capture type_head %} {{ settings.typography_headings | replace: ',sans-serif' : '' | replace: ',serif' : '' | lstrip | rstrip | replace: ' ', '+' | replace: "'", '' }} {% endcapture %}
+{% capture type_body %} {{ settings.typography_body | replace: ',sans-serif' : '' | replace: ',serif' : '' | lstrip | rstrip | replace: ' ', '+' | replace: "'", '' }} {% endcapture %}
+
+{% unless type_head contains 'default' %}
+	<link href="//fonts.googleapis.com/css?family={{ type_head | replace: ' ', '' }}:400,400italic,500,600,700,700italic" rel="stylesheet" type="text/css">
+{% endunless %}
+
+{% unless type_body contains 'regular' or type_body == type_head or type_body == type_menu %}
+	<link href="//fonts.googleapis.com/css?family={{ type_body | replace: ' ', '' }}:400,400italic,500,600,700,700italic" rel="stylesheet" type="text/css">
+{% endunless %}

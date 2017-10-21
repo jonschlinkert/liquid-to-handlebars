@@ -1,0 +1,169 @@
+{%- assign social_icons = false -%}
+{%- assign menu_enabled = false -%}
+
+{% if
+  settings.social_twitter_link != blank
+  or settings.social_facebook_link != blank
+  or settings.social_pinterest_link != blank
+  or settings.social_instagram_link != blank
+  or settings.social_tumblr_link != blank
+  or settings.social_snapchat_link != blank
+  or settings.social_youtube_link != blank
+  or settings.social_vimeo_link != blank
+  or template.name == 'article'
+  or template.name == 'blog'
+%}
+  {%- assign social_icons = true -%}
+{% endif %}
+
+{%- for block in section.blocks -%}
+  {%- if block.type == 'menu' -%}
+    {%- assign menu_enabled = true -%}
+  {%- endif -%}
+{%- endfor -%}
+
+<footer class="site-footer" role="contentinfo" data-section-type="footer" data-section-id="{{ section.id }}" {% if section.settings.enable_parallax %}data-footer-parallax{% endif %} data-section-id="{{ section.id }}" data-section-type="footer">
+  <div class="page-width">
+    {% if menu_enabled or section.settings.show_newsletter %}
+      <div class="flex-footer{% unless section.settings.show_newsletter %} flex-footer--full text-center{% endunless %}">
+        {% for block in section.blocks %}
+          <div class="flex-footer__item flex-footer__item--{{ block.type }}" {{ block.shopify_attributes }}>
+            {% case block.type %}
+            {% when 'menu' %}
+              {%- assign link_list = block.settings.link_list -%}
+              <ul class="site-footer__linklist">
+                {% for link in linklists[link_list].links %}
+                  <li class="site-footer__linklist-item h6">
+                    <a href="{{ link.url }}">{{ link.title }}</a>
+                  </li>
+                {% endfor %}
+              </ul>
+            {% endcase %}
+          </div>
+        {% endfor %}
+
+        {% if section.settings.show_newsletter %}
+          <div class="flex-footer__item flex-footer__item--newsletter">
+            <div class="site-footer__newsletter">
+              {% form 'customer' %}
+                <input type="hidden" name="contact[tags]" value="newsletter">
+                <label for="NewsletterEmail" class="site-footer__newsletter-label">{{ section.settings.newsletter_heading }}</label>
+                <div class="input-group--underline">
+                  <input type="email" value="{% if customer %}{{ customer.email }}{% endif %}" placeholder="{{ 'general.newsletter_form.newsletter_placeholder' | t }}" name="contact[email]" id="NewsletterEmail" class="input-group__field site-footer__newsletter-input" aria-label="{{ 'general.newsletter_form.newsletter_placeholder' | t }}" autocorrect="off" autocapitalize="off">
+                  <div class="input-group__btn">
+                    <input type="submit" class="btn btn--clear" value="{{ section.settings.newsletter_button }}" name="subscribe" id="Subscribe">
+                  </div>
+                </div>
+                <div class="site-footer__newsletter-message" aria-role="alert">
+                  {% if form.posted_successfully? %}
+                    <p class="form-success" aria-role="alert">{{ 'general.newsletter_form.confirmation' | t }}</p>
+                  {% endif %}
+                  {{ form.errors | default_errors }}</div>
+              {% endform %}
+            </div>
+          </div>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    <div class="site-footer__bottom{% unless section.settings.show_social_icons or section.settings.show_payment_icons %} site-footer__bottom--center{% endunless %}">
+      {% if section.settings.show_social_icons %}
+        <div class="site-footer__social-icons flex-footer__item--one-third">
+          {% include 'social-links', disableTab: true, largeIcons: false %}
+        </div>
+      {% endif %}
+
+      <div class="site-footer__copyright flex-footer__item--one-third">
+        <small>{{ 'layout.footer.copyright' | t }} &copy; {{ 'now' | date: "%Y" }}, {{ shop.name | link_to: '/' }}.</small>
+        <small class="site-footer__powered-by">{{ powered_by_link }}</small>
+      </div>
+
+      {% if section.settings.show_payment_icons %}
+        <div class="site-footer__payment-icons flex-footer__item--one-third">
+          {% unless shop.enabled_payment_types == empty %}
+            {%- assign payment_icons_available = 'amazon_payments,american_express,apple_pay,bitcoin,cirrus,dankort,diners_club,discover,dogecoin,dwolla,forbrugsforeningen,interac,jcb,litecoin,maestro,master,paypal,stripe,visa' | split: ',' -%}
+            <ul class="payment-icons list--inline">
+              {% for type in shop.enabled_payment_types %}
+                {% if payment_icons_available contains type %}
+                  <li class="payment-icon">
+                    {%- assign icon_name = type | prepend: 'icon-' -%}
+                    {% include icon_name %}
+                  </li>
+                {% endif %}
+              {% endfor %}
+            </ul>
+          {% endunless %}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  {% if section.settings.enable_parallax %}
+    <div class="site-footer__drawer-cover"></div>
+  {% endif %}
+</footer>
+
+{% schema %}
+{
+  "name": "Footer",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_social_icons",
+      "label": "Show social icons",
+      "info": "Fill out your social links in the general settings",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_payment_icons",
+      "label": "Show payment icons",
+      "info": "Update your payment settings in your store's Settings / Payments",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_parallax",
+      "label": "Enable footer scrolling parallax effect",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Newsletter"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_newsletter",
+      "label": "Show newsletter signup",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "newsletter_heading",
+      "label": "Heading",
+      "default": "Sign up for updates"
+    },
+    {
+      "type": "text",
+      "id": "newsletter_button",
+      "label": "Button label",
+      "default": "Ok"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "menu",
+      "name": "Menu",
+      "limit": 2,
+      "settings": [
+        {
+          "id": "link_list",
+          "type": "link_list",
+          "label": "Menu",
+          "default": "footer"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

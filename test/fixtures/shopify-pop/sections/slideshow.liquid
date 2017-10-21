@@ -1,0 +1,131 @@
+{% if section.blocks.size > 0 %}
+  {% assign slider_enabled = true %}
+  <div class="flexslider" id="flexslider--{{ section.id }}" data-section-id="{{ section.id }}" data-section-type="slideshow-section" data-autoplay="{{ section.settings.slider_home_auto }}" data-speed="{{ section.settings.slider_home_rate }}" data-animation-type="{{ section.settings.slider_animation_type }}">
+    <ul class="slides js">
+
+      {% for block in section.blocks %}
+        {% if block.settings.image != blank %}
+          {%- assign img_url = block.settings.image | img_url: '1x1' | replace: '_1x1.', '_{width}x.' -%}
+
+          {% if block.settings.image.width >= 1060 %}
+            {%- assign width = 1060 -%}
+          {% else %}
+            {%- assign width = block.settings.image.width -%}
+          {% endif %}
+
+          <li id="slide--{{ block.id }}" data-flexslider-index="{{ forloop.index0 }}" {{ block.shopify_attributes }}>
+            {% if block.settings.link != blank %}<a href="{{ block.settings.link }}" class="slide-link">{% endif %}
+              <img class="lazyload{% unless forloop.first == true %} lazypreload{% endunless %}"
+                   src="{{ block.settings.image | img_url: '300x300' }}"
+                   data-src="{{ img_url }}"
+                   data-widths="[180, 360, 470, 600, 750, 940, 1060, 1296, 1512, 1728, 2048]"
+                   data-aspectratio="{{ block.settings.image.aspect_ratio }}"
+                   data-sizes="auto"
+                   style="{% if width <= 1060 %}{%- assign min_width = width | times: 1.0 | divided_by: 1060 -%}{%- assign min_width = min_width | times: 100 -%}min-width: {{ min_width }}%; {% endif %}"
+                   alt="{{ block.settings.image.alt | escape }}">
+            {% if block.settings.link != blank %}</a>{% endif %}
+          </li>
+          {% else %}
+            <li id="slide--{{ block.id }}" data-flexslider-index="{{ forloop.index0 }}" {{ block.shopify_attributes }}>
+              <span class="slide-link">
+                {% capture current %}{% cycle 1, 2 %}{% endcapture %}
+                {{ 'lifestyle-' | append: current | placeholder_svg_tag: 'placeholder-svg' }}
+              </span>
+            </li>
+        {% endif %}
+      {% endfor %}
+    </ul>
+    <noscript>
+      {{ section.blocks[0].settings.image | img_url: '1060x' | img_tag: block.settings.image.alt, "auto" }}
+    </noscript>
+  </div>
+{% endif %}
+
+{% schema %}
+  {
+    "name": "Slideshow",
+    "class": "index-section",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "slider_home_auto",
+        "label": "Auto-rotate slides"
+      },
+      {
+        "type": "select",
+        "id": "slider_home_rate",
+        "label": "Change slides every",
+        "options": [
+          {
+            "value": "5000",
+            "label": "5 seconds"
+          },
+          {
+            "value": "7000",
+            "label": "7 seconds"
+          },
+          {
+            "value": "10000",
+            "label": "10 seconds"
+          },
+          {
+            "value": "15000",
+            "label": "15 seconds"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "slider_animation_type",
+        "label": "Transition effect",
+        "options": [
+          {
+            "value": "slide",
+            "label": "Slide"
+          },
+          {
+            "value": "fade",
+            "label": "Fade"
+          }
+        ]
+      }
+    ],
+    "blocks" : [
+      {
+        "type": "image",
+        "name": "Slide",
+        "settings": [
+          {
+            "type": "image_picker",
+            "id": "image",
+            "label": "Image"
+          },
+          {
+            "type": "url",
+            "id": "link",
+            "label": "Slide link"
+          }
+        ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "Slideshow",
+        "category": "Image",
+        "settings": {
+          "slider_home_auto": true,
+          "slider_home_rate": "5000",
+          "slider_animation_type": "slide"
+        },
+        "blocks": [
+          {
+            "type": "image"
+          },
+          {
+            "type": "image"
+          }
+        ]
+      }
+    ]
+  }
+{% endschema %}

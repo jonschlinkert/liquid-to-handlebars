@@ -1,0 +1,105 @@
+{% if section.blocks.size > 0 %}
+<div id="home-slideshow" class="index-section home-section">
+  <div class="home-slideshow">
+
+  <div class="regular-slider flexslider" id="flexslider--{{ section.id }}" data-section-id="{{ section.id }}" data-section-type="slideshow-section">
+    <ul class="slides">
+      {% for block in section.blocks %}
+					{% capture noscriptImg %}{{ block.settings.image.src }}{% endcapture %}
+          <li class="slide" id="slide-{{ block.id }}" data-flexslider-index="{{ forloop.index0 }}" {{ block.shopify_attributes }}>
+          {% if block.settings.image != blank %}
+					<div class="lazyload__image-container">
+						{% unless block.settings.link == blank %}
+							<a href="{{ block.settings.link }}" class="slide-link slide-link--{{ block.id }}">
+						{% endunless %}
+            {% assign img_url = block.settings.image | img_url: '1x1' | replace: '_1x1.', '_{width}x.' %}
+                <div class="lazyload__image-wrapper supports-no-js" style="padding-top:{{ 1 | divided_by: block.settings.image.aspect_ratio | times: 100}}%;">
+									<img class="no-js lazyload {% unless forloop.first == true %} lazypreload{% endunless %}"
+									{% if forloop.first == true %}
+									src="{{ block.settings.image | img_url: '300x' }}"
+									{% endif %}
+									data-src="{{ img_url }}"
+									data-widths="[320, 360, 375, 414, 568, 684, 720, 732, 736, 768, 1024, 1200, 1296, 1512, 1728, 1944, 2048, 4472]"
+									data-aspectratio="{{ block.settings.image.aspect_ratio }}"
+									data-sizes="auto"
+									data-parent-fit="width"
+									alt="{{ block.settings.image.alt | escape }}"
+									id="slide-{{ block.id }}"/>
+								</div>
+								{% if forloop.first %}
+								<noscript>
+									<img src="{{ block.settings.image | img_url: '1024x1024' }}"
+										srcset="{{ block.settings.image | img_url: '1024x1024' }} 1x, {{ block.settings.image | img_url: '1024x1024', scale: 2 }} 2x"
+										alt="{{ block.settings.image.alt }}" style="opacity:1;">
+									<style>
+										.flexslider .slides li {
+											display: block;
+										}
+									</style>
+								</noscript>
+								{% endif %}
+            {% unless block.settings.link == blank %}
+              </a>
+            {% endunless %}
+					</div>
+          {% else %}
+            {% if block.settings.image == blank %}
+                {% capture current %}{% cycle 1, 2 %}{% endcapture %}
+                {% capture svg_tag_class %}placeholder-noblocks slide-link slide-link--{{ block.id }} lazyload{% endcapture %}
+                {%- assign placeholder = 'placeholder-lifestyle-' | append: current -%}
+                {{ 'lifestyle-' | append: current | placeholder_svg_tag: svg_tag_class }}
+                {% endif %}
+          {% endif %}
+          </li>
+      {% endfor %}
+    </ul>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+{% schema %}
+  {
+  	"name": "Slideshow",
+  	"max_blocks": 6,
+  	"blocks": [
+  		{
+  			"type": "image",
+  			"name": "Slide",
+  			"settings": [
+  				{
+  					"type": "image_picker",
+  					"id": "image",
+  					"label": "Image"
+  				},
+  				{
+  					"type": "url",
+  					"id": "link",
+  					"label": "Link URL"
+  				}
+  			]
+  		}
+  	],
+  	"presets": [
+  		{
+  			"name": "Slideshow",
+  			"category": "Image",
+  			"blocks": [
+
+  				{
+  					"type": "image"
+  				},
+  				{
+  					"type": "image"
+  				},
+  				{
+  					"type": "image"
+  				},
+  				{
+  					"type": "image"
+  				}
+  			]
+  		}
+  	]
+  }
+{% endschema %}

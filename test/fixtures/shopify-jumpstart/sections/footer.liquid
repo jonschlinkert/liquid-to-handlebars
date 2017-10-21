@@ -1,0 +1,142 @@
+{%- assign social_icons = false -%}
+
+{% if
+  settings.social_twitter != blank
+  or settings.social_facebook != blank
+  or settings.social_pinterest != blank
+  or settings.social_instagram != blank
+  or settings.social_snapchat != blank
+  or settings.social_tumblr != blank
+  or settings.social_youtube != blank
+  or settings.social_vimeo != blank
+  or settings.social_flickr != blank
+  or settings.social_email != blank
+  or settings.social_linkedin != blank
+  or settings.social_google != blank
+%}
+  {%- assign social_icons = true -%}
+{% endif %}
+{% if social_icons %}
+      <aside class="social-footer">
+        <div class="wrapper display-table">
+          <div class="display-table-cell">
+            <ul class="inline-list social-icons">
+              {% include 'footer_social-icons' %}
+            </ul>
+          </div>
+        </div>
+      </aside>
+    {% endif %}
+
+    <footer class="site-footer small--text-center" role="contentinfo">
+
+      <div class="wrapper text-center">
+
+        <div class="h1 footer__logo" itemscope itemtype="http://schema.org/Organization">
+          {% if section.settings.footer_logo != blank %}
+          {%- assign img_url = section.settings.footer_logo | img_url: '1x1' | replace: '_1x1.', '_{width}x.' -%}
+           {% if section.settings.footer_logo_max_width != empty %}
+            {% capture image_size %}{{ section.settings.footer_logo_max_width | escape }}x{% endcapture %}
+            <style>
+              .footer__logo {
+                max-width:{{ section.settings.footer_logo_max_width | escape }}px;
+                margin: 0 auto;
+              }
+            </style>
+           {% else %}
+            {% assign image_size = "150x" %}
+            <style>
+              .footer__logo {
+                max-width: {{ image_size | slice: -1 }}px;
+              }
+            </style>
+           {% endif %}
+
+            <a href="/" itemprop="url" class="footer__logo-link">
+              {% comment %}<img src="{{ section.settings.footer_logo | img_url: image_size }}" alt="{{ shop.name }}" itemprop="logo">{% endcomment %}
+              <img class="no-js lazyload supports-js"
+                data-src="{{ img_url }}"
+                data-widths="[90, 180, 360, 540, 720, 900, 1080, 1296, 1512, 1728, 2048]"
+                data-aspectratio="{{ section.settings.footer_logo.aspect_ratio }}"
+                data-sizes="auto"
+                alt="{{ section.settings.footer_logo.alt | escape | default: shop.name }}">
+              <noscript>
+                <img src="{{ section.settings.footer_logo | img_url: image_size }}"
+                  srcset="{{ section.settings.footer_logo | img_url: image_size }} 1x, {{ section.settings.footer_logo | img_url: image_size, scale: 2 }} 2x"
+                  alt="{{ section.settings.footer_logo.alt | default: shop.name }}"
+                  itemprop="logo">
+              </noscript>
+            </a>
+          {% else %}
+            <a href="/" itemprop="url" class="site-header__logo-text">{{ shop.name }}</a>
+          {% endif %}
+        </div>
+
+        {% include 'newsletter' %}
+
+        {% if section.settings.footer_linklist %}
+          <div class="link-list">
+            {% for link in linklists[section.settings.footer_linklist].links %}
+              <a class="footer-link" href="{{ link.url }}">{{ link.title }}</a>
+            {% endfor %}
+          </div>
+          <hr>
+        {% endif %}
+
+        <div class="copy">
+          <p class="text">{{ 'layout.footer.copyright' | t }} &copy; {{ 'now' | date: "%Y" }} <a href="/">{{ shop.name }}</a></p>
+          <p class="powered">{{ powered_by_link }}</p>
+        </div>
+
+        {% assign payment_icons_available = 'amazon_payments,american_express,bitcoin,cirrus,dankort,diners_club,discover,dogecoin,dwolla,forbrugsforeningen,interac,jcb,litecoin,maestro,master,paypal,visa,apple_pay' | split: ',' %}
+        {% if section.settings.footer_payment_enable and shop.enabled_payment_types != empty %}
+          <div class="pay-icons">
+            {% for type in shop.enabled_payment_types %}
+              {% if payment_icons_available contains type %}
+                {% include 'asset_svg' with type %}
+              {% endif %}
+            {% endfor %}
+          </div>
+        {% endif %}
+
+      </div>
+
+    </footer>
+
+{% schema %}
+  {
+  	"name": "Footer",
+  	"settings": [
+  		{
+  			"type": "image_picker",
+  			"id": "footer_logo",
+  			"label": "Logo image",
+  			"info": "200px wide .png recommended"
+  		},
+  		{
+  			"type": "text",
+  			"id": "footer_logo_max_width",
+  			"label": "Custom logo width (in pixels)",
+  			"default": "50",
+  			"info": "Do not add the 'px' unit"
+  		},
+  		{
+  			"type": "checkbox",
+  			"id": "footer_newsletter_enable",
+  			"label": "Show newsletter",
+  			"default": false
+  		},
+  		{
+  			"type": "link_list",
+  			"id": "footer_linklist",
+  			"label": "Menu",
+  			"default": "footer"
+  		},
+  		{
+  			"type": "checkbox",
+  			"id": "footer_payment_enable",
+  			"label": "Show payment methods"
+  		}
+  	]
+  }
+{% endschema %}

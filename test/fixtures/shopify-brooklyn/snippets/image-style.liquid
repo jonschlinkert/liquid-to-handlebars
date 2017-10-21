@@ -1,0 +1,53 @@
+<style>
+  {% if image.aspect_ratio <= 1 %}
+    {% assign max_width = height | times: image.aspect_ratio %}
+    {% if image.height < height %}
+      {% assign max_height = image.height %}
+      {% assign max_width = image.width %}
+    {% else %}
+      {% assign max_height = height %}
+    {% endif %}
+  {% else %}
+    {% assign max_height = width | divided_by: image.aspect_ratio %}
+    {% if image.width < width %}
+      {% assign max_height = image.height %}
+      {% assign max_width = image.width %}
+    {% else %}
+      {% assign max_width = width %}
+    {% endif %}
+  {% endif %}
+
+  {% if small_style %}@media screen and (min-width: 591px) { {% endif %}
+    .{{ img_id_class }} {
+      max-width: {{ max_width }}px;
+      max-height: {{ max_height }}px;
+    }
+    #{{ wrapper_id }} {
+      max-width: {{ max_width }}px;
+    }
+  {% if small_style %} } {% endif %}
+
+  {% if small_style %}
+    {% if image.aspect_ratio <= 1 %}
+      {% unless template.name == 'product' %}
+        {% assign max_width = 295 | times: image.aspect_ratio %}
+      {% else %}
+        {% assign max_width = 590 | times: image.aspect_ratio %}
+      {% endunless %}
+    {% else %}
+      {% if image.width < 590 %}
+        {% assign max_width = image.width %}
+      {% else %}
+        {% assign max_width = 590 %}
+      {% endif %}
+    {% endif %}
+    @media screen and (max-width: 590px) {
+      .{{ img_id_class }} {
+        max-width: {{ max_width }}px;
+      }
+      #{{ wrapper_id }} {
+        max-width: {{ max_width }}px;
+      }
+    }
+  {% endif %}
+</style>

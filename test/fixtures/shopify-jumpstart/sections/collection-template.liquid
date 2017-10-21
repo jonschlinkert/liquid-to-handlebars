@@ -1,0 +1,164 @@
+<div data-section-id="{{ section.id }}" data-section-type="collection-template">
+{% assign header_title = collection.title %}
+{% include 'page_header' with header_title %}
+
+<div class="wrapper wrapper--margins">
+
+  {% if collection.image %}
+    <div class="collection-image">
+    {% assign img_url = collection.image | img_url: '1x1' | replace: '_1x1.', '_{width}x.' %}
+      <img class="no-js lazyload"
+            data-src="{{ img_url }}"
+            data-widths="[320, 360, 375, 414, 568, 684, 720, 732, 736, 768, 1024, 1200, 1296, 1512, 1728, 1944, 2048, 4472]"
+            data-aspectratio="{{ collection.image.aspect_ratio }}"
+            data-sizes="auto"
+            data-parent-fit="width"
+            alt="{{ collection.image.alt }}" />
+            <noscript>
+              <img src="{{ collection.image | img_url: '1200x' }}"
+                srcset="{{ collection.image | img_url: '1200x' }} 1x, {{ collection.image | img_url: '1200x', scale: 2 }} 2x"
+                alt="{{ collection.image.alt }}"  style="opacity:1;">
+            </noscript>
+    </div>
+  {% endif %}
+
+  {%- assign limit = section.settings.grid | times: section.settings.rows -%}
+  {% paginate collection.products by limit %}
+
+    <div class="collection-list grid-uniform {% unless shop.products_count == 0 %} small-gutter {% endunless %}">
+
+
+      {% case section.settings.grid %}
+      {% when '2' %}
+        {%- assign grid_item_width = 'small--one-whole medium--one-half large--one-half' -%}
+      {% when '3' %}
+        {%- assign grid_item_width = 'small--one-whole medium--one-third large--one-third' -%}
+      {% when '4' %}
+        {%- assign grid_item_width = 'small--one-half medium--one-quarter large--one-quarter' -%}
+      {% when '5' %}
+        {%- assign grid_item_width = 'small--one-half medium--one-third large--one-fifth' -%}
+      {% endcase %}
+
+      {% for product in collection.products %}
+
+        {% include 'product-grid-item', grid_item_width: grid_item_width %}
+
+      {% else %}
+
+        {% if shop.products_count == 0 %}
+            <div class="grid__item">
+              <div class="helper-section">
+                <div class="helper-note">
+                  <span class="helper-icon"></span>
+                  <h3>{{ 'homepage.onboarding.modal_title' | t }}</h3>
+                  <p>{{ 'homepage.onboarding.no_products_collection' | t }}</p>
+                  <p><a class="admin-btn-primary" href="/admin/products/new">{{ 'homepage.onboarding.add_product' | t }}</a></p>
+                </div>
+
+                <div class="collection-list grid-uniform helper-content">
+                  {% assign index = 1 %}
+                  {% for i in (1..6) %}
+                    <div class="product grid__item one-third medium--one-half small--one-whole text-center">
+                      <a href="/admin/products" class="grid__image">
+                        {% capture current %}{% cycle 1, 2, 3, 4, 5, 6 %}{% endcapture %}
+                        {{ 'product-' | append: current | placeholder_svg_tag: 'placeholder-svg' }}
+                      </a>
+                      <h3>{{ 'homepage.onboarding.product_title' | t }}</h3>
+                      <p class="price">
+                        $19.99
+                      </p>
+                    </div>
+                    {% assign index = index | plus: 1 %}
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
+          {% else %}
+            <div class="grid__item">
+              <p><em>{{ 'collections.general.no_matches' | t }}</em></p>
+            </div>
+          {% endif %}
+
+      {% endfor %}
+
+    </div>
+
+    {% include 'page_pagination' %}
+
+  {% endpaginate %}
+
+</div>
+
+</div>
+
+{% schema %}
+  {
+    "name": "Collection Pages",
+    "settings": [
+    	{
+        "type": "select",
+        "id": "grid",
+        "label": "Number of product columns",
+        "default": "3",
+        "options": [
+          {
+            "value": "2",
+            "label": "2"
+          },
+          {
+            "value": "3",
+            "label": "3"
+          },
+          {
+            "value": "4",
+            "label": "4"
+          },
+          {
+            "value": "5",
+            "label": "5"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "rows",
+        "label": "Rows per page",
+        "default": "6",
+        "options": [
+          {
+            "value": "3",
+            "label": "3"
+          },
+          {
+            "value": "4",
+            "label": "4"
+          },
+          {
+            "value": "5",
+            "label": "5"
+          },
+          {
+            "value": "6",
+            "label": "6"
+          },
+          {
+            "value": "7",
+            "label": "7"
+          },
+          {
+            "value": "8",
+            "label": "8"
+          },
+          {
+            "value": "9",
+            "label": "9"
+          },
+          {
+            "value": "10",
+            "label": "10"
+          }
+        ]
+      }
+    ]
+  }
+{% endschema %}

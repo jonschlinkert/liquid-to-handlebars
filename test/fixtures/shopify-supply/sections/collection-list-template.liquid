@@ -1,0 +1,152 @@
+{% paginate collection.products by section.settings.num_products %}
+
+{% include 'breadcrumb' %}
+
+{% assign has_sidebar = false %}
+{% if collection.all_tags.size > 0 %}
+  {% assign has_sidebar = true %}
+{% endif %}
+
+<div class="grid grid-border text-center">
+
+  {% if has_sidebar %}
+  <div class="grid-item large--one-fifth collection-filters" id="collectionFilters">
+    {% include 'collection-sidebar' %}
+  </div>
+  {% endif %}
+
+  <div class="grid-item{% if has_sidebar %} large--four-fifths grid-border--left{% endif %}">
+
+    {% comment %}
+      Different markup if description is set
+    {% endcomment %}
+    {% if collection.description != blank %}
+      <header class="section-header">
+        <h1 class="section-header--title">{{ collection.title }}</h1>
+        <div class="rte rte--header">
+          {{ collection.description }}
+        </div>
+      </header>
+      <hr{% if has_sidebar %} class="hr--offset-left"{% endif %}>
+      <div class="section-header">
+        <div class="section-header--right">
+          {% include 'collection-sorting' %}
+          {% include 'collection-views' %}
+          {% include 'toggle-filters' %}
+        </div>
+      </div>
+    {% else %}
+    <header class="section-header">
+      <h1 class="section-header--title section-header--left">{{ collection.title }}</h1>
+      <div class="section-header--right">
+        {% include 'collection-sorting' %}
+        {% include 'collection-views' %}
+        {% include 'toggle-filters' %}
+      </div>
+    </header>
+    {% endif %}
+
+    <div class="grid-uniform">
+
+      {% for product in collection.products %}
+
+        {% include 'product-list-item' %}
+
+      {% else %}
+
+        <div class="grid-item">
+          <p>{{ 'collections.general.no_matches' | t }}</p>
+        </div>
+
+      {% endfor %}
+
+    </div>
+
+  </div>
+
+  {% if paginate.pages > 1 %}
+  <div class="grid-item pagination-border-top">
+    <div class="grid">
+      <div class="grid-item{% if has_sidebar %} large--four-fifths push--large--one-fifth{% endif %}">
+          <div class="text-center">
+            {% include 'pagination-custom' %}
+          </div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+</div>
+
+{% endpaginate %}
+
+{% schema %}
+  {
+    "name": "Collection",
+    "class": "collection-template-section",
+    "settings": [
+      {
+        "type": "select",
+        "id": "num_products",
+        "label": "Products per page",
+        "default": "20",
+        "options": [
+          {
+            "value": "10",
+            "label": "10"
+          },
+          {
+            "value": "15",
+            "label": "15"
+          },
+          {
+            "value": "20",
+            "label": "20"
+          },
+          {
+            "value": "25",
+            "label": "25"
+          },
+          {
+            "value": "30",
+            "label": "30"
+          }
+        ]
+      },
+      {
+        "type": "radio",
+        "id": "collection_sidebar_filters",
+        "label": "Sidebar product filters",
+        "options": [
+          {
+            "value": "tags",
+            "label": "By tag"
+          },
+          {
+            "value": "groups",
+            "label": "By group"
+          }
+        ],
+        "info": "[Learn how to set up filter groups](https:\/\/help.shopify.com\/manual\/using-themes\/themes-by-shopify\/supply#product-tips-tips-specific)."
+      },
+      {
+        "type": "checkbox",
+        "id": "product_show_compare_at_price",
+        "label": "Show compare at price",
+        "default": false
+      },
+      {
+        "type": "checkbox",
+        "id": "product_show_saved_amount",
+        "label": "Show saved amount",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "product_reviews_enable",
+        "label": "Enable product reviews",
+        "info": "Install the free Shopify [Product Reviews](https:\/\/apps.shopify.com\/product-reviews) app to add product reviews."
+      }
+    ]
+  }
+{% endschema %}

@@ -1,0 +1,69 @@
+<!-- snippets/featured-collection.liquid -->
+{% unless featured_collection_width %}
+  {% assign featured_collection_width = 'medium--one-third large--one-sixth' %}
+{% endunless %}
+
+{% unless featured_collection_size %}
+  {% assign featured_collection_size = 480 %}
+{% endunless %}
+
+{% assign featured_collection = collections[featured] %}
+
+{% if featured_collection == empty %}
+  {% comment %}add default state for collection block in storefront editor{% endcomment %}
+  {% capture collection_title %}{{ 'home_page.onboarding.collection_title' | t }}{% endcapture %}
+{% else %}
+  {% capture collection_title %}{{ featured_collection.title | escape }}{% endcapture %}
+{% endif %}
+
+<a href="{{ featured_collection.url }}" title="{{ 'collections.general.link_title' | t: title: collection_title }}" class="featured-box">
+  {% if featured_collection == empty %}
+    {% capture current %}{% cycle 1, 2, 3, 4, 5, 6 %}{% endcapture %}
+    {{ 'collection-' | append: current | placeholder_svg_tag: 'placeholder-svg' }}
+  {% else %}
+    {% if featured_collection.image %}
+      {%- assign collection_image = featured_collection.image -%}
+    {% else %}
+      {%- assign collection_image = featured_collection.products.first.featured_image -%}
+    {% endif %}
+
+    {% unless collection_image == blank %}
+      {% capture img_id %}CollectionImage-{{ collection_image.id }}--{{ featured_collection_size }}{% endcapture %}
+      {% capture img_wrapper_id %}CollectionImageWrapper-{{ collection_image.id }}--{{ featured_collection_size }}{% endcapture %}
+      {%- assign img_url = collection_image | img_url: '1x1' | replace: '_1x1.', '_{width}x.' -%}
+      {% include 'image-style' with image: collection_image, small_style: true, width: featured_collection_size, height: featured_collection_size, wrapper_id: img_wrapper_id, img_id: img_id %}
+      <div id="{{ img_wrapper_id }}" class="collection__grid-image-wrapper js">
+        <div style="padding-top:{{ 1 | divided_by: collection_image.aspect_ratio | times: 100}}%;">
+          <img id="{{ img_id }}"
+               class="collection__grid-image lazyload"
+               data-src="{{ img_url }}"
+               data-widths="[180, 360, 540, 720, 900, 1080, 1296, 1512, 1728, 2048]"
+               data-aspectratio="{{ collection_image.aspect_ratio }}"
+               data-sizes="auto"
+               alt="{{ collection_image.alt | escape }}">
+        </div>
+      </div>
+    {% else %}
+      <div class="js">
+        {%- capture image_size -%}{{ featured_collection_size }}x{{ featured_collection_size }}{%- endcapture -%}
+        {{ collection_image | img_url: image_size | img_tag: collection_title }}
+      </div>
+    {% endunless %}
+
+    <noscript>
+      {%- capture image_size -%}{{ featured_collection_size }}x{{ featured_collection_size }}{%- endcapture -%}
+      {{ collection_image | img_url: image_size, scale: 2 | img_tag: collection_title }}
+    </noscript>
+  {% endif %}
+  <div class="featured-box__body">
+    <p class="h2 featured-box__title">{{ collection_title }}</p>
+
+    <hr class="hr--small">
+
+    <div class="grid">
+      <div class="grid-item large--four-sixths push--large--one-sixth">
+        <p class="btn--large">{{ 'home_page.sections.view_collection' | t }}</p>
+      </div>
+    </div>
+  </div>
+</a>

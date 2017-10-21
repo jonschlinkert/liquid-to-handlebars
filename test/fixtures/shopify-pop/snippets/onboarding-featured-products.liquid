@@ -1,0 +1,17 @@
+<!-- snippets/onboarding-featured-products.liquid -->
+<div class="grid--full helper-section">
+  <div class="helper-content product-wrapper">
+    {% for i in (1..total_products) limit: 8 %}
+      <div class="grid-item one-half {{grid_item_width}} text-center">
+        <div class="product-wrapper">
+          <a href="/admin/products" class="grid-link__image product">
+            {% capture current %}{% cycle 1, 2, 3, 4, 5, 6 %}{% endcapture %}
+            {{ 'product-' | append: current | placeholder_svg_tag: 'placeholder-svg' }}
+          <p class="h4 product__title">{{ 'home_page.onboarding.product_title' | t }}</p>
+          <p class="product__price">$19.99</p>
+          </a>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>

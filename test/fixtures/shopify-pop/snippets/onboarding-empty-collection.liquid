@@ -1,0 +1,15 @@
+<!-- snippets/onboarding-empty-collection.liquid -->
+<div class="grid--full helper-section">
+  <div class="helper-content">
+    {% for i in (1..products_per_page) %}
+      <div class="grid-item {{grid_item_width}} text-center">
+        <a href="/admin/products" class="grid-link__image">
+          {% capture current %}{% cycle 1, 2, 3, 4, 5, 6 %}{% endcapture %}
+          {{ 'product-' | append: current | placeholder_svg_tag: 'placeholder-svg' }}
+        </a>
+        <p class="h6"><a href="/admin/products">{{ 'home_page.onboarding.product_title' | t }}</a></p>
+        <p class="h6">$19.99</p>
+      </div>
+    {% endfor %}
+  </div>
+</div>

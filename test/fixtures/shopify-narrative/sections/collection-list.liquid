@@ -1,0 +1,140 @@
+<div class="collection-list collection-list--{{ section.id }}">
+
+  <div class="page-width">
+    {% if section.settings.title != blank %}
+      <div class="featured-collection__heading grid text-center">
+        <div class="grid__item medium-up--ten-twelfths medium-up--push-one-twelfth">
+          <h2>{{ section.settings.title | escape }}</h2>
+        </div>
+      </div>
+    {% endif %}
+
+    <div class="grid grid--uniform">
+
+      {% for block in section.blocks limit: section.blocks.size %}
+
+        {% case section.settings.grid %}
+          {% when 1 %}
+            {%- assign grid_item_width = 'one-whole' -%}
+          {% when 2 %}
+            {%- assign grid_item_width = 'small--one-half medium-up--one-half' -%}
+          {% when 3 %}
+            {%- assign grid_item_width = 'small--one-half medium-up--one-third' -%}
+          {% when 4 %}
+            {%- assign grid_item_width = 'small--one-half medium-up--one-quarter' -%}
+          {% else %}
+            {%- assign grid_item_width = 'small--one-half medium-up--one-third' -%}
+        {% endcase %}
+
+        {%- assign collection = collections[block.settings.collection] -%}
+
+        {% if collection == empty %}
+          {% comment %}add default state for collection block in storefront editor{% endcomment %}
+          {% capture collection_title %}{{ 'homepage.onboarding.collection_title' | t }}{% endcapture %}
+        {% else %}
+          {% capture collection_title %}{{ collection.title | escape }}{% endcapture %}
+        {% endif %}
+
+        {% if collection.image %}
+          {% assign no_collection_image = false %}
+          {%- assign collection_image = collection.image -%}
+        {% elsif collection.products.first and collection.products.first.images != empty %}
+          {%- assign collection_image = collection.products.first.featured_image -%}
+        {% else %}
+          {%- assign collection_image = blank -%}
+        {% endif %}
+
+        <div class="grid__item {{ grid_item_width }}" {{ block.shopify_attributes }}>
+          <div class="collection-list-grid__image-item">
+            <div class="collection-list-grid__image-container">
+              <a href="{{ collection.url }}" class="collection-list-grid__link">
+                <div class="collection-list-grid__image-wrapper">
+                  {% unless collection_image == blank %}
+                    <noscript>
+                      <div class="collection-grid-item__image" style="background-image: url({{ collection_image | img_url: '1024x1024' }})"></div>
+                    </noscript>
+                    <div class="collection-grid-item__image lazyload"
+                      data-bgset="{% include 'bgset', image: collection_image %}"
+                      data-sizes="auto"
+                      data-parent-fit="cover"
+                      style="background-image: url('{{ collection_image | img_url: '300x300' }});">
+                    </div>
+                  {% else %}
+                    {% if collection == empty %}
+                      <div class="collection-grid-item__image">
+                        {% capture current %}{% cycle 1, 2, 3 %}{% endcapture %}
+                        {{ 'collection-' | append: current | placeholder_svg_tag: 'placeholder-svg' }}
+                      </div>
+                    {% else %}
+                      <div class="collection-grid-item__image" style="background-image: url({{ collection_image | img_url: '1024x1024' }})"></div>
+                    {% endif %}
+                  {% endunless %}
+                </div>
+              </a>
+            </div>
+            <div class="collection-grid-item__title">
+              <h3 class="h2 text-title text-center">{{ collection_title }}</h3>
+            </div>
+          </div>
+        </div>
+
+      {% endfor %}
+
+    </div>
+
+  </div>
+
+</div>
+{% schema %}
+{
+    "name": "Collection list",
+    "class": "index-section",
+    "max_blocks": 12,
+    "settings": [
+      {
+        "type": "text",
+        "id": "title",
+        "label": "Heading",
+        "default": "Collection list"
+      },
+      {
+        "type": "range",
+        "id": "grid",
+        "label": "Collections per row",
+        "min": 2,
+        "max": 4,
+        "step": 1,
+        "default": 3
+      }
+    ],
+    "blocks": [
+      {
+        "type": "collection",
+        "name": "Collection",
+        "settings": [
+          {
+            "type": "collection",
+            "id": "collection",
+            "label": "Collection"
+          }
+        ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "Collection list",
+        "category": "Collection",
+        "blocks": [
+          {
+            "type": "collection"
+          },
+          {
+            "type": "collection"
+          },
+          {
+            "type": "collection"
+          }
+        ]
+      }
+    ]
+  }{% endschema %}

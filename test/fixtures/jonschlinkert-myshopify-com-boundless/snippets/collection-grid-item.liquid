@@ -1,0 +1,50 @@
+{% if collection == empty %}
+  {% comment %}add default state for collection block in storefront editor{% endcomment %}
+  {% capture collection_title %}{{ 'homepage.onboarding.collection_title' | t }}{% endcapture %}
+{% else %}
+  {% capture collection_title %}{{ collection.title | escape }}{% endcapture %}
+{% endif %}
+
+{% if collection.image %}
+  {% assign no_collection_image = false %}
+  {%- assign collection_image = collection.image -%}
+{% elsif collection.products.first and collection.products.first.images != empty %}
+  {%- assign collection_image = collection.products.first.featured_image -%}
+{% else %}
+  {%- assign collection_image = blank -%}
+{% endif %}
+
+<div class="grid__item {{ grid_item_width }} collection-grid__item text-center">
+  <a href="{{ collection.url }}" class="collection-grid__link">
+    <noscript>
+      <div class="collection-grid__link-overlay grid__image" style="background-image: url({{ collection_image | img_url: '1024x' }})">
+        <div class="collection-grid__title-wrapper">
+          <h3 class="collection-grid__title">
+            {{ collection_title }}
+          </h3>
+        </div>
+      </div>
+    </noscript>
+    {% unless collection_image == blank %}
+    <div class="collection-grid__link-overlay grid__image lazyload"
+      style="background-image: url({{ collection_image | img_url: '300x300' }})"
+      data-bgset="{% include 'bgset', image: collection_image %}"
+      data-sizes="auto"
+      data-parent-fit="cover">
+      <div class="collection-grid__title-wrapper">
+        <h3 class="collection-grid__title">
+          {{ collection_title }}
+        </h3>
+      </div>
+    </div>
+    {% else %}
+      <div class="collection-grid__link-overlay grid__image" style="background-image: url({{ collection_image | img_url: '1024x' }})">
+        <div class="collection-grid__title-wrapper">
+          <h3 class="collection-grid__title">
+            {{ collection_title }}
+          </h3>
+        </div>
+      </div>
+    {% endunless %}
+  </a>
+</div>

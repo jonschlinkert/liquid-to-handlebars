@@ -1,0 +1,278 @@
+{% capture borderWidth %}{{ settings.border_width }}px{% endcapture %}
+{% capture colorBorder %}{{ settings.color_borders }}{% endcapture %}
+
+<style>
+.site-footer {
+  padding: 0 0 30px;
+
+  {% if section.settings.border_footer %}
+    border-top: {{borderWidth}} solid {{colorBorder}};
+    margin-top: 15px;
+  {% endif %}
+}
+
+@media screen and (min-width: 1025px) {
+  .site-footer {
+    {% if section.settings.border_footer %}
+      margin-top: 60px;
+    {% endif %}
+    padding: 60px 0;
+  }
+}
+</style>
+
+<footer class="site-footer small--text-center medium--text-center" role="contentinfo">
+
+  <div class="wrapper">
+
+    <hr class="hr--clear large--hide">
+
+    {% comment %}
+      This checks which parts of the footer are turned on and adjusts the layout accordingly.
+    {% endcomment %}
+
+    {% if settings.social_twitter_link != blank or settings.social_facebook_link != blank or settings.social_pinterest_link != blank or settings.social_google_plus_link != blank or settings.social_instagram_link != blank or settings.social_tumblr_link != blank or settings.social_snapchat_link != blank or settings.social_youtube_link != blank or settings.social_vimeo_link != blank or settings.social_fancy_link != blank %}
+      {% assign show_social_icons = true %}
+    {% else %}
+      {% assign show_social_icons = false %}
+    {% endif %}
+
+    {% assign flexifooter = 0 %}
+    {% if section.settings.footer_custom_content != blank or section.settings.footer_custom_title != blank %}
+      {% assign flexifooter = flexifooter | plus: 1 %}
+    {% endif %}
+    {% if section.settings.footer_newsletter_enable or show_social_icons %}
+      {% assign flexifooter = flexifooter | plus: 1 %}
+    {% endif %}
+
+    {% if flexifooter > 0 %}
+
+      <div class="{% if flexifooter == 1 %}text-center{% else %}grid{% endif %}">
+
+      {% if section.settings.footer_custom_content != blank or section.settings.footer_custom_title != blank %}
+
+        {% if flexifooter == 2 %}
+          <div class="grid-item large--two-thirds">
+        {% endif %}
+
+        {% if section.settings.footer_custom_title != blank %}
+          <h3 class="h5 onboarding-header">{{ section.settings.footer_custom_title | escape }}</h3>
+        {% endif %}
+
+        <div class="rte">
+          {{ section.settings.footer_custom_content }}
+        </div>
+
+        {% if flexifooter == 2 %}
+          </div>
+        {% endif %}
+
+      {% endif %}
+
+      {% if section.settings.footer_newsletter_enable or show_social_icons %}
+
+        {% if flexifooter == 2 %}
+          <div class="grid-item large--one-third">
+        {% endif %}
+
+          <hr class="hr--clear large--hide">
+
+          <h3 class="h5">{{ 'layout.footer.social_title' | t }}</h3>
+
+          {% if section.settings.footer_newsletter_enable %}
+            <div class="grid">
+              <div class="grid-item medium--two-thirds push--medium--one-sixth">
+                {% include 'newsletter-form' %}
+              </div>
+            </div>
+          {% endif %}
+
+          {% if show_social_icons %}
+
+            {% comment %}
+              Loop through the social network links
+            {% endcomment %}
+            <ul class="inline-list social-icons">
+              {% if settings.social_twitter_link != blank %}
+                <li>
+                  <a class="icon-fallback-text" href="{{ settings.social_twitter_link | escape }}" title="{{ 'layout.footer.social_platform' | t: name: shop.name, platform: 'Twitter' }}">
+                    <span class="icon icon-twitter" aria-hidden="true"></span>
+                    <span class="fallback-text">Twitter</span>
+                  </a>
+                </li>
+              {% endif %}
+              {% if settings.social_facebook_link != blank %}
+                <li>
+                  <a class="icon-fallback-text" href="{{ settings.social_facebook_link | escape }}" title="{{ 'layout.footer.social_platform' | t: name: shop.name, platform: 'Facebook' }}">
+                    <span class="icon icon-facebook" aria-hidden="true"></span>
+                    <span class="fallback-text">Facebook</span>
+                  </a>
+                </li>
+              {% endif %}
+              {% if settings.social_pinterest_link != blank %}
+                <li>
+                  <a class="icon-fallback-text" href="{{ settings.social_pinterest_link | escape }}" title="{{ 'layout.footer.social_platform' | t: name: shop.name, platform: 'Pinterest' }}">
+                    <span class="icon icon-pinterest" aria-hidden="true"></span>
+                    <span class="fallback-text">Pinterest</span>
+                  </a>
+                </li>
+              {% endif %}
+              {% if settings.social_google_plus_link != blank %}
+                <li>
+                  <a class="icon-fallback-text" href="{{ settings.social_google_plus_link | escape }}" title="{{ 'layout.footer.social_platform' | t: name: shop.name, platform: 'Google Plus' }}" rel="publisher">
+                    <span class="icon icon-google_plus" aria-hidden="true"></span>
+                    <span class="fallback-text">Google</span>
+                  </a>
+                </li>
+              {% endif %}
+              {% if settings.social_instagram_link != blank %}
+                <li>
+                  <a class="icon-fallback-text" href="{{ settings.social_instagram_link | escape }}" title="{{ 'layout.footer.social_platform' | t: name: shop.name, platform: 'Instagram' }}">
+                    <span class="icon icon-instagram" aria-hidden="true"></span>
+                    <span class="fallback-text">Instagram</span>
+                  </a>
+                </li>
+              {% endif %}
+              {% if settings.social_tumblr_link != blank %}
+                <li>
+                  <a class="icon-fallback-text" href="{{ settings.social_tumblr_link | escape }}" title="{{ 'layout.footer.social_platform' | t: name: shop.name, platform: 'Tumblr' }}">
+                    <span class="icon icon-tumblr" aria-hidden="true"></span>
+                    <span class="fallback-text">Tumblr</span>
+                  </a>
+                </li>
+              {% endif %}
+              {% if settings.social_snapchat_link != blank %}
+                <li>
+                  <a class="icon-fallback-text" href="{{ settings.social_snapchat_link | escape }}" title="{{ 'layout.footer.social_platform' | t: name: shop.name, platform: 'Snapchat' }}">
+                    <span class="icon icon-snapchat" aria-hidden="true"></span>
+                    <span class="fallback-text">Snapchat</span>
+                  </a>
+                </li>
+              {% endif %}
+              {% if settings.social_youtube_link != blank %}
+                <li>
+                  <a class="icon-fallback-text" href="{{ settings.social_youtube_link | escape }}" title="{{ 'layout.footer.social_platform' | t: name: shop.name, platform: 'YouTube' }}">
+                    <span class="icon icon-youtube" aria-hidden="true"></span>
+                    <span class="fallback-text">YouTube</span>
+                  </a>
+                </li>
+              {% endif %}
+              {% if settings.social_vimeo_link != blank %}
+                <li>
+                  <a class="icon-fallback-text" href="{{ settings.social_vimeo_link | escape }}" title="{{ 'layout.footer.social_platform' | t: name: shop.name, platform: 'Vimeo' }}">
+                    <span class="icon icon-vimeo" aria-hidden="true"></span>
+                    <span class="fallback-text">Vimeo</span>
+                  </a>
+                </li>
+              {% endif %}
+              {% if settings.social_fancy_link != blank %}
+                <li>
+                  <a class="icon-fallback-text" href="{{ settings.social_fancy_link | escape }}" title="{{ 'layout.footer.social_platform' | t: name: shop.name, platform: 'Fancy' }}">
+                    <span class="icon icon-fancy" aria-hidden="true"></span>
+                    <span class="fallback-text">Fancy</span>
+                  </a>
+                </li>
+              {% endif %}
+            </ul>
+
+          {% endif %}
+
+        {% if flexifooter == 2 %}
+          </div>
+        {% endif %}
+
+      {% endif %}
+
+      </div>
+
+    {% endif %}
+
+    <hr class="hr--clear">
+
+    {% if section.settings.footer_search_enable %}
+      <div class="grid">
+        <div class="grid-item medium--two-thirds push--medium--one-sixth large--one-half push--large--one-quarter nav-search">
+          <h3 class="h5 text-center">{{ 'general.search.title' | t }}</h3>
+          {% include 'search-bar' %}
+        </div>
+      </div>
+    {% endif %}
+
+    <div class="text-center">
+      {% if linklists[section.settings.menu].links != blank %}
+        <ul class="inline-list nav-secondary">
+          {% for link in linklists[section.settings.menu].links %}
+            <li><a href="{{ link.url }}">{{ link.title }}</a></li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    </div>
+
+    {% comment %}
+      Loop through available payment methods and show their icons.
+    {% endcomment %}
+    {% unless shop.enabled_payment_types == empty %}
+      {% assign payment_icons_available = 'amazon_payments,american_express,apple_pay,bitcoin,cirrus,dankort,diners_club,discover,dogecoin,dwolla,forbrugsforeningen,interac,jcb,litecoin,maestro,master,paypal,visa' | split: ',' %}
+      <ul class="inline-list payment-icons text-center">
+        {% for type in shop.enabled_payment_types %}
+          {% if payment_icons_available contains type %}
+            <li>
+              <span class="icon-fallback-text">
+                <span class="icon icon-{{type}}" aria-hidden="true"></span>
+                <span class="fallback-text">{{type | replace: '_',' '}}</span>
+              </span>
+            </li>
+          {% endif %}
+        {% endfor %}
+      </ul>
+    {% endunless %}
+
+    <div class="text-center">
+      <small>
+        {{ 'layout.footer.copyright' | t }} &copy; {{ 'now' | date: "%Y" }} {{ shop.name | link_to: '/' }} | {{ powered_by_link }}<br>
+      </small>
+    </div>
+
+  </div>
+
+</footer>
+
+{% schema %}
+  {
+    "name": "Footer",
+    "settings": [
+      {
+        "type": "text",
+        "id": "footer_custom_title",
+        "label": "Heading",
+        "default": "Custom content"
+      },
+      {
+        "type": "richtext",
+        "id": "footer_custom_content",
+        "label": "Text",
+        "default": "<p>Add new content to display here.</p>"
+      },
+      {
+        "type": "checkbox",
+        "id": "footer_newsletter_enable",
+        "label": "Show newsletter signup"
+      },
+      {
+        "type": "checkbox",
+        "id": "footer_search_enable",
+        "label": "Show search"
+      },
+      {
+        "type": "link_list",
+        "id": "menu",
+        "label": "Footer menu"
+      },
+      {
+        "type": "checkbox",
+        "id": "border_footer",
+        "label": "Show border"
+      }
+    ]
+  }
+{% endschema %}

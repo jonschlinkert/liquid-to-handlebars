@@ -1,0 +1,18 @@
+<div class="filter-dropdown__wrapper text-center collection-filters">
+  <div class="filter-dropdown">
+    <label class="filter-dropdown__label" for="sortBy">
+      <span class="filter-dropdown__label--title">{{ 'collections.sorting.title' | t }}</span>
+      <span class="filter-dropdown__label--active"></span>
+    </label>
+    <select name="sortBy" id="sortBy" class="filter-dropdown__select">
+      <option value="manual">{{ 'collections.sorting.featured' | t }}</option>
+      <option value="best-selling">{{ 'collections.sorting.best_selling' | t }}</option>
+      <option value="title-ascending">{{ 'collections.sorting.az' | t }}</option>
+      <option value="title-descending">{{ 'collections.sorting.za' | t }}</option>
+      <option value="price-ascending">{{ 'collections.sorting.price_ascending' | t }}</option>
+      <option value="price-descending">{{ 'collections.sorting.price_descending' | t }}</option>
+      <option value="created-descending">{{ 'collections.sorting.date_descending' | t }}</option>
+      <option value="created-ascending">{{ 'collections.sorting.date_ascending' | t }}</option>
+    </select>
+  </div>
+</div>

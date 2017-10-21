@@ -1,0 +1,119 @@
+<div class="page-width">
+  <div class="section-block section-block--padding">
+    <div class="flex flex--grid flex--no-gutter">
+      {% case section.blocks.size %}
+        {% when 1 %}
+          {% assign flex_size = '' %}
+        {% when 2 %}
+          {% assign flex_size = 'medium-up--one-half' %}
+        {% when 3 %}
+          {% assign flex_size = 'medium-up--one-third' %}
+        {% else %}
+          {% assign flex_size = 'medium-up--one-half' %}
+      {% endcase %}
+      {% for block in section.blocks %}
+        <div class="flex__item flex flex--center-vertical {{ flex_size }}" {{ block.shopify_attributes }}>
+          {% case block.type %}
+            {% when 'image_block' %}
+              <div class="flex__item">
+                {% if block.settings.image != blank %}
+                  <noscript>
+                    <img src="{{ block.settings.image | img_url: '600x' }}" alt="{{ block.settings.image.alt }}" class="image-content__image">
+                  </noscript>
+                  <div class="image-content__image-container">
+                    <div class="image-content__image-wrapper" style="padding-top:{{ 1 | divided_by: block.settings.image.aspect_ratio | times: 100}}%;">
+                      {% assign img_url = block.settings.image | img_url: '1x1' | replace: '_1x1.', '_{width}x.' %}
+                      <img class="image-content__image lazyload"
+                        src="{{ block.settings.image | img_url: '300x300' }}"
+                        data-src="{{ img_url }}"
+                        data-widths="[180, 360, 540, 720, 900, 1080, 1296, 1512, 1728, 1944, 2048]"
+                        data-aspectratio="{{ block.settings.image.aspect_ratio }}"
+                        data-sizes="auto"
+                        alt="{{ block.settings.image.alt | escape }}">
+                    </div>
+                  </div>
+                {% else %}
+                  <div class="image-content__image">
+                    {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+                  </div>
+                {% endif %}
+              </div>
+            {% when 'text_block' %}
+              <div class="flex__item image-content__text text-{{ block.settings.align }}">
+                <p class="h5">{{ block.settings.title | escape }}</p>
+                <div class="rte-setting">{{ block.settings.text }}</div>
+              </div>
+          {% endcase %}
+        </div>
+      {% endfor %}
+    </div>
+
+    {% if section.blocks.size == 0 %}
+      {% include 'no-blocks' %}
+    {% endif %}
+  </div>
+</div>
+
+{% schema %}
+  {
+    "name": "Image with text",
+    "class": "index-section",
+    "max_blocks": 4,
+    "blocks": [
+      {
+        "type": "text_block",
+        "name": "Text",
+        "settings": [
+          {
+            "type": "text",
+            "id": "title",
+            "label": "Heading",
+            "default": "Image with text"
+          },
+          {
+            "type": "richtext",
+            "id": "text",
+            "label": "Text",
+            "default": "<p>Pair large text with an image to give focus to your chosen product, collection, or blog post. Add details on availability, style, or even provide a review.</p>"
+          },
+          {
+            "type": "select",
+            "id": "align",
+            "label": "Text alignment",
+            "options": [
+              { "value": "left", "label": "Left" },
+              { "value": "center", "label": "Center" },
+              { "value": "right", "label": "Right" }
+            ],
+            "default": "left"
+          }
+        ]
+      },
+      {
+        "type": "image_block",
+        "name": "Image",
+        "settings": [
+          {
+            "type": "image_picker",
+            "id": "image",
+            "label": "Image"
+          }
+        ]
+      }
+    ],
+    "presets": [
+      {
+        "name": "Image with text",
+        "category": "Image",
+        "blocks": [
+          {
+            "type": "image_block"
+          },
+          {
+            "type": "text_block"
+          }
+        ]
+      }
+    ]
+  }
+{% endschema %}

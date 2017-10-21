@@ -1,0 +1,53 @@
+<!-- /templates/blog.liquid -->
+
+{% paginate blog.articles by 5 %}
+
+<div class="page-width page-container" itemscope itemtype="http://schema.org/Article">
+  <header class="visually-hidden">
+    {% if current_tags %}
+      <h1>{{ blog.title | link_to: blog.url }} &mdash; {{ current_tags.first }}</h1>
+    {% else %}
+      <h1>{{ blog.title }}</h1>
+    {% endif %}
+  </header>
+
+  {% for article in blog.articles %}
+    <h2><a href="{{ article.url }}">{{ article.title }}</a></h2>
+
+    {% comment %}
+      Use the excerpt if it exists or truncate the full article
+    {% endcomment %}
+    <div class="rte rte--indented-images">
+      {% if article.image %}
+        <p>
+          <a href="{{ article.url }}">
+            {{ article | img_url: 'master' | img_tag: article.title }}
+          </a>
+        </p>
+      {% endif %}
+
+      {% if article.excerpt.size > 0 %}
+        {{ article.excerpt }}
+      {% else %}
+        <p>{{ article.content | truncatewords: 100 }}</p>
+      {% endif %}
+    </div>
+
+    <p class="action-link">
+      <a href="{{ article.url }}">{{ 'blogs.article.read_more' | t }} <span class="icon icon-arrow-right action-link__icon" aria-hidden="true"></span></a>
+    </p>
+
+    {% unless forloop.last %}
+      <hr class="hr--clear">
+    {% endunless %}
+
+  {% endfor %}
+
+  {% if paginate.pages > 1 %}
+    <hr class="hr--clear">
+
+    {% include 'pagination' %}
+  {% endif %}
+</div>
+
+{% endpaginate %}

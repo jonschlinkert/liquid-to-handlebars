@@ -1,0 +1,52 @@
+<!-- /templates/customers/account.liquid -->
+<h1 class="small--text-center">{{ 'customer.account.title' | t }}</h1>
+
+<hr class="hr--clear hr--small">
+
+<h2 class="small--text-center">{{ 'customer.orders.title' | t }}</h2>
+
+{% paginate customer.orders by 20 %}
+  {% if customer.orders.size != 0 %}
+
+    <table class="responsive-table">
+      <thead>
+        <tr>
+          <th>{{ 'customer.orders.order_number' | t }}</th>
+          <th>{{ 'customer.orders.date' | t }}</th>
+          <th>{{ 'customer.orders.payment_status' | t }}</th>
+          <th>{{ 'customer.orders.fulfillment_status' | t }}</th>
+          <th>{{ 'customer.orders.total' | t }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for order in customer.orders %}
+          <tr>
+            <td data-label="{{ 'customer.orders.order_number' | t }}">{{ order.name | link_to: order.customer_url }}</td>
+            <td data-label="{{ 'customer.orders.date' | t }}">{{ order.created_at | date: format: 'month_day_year' }}</td>
+            <td data-label="{{ 'customer.orders.payment_status' | t }}">{{ order.financial_status_label }}</td>
+            <td data-label="{{ 'customer.orders.fulfillment_status' | t }}">{{ order.fulfillment_status_label }}</td>
+            <td data-label="{{ 'customer.orders.total' | t }}">{{ order.total_price | money }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+  {% else %}
+
+    <p>{{ 'customer.orders.none' | t }}</p>
+
+  {% endif %}
+  {% if paginate.pages > 1 %}
+    <div class="pagination">
+      {{ paginate | default_pagination | replace: '&laquo; Previous', '&larr;' | replace: 'Next &raquo;', '&rarr;' }}
+    </div>
+  {% endif %}
+{% endpaginate %}
+
+<hr class="hr--clear hr--small">
+
+<h2>{{ 'customer.account.details' | t }}</h2>
+
+{{ customer.default_address | format_address }}
+
+<p><a href="/account/addresses">{{ 'customer.account.view_addresses' | t }} ({{ customer.addresses_count }})</a></p>

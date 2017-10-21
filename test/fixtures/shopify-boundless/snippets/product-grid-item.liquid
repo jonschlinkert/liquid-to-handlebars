@@ -1,0 +1,77 @@
+<div class="product-item grid__item {{ grid_item_width }}">
+  <div class="product-item__link-wrapper">
+    <a class="product-item__link {% if product_image_spacing %} product-item__image--margins{% endif %}" href="{{ product.url | within: collection }}">
+
+    <span class="image-wrapper">
+      {% if product.featured_image.src == blank %}
+        <img src="{{ product.featured_image.src | img_url: '1024x' }}" alt="{{ product.featured_image.alt | escape }}">
+      {% else %}
+        <noscript>
+          <img class="product-item__image-no-js" src="{{ product.featured_image.src | img_url: '1024x' }}" alt="{{ product.featured_image.alt | escape }}">
+        </noscript>
+        <div class="product-item__image-container" style="max-width: {{ 600 | times: product.featured_image.aspect_ratio | round }}px;">
+          <div class="product-item__image-wrapper" style="padding-top:{{ 1 | divided_by: product.featured_image.aspect_ratio | times: 100}}%">
+            {% assign img_url = product.featured_image | img_url: '1x1' | replace: '_1x1.', '_{width}x.' %}
+            <img class="product-item__image lazyload"
+              src="{{ product.featured_image | img_url: '300x300' }}"
+              data-src="{{ img_url }}"
+              data-widths="[360, 540, 720, 900, 1080, 1296, 1512, 1728, 1944, 2048, 4472]"
+              data-aspectratio="{{ product.featured_image.aspect_ratio }}"
+              data-sizes="auto"
+              alt="{{ product.featured_image.alt | escape }}">
+          </div>
+        </div>
+      {% endif %}
+
+        <span class="product-item__meta">
+          <span class="product-item__meta__inner">
+
+            {% if vendor_enable %}
+              <p class="product-item__vendor">{{ product.vendor }}</p>
+            {% endif %}
+            <p class="product-item__title">{{ product.title }}</p>
+            <p class="product-item__price-wrapper">
+              {% comment %}
+                You can show a leading 'from' or 'up to' by checking 'product.price_varies'
+                if your variants have different prices.
+              {% endcomment %}
+              {% if product.compare_at_price > product.price %}
+                <span class="visually-hidden">{{ 'products.general.regular_price' | t }}</span>
+                <s class="product-item__price--reg">{{ product.compare_at_price | money_without_trailing_zeros }}</s>
+                <span class="product-item__price--sale">{{ 'products.general.now_price_html' | t: price: price }}</span>
+              {% else %}
+                {% if product.price_varies %}
+                  {{ 'products.general.from_text_html' | t: price: price }}
+                {% else %}
+                  {% if product.compare_at_price > product.price %}
+                    <span class="visually-hidden">{{ 'products.general.sale_price' | t }}</span>
+                  {% else %}
+                    <span class="visually-hidden">{{ 'products.general.regular_price' | t }}</span>
+                  {% endif %}
+                  {{ product.price | money_without_trailing_zeros }}
+                {% endif %}
+              {% endif %}
+            </p>
+
+            {% comment %}
+              Check if the product is sold out.
+            {% endcomment %}
+            {% unless product.available %}
+              <p class="product-item__sold-out">{{ 'products.product.sold_out' | t }}</p>
+            {% endunless %}
+          </span>
+        </span>
+
+        {% comment %}
+          If on sale, add a badge
+        {% endcomment %}
+        {% if product.compare_at_price > product.price %}
+          {% assign sale_text_length = 'products.product.on_sale' | t | size %}
+          <span class="product-item__badge {% if sale_text_length > 6 %}product-item__badge--large{% endif %}">
+            {{ 'products.product.on_sale' | t }}
+          </span>
+        {% endif %}
+      </span>
+    </a>
+  </div>
+</div>

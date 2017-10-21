@@ -1,0 +1,106 @@
+<style>
+  #QuotesSection-{{ section.id }} .quotes-slider {
+    background-color: {{ section.settings.color_bg }};
+  }
+  #QuotesSection-{{ section.id }} .quote,
+  #QuotesSection-{{ section.id }} .quote-author {
+    color: {{ section.settings.color_text }};
+  }
+</style>
+
+{% if section.blocks.size > 0 %}
+  <div id="QuotesSection-{{ section.id }}" data-section-id="{{ section.id }}" data-section-type="quotes-section">
+    <div class="quotes-slider text-center" data-count="{{ section.blocks.size }}" data-speed="{{ section.settings.autoplay_speed }}">
+      {% for block in section.blocks %}
+        <div class="quotes-slide quotes-slide--{{ forloop.index0 }} quotes-slide--{{ block.id }}{% if forloop.first == true %} quotes-slide--visible{% endif %}" {{ block.shopify_attributes }}>
+          {% if block.settings.quote != blank %}
+            <div class="h4 quote rte-setting">{{ block.settings.quote }}</div>
+          {% endif %}
+          {% if block.settings.author != blank %}
+            <span class="quote-author">{{ block.settings.author | escape }}</span>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+{% else %}
+  {% include 'no-blocks' %}
+{% endif %}
+
+{% schema %}
+{
+  "name": "Testimonials",
+  "class": "index-section index-section--quotes",
+  "max_blocks": 5,
+  "settings": [
+    {
+      "type": "color",
+      "id": "color_bg",
+      "label": "Background color",
+      "default": "#4a4a4a"
+    },
+    {
+      "type": "color",
+      "id": "color_text",
+      "label": "Text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "select",
+      "id": "autoplay_speed",
+      "label": "Change slides every",
+      "options": [
+        {
+          "value": "3000",
+          "label": "3 seconds"
+        },
+        {
+          "value": "4000",
+          "label": "4 seconds"
+        },
+        {
+          "value": "5000",
+          "label": "5 seconds"
+        },
+        {
+          "value": "6000",
+          "label": "6 seconds"
+        }
+      ],
+      "default": "4000"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "quote",
+      "name": "Testimonial",
+      "settings": [
+        {
+          "type": "richtext",
+          "id": "quote",
+          "label": "Text",
+          "info": "Best results if text does not exceed 400 characters",
+          "default": "<p>Add customer reviews and testimonials to showcase your store's happy customers.</p>"
+        },
+        {
+          "type": "text",
+          "id": "author",
+          "label": "Author",
+          "default": "Author's name"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Testimonials",
+      "category": "Text",
+      "blocks": [
+        {
+          "type": "quote"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

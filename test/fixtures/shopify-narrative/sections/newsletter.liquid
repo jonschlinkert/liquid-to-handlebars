@@ -1,0 +1,115 @@
+<style>
+  .newsletter-wrapper--{{ section.id }} input[type='email']::-webkit-input-placeholder {
+    color: {{ section.settings.text_color }};
+  }
+  .newsletter-wrapper--{{ section.id }} input[type='email']::-moz-placeholder {
+    color: {{ section.settings.text_color }};
+  }
+  .newsletter-wrapper--{{ section.id }} input[type='email']:-ms-input-placeholder {
+    color: {{ section.settings.text_color }};
+  }
+  .newsletter-wrapper--{{ section.id }} input[type='email']::placeholder {
+    color: {{ section.settings.text_color }};
+  }
+  @media screen and (min-width: 750px) {
+    .newsletter-wrapper--{{ section.id }} .input-group--underline {
+      border-bottom: 2px solid {{ section.settings.text_color }};
+    }
+  }
+  @media screen and (max-width: 749px) {
+    .newsletter-wrapper--{{ section.id }} .input-group__field {
+      border-bottom: 2px solid {{ section.settings.text_color }} !important;
+    }
+  }
+  .newsletter-wrapper--{{ section.id }} .icon {
+    fill: {{ section.settings.text_color }};
+  }
+  .newsletter-wrapper--{{ section.id }} .btn--newsletter__submit {
+    color: {{ section.settings.text_color }};
+    fill: {{ section.settings.text_color }};
+  }
+  .newsletter-wrapper--{{ section.id }} button {
+    border: 2px solid {{ section.settings.text_color }};
+    outline-color: {{ section.settings.text_color }} !important;
+  }
+  .newsletter-wrapper--{{ section.id }} .form-success {
+    color: {{ section.settings.text_color }};
+  }
+
+  {% if section.settings.background_color != blank %}
+    .newsletter-wrapper--{{ section.id }} {
+      background-color: {{ section.settings.background_color }};
+    }
+  {% endif %}
+</style>
+
+<div class="newsletter-wrapper newsletter-wrapper--{{ section.id }} one-whole" data-section-id="{{ section.id }}" data-section-type="newsletter">
+  <div class="page-width">
+    {% form 'customer' %}
+      <input type="hidden" name="contact[tags]" value="newsletter">
+      <div class="input-group--underline" data-animate>
+        <input type="email" value="{% if customer %}{{ customer.email }}{% endif %}" placeholder="{{ section.settings.heading | escape }}" name="contact[email]" class="input-group__field" id="EmailField{{ section.id }}" aria-label="{{ 'general.newsletter_form.newsletter_placeholder' | t }}" autocorrect="off" autocapitalize="off">
+        <div class="input-group__btn input-group__btn--newsletter">
+          <button type="submit" class="btn--newsletter__submit" tabindex="-1">
+            {% include 'icon-arrow-right' %}
+            <span class="visually-hidden">{{ 'sections.newsletter.submit' | t }}</span>
+          </button>
+        </div>
+      </div>
+      <div class="newsletter__message" aria-role="alert">
+        {% if form.posted_successfully? %}
+          <p class="form-success" aria-role="alert">
+            {% unless section.settings.success_message == blank %}
+              {{ section.settings.success_message | escape }}
+            {% endunless %}
+          </p>
+        {% endif %}
+        {{ form.errors | default_errors }}
+      </div>
+    {% endform %}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Newsletter",
+  "class": "index-section index-section--newsletter",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Subscribe to our newsletter"
+    },
+    {
+      "type": "text",
+      "id": "success_message",
+      "label": "Success message",
+      "default": "Thanks for subscribing"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#3a3a3a"
+
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color",
+      "default": "#eae7e0"
+    },
+    {
+      "type": "paragraph",
+      "content": "Customers who subscribe will have their email address added to the \"accepts marketing\" list. [View customers](/admin/customers?query=&accepts_marketing=1)"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Newsletter",
+      "category": "Promotional"
+    }
+  ]
+}
+{% endschema %}

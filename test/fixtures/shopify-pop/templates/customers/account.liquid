@@ -1,0 +1,81 @@
+{% comment %}
+
+  This template will be automatically generated for you if the file doesn't exist,
+  but where's the fun in having no control? Define your layout below.
+
+  The 'layout settings.customer_layout' line is inserted at the top of every customer account template.
+  Your theme's settings determine to use the 'default' or 'theme' customer templates.
+  More info:
+    - http://www.tetchi.ca/shopify-theme-from-scratch-part-11/
+
+  Template note:
+    - All IDs on this template are required to make the form(s) submit properly
+
+  For all available customer liquid tags:
+    - http://docs.shopify.com/themes/liquid-variables/customer
+
+{% endcomment %}
+
+
+<h1 class="text-center">{{ 'customer.account.title' | t }}</h1>
+
+<hr class="hr--small">
+
+<div class="grid">
+
+  <div class="grid-item customer-orders two-thirds medium-down--one-whole">
+    <h2 class="h4">{{ 'customer.orders.title' | t }}</h2>
+
+    {% comment %}
+      If we have past orders, loop through each one
+    {% endcomment %}
+    {% paginate customer.orders by 20 %}
+    {% if customer.orders.size != 0 %}
+
+      <table class="full">
+        <thead>
+          <tr>
+            <th>{{ 'customer.orders.order_number' | t }}</th>
+            <th>{{ 'customer.orders.date' | t }}</th>
+            <th>{{ 'customer.orders.payment_status' | t }}</th>
+            <th>{{ 'customer.orders.fulfillment_status' | t }}</th>
+            <th>{{ 'customer.orders.total' | t }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for order in customer.orders %}
+            <tr>
+              <td>{{ order.name | link_to: order.customer_url }}</td>
+              <td>{{ order.created_at | date: "%b %d, %Y" }}</td>
+              <td>{{ order.financial_status_label }}</td>
+              <td>{{ order.fulfillment_status_label }}</td>
+              <td>{{ order.total_price | money }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+    {% else %}
+
+      <p>{{ 'customer.orders.none' | t }}</p>
+
+    {% endif %}
+
+    {% if paginate.pages > 1 %}
+      <div class="text-center">
+        {% include 'pagination-custom' %}
+      </div>
+    {% endif %}
+
+    {% endpaginate %}
+  </div>
+
+  <div class="grid-item one-third medium-down--one-whole">
+    <h2 class="h4">{{ 'customer.account.details' | t }}</h2>
+
+    {{ customer.default_address | format_address }}
+
+    <p><a href="/account/addresses">{{ 'customer.account.view_addresses' | t }} ({{ customer.addresses_count }})</a></p>
+  </div>
+
+</div>

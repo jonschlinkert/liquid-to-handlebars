@@ -1,0 +1,82 @@
+<!-- /templates/blog.liquid -->
+{% paginate blog.articles by 5 %}
+
+<div class="grid">
+
+  <div class="grid__item large--five-sixths push--large--one-twelfth">
+
+    <header class="section-header text-center">
+      <h1>
+        {% if current_tags %}
+          {{ blog.title | link_to: blog.url }} &mdash; {{ current_tags.first }}
+        {% else %}
+          {{ blog.title }}
+        {% endif %}
+        <a href="{{ shop.url }}{{ blog.url }}.atom" class="icon-fallback-text rss-link">
+          <span class="icon icon-rss" aria-hidden="true"></span>
+          <span class="fallback-text">RSS</span>
+        </a>
+      </h1>
+      <hr class="hr--small">
+    </header>
+
+    {% for article in blog.articles %}
+
+      {% assign article_content = article.excerpt_or_content %}
+
+      <article class="article grid small--text-center">
+
+        {% unless article.image == blank %}
+          <div class="grid__item">
+            <a class="article__featured-link" href="{{ article.url }}">
+              <noscript>
+                {{ article.image | img_url: '2048x2048' | img_tag: article.title | escape }}
+              </noscript>
+              <div class="article__featured-image-wrapper" style="padding-top:{{ 1 | divided_by: article.image.aspect_ratio | times: 100}}%;">
+                {% assign img_url = article.image | img_url: '1x1' | replace: '_1x1.', '_{width}x.' %}
+                <img class="article__featured-image lazyload"
+                  src="{{ article.image | img_url: '300x300' }}"
+                  data-src="{{ img_url }}"
+                  data-widths="[360, 540, 720, 900, 1080, 1296, 1512, 1728, 2048]"
+                  data-aspectratio="{{ article.image.aspect_ratio }}"
+                  data-sizes="auto"
+                  alt="{{ article.title | escape }}">
+              </div>
+            </a>
+          </div>
+        {% endunless %}
+
+        <div class="grid__item large--two-tenths push--large--one-tenth">
+          <time datetime="{{ article.published_at | date: '%Y-%m-%d' }}" class="date">{{ article.published_at | date: format: 'month_day_year' }}</time>
+          <hr class="hr--small hr--left small--hide">
+        </div>
+        <div class="grid__item large--six-tenths push--large--one-tenth">
+          <h2 class="h3"><a href="{{ article.url }}">{{ article.title }}</a></h2>
+          <div class="rte rte--indented-images">
+            {{ article_content | strip_html | truncatewords: 120 }}
+          </div>
+
+          <p>
+            <a href="{{ article.url }}" class="text-link">{{ 'blogs.article.read_more' | t }} <span class="icon icon-arrow-right" aria-hidden="true"></span></a>
+          </p>
+
+          {% if article.tags.size > 0 %}
+            <ul class="tags tags--article inline-list">
+              {% include 'tags-article' %}
+            </ul>
+          {% endif %}
+        </div>
+      </article>
+
+      {% unless forloop.last %}<hr class="hr--clear">{% endunless %}
+
+    {% endfor %}
+
+    {% if paginate.pages > 1 %}
+      {% include 'pagination' %}
+    {% endif %}
+
+  </div>
+</div>
+
+{% endpaginate %}

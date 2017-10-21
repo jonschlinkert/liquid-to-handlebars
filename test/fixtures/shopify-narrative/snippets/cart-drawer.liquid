@@ -1,0 +1,166 @@
+{% if settings.show_cart_drawer and template.name != 'cart' %}
+<div class="drawer-cover"></div>
+<div class="drawer critical-hide" tabindex="-1" data-section-id="cart-drawer" data-section-type="cart-drawer" data-cart-token="{{ cart.id }}" data-drawer-push aria-hidden="true">
+
+  <form action="/cart" method="post" novalidate class="cart-drawer{% if cart.items.size == 0 %} cart-drawer--empty{% endif %}">
+
+    <div class="cart-drawer__header">
+      <div class="cart-drawer__header-container">
+        <button type="button" class="cart-drawer__close-button btn btn--clear btn--square">
+          {% include 'icon-close' %}
+          <span class="icon__fallback-text">{{ 'cart.general.close_cart' | t }}</span>
+        </button>
+        <p class="cart-drawer__header-title text-title text-center">{{ 'cart.general.title' | t }}</p>
+      </div>
+    </div>
+
+    <div class="cart-drawer__content">
+      <div class="cart-drawer__content-container">
+
+        {% comment %}
+        Cart empty state
+        {% endcomment %}
+        <div class="cart-drawer__empty-text">
+          <p class="text-center">{{ 'cart.general.empty' | t }}</p>
+        </div>
+
+        {% comment %}
+        Cart no cookies state
+        {% endcomment %}
+        <div class="cart-drawer__no-cookies">
+          <p class="text-center">{{ 'cart.general.cookies_required' | t }}</p>
+        </div>
+
+        <div class="cart-drawer__item-list" data-cart-item-list>
+          {% comment %}
+          If the cart has no items, then include a item element with a template class
+          so that it is hidden but still available for use client-side by ajax-cart.js
+          {% endcomment %}
+
+          {%- assign cartItems = 'template ' | split: ' ' -%}
+          {% if cart.items.size > 0 %}
+            {%- assign cartItems = cart.items -%}
+          {% endif %}
+
+          {% for item in cartItems %}
+            <div class="cart-drawer__item{% if item == 'template' %} ajax-cart__template{% endif %}" data-cart-item data-cart-item-id="{{ item.key }}" aria-live="polite">
+
+              {% assign itemImage = true %}
+              {% if item.image == blank and item.product.featured_image == blank %}
+                {% assign itemImage = false %}
+              {% endif %}
+              <a href="{{ item.url }}" class="cart-drawer__item-image" style="background-image: {% if itemImage %}url('{{ item | img_url: 'medium' }}'){% else %}none{% endif %};" data-cart-item-background-image data-cart-item-href></a>
+
+              <div class="cart-drawer__item-content">
+                <a href="{{ item.url }}" class="h4 cart-drawer__item-title" data-cart-item-href data-cart-item-title>{{ item.product.title }}</a>
+                <p class="cart-drawer__item-subtitle" data-cart-item-variant-title>
+                  {% unless item.product.variants.size == 1 and item.product.options.size == 1 and item.product.options.first == 'Title' and item.variant.title == 'Default Title' %}
+                    {{ item.variant.title }}
+                  {% endunless %}
+                </p>
+
+                <ul class="cart-drawer__item-properties" data-cart-item-property-list>
+                  {% comment %}
+                  If the item has no properties, then include a property element with a template class
+                  so that it is hidden but still available for use client-side by ajax-cart.js
+                  {% endcomment %}
+
+                  {%- assign itemProperties = 'template ' | split: ' ' -%}
+                  {%- assign property_size = item.properties | size -%}
+
+                  {% if property_size > 0 %}
+                    {%- assign itemProperties = item.properties -%}
+                  {% endif %}
+
+                  {% for property in itemProperties %}
+                    {% for p in itemProperties %}
+                    <li class="cart-drawer__item-property{% if property == 'template' %} ajax-cart__template{% endif %}{% if p.last == blank %} visually-hidden{% endif %}" data-cart-item-property>
+                        {{ p.first }}:
+
+                        {% comment %}
+                        Check if there was an uploaded file associated
+                        {% endcomment %}
+                        {% if p.last contains '/uploads/' %}
+                          <a href="{{ p.last }}">{{ p.last | split: '/' | last }}</a>
+                        {% else %}
+                          {{ p.last }}
+                        {% endif %}
+                      </li>
+                    {% endfor %}
+                  {% endfor %}
+                </ul>
+
+                <p class="cart-drawer__item-price-container">
+                  <span class="cart-drawer__item-price" data-cart-item-price>{{ item.price | money }}</span>
+                  <s data-cart-item-original-price>{% if item.price != item.original_price %}{{ item.original_price | money }}{% endif %}</s>
+                </p>
+
+                <div class="cart-drawer__item-discount-container" data-cart-item-discount-list>
+                  {% comment %}
+                  If the item has no properties, then include a property element with a template class
+                  so that it is hidden but still available for use client-side by ajax-cart.js
+                  {% endcomment %}
+
+                  {%- assign itemDiscounts = 'template ' | split: ' ' -%}
+                  {% if item.discounts.size > 0 %}
+                    {%- assign itemDiscounts = item.discounts -%}
+                  {% endif %}
+
+                  {% for discount in itemDiscounts %}
+                    <p class="cart-drawer__item-discount text-small{% if discount == 'template' %} ajax-cart__template{% endif %}" data-cart-item-discount>{{ discount.title }}</p>
+                  {% endfor %}
+                </div>
+
+                <label for="quantity_{{ item.key }}" class="label--hidden" data-cart-item-label-quantity>{{ 'cart.general.item_quantity' | t }}</label>
+                <input id="quantity_{{ item.key }}" class="cart-drawer__item-quantity" value="{{ item.quantity }}" type="number" pattern="\d*" min="1" aria-label="{{ 'cart.general.item_quantity' | t }}" data-cart-item-input-quantity>
+
+                <button class="cart-drawer__item-delete btn-link" type="button" data-cart-item-delete>{{ 'cart.general.remove' | t }}</button>
+              </div>
+            </div>
+          {% endfor %}
+
+          {% if settings.show_cart_note %}
+            <div class="cart-drawer__item cart-drawer__note-container" data-cart-note-container>
+              <label for="CartSpecialInstructions">{{ 'cart.general.note' | t }}</label>
+              <textarea name="note" class="cart-drawer__note" data-cart-note>{{ cart.note }}</textarea>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+
+    <div class="cart-drawer__footer">
+      <div class="cart-drawer__footer-container">
+        <div class="cart-drawer__message-container">
+          <div class="cart-drawer__message" data-cart-message></div>
+        </div>
+
+        <div class="cart-drawer__subtotal" aria-live="polite">
+          <div class="cart-drawer__subtotal-label">
+            <span class="h4">{{ 'cart.general.subtotal' | t }}</span>
+          </div>
+          <div class="cart-drawer__subtotal-price">
+            <span class="cart-drawer__subtotal-number" data-cart-subtotal>{{ cart.total_price | money }}</span>
+          </div>
+        </div>
+
+        <div class="cart-drawer__discount-container{% if cart.total_discount != 0 %} ajax-cart__discount-container--active{% endif %}" data-cart-total-discount-container>
+          <p class="cart-drawer__discount">
+            <span>{{ 'cart.general.savings' | t }}</span>
+            <span data-cart-total-discount>{{ cart.total_discount | money }}</span>
+          </p>
+        </div>
+
+        <p class="cart-drawer__disclaimer">{{ 'cart.general.shipping_at_checkout' | t }}</p>
+
+        <button type="submit" class="btn btn--loader cart-drawer__checkout" name="checkout" data-cart-submit{% if cart.items.size == 0 %} disabled{% endif %}>
+          {{ 'cart.general.checkout' | t }}
+          <span class="btn--loader-balls"></span>
+        </button>
+      </div>
+    </div>
+
+  </form>
+</div>
+{% endif %}

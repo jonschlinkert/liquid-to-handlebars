@@ -1,0 +1,286 @@
+<!-- /templates/product.liquid -->
+<div itemscope itemtype="http://schema.org/Product" id="ProductSection--{{ section.id }}" data-section-id="{{ section.id }}" data-section-type="product-template" data-image-zoom-type="{{ section.settings.zoom_enable }}" data-enable-history-state="true" data-scroll-to-image="true">
+  <div itemscope itemtype="http://schema.org/Product">
+
+    <meta itemprop="url" content="{{ shop.url }}{{ product.url }}">
+    <meta itemprop="image" content="{{ product.featured_image.src | img_url: 'grande' }}">
+
+    {% assign current_variant = product.selected_or_first_available_variant %}
+
+    <div class="grid product-single">
+      <div class="grid__item large--seven-twelfths medium--seven-twelfths text-center">
+        <div class="product-single__photos">
+          {% assign featured_image = current_variant.featured_image | default: product.featured_image %}
+
+          {% comment %}
+            We need to figure out the max width we want the image to be on the page
+            based on the aspect ratio of the image and based on the size of the
+            image.
+          {% endcomment %}
+          {% capture img_id_class %}product-single__photo-{{ featured_image.id }}{% endcapture %}
+          {% capture wrapper_id %}ProductImageWrapper-{{ featured_image.id }}{% endcapture %}
+
+          {% comment %}
+            Display current variant image
+          {% endcomment %}
+          <div class="product-single__photo--flex-wrapper">
+            <div class="product-single__photo--flex">
+              {% include 'image-style' with image: featured_image, width: 575, height: 850, small_style: true, wrapper_id: wrapper_id, img_id_class: img_id_class %}
+              <div id="{{ wrapper_id }}" class="product-single__photo--container">
+                <div class="product-single__photo-wrapper" style="padding-top:{{ 1 | divided_by: featured_image.aspect_ratio | times: 100}}%;">
+                  {% assign img_url = featured_image | img_url: '1x1' | replace: '_1x1.', '_{width}x.' %}
+                  <img class="product-single__photo lazyload {{ img_id_class }}"
+                    src="{{ featured_image | img_url: '300x300' }}"
+                    data-src="{{ img_url }}"
+                    data-widths="[180, 360, 590, 720, 900, 1080, 1296, 1512, 1728, 2048]"
+                    data-aspectratio="{{ featured_image.aspect_ratio }}"
+                    data-sizes="auto"
+                    {% if section.settings.zoom_enable %}data-mfp-src="{{ featured_image | img_url: '1024x1024' }}"{% endif %}
+                    data-image-id="{{ featured_image.id }}"
+                    alt="{{ featured_image.alt | escape }}">
+
+                  <noscript>
+                    <img class="product-single__photo"
+                      src="{{ featured_image | img_url: 'master' }}"
+                      {% if section.settings.zoom_enable %}data-mfp-src="{{ featured_image | img_url: '1024x1024' }}"{% endif %}
+                      alt="{{ featured_image.alt | escape }}" data-image-id="{{ featured_image.id }}">
+                  </noscript>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {% comment %}
+            Display rest of product images, not repeating the featured one
+          {% endcomment %}
+          {% for image in product.images %}
+            {% unless image contains featured_image %}
+
+              {% comment %}
+                We need to figure out the max width we want the image to be on the page
+                based on the aspect ratio of the image and based on the size of the
+                image.
+              {% endcomment %}
+              {% capture img_id_class %}product-single__photo-{{ image.id }}{% endcapture %}
+              {% capture wrapper_id %}ProductImageWrapper-{{ image.id }}{% endcapture %}
+
+              <div class="product-single__photo--flex-wrapper">
+                <div class="product-single__photo--flex">
+                  {% include 'image-style' with image: image, width: 575, height: 850, small_style: true, wrapper_id: wrapper_id, img_id_class: img_id_class %}
+                  <div id="{{ wrapper_id }}" class="product-single__photo--container">
+                    <div class="product-single__photo-wrapper" style="padding-top:{{ 1 | divided_by: image.aspect_ratio | times: 100}}%;">
+                      {% assign img_url = image | img_url: '1x1' | replace: '_1x1.', '_{width}x.' %}
+                      <img class="product-single__photo lazyload {{ img_id_class }}"
+                        src="{{ image | img_url: '300x' }}"
+                        data-src="{{ img_url }}"
+                        data-widths="[180, 360, 540, 720, 900, 1080, 1296, 1512, 1728, 2048]"
+                        data-aspectratio="{{ image.aspect_ratio }}"
+                        data-sizes="auto"
+                        {% if section.settings.zoom_enable %}data-mfp-src="{{ image.src | img_url: '1024x1024' }}"{% endif %}
+                        data-image-id="{{ image.id }}"
+                        alt="{{ image.alt | escape }}">
+
+                      <noscript>
+                        <img class="product-single__photo" src="{{ image.src | img_url: 'master' }}"
+                          {% if section.settings.zoom_enable %}data-mfp-src="{{ image.src | img_url: '1024x1024' }}"{% endif %}
+                          alt="{{ image.alt | escape }}"
+                          data-image-id="{{ image.id }}">
+                      </noscript>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            {% endunless %}
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="grid__item product-single__meta--wrapper medium--five-twelfths large--five-twelfths">
+        <div class="product-single__meta">
+          {% if section.settings.product_vendor_enable %}
+            <h2 class="product-single__vendor" itemprop="brand">{{ product.vendor }}</h2>
+          {% endif %}
+
+          <h1 class="product-single__title" itemprop="name">{{ product.title }}</h1>
+
+          <div itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+            {% comment %}
+              Optionally show the 'compare at' or original price of the product.
+            {% endcomment %}
+
+            {% if product.compare_at_price_max > product.price %}
+              <span id="PriceA11y" class="visually-hidden">{{ 'products.general.regular_price' | t }}</span>
+              <span class="product-single__price--wrapper">
+                <span id="ComparePrice" class="product-single__price--compare-at">
+                  {% if current_variant.compare_at_price > current_variant.price %}
+                    {{ current_variant.compare_at_price | money }}
+                  {% endif %}
+                </span>
+              </span>
+              <span id="ComparePriceA11y" class="visually-hidden">{{ 'products.general.sale_price' | t }}</span>
+            {% else %}
+              <span id="PriceA11y" class="visually-hidden">{{ 'products.general.regular_price' | t }}</span>
+            {% endif %}
+
+            <span id="ProductPrice"
+              class="product-single__price{% if product.compare_at_price > product.price %} on-sale{% endif %}"
+              itemprop="price"
+              content="{{ current_variant.price | divided_by: 100.00 }}">
+              {{ current_variant.price | money }}
+            </span>
+
+            <hr class="hr--small">
+
+            <meta itemprop="priceCurrency" content="{{ shop.currency }}">
+            <link itemprop="availability" href="http://schema.org/{% if product.available %}InStock{% else %}OutOfStock{% endif %}">
+
+            <form action="/cart/add" method="post" enctype="multipart/form-data" id="AddToCartForm--{{ section.id }}" class="product-single__form">
+              {% unless product.options.size == 1 and product.variants[0].title == 'Default Title' %}
+                {% for option in product.options_with_values %}
+                  <div class="radio-wrapper js product-form__item">
+                    <label class="single-option-radio__label{% if option.name == 'Default' or option.name == 'Title' %} hidden-label{% endif %}"
+                      for="ProductSelect-option-{{ forloop.index0 }}">
+                      {{ option.name }}
+                    </label>
+                    {% if section.settings.product_selector == 'radio' %}
+                      <fieldset class="single-option-radio"
+                        name="{{ option.name }}"
+                        id="ProductSelect-option-{{ forloop.index0 }}">
+                        {% assign option_index = forloop.index %}
+                        {% for value in option.values %}
+                          {% assign variant_label_state = true %}
+                          {% if product.options.size == 1 %}
+                            {% unless product.variants[forloop.index0].available  %}
+                              {% assign variant_label_state = false %}
+                            {% endunless %}
+                          {% endif %}
+                          <input type="radio"
+                            {% if option.selected_value == value %} checked="checked"{% endif %}
+                            {% unless variant_label_state %} disabled="disabled"{% endunless %}
+                            value="{{ value | escape }}"
+                            data-index="option{{ option_index }}"
+                            name="{{ option.name }}"
+                            class="single-option-selector__radio{% unless variant_label_state %} disabled{% endunless %}"
+                            id="ProductSelect-option-{{ option.name }}-{{ value | escape }}">
+                          <label for="ProductSelect-option-{{ option.name }}-{{ value | escape }}"{% unless variant_label_state %} class="disabled"{% endunless %}>{{ value | escape }}</label>
+                        {% endfor %}
+                      </fieldset> 
+                    {% else %}
+                      <select class="single-option-selector__radio single-option-selector-{{ section.id }} product-form__input" id="SingleOptionSelector-{{ forloop.index0 }}" data-index="option{{ forloop.index }}">
+                        {% for value in option.values %}
+                          <option value="{{ value | escape }}"{% if option.selected_value == value %} selected="selected"{% endif %}>{{ value }}</option>
+                        {% endfor %}
+                      </select>
+                    {% endif %}
+                  </div>
+                {% endfor %}
+              {% endunless %}
+
+              <select name="id" id="ProductSelect" class="product-single__variants no-js">
+                {% for variant in product.variants %}
+                  {% if variant.available %}
+                    <option {% if variant == product.selected_or_first_available_variant %}
+                      selected="selected" {% endif %}
+                      data-sku="{{ variant.sku }}"
+                      value="{{ variant.id }}">
+                      {{ variant.title }} - {{ variant.price | money_with_currency }}
+                    </option>
+                  {% else %}
+                    <option disabled="disabled">
+                      {{ variant.title }} - {{ 'products.product.sold_out' | t }}
+                    </option>
+                  {% endif %}
+                {% endfor %}
+              </select>
+
+              {% if section.settings.quantity_enabled %}
+              <div class="product-single__quantity">
+                <label for="Quantity" class="product-single__quantity-label js-quantity-selector">{{ 'products.product.quantity' | t }}</label>
+                <input type="number" hidden="hidden" id="Quantity" name="quantity" value="1" min="1" class="js-quantity-selector">
+              </div>
+              {% endif %}
+
+              <div class="product-single__add-to-cart">
+                <button type="submit" name="add" id="AddToCart--{{ section.id }}" class="btn add-to-cart"{% unless current_variant.available %} disabled="disabled"{% endunless %}>
+                  <span class="add-to-cart-text">
+                    {% if current_variant.available %}
+                      {{ 'products.product.add_to_cart' | t }}
+                    {% else %}
+                      {{ 'products.product.sold_out' | t }}
+                    {% endif %}
+                  </span>
+                </button>
+              </div>
+            </form>
+
+          </div>
+
+          <div class="product-single__description rte" itemprop="description">
+            {{ product.description }}
+          </div>
+
+          {% if section.settings.social_sharing_products %}
+            {% include 'social-sharing', share_title: product.title, share_permalink: product.url, share_image: product %}
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    {% if collection %}
+      <hr class="hr--clear">
+      <div class="text-center">
+        <a href="{{ collection.url }}" class="return-link">&larr; {{ 'products.general.collection_return' | t: collection: collection.title }}</a>
+      </div>
+    {% endif %}
+
+  </div>
+</div>
+{% unless product.empty == empty %}
+  <script type="application/json" id="ProductJson-{{ section.id }}">
+    {{ product | json }}
+  </script>
+{% endunless %}
+
+{% schema %}
+  {
+    "name": "Product pages",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "zoom_enable",
+        "label": "Enable image zoom"
+      },
+      {
+        "type": "checkbox",
+        "id": "quantity_enabled",
+        "label": "Show quantity selector"
+      },
+      {
+        "type": "checkbox",
+        "id": "social_sharing_products",
+        "label": "Enable product sharing",
+        "default": true
+      },
+      {
+        "type": "checkbox",
+        "id": "product_vendor_enable",
+        "label": "Show product vendor"
+      },
+      {
+        "type": "select",
+        "id": "product_selector",
+        "label": "Selector type",
+        "options": [
+          {
+            "value": "radio",
+            "label": "Button"
+          },
+          {
+            "value": "select",
+            "label": "Dropdown"
+          }
+        ]
+      }
+    ]
+  }
+{% endschema %}

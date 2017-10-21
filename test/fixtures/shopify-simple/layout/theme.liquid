@@ -1,0 +1,113 @@
+<!doctype html>
+<!--[if IE 9]> <html class="ie9 supports-no-js" lang="{{ shop.locale }}"> <![endif]-->
+<!--[if (gt IE 9)|!(IE)]><!--> <html class="supports-no-js" lang="{{ shop.locale }}"> <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="{{ settings.color_primary }}">
+  <link rel="canonical" href="{{ canonical_url }}">
+
+  {% if settings.favicon %}
+    <link rel="shortcut icon" href="{{ settings.favicon | img_url: '32x32' }}" type="image/png" />
+  {% endif %}
+
+  <title>
+  {{ page_title }}{% if current_tags %}{% assign meta_tags = current_tags | join: ', ' %} &ndash; {{ 'general.meta.tags' | t: tags: meta_tags }}{% endif %}{% if current_page != 1 %} &ndash; {{ 'general.meta.page' | t: page: current_page }}{% endif %}{% unless page_title contains shop.name %} &ndash; {{ shop.name }}{% endunless %}
+  </title>
+
+  {% if page_description %}
+    <meta name="description" content="{{ page_description | escape }}">
+  {% endif %}
+
+  {% include 'social-meta-tags' %}
+
+  <script>
+    document.documentElement.className = document.documentElement.className.replace('supports-no-js', 'supports-js');
+
+    var theme = {
+      mapStrings: {
+        addressError: {{ 'homepage.map.address_error' | t | json }},
+        addressNoResults: {{ 'homepage.map.address_no_results' | t | json }},
+        addressQueryLimit: {{ 'homepage.map.address_query_limit_html' | t | json }},
+        authError: {{ 'homepage.map.auth_error_html' | t | json }}
+      }
+    }
+  </script>
+
+  {{ 'theme.scss.css' | asset_url | stylesheet_tag }}
+
+  <!-- Google Fonts -->
+  {% if settings.type_base_family contains 'Google' %}
+    {% assign type_base_parts = settings.type_base_family | split: '_' %}
+    {% capture base_google_url %}{{ type_base_parts[1] }}:400,700{% endcapture %}
+    {{ '//fonts.googleapis.com/css?family=' | append: base_google_url | stylesheet_tag }}
+  {% endif %}
+  {% if settings.type_header_family contains 'Google' %}
+    {% unless settings.type_header_family contains type_base_parts[1] %}
+      {% assign type_header_parts = settings.type_header_family | split: '_' %}
+      {% capture header_google_url %}{{ type_header_parts[1] }}:400,700{% endcapture %}
+      {{ '//fonts.googleapis.com/css?family=' | append: header_google_url | stylesheet_tag }}
+    {% endunless %}
+  {% endif %}
+
+  {{ content_for_header }}
+
+  {{ '//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js' | script_tag }}
+  {{ 'modernizr.min.js' | asset_url | script_tag }}
+
+  <!--[if (gt IE 9)|!(IE)]><!--><script src="{{ 'lazysizes.min.js' | asset_url }}" async="async"></script><!--<![endif]-->
+  <!--[if lte IE 9]><script src="{{ 'lazysizes.min.js' | asset_url }}"></script><![endif]-->
+
+  {% if template.directory == 'customers' %}
+    {{ 'shopify_common.js' | shopify_asset_url | script_tag }}
+  {% endif %}
+</head>
+
+<body id="{{ page_title | handle }}" class="{% if customer %}customer-logged-in {% endif %}template-{{ template | split: '.' | first | handle }}">
+
+  <a class="in-page-link visually-hidden skip-link" href="#MainContent">{{ 'general.accessibility.skip_to_content' | t }}</a>
+
+  {% section "header" %}
+
+    {% comment %}
+    <hr class="small--hide hr--small">
+    {% endcomment %}
+
+  <div class="site-wrapper">
+
+    <div class="grid">
+
+      {% section "sidebar" %}
+
+      <main class="main-content grid__item medium-up--four-fifths" id="MainContent" role="main">
+        {% unless template.name == 'index' %}
+          <hr class="hr--border-top small--hide">
+        {% endunless %}
+        {% if settings.show_breadcrumb_nav and template.name != 'index' %}
+          {% include 'breadcrumb-nav' %}
+        {% endif %}
+        {{ content_for_layout }}
+      </main>
+
+    </div>
+
+    <hr>
+
+    {% section "footer" %}
+
+  </div>
+
+  {% if template.name == 'product' or template.name == 'index' %}
+    {{ 'option_selection.js' | shopify_asset_url | script_tag }}
+    <script>
+      // Set a global variable for theme.js to use on product single init
+      window.theme = window.theme || {};
+      theme.moneyFormat = {{ shop.money_format | json }};
+      theme.productSingleObject = {{ product | json }};
+    </script>
+  {% endif %}
+
+  {{ 'theme.js' | asset_url | script_tag }}
+</body>
+</html>

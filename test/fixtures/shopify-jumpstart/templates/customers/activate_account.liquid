@@ -1,0 +1,35 @@
+{% capture header_title %} {{ 'customer.activate_account.title' | t }} {% endcapture %}
+{% include 'page_header' with header_title %}
+
+<div class="wrapper wrapper--margins wrapper--center">
+
+  <div class="form--customer">
+
+    {% form 'activate_customer_password' %}
+
+      {{ form.errors | default_errors }}
+
+      <p>{{ 'customer.activate_account.subtext' | t: email: email }}</p>
+
+      <div class="form__row">
+        <div class="form__column full">
+          <label for="CustomerPassword">{{ 'customer.activate_account.password' | t }}</label>
+          <input type="password" value="" name="customer[password]" id="CustomerPassword" class="input-full">
+        </div>
+      </div>
+
+      <div class="form__row">
+        <div class="form__column full">
+          <label for="CustomerPasswordConfirmation">{{ 'customer.activate_account.password_confirm' | t }}</label>
+          <input type="password" value="" name="customer[password_confirmation]" id="CustomerPasswordConfirmation" class="input-full">
+        </div>
+      </div>
+
+      <input type="submit" class="btn btn--regular btn--color btn--fill" value="{{ 'customer.activate_account.submit' | t }}">
+      <input type="submit" class="btn btn--regular btn--dark btn--outline" name="decline" value="{{ 'customer.activate_account.cancel' | t }}">
+
+    {% endform %}
+
+  </div>
+
+</div>

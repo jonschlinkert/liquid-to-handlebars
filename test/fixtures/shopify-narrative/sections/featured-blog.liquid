@@ -1,0 +1,176 @@
+<div class="featured-blog featured-blog--{{ section.id }}" data-section-id="{{ section.id }}" data-section-type="featured-blog">
+
+  <div class="page-width">
+    {% if section.settings.title != blank %}
+      <h2 class="featured-blog__heading section-header__title text-center" data-animate>{{ section.settings.title | escape }}</h2>
+    {% endif %}
+
+    {%- assign blog = blogs[section.settings.blog] -%}
+    {%- assign mobileColumns = 1 -%}
+
+    {% unless blog.articles.size == 1 %}
+      {% case section.settings.post_limit %}
+        {% when 3 %}
+          {%- assign desktopColumns = 3 -%}
+          {%- assign width = 'medium-up--one-third' -%}
+        {% when 2 %}
+          {%- assign desktopColumns = 2 -%}
+          {%- assign width = 'medium-up--one-half' -%}
+        {% when 1 %}
+          {%- assign desktopColumns = 1 -%}
+          {%- assign width = 'one-whole' -%}
+        {% else %}
+          {%- assign desktopColumns = 3 -%}
+          {%- assign width = 'medium-up--one-third' -%}
+      {% endcase %}
+    {% endunless %}
+
+    {% capture emptyBlog %}
+      <div class="card-list grid" data-desktop-columns="{{ desktopColumns }}" data-mobile-columns="{{ mobileColumns }}">
+        <div class="card-list__column grid__item {{ width }}{% if mobileColumns == 2 %} small--one-half{% endif %}">
+          {% for i in (1..section.settings.post_limit)  %}
+            <div class="card critical-clear" data-animate>
+              <a class="card__wrapper card--article">
+                {% if section.settings.blog_show_image %}
+                  {% if section.settings.post_limit == 1 %}
+                    <div class="medium-up--one-half card-list__column--half-left">
+                  {% endif %}
+                  <div class="card__image-wrapper">
+                    {% capture current %}{% cycle 1, 2, 3, 4, 5, 6 %}{% endcapture %}
+                    {{ 'collection-' | append: current | placeholder_svg_tag: 'placeholder-svg' }}
+                  </div>
+                  {% if section.settings.post_limit == 1 %}
+                    </div>
+                  {% endif %}
+                  {% if blog.articles.size == 1 or section.settings.post_limit == 1 %}
+                    <div class="medium-up--one-half card-list__column--half-right">
+                  {% endif %}
+                {% endif %}
+                <div class="card__info">
+                  <h2 class="card__name h4">{{ 'homepage.onboarding.blog_title' | t }}</h2>
+                  {% if section.settings.blog_show_excerpt %}
+                    <div class="card__excerpt rte">
+                      {{ 'homepage.onboarding.blog_excerpt' | t }}
+                    </div>
+                  {% endif %}
+                  <span class="card__read-more">
+                    {{ 'blogs.article.read_more' | t }}
+                    {% include 'icon-arrow-right' %}
+                  </span>
+                </div>
+                {% if section.settings.blog_show_image %}
+                  {% if blog.articles.size == 1 or section.settings.post_limit == 1 %}
+                    </div>
+                  {% endif %}
+                {% endif %}
+              </a>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    {% endcapture %}
+
+    {% unless blog.articles_count == 0 %}
+      <div class="card-list grid" data-desktop-columns="{{ desktopColumns }}" data-mobile-columns="{{ mobileColumns }}">
+        <div class="card-list__column grid__item {{ width }}{% if mobileColumns == 2 %} small--one-half{% endif %}">
+          {% for article in blog.articles limit: section.settings.post_limit %}
+            {% include 'featured-article-card', article: article %}
+          {% endfor %}
+        </div>
+      </div>
+      {% if blog.articles.size > 0 %}
+        <div class="card-list__spinner">
+          {% include 'spinner', position: 'top' %}
+        </div>
+      {% endif %}
+    {% else %}
+      {{ emptyBlog }}
+    {% endunless %}
+
+    {% if blog == empty %}
+      {{ emptyBlog }}
+    {% endif %}
+
+    {% if section.settings.show_view_all %}
+      <div class="featured-blog__view-all">
+        <a href="{{ blog.url }}" class="btn{% if section.settings.use_second_button %} btn--secondary{% endif %}">
+          {{ 'collections.general.view_all' | t }}
+        </a>
+      </div>
+    {% endif %}
+
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Blog posts",
+  "class": "index-section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading",
+      "default": "Blog"
+    },
+    {
+      "id": "blog",
+      "type": "blog",
+      "label": "Blog"
+    },
+    {
+      "type": "range",
+      "id": "post_limit",
+      "label": "Posts",
+      "min": 1,
+      "max": 3,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "checkbox",
+      "id": "blog_show_date",
+      "label": "Show date",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "blog_show_author",
+      "label": "Show author",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "blog_show_image",
+      "label": "Show cover image",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "blog_show_excerpt",
+      "label": "Show excerpt",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_view_all",
+      "label": "Show 'View all' button",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "use_second_button",
+      "label": "Use secondary button style",
+      "default": false
+    }
+  ],
+  "presets": [
+    {
+      "name": "Blog posts",
+      "category": "Blog",
+      "settings": {
+        "blog": "News"
+      }
+    }
+  ]
+}{% endschema %}

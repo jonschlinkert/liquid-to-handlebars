@@ -1,0 +1,37 @@
+{% comment %}
+  Featuring collections on a page using a menu
+  https://docs.shopify.com/support/your-store/collections/featuring-collections-using-link-lists
+{% endcomment %}
+
+{% assign featured_collection_width = 'small--one-half medium--one-third large--one-quarter' %}
+
+{% include 'breadcrumb' %}
+
+<div class="grid">
+
+  <div class="grid-item large--two-thirds push--large--one-sixth text-center">
+
+    <h1>{{ page.title }}</h1>
+
+    <div class="rte">
+      {{ page.content }}
+    </div>
+
+  </div>
+
+  <div class="grid-item one-whole">
+
+    <div class="grid-uniform text-center row-negative-bottom">
+
+    {% for link in linklists[page.handle].links %}
+      {% if link.type == 'collection_link' %}
+        {% assign featured = link.object.handle %}
+        {% include 'featured-collection' %}
+      {% endif %}
+    {% endfor %}
+
+    </div>
+
+  </div>
+
+</div>

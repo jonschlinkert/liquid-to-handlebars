@@ -1,0 +1,86 @@
+<div class="page-width">
+  <div class="section-block section-block--padding">
+    {% if section.settings.title_enable %}
+      <div class="section-block__header text-center">
+        <h4 class="h1--mini section-block__title">{{ section.settings.title | escape }}</h4>
+      </div>
+    {% endif %}
+    <div class="grid">
+      <div class="grid__item medium-up--two-thirds medium-up--push-one-sixth">
+        <form action="/search" method="get" class="grid grid--half-gutters" role="search">
+          <div class="grid__item medium-up--three-quarters">
+            {% comment %}<input type="hidden" name="type" value="product">{% endcomment %}
+            <input type="search" name="q" value="{{ search.terms | escape }}" placeholder="{{ 'general.search.placeholder' | t }}" aria-label="{{ 'general.search.placeholder' | t }}" class="input--full">
+          </div>
+          <div class="grid__item medium-up--one-quarter">
+            <button type="submit" class="btn btn--narrow btn--full">{{ 'general.search.submit' | t }}</button>
+          </div>
+        </form>
+
+        {% if section.settings.links_type %}
+          {% for collection in collections %}
+            {% capture collection_tags %}{{ collection.tags | join: ',' }}{% endcapture %}
+            {% capture all_tags %}{% if all_tags %}{{ all_tags }},{% endif %}{{ collection_tags }}{% endcapture %}
+          {% endfor %}
+          <ul class="list--inline tag-list small--text-center">
+            <li class="tag-list__item">{{ section.settings.quick_link_label | escape }}</li>
+            {% assign all_tags = all_tags | split: ',' | uniq %}
+            {% for tag in all_tags limit: 5 %}
+              <li class="tag-list__item"><a href="/search?q={{ tag | handleize }}">{{ tag }}</a></li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+{% stylesheet %}
+  .tag-list {
+    margin-top: 10px;
+  }
+
+  .tag-list__item {
+    margin-right: 10px;
+  }
+{% endstylesheet %}
+
+{% schema %}
+  {
+    "name": "Search",
+    "class": "index-section",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "title_enable",
+        "label": "Show header",
+        "default": true
+      },
+      {
+        "type": "text",
+        "id": "title",
+        "label": "Heading",
+        "default": "Search"
+      },
+      {
+        "type": "checkbox",
+        "id": "links_type",
+        "label": "Enable quick links",
+        "info": "Links are automatically generated from product tags",
+        "default": true
+      },
+      {
+        "type": "text",
+        "id": "quick_link_label",
+        "label": "Quick links label",
+        "default": "Quick links:"
+      }
+    ],
+    "presets": [
+      {
+        "name": "Search",
+        "category": "Store information"
+      }
+    ]
+  }
+{% endschema %}

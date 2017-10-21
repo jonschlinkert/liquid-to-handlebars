@@ -1,0 +1,64 @@
+{% assign on_sale = false %}
+{% if product.compare_at_price > product.price %}
+  {% assign on_sale = true %}
+{% endif %}
+
+{% assign sold_out = true %}
+{% if product.available %}
+  {% assign sold_out = false %}
+{% endif %}
+
+{% unless grid_item_width %}
+  {%- assign grid_item_width = 'one-third medium--one-half small--one-whole' -%}
+{% endunless %}
+<div class="product grid__item {{ grid_item_width }} text-center">
+
+  <a href="{{ product.url | within: collection }}" class="grid__image sale-{{ on_sale }} sold-{{ sold_out }}">
+    {% if product.featured_image %}
+    <div class="product__image-wrapper supports-no-js" style="padding-top:{{ 1 | divided_by: product.featured_image.aspect_ratio | times: 100}}%;">
+    {% assign img_url = product.featured_image | img_url: '1x1' | replace: '_1x1.', '_{width}x.' %}
+      <img 
+        class="no-js lazyload"
+        data-src="{{ img_url }}"
+        data-widths="[108, 360, 375, 414, 568, 684, 720, 732, 736, 768, 1024, 1200, 1296, 1512, 1728, 1944, 2048]"
+        data-aspectratio="{{ product.featured_image.aspect_ratio }}"
+        data-sizes="auto"
+        data-parent-fit="width"
+        alt="{{ product.featured_image.alt | escape }}">       
+    </div>
+    <noscript>
+      <img src="{{ product.featured_image | img_url: '580x' }}"
+        srcset="{{ product.featured_image | img_url: '580x' }} 1x, {{ product.featured_image | img_url: '580x', scale: 2 }} 2x"
+        alt="{{ product.featured_image.alt }}" style="opacity:1;">
+    </noscript>
+    {% else %}
+    {% capture current %}{% cycle 1, 2, 3, 4, 5, 6 %}{% endcapture %}
+      {{ 'product-' | append: current | placeholder_svg_tag: 'placeholder-svg' }}
+    {% endif %}
+    {% if sold_out %}
+      <span class="badge badge--sold-out">{{ 'products.product.sold_out' | t }}</span>
+    {% elsif on_sale %}
+      <span class="badge badge--on-sale">{{ 'products.product.on_sale' | t }}</span>
+    {% endif %}
+  </a>
+
+  <p class="h3"><a href="{{ product.url | within: collection }}">{{ product.title }}</a></p>
+
+  <p class="price">
+
+    {% if product.price_varies %} {{ 'products.product.on_sale_from' | t }} {% endif %}
+    {% if on_sale %}
+      <span class="visually-hidden">{{ 'products.product.sale_price' | t }}</span>
+    {% else %}
+      <span class="visually-hidden">{{ 'products.product.regular_price' | t }}</span>
+    {% endif %}
+    {{ product.price | money }}
+
+    {% if on_sale %}
+      <span class="visually-hidden">{{ 'products.product.regular_price' | t }}</span>
+      <span class="compare-price">{{ product.compare_at_price | money }}</span>
+    {% endif %}
+
+  </p>
+
+</div>

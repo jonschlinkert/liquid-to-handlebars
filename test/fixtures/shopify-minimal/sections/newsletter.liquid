@@ -1,0 +1,87 @@
+<style>
+  .newsletter-grid__item {
+    background-color: {{ section.settings.color_bg }};
+  }
+
+  .newsletter-grid__item:first-child {
+    background-color: {{ section.settings.color_bg | color_modify: 'alpha', 0.5 }};
+  }
+</style>
+
+<div class="grid-uniform newsletter-grid">
+  <div class="grid__item newsletter-grid__item post-large--one-half">
+    <div class="newsletter-content-wrapper">
+      <div class="newsletter-content">
+        {% unless section.settings.heading == blank %}
+        <div class="section-header section-header--small">
+          <h2 class="section-header__title{% unless section.settings.subtext == blank %} section-header__title-spacing{% endunless %}">
+            {{ section.settings.heading | escape }}
+          </h2>
+        </div>
+        {% endunless %}
+        {% unless section.settings.subtext == blank %}
+          <p>{{ section.settings.subtext | escape }}</p>
+        {% endunless %}
+      </div>
+    </div>
+  </div>
+
+  <div class="grid__item newsletter-grid__item post-large--one-half">
+    <div class="newsletter-content-wrapper">
+      <div class="newsletter-content">
+        {% form 'customer' %}
+          {{ form.errors | default_errors }}
+          {% if form.posted_successfully? %}
+            <p class="note form-success">{{ 'general.newsletter_form.confirmation' | t }}</p>
+          {% else %}
+            <input type="hidden" name="contact[tags]" value="newsletter">
+            <div class="input-group">
+              <label for="Email" class="visually-hidden">{{ 'contact.form.email' | t }}</label>
+              <input type="email" value="{% if customer %}{{ customer.email }}{% endif %}" placeholder="{{ 'general.newsletter_form.newsletter_email' | t }}" name="contact[email]" id="Email" class="input-group-field" aria-label="{{ 'layout.footer.newsletter_email_placeholder' | t }}" autocorrect="off" autocapitalize="off">
+              <span class="input-group-btn">
+                <button type="submit" class="btn" name="commit" id="subscribe">{{ 'general.newsletter_form.submit' | t }}</button>
+              </span>
+            </div>
+          {% endif %}
+        {% endform %}
+      </div>
+    </div>
+  </div>
+</div>
+
+{% schema %}
+  {
+    "name": "Newsletter",
+    "class": "newsletter-section",
+    "settings": [
+      {
+        "type": "text",
+        "id": "heading",
+        "label": "Heading",
+        "default": "Subscribe to our newsletter"
+      },
+      {
+        "type": "text",
+        "id": "subtext",
+        "label": "Subtext",
+        "default": "Promotions, new products and sales. Directly to your inbox."
+      },
+      {
+        "type": "color",
+        "id": "color_bg",
+        "label": "Background color",
+        "default": "#eeeeee"
+      },
+      {
+        "type": "paragraph",
+        "content": "Any customers who sign up will have an account created for them in Shopify. [View customers](/admin/customers?query=&accepts_marketing=1)"
+      }
+    ],
+    "presets": [
+      {
+        "name": "Newsletter",
+        "category": "Promotional"
+      }
+    ]
+  }
+{% endschema %}
