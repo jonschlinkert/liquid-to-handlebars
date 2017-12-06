@@ -18,214 +18,221 @@ function expected(name) {
 }
 
 describe.only('shopify themes', function() {
-  it('should convert assets files', function() {
-    assert.equal(convert(fixture('shopify-debut/assets/gift-card.scss.liquid')), expected('shopify-debut/assets/gift-card.scss.hbs'));
-    assert.equal(convert(fixture('shopify-debut/assets/ico-select.svg.liquid')), expected('shopify-debut/assets/ico-select.svg.hbs'));
-    assert.equal(convert(fixture('shopify-debut/assets/theme.scss.liquid')), expected('shopify-debut/assets/theme.scss.hbs'));
-    assert.equal(convert(fixture('shopify-debut/config/settings_data.json')), expected('shopify-debut/config/settings_data.json'));
-    assert.equal(convert(fixture('shopify-debut/config/settings_schema.json')), expected('shopify-debut/config/settings_schema.json'));
-    assert.equal(convert(fixture('shopify-debut/layout/gift_card.liquid')), expected('shopify-debut/layout/gift_card.hbs'));
-    assert.equal(convert(fixture('shopify-debut/layout/password.liquid')), expected('shopify-debut/layout/password.hbs'));
-    assert.equal(convert(fixture('shopify-debut/layout/theme.liquid')), expected('shopify-debut/layout/theme.hbs'));
-    assert.equal(convert(fixture('shopify-debut/locales/de.json')), expected('shopify-debut/locales/de.json'));
-    assert.equal(convert(fixture('shopify-debut/locales/en.default.json')), expected('shopify-debut/locales/en.default.json'));
-    assert.equal(convert(fixture('shopify-debut/locales/es.json')), expected('shopify-debut/locales/es.json'));
-    assert.equal(convert(fixture('shopify-debut/locales/fr.json')), expected('shopify-debut/locales/fr.json'));
-    assert.equal(convert(fixture('shopify-debut/locales/ja.json')), expected('shopify-debut/locales/ja.json'));
-    assert.equal(convert(fixture('shopify-debut/locales/pt-BR.json')), expected('shopify-debut/locales/pt-BR.json'));
-    assert.equal(convert(fixture('shopify-debut/locales/pt-PT.json')), expected('shopify-debut/locales/pt-PT.json'));
-    assert.equal(convert(fixture('shopify-debut/sections/article-template.liquid')), expected('shopify-debut/sections/article-template.hbs'));
-    assert.equal(convert(fixture('shopify-debut/sections/blog-template.liquid')), expected('shopify-debut/sections/blog-template.hbs'));
-    assert.equal(convert(fixture('shopify-debut/sections/cart-template.liquid')), expected('shopify-debut/sections/cart-template.hbs'));
-    assert.equal(convert(fixture('shopify-debut/sections/collection-list.liquid')), expected('shopify-debut/sections/collection-list.hbs'));
-    assert.equal(convert(fixture('shopify-debut/sections/collection-template.liquid')), expected('shopify-debut/sections/collection-template.hbs'));
-    assert.equal(convert(fixture('shopify-debut/sections/collection.liquid')), expected('shopify-debut/sections/collection.hbs'));
-    assert.equal(convert(fixture('shopify-debut/sections/custom-content.liquid')), expected('shopify-debut/sections/custom-content.hbs'));
-    assert.equal(convert(fixture('shopify-debut/sections/feature-columns.liquid')), expected('shopify-debut/sections/feature-columns.hbs'));
-    assert.equal(convert(fixture('shopify-debut/sections/feature-row.liquid')), expected('shopify-debut/sections/feature-row.hbs'));
-    assert.equal(convert(fixture('shopify-debut/sections/featured-blog.liquid')), expected('shopify-debut/sections/featured-blog.hbs'));
-    assert.equal(convert(fixture('shopify-debut/sections/featured-product.liquid')), expected('shopify-debut/sections/featured-product.hbs'));
-    assert.equal(convert(fixture('shopify-debut/sections/footer.liquid')), expected('shopify-debut/sections/footer.hbs'));
-    assert.equal(convert(fixture('shopify-debut/sections/header.liquid')), expected('shopify-debut/sections/header.hbs'));
-    assert.equal(convert(fixture('shopify-debut/sections/hero.liquid')), expected('shopify-debut/sections/hero.hbs'));
-    assert.equal(convert(fixture('shopify-debut/sections/image-bar.liquid')), expected('shopify-debut/sections/image-bar.hbs'));
-    assert.equal(convert(fixture('shopify-debut/sections/list-collections-template.liquid')), expected('shopify-debut/sections/list-collections-template.hbs'));
-    assert.equal(convert(fixture('shopify-debut/sections/logo-bar.liquid')), expected('shopify-debut/sections/logo-bar.hbs'));
-    assert.equal(convert(fixture('shopify-debut/sections/map.liquid')), expected('shopify-debut/sections/map.hbs'));
-    assert.equal(convert(fixture('shopify-debut/sections/newsletter.liquid')), expected('shopify-debut/sections/newsletter.hbs'));
-    assert.equal(convert(fixture('shopify-debut/sections/password-content.liquid')), expected('shopify-debut/sections/password-content.hbs'));
-    assert.equal(convert(fixture('shopify-debut/sections/password-footer.liquid')), expected('shopify-debut/sections/password-footer.hbs'));
-    assert.equal(convert(fixture('shopify-debut/sections/password-header.liquid')), expected('shopify-debut/sections/password-header.hbs'));
-    assert.equal(convert(fixture('shopify-debut/sections/product-template.liquid')), expected('shopify-debut/sections/product-template.hbs'));
-    assert.equal(convert(fixture('shopify-debut/sections/quotes.liquid')), expected('shopify-debut/sections/quotes.hbs'));
-    assert.equal(convert(fixture('shopify-debut/sections/slideshow.liquid')), expected('shopify-debut/sections/slideshow.hbs'));
-    assert.equal(convert(fixture('shopify-debut/snippets/bgset.liquid')), expected('shopify-debut/snippets/bgset.hbs'));
-    assert.equal(convert(fixture('shopify-debut/snippets/collection-grid-item.liquid')), expected('shopify-debut/snippets/collection-grid-item.hbs'));
-    assert.equal(convert(fixture('shopify-debut/snippets/comment.liquid')), expected('shopify-debut/snippets/comment.hbs'));
-    assert.equal(convert(fixture('shopify-debut/snippets/google-fonts.liquid')), expected('shopify-debut/snippets/google-fonts.hbs'));
-    assert.equal(convert(fixture('shopify-debut/snippets/icon-amazon_payments.liquid')), expected('shopify-debut/snippets/icon-amazon_payments.hbs'));
-    assert.equal(convert(fixture('shopify-debut/snippets/icon-american_express.liquid')), expected('shopify-debut/snippets/icon-american_express.hbs'));
-    assert.equal(convert(fixture('shopify-debut/snippets/icon-apple_pay.liquid')), expected('shopify-debut/snippets/icon-apple_pay.hbs'));
-    assert.equal(convert(fixture('shopify-debut/snippets/icon-arrow-left.liquid')), expected('shopify-debut/snippets/icon-arrow-left.hbs'));
-    assert.equal(convert(fixture('shopify-debut/snippets/icon-arrow-right.liquid')), expected('shopify-debut/snippets/icon-arrow-right.hbs'));
-    assert.equal(convert(fixture('shopify-debut/snippets/icon-bitcoin.liquid')), expected('shopify-debut/snippets/icon-bitcoin.hbs'));
-    assert.equal(convert(fixture('shopify-debut/snippets/icon-cart.liquid')), expected('shopify-debut/snippets/icon-cart.hbs'));
-    assert.equal(convert(fixture('shopify-debut/snippets/icon-chevron-down.liquid')), expected('shopify-debut/snippets/icon-chevron-down.hbs'));
-    assert.equal(convert(fixture('shopify-debut/snippets/icon-chevron-left.liquid')), expected('shopify-debut/snippets/icon-chevron-left.hbs'));
-    assert.equal(convert(fixture('shopify-debut/snippets/icon-chevron-right.liquid')), expected('shopify-debut/snippets/icon-chevron-right.hbs'));
-    assert.equal(convert(fixture('shopify-debut/snippets/icon-chevron-up.liquid')), expected('shopify-debut/snippets/icon-chevron-up.hbs'));
-    assert.equal(convert(fixture('shopify-debut/snippets/icon-cirrus.liquid')), expected('shopify-debut/snippets/icon-cirrus.hbs'));
-    assert.equal(convert(fixture('shopify-debut/snippets/icon-close.liquid')), expected('shopify-debut/snippets/icon-close.hbs'));
-    assert.equal(convert(fixture('shopify-debut/snippets/icon-dankort.liquid')), expected('shopify-debut/snippets/icon-dankort.hbs'));
-    assert.equal(convert(fixture('shopify-debut/snippets/icon-diners_club.liquid')), expected('shopify-debut/snippets/icon-diners_club.hbs'));
-    assert.equal(convert(fixture('shopify-debut/snippets/icon-discover.liquid')), expected('shopify-debut/snippets/icon-discover.hbs'));
-    assert.equal(convert(fixture('shopify-debut/snippets/icon-dogecoin.liquid')), expected('shopify-debut/snippets/icon-dogecoin.hbs'));
-    assert.equal(convert(fixture('shopify-debut/snippets/icon-dwolla.liquid')), expected('shopify-debut/snippets/icon-dwolla.hbs'));
-    assert.equal(convert(fixture('shopify-debut/snippets/icon-facebook.liquid')), expected('shopify-debut/snippets/icon-facebook.hbs'));
-    assert.equal(convert(fixture('shopify-debut/snippets/icon-forbrugsforeningen.liquid')), expected('shopify-debut/snippets/icon-forbrugsforeningen.hbs'));
-    assert.equal(convert(fixture('shopify-debut/snippets/icon-hamburger.liquid')), expected('shopify-debut/snippets/icon-hamburger.hbs'));
-    assert.equal(convert(fixture('shopify-debut/snippets/icon-instagram.liquid')), expected('shopify-debut/snippets/icon-instagram.hbs'));
-    assert.equal(convert(fixture('shopify-debut/snippets/icon-interac.liquid')), expected('shopify-debut/snippets/icon-interac.hbs'));
-    assert.equal(convert(fixture('shopify-debut/snippets/icon-jcb.liquid')), expected('shopify-debut/snippets/icon-jcb.hbs'));
-    assert.equal(convert(fixture('shopify-debut/snippets/icon-laser.liquid')), expected('shopify-debut/snippets/icon-laser.hbs'));
-    assert.equal(convert(fixture('shopify-debut/snippets/icon-litecoin.liquid')), expected('shopify-debut/snippets/icon-litecoin.hbs'));
-    assert.equal(convert(fixture('shopify-debut/snippets/icon-lock.liquid')), expected('shopify-debut/snippets/icon-lock.hbs'));
-    assert.equal(convert(fixture('shopify-debut/snippets/icon-login.liquid')), expected('shopify-debut/snippets/icon-login.hbs'));
-    assert.equal(convert(fixture('shopify-debut/snippets/icon-maestro.liquid')), expected('shopify-debut/snippets/icon-maestro.hbs'));
-    assert.equal(convert(fixture('shopify-debut/snippets/icon-master.liquid')), expected('shopify-debut/snippets/icon-master.hbs'));
-    assert.equal(convert(fixture('shopify-debut/snippets/icon-minus.liquid')), expected('shopify-debut/snippets/icon-minus.hbs'));
-    assert.equal(convert(fixture('shopify-debut/snippets/icon-pause.liquid')), expected('shopify-debut/snippets/icon-pause.hbs'));
-    assert.equal(convert(fixture('shopify-debut/snippets/icon-paypal.liquid')), expected('shopify-debut/snippets/icon-paypal.hbs'));
-    assert.equal(convert(fixture('shopify-debut/snippets/icon-pin.liquid')), expected('shopify-debut/snippets/icon-pin.hbs'));
-    assert.equal(convert(fixture('shopify-debut/snippets/icon-pinterest.liquid')), expected('shopify-debut/snippets/icon-pinterest.hbs'));
-    assert.equal(convert(fixture('shopify-debut/snippets/icon-play-video.liquid')), expected('shopify-debut/snippets/icon-play-video.hbs'));
-    assert.equal(convert(fixture('shopify-debut/snippets/icon-play.liquid')), expected('shopify-debut/snippets/icon-play.hbs'));
-    assert.equal(convert(fixture('shopify-debut/snippets/icon-plus.liquid')), expected('shopify-debut/snippets/icon-plus.hbs'));
-    assert.equal(convert(fixture('shopify-debut/snippets/icon-quote.liquid')), expected('shopify-debut/snippets/icon-quote.hbs'));
-    assert.equal(convert(fixture('shopify-debut/snippets/icon-rss.liquid')), expected('shopify-debut/snippets/icon-rss.hbs'));
-    assert.equal(convert(fixture('shopify-debut/snippets/icon-search.liquid')), expected('shopify-debut/snippets/icon-search.hbs'));
-    assert.equal(convert(fixture('shopify-debut/snippets/icon-shopify-logo.liquid')), expected('shopify-debut/snippets/icon-shopify-logo.hbs'));
-    assert.equal(convert(fixture('shopify-debut/snippets/icon-snapchat.liquid')), expected('shopify-debut/snippets/icon-snapchat.hbs'));
-    assert.equal(convert(fixture('shopify-debut/snippets/icon-stripe.liquid')), expected('shopify-debut/snippets/icon-stripe.hbs'));
-    assert.equal(convert(fixture('shopify-debut/snippets/icon-tumblr.liquid')), expected('shopify-debut/snippets/icon-tumblr.hbs'));
-    assert.equal(convert(fixture('shopify-debut/snippets/icon-twitter.liquid')), expected('shopify-debut/snippets/icon-twitter.hbs'));
-    assert.equal(convert(fixture('shopify-debut/snippets/icon-vimeo.liquid')), expected('shopify-debut/snippets/icon-vimeo.hbs'));
-    assert.equal(convert(fixture('shopify-debut/snippets/icon-visa.liquid')), expected('shopify-debut/snippets/icon-visa.hbs'));
-    assert.equal(convert(fixture('shopify-debut/snippets/icon-youtube.liquid')), expected('shopify-debut/snippets/icon-youtube.hbs'));
-    assert.equal(convert(fixture('shopify-debut/snippets/image-style.liquid')), expected('shopify-debut/snippets/image-style.hbs'));
-    assert.equal(convert(fixture('shopify-debut/snippets/no-blocks.liquid')), expected('shopify-debut/snippets/no-blocks.hbs'));
-    assert.equal(convert(fixture('shopify-debut/snippets/pagination.liquid')), expected('shopify-debut/snippets/pagination.hbs'));
-    assert.equal(convert(fixture('shopify-debut/snippets/product-card-grid.liquid')), expected('shopify-debut/snippets/product-card-grid.hbs'));
-    assert.equal(convert(fixture('shopify-debut/snippets/product-card-list.liquid')), expected('shopify-debut/snippets/product-card-list.hbs'));
-    assert.equal(convert(fixture('shopify-debut/snippets/product-price.liquid')), expected('shopify-debut/snippets/product-price.hbs'));
-    assert.equal(convert(fixture('shopify-debut/snippets/search-form.liquid')), expected('shopify-debut/snippets/search-form.hbs'));
-    assert.equal(convert(fixture('shopify-debut/snippets/site-nav.liquid')), expected('shopify-debut/snippets/site-nav.hbs'));
-    assert.equal(convert(fixture('shopify-debut/snippets/social-meta-tags.liquid')), expected('shopify-debut/snippets/social-meta-tags.hbs'));
-    assert.equal(convert(fixture('shopify-debut/snippets/social-sharing.liquid')), expected('shopify-debut/snippets/social-sharing.hbs'));
-    assert.equal(convert(fixture('shopify-debut/templates/404.liquid')), expected('shopify-debut/templates/404.hbs'));
-    assert.equal(convert(fixture('shopify-debut/templates/article.liquid')), expected('shopify-debut/templates/article.hbs'));
-    assert.equal(convert(fixture('shopify-debut/templates/blog.liquid')), expected('shopify-debut/templates/blog.hbs'));
-    assert.equal(convert(fixture('shopify-debut/templates/cart.liquid')), expected('shopify-debut/templates/cart.hbs'));
-    assert.equal(convert(fixture('shopify-debut/templates/collection.liquid')), expected('shopify-debut/templates/collection.hbs'));
-    assert.equal(convert(fixture('shopify-debut/templates/customers/account.liquid')), expected('shopify-debut/templates/customers/account.hbs'));
-    assert.equal(convert(fixture('shopify-debut/templates/customers/activate_account.liquid')), expected('shopify-debut/templates/customers/activate_account.hbs'));
-    assert.equal(convert(fixture('shopify-debut/templates/customers/addresses.liquid')), expected('shopify-debut/templates/customers/addresses.hbs'));
-    assert.equal(convert(fixture('shopify-debut/templates/customers/login.liquid')), expected('shopify-debut/templates/customers/login.hbs'));
-    assert.equal(convert(fixture('shopify-debut/templates/customers/order.liquid')), expected('shopify-debut/templates/customers/order.hbs'));
-    assert.equal(convert(fixture('shopify-debut/templates/customers/register.liquid')), expected('shopify-debut/templates/customers/register.hbs'));
-    assert.equal(convert(fixture('shopify-debut/templates/customers/reset_password.liquid')), expected('shopify-debut/templates/customers/reset_password.hbs'));
-    assert.equal(convert(fixture('shopify-debut/templates/gift_card.liquid')), expected('shopify-debut/templates/gift_card.hbs'));
-    assert.equal(convert(fixture('shopify-debut/templates/index.liquid')), expected('shopify-debut/templates/index.hbs'));
-    assert.equal(convert(fixture('shopify-debut/templates/list-collections.liquid')), expected('shopify-debut/templates/list-collections.hbs'));
-    assert.equal(convert(fixture('shopify-debut/templates/page.contact.liquid')), expected('shopify-debut/templates/page.contact.hbs'));
-    assert.equal(convert(fixture('shopify-debut/templates/page.liquid')), expected('shopify-debut/templates/page.hbs'));
-    assert.equal(convert(fixture('shopify-debut/templates/password.liquid')), expected('shopify-debut/templates/password.hbs'));
-    assert.equal(convert(fixture('shopify-debut/templates/product.liquid')), expected('shopify-debut/templates/product.hbs'));
-    assert.equal(convert(fixture('shopify-debut/templates/search.liquid')), expected('shopify-debut/templates/search.hbs'));
-    assert.equal(convert(fixture('shopify-naked/assets/shop.js.liquid')), expected('shopify-naked/assets/shop.js.hbs'));
-    assert.equal(convert(fixture('shopify-naked/assets/style.scss.liquid')), expected('shopify-naked/assets/style.scss.hbs'));
-    assert.equal(convert(fixture('shopify-naked/config/settings_data.json')), expected('shopify-naked/config/settings_data.json'));
-    assert.equal(convert(fixture('shopify-naked/config/settings_schema.json')), expected('shopify-naked/config/settings_schema.json'));
-    assert.equal(convert(fixture('shopify-naked/layout/theme.liquid')), expected('shopify-naked/layout/theme.hbs'));
-    assert.equal(convert(fixture('shopify-naked/snippets/open-graph-tags.liquid')), expected('shopify-naked/snippets/open-graph-tags.hbs'));
-    assert.equal(convert(fixture('shopify-naked/snippets/product-item.liquid')), expected('shopify-naked/snippets/product-item.hbs'));
-    assert.equal(convert(fixture('shopify-naked/snippets/site-nav.liquid')), expected('shopify-naked/snippets/site-nav.hbs'));
-    assert.equal(convert(fixture('shopify-naked/snippets/twitter-card.liquid')), expected('shopify-naked/snippets/twitter-card.hbs'));
-    assert.equal(convert(fixture('shopify-naked/templates/404.liquid')), expected('shopify-naked/templates/404.hbs'));
-    assert.equal(convert(fixture('shopify-naked/templates/article.liquid')), expected('shopify-naked/templates/article.hbs'));
-    assert.equal(convert(fixture('shopify-naked/templates/blog.liquid')), expected('shopify-naked/templates/blog.hbs'));
-    assert.equal(convert(fixture('shopify-naked/templates/cart.liquid')), expected('shopify-naked/templates/cart.hbs'));
-    assert.equal(convert(fixture('shopify-naked/templates/collection.liquid')), expected('shopify-naked/templates/collection.hbs'));
-    assert.equal(convert(fixture('shopify-naked/templates/index.liquid')), expected('shopify-naked/templates/index.hbs'));
-    assert.equal(convert(fixture('shopify-naked/templates/page.liquid')), expected('shopify-naked/templates/page.hbs'));
-    assert.equal(convert(fixture('shopify-naked/templates/product.liquid')), expected('shopify-naked/templates/product.hbs'));
-    assert.equal(convert(fixture('shopify-naked/templates/search.liquid')), expected('shopify-naked/templates/search.hbs'));
-    assert.equal(convert(fixture('shopify-skeleton/assets/arrow-down.svg.liquid')), expected('shopify-skeleton/assets/arrow-down.svg.hbs'));
-    assert.equal(convert(fixture('shopify-skeleton/assets/cart.svg.liquid')), expected('shopify-skeleton/assets/cart.svg.hbs'));
-    assert.equal(convert(fixture('shopify-skeleton/assets/shop.js.liquid')), expected('shopify-skeleton/assets/shop.js.hbs'));
-    assert.equal(convert(fixture('shopify-skeleton/assets/style.scss.liquid')), expected('shopify-skeleton/assets/style.scss.hbs'));
-    assert.equal(convert(fixture('shopify-skeleton/config/settings_data.json')), expected('shopify-skeleton/config/settings_data.json'));
-    assert.equal(convert(fixture('shopify-skeleton/layout/theme.liquid')), expected('shopify-skeleton/layout/theme.hbs'));
-    assert.equal(convert(fixture('shopify-skeleton/snippets/article-grid-item.liquid')), expected('shopify-skeleton/snippets/article-grid-item.hbs'));
-    assert.equal(convert(fixture('shopify-skeleton/snippets/collection-grid-item.liquid')), expected('shopify-skeleton/snippets/collection-grid-item.hbs'));
-    assert.equal(convert(fixture('shopify-skeleton/snippets/collection-listing.liquid')), expected('shopify-skeleton/snippets/collection-listing.hbs'));
-    assert.equal(convert(fixture('shopify-skeleton/snippets/open-graph-tags.liquid')), expected('shopify-skeleton/snippets/open-graph-tags.hbs'));
-    assert.equal(convert(fixture('shopify-skeleton/snippets/product-grid-item.liquid')), expected('shopify-skeleton/snippets/product-grid-item.hbs'));
-    assert.equal(convert(fixture('shopify-skeleton/snippets/site-nav.liquid')), expected('shopify-skeleton/snippets/site-nav.hbs'));
-    assert.equal(convert(fixture('shopify-skeleton/snippets/social-links.liquid')), expected('shopify-skeleton/snippets/social-links.hbs'));
-    assert.equal(convert(fixture('shopify-skeleton/snippets/twitter-card.liquid')), expected('shopify-skeleton/snippets/twitter-card.hbs'));
-    assert.equal(convert(fixture('shopify-skeleton/templates/404.liquid')), expected('shopify-skeleton/templates/404.hbs'));
-    assert.equal(convert(fixture('shopify-skeleton/templates/article.liquid')), expected('shopify-skeleton/templates/article.hbs'));
-    assert.equal(convert(fixture('shopify-skeleton/templates/blog.grid.liquid')), expected('shopify-skeleton/templates/blog.grid.hbs'));
-    assert.equal(convert(fixture('shopify-skeleton/templates/blog.liquid')), expected('shopify-skeleton/templates/blog.hbs'));
-    assert.equal(convert(fixture('shopify-skeleton/templates/cart.liquid')), expected('shopify-skeleton/templates/cart.hbs'));
-    assert.equal(convert(fixture('shopify-skeleton/templates/collection.liquid')), expected('shopify-skeleton/templates/collection.hbs'));
-    assert.equal(convert(fixture('shopify-skeleton/templates/index.liquid')), expected('shopify-skeleton/templates/index.hbs'));
-    assert.equal(convert(fixture('shopify-skeleton/templates/list-collections.liquid')), expected('shopify-skeleton/templates/list-collections.hbs'));
-    assert.equal(convert(fixture('shopify-skeleton/templates/page.liquid')), expected('shopify-skeleton/templates/page.hbs'));
-    assert.equal(convert(fixture('shopify-skeleton/templates/product.liquid')), expected('shopify-skeleton/templates/product.hbs'));
-    assert.equal(convert(fixture('shopify-skeleton/templates/search.liquid')), expected('shopify-skeleton/templates/search.hbs'));
-    assert.equal(convert(fixture('shopify-timber/assets/ajax-cart.js.liquid')), expected('shopify-timber/assets/ajax-cart.js.hbs'));
-    assert.equal(convert(fixture('shopify-timber/assets/gift-card.scss.liquid')), expected('shopify-timber/assets/gift-card.scss.hbs'));
-    assert.equal(convert(fixture('shopify-timber/assets/ico-select.svg.liquid')), expected('shopify-timber/assets/ico-select.svg.hbs'));
-    assert.equal(convert(fixture('shopify-timber/assets/icons.json')), expected('shopify-timber/assets/icons.json'));
-    assert.equal(convert(fixture('shopify-timber/assets/timber.js.liquid')), expected('shopify-timber/assets/timber.js.hbs'));
-    assert.equal(convert(fixture('shopify-timber/assets/timber.scss.liquid')), expected('shopify-timber/assets/timber.scss.hbs'));
-    assert.equal(convert(fixture('shopify-timber/layout/theme.liquid')), expected('shopify-timber/layout/theme.hbs'));
-    assert.equal(convert(fixture('shopify-timber/snippets/ajax-cart-template.liquid')), expected('shopify-timber/snippets/ajax-cart-template.hbs'));
-    assert.equal(convert(fixture('shopify-timber/snippets/blog-sidebar.liquid')), expected('shopify-timber/snippets/blog-sidebar.hbs'));
-    assert.equal(convert(fixture('shopify-timber/snippets/breadcrumb.liquid')), expected('shopify-timber/snippets/breadcrumb.hbs'));
-    assert.equal(convert(fixture('shopify-timber/snippets/collection-sidebar.liquid')), expected('shopify-timber/snippets/collection-sidebar.hbs'));
-    assert.equal(convert(fixture('shopify-timber/snippets/collection-sorting.liquid')), expected('shopify-timber/snippets/collection-sorting.hbs'));
-    assert.equal(convert(fixture('shopify-timber/snippets/comment.liquid')), expected('shopify-timber/snippets/comment.hbs'));
-    assert.equal(convert(fixture('shopify-timber/snippets/oldIE-js.liquid')), expected('shopify-timber/snippets/oldIE-js.hbs'));
-    assert.equal(convert(fixture('shopify-timber/snippets/onboarding-empty-collection.liquid')), expected('shopify-timber/snippets/onboarding-empty-collection.hbs'));
-    assert.equal(convert(fixture('shopify-timber/snippets/onboarding-featured-collections.liquid')), expected('shopify-timber/snippets/onboarding-featured-collections.hbs'));
-    assert.equal(convert(fixture('shopify-timber/snippets/onboarding-featured-products.liquid')), expected('shopify-timber/snippets/onboarding-featured-products.hbs'));
-    assert.equal(convert(fixture('shopify-timber/snippets/product-grid-item.liquid')), expected('shopify-timber/snippets/product-grid-item.hbs'));
-    assert.equal(convert(fixture('shopify-timber/snippets/respond.liquid')), expected('shopify-timber/snippets/respond.hbs'));
-    assert.equal(convert(fixture('shopify-timber/snippets/search-bar.liquid')), expected('shopify-timber/snippets/search-bar.hbs'));
-    assert.equal(convert(fixture('shopify-timber/snippets/social-meta-tags.liquid')), expected('shopify-timber/snippets/social-meta-tags.hbs'));
-    assert.equal(convert(fixture('shopify-timber/snippets/tags-article.liquid')), expected('shopify-timber/snippets/tags-article.hbs'));
-    assert.equal(convert(fixture('shopify-timber/templates/404.liquid')), expected('shopify-timber/templates/404.hbs'));
-    assert.equal(convert(fixture('shopify-timber/templates/article.liquid')), expected('shopify-timber/templates/article.hbs'));
-    assert.equal(convert(fixture('shopify-timber/templates/blog.liquid')), expected('shopify-timber/templates/blog.hbs'));
-    assert.equal(convert(fixture('shopify-timber/templates/cart.liquid')), expected('shopify-timber/templates/cart.hbs'));
-    assert.equal(convert(fixture('shopify-timber/templates/collection.liquid')), expected('shopify-timber/templates/collection.hbs'));
-    assert.equal(convert(fixture('shopify-timber/templates/collection.list.liquid')), expected('shopify-timber/templates/collection.list.hbs'));
-    assert.equal(convert(fixture('shopify-timber/templates/customers/account.liquid')), expected('shopify-timber/templates/customers/account.hbs'));
-    assert.equal(convert(fixture('shopify-timber/templates/customers/activate_account.liquid')), expected('shopify-timber/templates/customers/activate_account.hbs'));
-    assert.equal(convert(fixture('shopify-timber/templates/customers/addresses.liquid')), expected('shopify-timber/templates/customers/addresses.hbs'));
-    assert.equal(convert(fixture('shopify-timber/templates/customers/login.liquid')), expected('shopify-timber/templates/customers/login.hbs'));
-    assert.equal(convert(fixture('shopify-timber/templates/customers/order.liquid')), expected('shopify-timber/templates/customers/order.hbs'));
-    assert.equal(convert(fixture('shopify-timber/templates/customers/register.liquid')), expected('shopify-timber/templates/customers/register.hbs'));
-    assert.equal(convert(fixture('shopify-timber/templates/customers/reset_password.liquid')), expected('shopify-timber/templates/customers/reset_password.hbs'));
-    assert.equal(convert(fixture('shopify-timber/templates/gift_card.liquid')), expected('shopify-timber/templates/gift_card.hbs'));
-    assert.equal(convert(fixture('shopify-timber/templates/index.liquid')), expected('shopify-timber/templates/index.hbs'));
-    assert.equal(convert(fixture('shopify-timber/templates/list-collections.liquid')), expected('shopify-timber/templates/list-collections.hbs'));
-    assert.equal(convert(fixture('shopify-timber/templates/page.contact.liquid')), expected('shopify-timber/templates/page.contact.hbs'));
-    assert.equal(convert(fixture('shopify-timber/templates/page.liquid')), expected('shopify-timber/templates/page.hbs'));
-    assert.equal(convert(fixture('shopify-timber/templates/product.liquid')), expected('shopify-timber/templates/product.hbs'));
-    assert.equal(convert(fixture('shopify-timber/templates/search.liquid')), expected('shopify-timber/templates/search.hbs'));
+  const fixtures = [
+    'shopify-debut/assets/gift-card.scss.liquid',
+    'shopify-debut/assets/ico-select.svg.liquid',
+    'shopify-debut/assets/theme.scss.liquid',
+    'shopify-debut/config/settings_data.json',
+    'shopify-debut/config/settings_schema.json',
+    'shopify-debut/layout/gift_card.liquid',
+    'shopify-debut/layout/password.liquid',
+    'shopify-debut/layout/theme.liquid',
+    'shopify-debut/locales/de.json',
+    'shopify-debut/locales/en.default.json',
+    'shopify-debut/locales/es.json',
+    'shopify-debut/locales/fr.json',
+    'shopify-debut/locales/ja.json',
+    'shopify-debut/locales/pt-BR.json',
+    'shopify-debut/locales/pt-PT.json',
+    'shopify-debut/sections/article-template.liquid',
+    'shopify-debut/sections/blog-template.liquid',
+    'shopify-debut/sections/cart-template.liquid',
+    'shopify-debut/sections/collection-list.liquid',
+    'shopify-debut/sections/collection-template.liquid',
+    'shopify-debut/sections/collection.liquid',
+    'shopify-debut/sections/custom-content.liquid',
+    'shopify-debut/sections/feature-columns.liquid',
+    'shopify-debut/sections/feature-row.liquid',
+    'shopify-debut/sections/featured-blog.liquid',
+    'shopify-debut/sections/featured-product.liquid',
+    'shopify-debut/sections/footer.liquid',
+    'shopify-debut/sections/header.liquid',
+    'shopify-debut/sections/hero.liquid',
+    'shopify-debut/sections/image-bar.liquid',
+    'shopify-debut/sections/list-collections-template.liquid',
+    'shopify-debut/sections/logo-bar.liquid',
+    'shopify-debut/sections/map.liquid',
+    'shopify-debut/sections/newsletter.liquid',
+    'shopify-debut/sections/password-content.liquid',
+    'shopify-debut/sections/password-footer.liquid',
+    'shopify-debut/sections/password-header.liquid',
+    'shopify-debut/sections/product-template.liquid',
+    'shopify-debut/sections/quotes.liquid',
+    'shopify-debut/sections/slideshow.liquid',
+    'shopify-debut/snippets/bgset.liquid',
+    'shopify-debut/snippets/collection-grid-item.liquid',
+    'shopify-debut/snippets/comment.liquid',
+    'shopify-debut/snippets/google-fonts.liquid',
+    'shopify-debut/snippets/icon-amazon_payments.liquid',
+    'shopify-debut/snippets/icon-american_express.liquid',
+    'shopify-debut/snippets/icon-apple_pay.liquid',
+    'shopify-debut/snippets/icon-arrow-left.liquid',
+    'shopify-debut/snippets/icon-arrow-right.liquid',
+    'shopify-debut/snippets/icon-bitcoin.liquid',
+    'shopify-debut/snippets/icon-cart.liquid',
+    'shopify-debut/snippets/icon-chevron-down.liquid',
+    'shopify-debut/snippets/icon-chevron-left.liquid',
+    'shopify-debut/snippets/icon-chevron-right.liquid',
+    'shopify-debut/snippets/icon-chevron-up.liquid',
+    'shopify-debut/snippets/icon-cirrus.liquid',
+    'shopify-debut/snippets/icon-close.liquid',
+    'shopify-debut/snippets/icon-dankort.liquid',
+    'shopify-debut/snippets/icon-diners_club.liquid',
+    'shopify-debut/snippets/icon-discover.liquid',
+    'shopify-debut/snippets/icon-dogecoin.liquid',
+    'shopify-debut/snippets/icon-dwolla.liquid',
+    'shopify-debut/snippets/icon-facebook.liquid',
+    'shopify-debut/snippets/icon-forbrugsforeningen.liquid',
+    'shopify-debut/snippets/icon-hamburger.liquid',
+    'shopify-debut/snippets/icon-instagram.liquid',
+    'shopify-debut/snippets/icon-interac.liquid',
+    'shopify-debut/snippets/icon-jcb.liquid',
+    'shopify-debut/snippets/icon-laser.liquid',
+    'shopify-debut/snippets/icon-litecoin.liquid',
+    'shopify-debut/snippets/icon-lock.liquid',
+    'shopify-debut/snippets/icon-login.liquid',
+    'shopify-debut/snippets/icon-maestro.liquid',
+    'shopify-debut/snippets/icon-master.liquid',
+    'shopify-debut/snippets/icon-minus.liquid',
+    'shopify-debut/snippets/icon-pause.liquid',
+    'shopify-debut/snippets/icon-paypal.liquid',
+    'shopify-debut/snippets/icon-pin.liquid',
+    'shopify-debut/snippets/icon-pinterest.liquid',
+    'shopify-debut/snippets/icon-play-video.liquid',
+    'shopify-debut/snippets/icon-play.liquid',
+    'shopify-debut/snippets/icon-plus.liquid',
+    'shopify-debut/snippets/icon-quote.liquid',
+    'shopify-debut/snippets/icon-rss.liquid',
+    'shopify-debut/snippets/icon-search.liquid',
+    'shopify-debut/snippets/icon-shopify-logo.liquid',
+    'shopify-debut/snippets/icon-snapchat.liquid',
+    'shopify-debut/snippets/icon-stripe.liquid',
+    'shopify-debut/snippets/icon-tumblr.liquid',
+    'shopify-debut/snippets/icon-twitter.liquid',
+    'shopify-debut/snippets/icon-vimeo.liquid',
+    'shopify-debut/snippets/icon-visa.liquid',
+    'shopify-debut/snippets/icon-youtube.liquid',
+    'shopify-debut/snippets/image-style.liquid',
+    'shopify-debut/snippets/no-blocks.liquid',
+    'shopify-debut/snippets/pagination.liquid',
+    'shopify-debut/snippets/product-card-grid.liquid',
+    'shopify-debut/snippets/product-card-list.liquid',
+    'shopify-debut/snippets/product-price.liquid',
+    'shopify-debut/snippets/search-form.liquid',
+    'shopify-debut/snippets/site-nav.liquid',
+    'shopify-debut/snippets/social-meta-tags.liquid',
+    'shopify-debut/snippets/social-sharing.liquid',
+    'shopify-debut/templates/404.liquid',
+    'shopify-debut/templates/article.liquid',
+    'shopify-debut/templates/blog.liquid',
+    'shopify-debut/templates/cart.liquid',
+    'shopify-debut/templates/collection.liquid',
+    'shopify-debut/templates/customers/account.liquid',
+    'shopify-debut/templates/customers/activate_account.liquid',
+    'shopify-debut/templates/customers/addresses.liquid',
+    'shopify-debut/templates/customers/login.liquid',
+    'shopify-debut/templates/customers/order.liquid',
+    'shopify-debut/templates/customers/register.liquid',
+    'shopify-debut/templates/customers/reset_password.liquid',
+    'shopify-debut/templates/gift_card.liquid',
+    'shopify-debut/templates/index.liquid',
+    'shopify-debut/templates/list-collections.liquid',
+    'shopify-debut/templates/page.contact.liquid',
+    'shopify-debut/templates/page.liquid',
+    'shopify-debut/templates/password.liquid',
+    'shopify-debut/templates/product.liquid',
+    'shopify-debut/templates/search.liquid',
+    'shopify-naked/assets/shop.js.liquid',
+    'shopify-naked/assets/style.scss.liquid',
+    'shopify-naked/config/settings_data.json',
+    'shopify-naked/config/settings_schema.json',
+    'shopify-naked/layout/theme.liquid',
+    'shopify-naked/snippets/open-graph-tags.liquid',
+    'shopify-naked/snippets/product-item.liquid',
+    'shopify-naked/snippets/site-nav.liquid',
+    'shopify-naked/snippets/twitter-card.liquid',
+    'shopify-naked/templates/404.liquid',
+    'shopify-naked/templates/article.liquid',
+    'shopify-naked/templates/blog.liquid',
+    'shopify-naked/templates/cart.liquid',
+    'shopify-naked/templates/collection.liquid',
+    'shopify-naked/templates/index.liquid',
+    'shopify-naked/templates/page.liquid',
+    'shopify-naked/templates/product.liquid',
+    'shopify-naked/templates/search.liquid',
+    'shopify-skeleton/assets/arrow-down.svg.liquid',
+    'shopify-skeleton/assets/cart.svg.liquid',
+    'shopify-skeleton/assets/shop.js.liquid',
+    'shopify-skeleton/assets/style.scss.liquid',
+    'shopify-skeleton/config/settings_data.json',
+    'shopify-skeleton/layout/theme.liquid',
+    'shopify-skeleton/snippets/article-grid-item.liquid',
+    'shopify-skeleton/snippets/collection-grid-item.liquid',
+    'shopify-skeleton/snippets/collection-listing.liquid',
+    'shopify-skeleton/snippets/open-graph-tags.liquid',
+    'shopify-skeleton/snippets/product-grid-item.liquid',
+    'shopify-skeleton/snippets/site-nav.liquid',
+    'shopify-skeleton/snippets/social-links.liquid',
+    'shopify-skeleton/snippets/twitter-card.liquid',
+    'shopify-skeleton/templates/404.liquid',
+    'shopify-skeleton/templates/article.liquid',
+    'shopify-skeleton/templates/blog.grid.liquid',
+    'shopify-skeleton/templates/blog.liquid',
+    'shopify-skeleton/templates/cart.liquid',
+    'shopify-skeleton/templates/collection.liquid',
+    'shopify-skeleton/templates/index.liquid',
+    'shopify-skeleton/templates/list-collections.liquid',
+    'shopify-skeleton/templates/page.liquid',
+    'shopify-skeleton/templates/product.liquid',
+    'shopify-skeleton/templates/search.liquid',
+    'shopify-timber/assets/ajax-cart.js.liquid',
+    'shopify-timber/assets/gift-card.scss.liquid',
+    'shopify-timber/assets/ico-select.svg.liquid',
+    'shopify-timber/assets/icons.json',
+    'shopify-timber/assets/timber.js.liquid',
+    'shopify-timber/assets/timber.scss.liquid',
+    'shopify-timber/layout/theme.liquid',
+    'shopify-timber/snippets/ajax-cart-template.liquid',
+    'shopify-timber/snippets/blog-sidebar.liquid',
+    'shopify-timber/snippets/breadcrumb.liquid',
+    'shopify-timber/snippets/collection-sidebar.liquid',
+    'shopify-timber/snippets/collection-sorting.liquid',
+    'shopify-timber/snippets/comment.liquid',
+    'shopify-timber/snippets/oldIE-js.liquid',
+    'shopify-timber/snippets/onboarding-empty-collection.liquid',
+    'shopify-timber/snippets/onboarding-featured-collections.liquid',
+    'shopify-timber/snippets/onboarding-featured-products.liquid',
+    'shopify-timber/snippets/product-grid-item.liquid',
+    'shopify-timber/snippets/respond.liquid',
+    'shopify-timber/snippets/search-bar.liquid',
+    'shopify-timber/snippets/social-meta-tags.liquid',
+    'shopify-timber/snippets/tags-article.liquid',
+    'shopify-timber/templates/404.liquid',
+    'shopify-timber/templates/article.liquid',
+    'shopify-timber/templates/blog.liquid',
+    'shopify-timber/templates/cart.liquid',
+    'shopify-timber/templates/collection.liquid',
+    'shopify-timber/templates/collection.list.liquid',
+    'shopify-timber/templates/customers/account.liquid',
+    'shopify-timber/templates/customers/activate_account.liquid',
+    'shopify-timber/templates/customers/addresses.liquid',
+    'shopify-timber/templates/customers/login.liquid',
+    'shopify-timber/templates/customers/order.liquid',
+    'shopify-timber/templates/customers/register.liquid',
+    'shopify-timber/templates/customers/reset_password.liquid',
+    'shopify-timber/templates/gift_card.liquid',
+    'shopify-timber/templates/index.liquid',
+    'shopify-timber/templates/list-collections.liquid',
+    'shopify-timber/templates/page.contact.liquid',
+    'shopify-timber/templates/page.liquid',
+    'shopify-timber/templates/product.liquid',
+    'shopify-timber/templates/search.liquid'
+  ];
+
+  fixtures.forEach(name => {
+    it('should convert ' + name, function() {
+      let exp = name.replace(/\.liquid$/, '.hbs');
+      assert.equal(convert(fixture(name)), expected(exp));
+    });
   });
 });
