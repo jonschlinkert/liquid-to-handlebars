@@ -3,31 +3,24 @@
 var fs = require('fs');
 var path = require('path');
 var ok = require('log-ok');
-var File = require('vinyl');
-var writeFile = require('write');
 var minimist = require('minimist');
+var through = require('through2');
+var vfs = require('vinyl-fs');
+var del = require('delete');
 var pkg = require('../package');
-var convert = require('..');
+var converter = require('..');
+console.time('done in');
 
 var opts = {
   alias: {
-    overwrite: 'o',
+    cwd: 'c',
+    glob: 'g',
     help: 'h',
+    overwrite: 'o',
+    replace: 'r',
     version: 'V'
   }
 };
-
-function help() {
-  console.error('Usage: $ lth [options] <file> <dest>');
-  console.error();
-  console.error('  file:  The file to convert');
-  console.error('  dest:  Required if --overwrite is not defined');
-  console.error();
-  console.error('Options:');
-  console.error();
-  console.error('-o, --overwrite', 'Overwrite the source file');
-  console.error();
-}
 
 var argv = minimist(process.argv.slice(2), opts);
 if (argv.version) {
@@ -40,40 +33,94 @@ if (argv.help) {
   process.exit();
 }
 
-var filepath, destpath;
-if (argv._[0]) {
-  filepath = argv._[0];
-  destpath = argv._[1];
-} else {
-  filepath = argv.file;
-  destpath = argv.dest;
-}
+var defaults = {cwd: process.cwd(), ignore: ['**/node_modules/**']};
+var options = Object.assign({}, defaults, argv);
+options.cwd = path.join(options.cwd, argv._[0]);
+var total = [];
+var files = [];
 
-if (!destpath && argv.overwrite) {
-  destpath = filepath;
-}
+var pattern = options.glob || '**/*.{html,md,markdown,liquid}';
+try {
+  var stat = fs.statSync(options.cwd);
+  if (stat.isFile()) {
+    pattern = options.cwd;
+    options.cwd = process.cwd();
+  }
+} catch (err) {}
 
-if (!filepath || !destpath) {
-  help();
-  process.exit(1);
-}
-
-fs.readFile(path.resolve(filepath), function(err, buf) {
-  handleError(err);
-
-  var idx = 0;
-  var str = buf.toString();
-  str = convert(str, argv);
-
-  writeFile(destpath, str, function(err) {
-    handleError(err);
-    ok('Success:', filepath);
-  });
-});
-
-function handleError(err) {
-  if (err) {
+vfs.src(pattern, options)
+  .pipe(convert(options))
+  .on('error', (err) => {
     console.error(err);
     process.exit(1);
-  }
+  })
+  .pipe(through.obj(function(file, enc, next) {
+    var input = file.contents.toString();
+    input = input.replace(/```liquid/gmi, '```handlebars');
+
+    if (!options.replace) {
+      file.contents = new Buffer(input);
+      next(null, file);
+      return;
+    }
+
+    var segs = options.replace.split(',');
+    var re = new RegExp(segs[0], 'gim');
+    var to = segs[1];
+
+    var str = input.replace(re, function(m) {
+      if (m.charAt(0) === m.charAt(0).toUpperCase()) {
+        return to.charAt(0).toUpperCase() + to.slice(1);
+      }
+      return to;
+    });
+
+    file.contents = new Buffer(str);
+    next(null, file);
+  }))
+  .pipe(vfs.dest((file) => {
+    total.push(file);
+    switch (file.extname) {
+      case '.liquid':
+      case '.html':
+        files.push(file.history[0]);
+        file.extname = '.hbs';
+        break;
+      case '.markdown':
+      case '.mkdown':
+      case '.mdown':
+        files.push(file.history[0]);
+        file.extname = '.md';
+        break;
+    }
+    return file.base;
+  }))
+  .on('error', (err) => {
+    console.error(err);
+    process.exit(1);
+  })
+  .on('end', () => {
+    console.timeEnd('done in');
+    console.log('converted', total.length, 'files');
+    del.sync(files);
+    process.exit();
+  });
+
+function convert(options) {
+  return through.obj(function(file, enc, next) {
+    file.contents = new Buffer(converter(file.contents.toString(), options));
+    next(null, file);
+  });
+}
+
+function help() {
+  console.error('Usage: $ lth [options] <file> <dest>');
+  console.error();
+  console.error('  file:  The file to convert');
+  console.error('  dest:  Required if --overwrite is not defined');
+  console.error();
+  console.error('Options:');
+  console.error();
+  console.error('-o, --overwrite', 'Overwrite the source file');
+  console.error();
 }
