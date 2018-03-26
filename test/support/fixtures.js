@@ -14,7 +14,8 @@ function fixtures(pattern, destBase, options) {
     const file = files[i];
     const fp = path.resolve(opts.cwd, file);
 
-    const dest = path.resolve(destBase, file);
+    let dest = path.resolve(destBase, file);
+    console.log(dest)
     const str = fs.readFileSync(fp, 'utf8');
     dest = dest.replace(/\.liquid$/, '.hbs');
     write.sync(dest, converter.convert(str));

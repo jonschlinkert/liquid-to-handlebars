@@ -20,7 +20,7 @@
     "liquid-to-handlebars": "bin/cli.js"
   },
   "engines": {
-    "node": ">=0.8"
+    "node": ">=4"
   },
   "scripts": {
     "test": "mocha"
