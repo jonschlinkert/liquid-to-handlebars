@@ -1,7 +1,7 @@
 {
   "name": "liquid-to-handlebars",
   "description": "Convert liquid templates to handlebars templates.",
-  "version": "2.0.7",
+  "version": "3.0.0",
   "homepage": "https://github.com/jonschlinkert/liquid-to-handlebars",
   "author": "Jon Schlinkert (https://github.com/jonschlinkert)",
   "repository": "jonschlinkert/liquid-to-handlebars",
@@ -73,7 +73,7 @@
     }
   },
   "verb": {
-    "toc": false,
+    "toc": true,
     "layout": "default",
     "tasks": [
       "readme"
@@ -87,14 +87,14 @@
         "handlebars"
       ]
     },
-    "lint": {
-      "reflinks": true
-    },
     "reflinks": [
       "handlebars",
       "handlebars-helpers",
       "liquid-filters",
       "template-helpers"
-    ]
+    ],
+    "lint": {
+      "reflinks": true
+    }
   }
 }
