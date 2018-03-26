@@ -25,9 +25,6 @@ describe('all liquid docs', function() {
         const expected = fs.readFileSync(cwd('expected/liquid-docs', name), 'utf8');
         const fixture = fs.readFileSync(path.join(fixtures, name), 'utf8');
         const actual = converter.convert(fixture);
-        // if (expected !== actual) {
-        //   // console.log(actual)
-        // }
         assert.equal(actual, expected);
       });
     });
@@ -53,7 +50,7 @@ describe('all liquid docs', function() {
       const fp = path.join(fixtures, name);
       const expected = fs.readFileSync(cwd('expected/liquid-docs', name), 'utf8');
       const fixture = fs.readFileSync(fp, 'utf8');
-      const actual = converter.convert(fixture, {prefix: '@'});
+      const actual = converter.convert(fixture, { prefix: '@' });
       assert.equal(actual, expected);
     });
   });
@@ -65,9 +62,6 @@ describe('all liquid docs', function() {
         const expected = fs.readFileSync(cwd('expected/_layouts', name), 'utf8');
         const fixture = fs.readFileSync(path.join(fixtures, name), 'utf8');
         const actual = converter.convert(fixture);
-        if (expected !== actual) {
-          console.log(actual);
-        }
         assert.equal(actual, expected);
       });
     });
@@ -80,9 +74,6 @@ describe('all liquid docs', function() {
         const expected = fs.readFileSync(cwd('expected/_includes', name), 'utf8');
         const fixture = fs.readFileSync(path.join(fixtures, name), 'utf8');
         const actual = converter.convert(fixture);
-        if (expected !== actual) {
-          console.log(actual);
-        }
         assert.equal(actual, expected);
       });
     });

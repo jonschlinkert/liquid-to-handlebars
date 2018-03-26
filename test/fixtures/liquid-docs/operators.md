@@ -2,8 +2,11 @@
 title: Operators
 description: Using operators to perform calculations in the Liquid template language.
 ---
+
 Liquid includes many logical and comparison operators.
+
 ## Basic operators
+
 <table>
   <tbody>
     <tr>
@@ -40,7 +43,9 @@ Liquid includes many logical and comparison operators.
     </tr>
   </tbody>
 </table>
+
 For example:
+
 ```liquid
 {% raw %}
 {% if product.title == "Awesome Shoes" %}
@@ -48,7 +53,9 @@ For example:
 {% endif %}
 {% endraw %}
 ```
+
 You can use multiple operators in a tag:
+
 ```liquid
 {% raw %}
 {% if product.type == "Shirt" or product.type == "Shoes" %}
@@ -56,8 +63,11 @@ You can use multiple operators in a tag:
 {% endif %}
 {% endraw %}
 ```
+
 ## contains
+
 `contains` checks for the presence of a substring inside a string.
+
 ```liquid
 {% raw %}
 {% if product.title contains 'Pack' %}
@@ -65,7 +75,9 @@ You can use multiple operators in a tag:
 {% endif %}
 {% endraw %}
 ```
+
 `contains` can also check for the presence of a string in an array of strings.
+
 ```liquid
 {% raw %}
 {% if product.tags contains 'Hello' %}
@@ -73,4 +85,5 @@ You can use multiple operators in a tag:
 {% endif %}
 {% endraw %}
 ```
+
 `contains` can only search strings. You cannot use it to check for an object in an array of objects.

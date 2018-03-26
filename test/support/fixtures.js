@@ -22,6 +22,10 @@ function fixtures(pattern, destBase, options) {
   }
 };
 
-fixtures('shopify-*/**/*.{*liquid*,json}', 'test/expected', {
+fixtures('liquid-*/*.md', 'test/expected', {
   cwd: path.join(__dirname, '../fixtures')
 });
+
+// fixtures('shopify-*/**/*.{*liquid*,json}', 'test/expected', {
+//   cwd: path.join(__dirname, '../fixtures')
+// });
