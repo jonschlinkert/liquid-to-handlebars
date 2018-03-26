@@ -1,8 +1,8 @@
 'use strict';
 
 require('mocha');
-var assert = require('assert');
-var utils = require('../lib/utils');
+const assert = require('assert');
+const utils = require('../lib/utils');
 
 describe('utils', function() {
   describe('isDotProp', function() {

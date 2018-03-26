@@ -113,9 +113,9 @@ We made 1 million dollars {{#comment}} in losses {{/comment}} this year
 Raw temporarily disables tag processing.
 This is useful for generating content (eg, Mustache, Handlebars) which uses conflicting syntax.
 ```liquid
-{{#raw}}
+{{{{raw}}}}
   In Handlebars, {{ this }} will be HTML-escaped, but {{{ that }}} will not.
-{{/raw}}
+{{{{/raw}}}}
 ```
 ### If / Else
 `if / else` statements should be familiar from other programming languages. Liquid implements them with the following tags:

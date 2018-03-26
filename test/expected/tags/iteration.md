@@ -7,11 +7,11 @@ Iteration tags run blocks of code repeatedly.
 Repeatedly executes a block of code. For a full list of attributes available within a `for` loop, see [forloop (object)](https://docs.shopify.com/themes/liquid/objects/for-loops).
 <p class="code-label">Input</p>
 ```liquid
-{{#raw}}
+{{{{raw}}}}
   {{#each collection.products as |product|}}
     {{ product.title }}
   {{/each}}
-{{/raw}}
+{{{{/raw}}}}
 ```
 <p class="code-label">Output</p>
 ```text
@@ -21,7 +21,7 @@ hat shirt pants
 Causes the loop to stop iterating when it encounters the `break` tag.
 <p class="code-label">Input</p>
 ```liquid
-{{#raw}}
+{{{{raw}}}}
 {{#each (range 1 5) as |i|}}
   {{#if (is i 4)}}
     {{break}}
@@ -29,7 +29,7 @@ Causes the loop to stop iterating when it encounters the `break` tag.
     {{ i }}
   {{/if}}
 {{/each}}
-{{/raw}}
+{{{{/raw}}}}
 ```
 <p class="code-label">Output</p>
 ```text
@@ -39,7 +39,7 @@ Causes the loop to stop iterating when it encounters the `break` tag.
 Causes the loop to skip the current iteration when it encounters the `continue` tag.
 <p class="code-label">Input</p>
 ```liquid
-{{#raw}}
+{{{{raw}}}}
 {{#each (range 1 5) as |i|}}
   {{#if (is i 4)}}
     {{continue}}
@@ -47,7 +47,7 @@ Causes the loop to skip the current iteration when it encounters the `continue` 
     {{ i }}
   {{/if}}
 {{/each}}
-{{/raw}}
+{{{{/raw}}}}
 ```
 <p class="code-label">Output</p>
 ```text
@@ -58,12 +58,12 @@ Causes the loop to skip the current iteration when it encounters the `continue` 
 Limits the loop to the specified number of iterations.
 <p class="code-label">Input</p>
 ```liquid
-{{#raw}}
+{{{{raw}}}}
 <!-- if array = [1,2,3,4,5,6] -->
 {{#each (limit array 2) as |item|}}
   {{ item }}
 {{/each}}
-{{/raw}}
+{{{{/raw}}}}
 ```
 <p class="code-label">Output</p>
 ```text
@@ -73,12 +73,12 @@ Limits the loop to the specified number of iterations.
 Begins the loop at the specified index.
 <p class="code-label">Input</p>
 ```liquid
-{{#raw}}
+{{{{raw}}}}
 <!-- if array = [1,2,3,4,5,6] -->
 {{#each (offset array 2) as |item|}}
   {{ item }}
 {{/each}}
-{{/raw}}
+{{{{/raw}}}}
 ```
 <p class="code-label">Output</p>
 ```text
@@ -88,7 +88,7 @@ Begins the loop at the specified index.
 Defines a range of numbers to loop through. The range can be defined by both literal and variable numbers.
 <p class="code-label">Input</p>
 ```liquid
-{{#raw}}
+{{{{raw}}}}
 {{#each (range 3 5) as |i|}}
   {{ i }}
 {{/each}}
@@ -96,7 +96,7 @@ Defines a range of numbers to loop through. The range can be defined by both lit
 {{#each (range 1 num) as |i|}}
   {{ i }}
 {{/each}}
-{{/raw}}
+{{{{/raw}}}}
 {{#each (range 1 item.quantity) as |i|}}
   {{ i }}
 {{/each}}
@@ -110,12 +110,12 @@ Defines a range of numbers to loop through. The range can be defined by both lit
 Reverses the order of the loop.
 <p class="code-label">Input</p>
 ```liquid
-{{#raw}}
+{{{{raw}}}}
 <!-- if array = [1,2,3,4,5,6] -->
 {{#each array as |item|}}
   {{ item }}
 {{/each}}
-{{/raw}}
+{{{{/raw}}}}
 ```
 <p class="code-label">Output</p>
 ```text
@@ -126,12 +126,12 @@ Loops through a group of strings and outputs them in the order that they were pa
 `cycle` must be used within a [for](#for) loop block.
 <p class="code-label">Input</p>
 ```liquid
-{{#raw}}
+{{{{raw}}}}
 {{cycle 'one' 'two' 'three'}}
 {{cycle 'one' 'two' 'three'}}
 {{cycle 'one' 'two' 'three'}}
 {{cycle 'one' 'two' 'three'}}
-{{/raw}}
+{{{{/raw}}}}
 ```
 <p class="code-label">Output</p>
 ```text
@@ -149,13 +149,13 @@ Uses for `cycle` include:
 Generates an HTML table. Must be wrapped in opening `<table>` and closing `</table>` HTML tags.
 <p class="code-label">Input</p>
 ```liquid
-{{#raw}}
+{{{{raw}}}}
 <table>
 {{#tablerow collection.products as |product|}}
   {{ product.title }}
 {{/tablerow}}
 </table>
-{{/raw}}
+{{{{/raw}}}}
 ```
 <p class="code-label">Output</p>
 ```html
@@ -187,11 +187,11 @@ Generates an HTML table. Must be wrapped in opening `<table>` and closing `</tab
 Defines how many columns the tables should have.
 <p class="code-label">Input</p>
 ```liquid
-{{#raw}}
+{{{{raw}}}}
 {{#tablerow (cols collection.products 2) as |product|}}
   {{ product.title }}
 {{/tablerow}}
-{{/raw}}
+{{{{/raw}}}}
 ```
 <p class="code-label">Output</p>
 ```html
@@ -225,25 +225,25 @@ Defines how many columns the tables should have.
 #### limit
 Exits the tablerow after a specific index.
 ```liquid
-{{#raw}}
+{{{{raw}}}}
 {{#tablerow (limit (cols collection.products 2) 3) as |product|}}
   {{ product.title }}
 {{/tablerow}}
-{{/raw}}
+{{{{/raw}}}}
 ```
 ### offset
 Starts the tablerow after a specific index.
 ```liquid
-{{#raw}}
+{{{{raw}}}}
 {{#tablerow (offset (cols collection.products 2) 3) as |product|}}
   {{ product.title }}
 {{/tablerow}}
-{{/raw}}
+{{{{/raw}}}}
 ```
 ### range
 Defines a range of numbers to loop through. The range can be defined by both literal and variable numbers.
 ```liquid
-{{#raw}}
+{{{{raw}}}}
 <!--variable number example-->
 {{assign 'num' 4}}
 <table>
@@ -257,5 +257,5 @@ Defines a range of numbers to loop through. The range can be defined by both lit
   {{ i }}
 {{/tablerow}}
 </table>
-{{/raw}}
+{{{{/raw}}}}
 ```

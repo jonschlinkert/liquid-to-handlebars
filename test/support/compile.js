@@ -16,7 +16,6 @@ function expected(pattern, options) {
     var str = fs.readFileSync(fp, 'utf8');
     var fn = hbs.compile(str);
     fn();
-
   }
 };
 

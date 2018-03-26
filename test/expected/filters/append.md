@@ -5,9 +5,9 @@ description: Liquid filter that appends a string to another string.
 Concatenates two strings and returns the concatenated value.
 <p class="code-label">Input</p>
 ```liquid
-{{#raw}}
+{{{{raw}}}}
 {{append '/my/fancy/url' '.html'}}
-{{/raw}}
+{{{{/raw}}}}
 ```
 <p class="code-label">Output</p>
 ```text
@@ -16,10 +16,10 @@ Concatenates two strings and returns the concatenated value.
 `append` can also be used with variables:
 <p class="code-label">Input</p>
 ```liquid
-{{#raw}}
+{{{{raw}}}}
 {{assign 'filename' '/index.html'}}
 {{append 'website.com' filename}}
-{{/raw}}
+{{{{/raw}}}}
 ```
 <p class="code-label">Output</p>
 ```text

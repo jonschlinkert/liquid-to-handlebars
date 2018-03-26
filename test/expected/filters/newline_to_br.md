@@ -5,13 +5,13 @@ description: Liquid filter that converts newlines in an input string to HTML <br
 Replaces every newline (`\n`) with an HTML line break (`<br>`).
 <p class="code-label">Input</p>
 ```liquid
-{{#raw}}
+{{{{raw}}}}
 {{#capture 'string_with_newlines'}}
 Hello
 there
 {{/capture}}
 {{newline_to_br string_with_newlines}}
-{{/raw}}
+{{{{/raw}}}}
 ```
 <p class="code-label">Output</p>
 ```html

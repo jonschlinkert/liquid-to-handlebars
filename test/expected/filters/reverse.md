@@ -5,10 +5,10 @@ description: Liquid filter that reverses an array, or a string converted to an a
 Reverses the order of the items in an array. `reverse` cannot reverse a string.
 <p class="code-label">Input</p>
 ```liquid
-{{#raw}}
+{{{{raw}}}}
 {{assign 'my_array' (split 'apples, oranges, peaches, plums' ', ')}}
 {{join (reverse my_array) ', '}}
-{{/raw}}
+{{{{/raw}}}}
 ```
 <p class="code-label">Output</p>
 ```text
@@ -18,9 +18,9 @@ Reverses the order of the items in an array. `reverse` cannot reverse a string.
 `reverse` cannot be used directly on a string, but you can split a string into an array, reverse the array, and rejoin it by chaining together filters:
 <p class="code-label">Input</p>
 ```liquid
-{{#raw}}
+{{{{raw}}}}
 {{join (reverse (split 'Ground control to Major Tom.' '')) ''}}
-{{/raw}}
+{{{{/raw}}}}
 ```
 <p class="code-label">Output</p>
 ```text

@@ -6,9 +6,9 @@ Allows you to specify a fallback in case a value doesn't exist. `default` will s
 In this example, `product_price` is not defined, so the default value is used.
 <p class="code-label">Input</p>
 ```liquid
-{{#raw}}
+{{{{raw}}}}
 {{default product_price 2.99}}
-{{/raw}}
+{{{{/raw}}}}
 ```
 <p class="code-label">Output</p>
 ```text
@@ -17,10 +17,10 @@ In this example, `product_price` is not defined, so the default value is used.
 In this example, `product_price` is defined, so the default value is not used.
 <p class="code-label">Input</p>
 ```liquid
-{{#raw}}
+{{{{raw}}}}
 {{assign 'product_price' 4.99}}
 {{default product_price 2.99}}
-{{/raw}}
+{{{{/raw}}}}
 ```
 <p class="code-label">Output</p>
 ```text
@@ -29,10 +29,10 @@ In this example, `product_price` is defined, so the default value is not used.
 In this example, `product_price` is empty, so the default value is used.
 <p class="code-label">Input</p>
 ```liquid
-{{#raw}}
+{{{{raw}}}}
 {{assign 'product_price' ''}}
 {{default product_price 2.99}}
-{{/raw}}
+{{{{/raw}}}}
 ```
 <p class="code-label">Output</p>
 ```text

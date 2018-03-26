@@ -6,9 +6,9 @@ Returns a substring of 1 character beginning at the index specified by the argum
 String indices are numbered starting from 0.
 <p class="code-label">Input</p>
 ```liquid
-{{#raw}}
+{{{{raw}}}}
 {{slice 'Liquid' 0}}
-{{/raw}}
+{{{{/raw}}}}
 ```
 <p class="code-label">Output</p>
 ```text
@@ -16,9 +16,9 @@ String indices are numbered starting from 0.
 ```
 <p class="code-label">Input</p>
 ```liquid
-{{#raw}}
+{{{{raw}}}}
 {{slice 'Liquid' 2}}
-{{/raw}}
+{{{{/raw}}}}
 ```
 <p class="code-label">Output</p>
 ```text
@@ -26,9 +26,9 @@ String indices are numbered starting from 0.
 ```
 <p class="code-label">Input</p>
 ```liquid
-{{#raw}}
+{{{{raw}}}}
 {{slice 'Liquid' 2 5}}
-{{/raw}}
+{{{{/raw}}}}
 ```
 <p class="code-label">Output</p>
 ```text
@@ -37,9 +37,9 @@ String indices are numbered starting from 0.
 If the first parameter is a negative number, the indices are counted from the end of the string:
 <p class="code-label">Input</p>
 ```liquid
-{{#raw}}
+{{{{raw}}}}
 {{slice 'Liquid' -3 2}}
-{{/raw}}
+{{{{/raw}}}}
 ```
 <p class="code-label">Output</p>
 ```text

@@ -7,12 +7,12 @@ Variable tags create new Liquid variables.
 Creates a new variable.
 <p class="code-label">Input</p>
 ```liquid
-{{#raw}}
+{{{{raw}}}}
 {{assign 'my_variable' false}}
 {{#if (isnt my_variable true)}}
   This statement is valid.
 {{/if}}
-{{/raw}}
+{{{{/raw}}}}
 ```
 <p class="code-label">Output</p>
 ```text
@@ -21,23 +21,23 @@ Creates a new variable.
 Wrap a variable in quotations `"` to save it as a string.
 <p class="code-label">Input</p>
 ```liquid
-{{#raw}}
+{{{{raw}}}}
 {{assign 'foo' 'bar'}}
 {{ foo }}
-{{/raw}}
+{{{{/raw}}}}
 ```
 <p class="code-label">Output</p>
 ```text
 bar
 ```
 ## capture
-Captures the string inside of the opening and closing tags and assigns it to a variable. Variables created through `{{#raw}}{{#capture}}{{/capture}}` are strings.
+Captures the string inside of the opening and closing tags and assigns it to a variable. Variables created through `{{{{raw}}}}{{#capture}}{{/capture}}` are strings.
 <p class="code-label">Input</p>
 ```liquid
-{{#raw}}
+{{{{raw}}}}
 {{#capture 'my_variable'}}I am being captured.{{/capture}}
 {{ my_variable }}
-{{/raw}}
+{{{{/raw}}}}
 ```
 <p class="code-label">Output</p>
 ```text
@@ -61,11 +61,11 @@ I am 35 and my favourite food is pizza.
 Creates a new number variable, and increases its value by one every time it is called. The initial value is 0.
 <p class="code-label">Input</p>
 ```liquid
-{{#raw}}
+{{{{raw}}}}
 {{increment my_counter}}
 {{increment my_counter}}
 {{increment my_counter}}
-{{/raw}}
+{{{{/raw}}}}
 ```
 <p class="code-label">Output</p>
 ```text
@@ -77,13 +77,13 @@ Variables created through the `increment` tag are independent from variables cre
 In the example below, a variable named "var" is created through `assign`. The `increment` tag is then used several times on a variable with the same name. Note that the `increment` tag does not affect the value of "var" that was created through `assign`.
 <p class="code-label">Input</p>
 ```liquid
-{{#raw}}
+{{{{raw}}}}
 {{assign 'var' 10}}
 {{increment var}}
 {{increment var}}
 {{increment var}}
 {{ var }}
-{{/raw}}
+{{{{/raw}}}}
 ```
 <p class="code-label">Output</p>
 ```text
@@ -96,11 +96,11 @@ In the example below, a variable named "var" is created through `assign`. The `i
 Creates a new number variable, and decreases its value by one every time it is called. The initial value is -1.
 <p class="code-label">Input</p>
 ```liquid
-{{#raw}}
+{{{{raw}}}}
 {{decrement variable}}
 {{decrement variable}}
 {{decrement variable}}
-{{/raw}}
+{{{{/raw}}}}
 ```
 <p class="code-label">Output</p>
 ```text

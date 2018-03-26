@@ -1,11 +1,9 @@
 'use strict';
 
 require('mocha');
-var fs = require('fs');
-var path = require('path');
-var assert = require('assert');
-var tests = require('./support/tests');
-var convert = require('../lib/convert').conditional;
+const assert = require('assert');
+const tests = require('./support/tests');
+const convert = require('../lib/convert').conditional;
 
 describe('operators', function() {
   describe('object notation', function() {

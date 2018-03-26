@@ -1,17 +1,17 @@
 'use strict';
 
 require('mocha');
-var fs = require('fs');
-var path = require('path');
-var assert = require('assert');
-var support = require('./support');
-var convert = require('..');
-var cwd = path.join.bind(path, __dirname);
-var fixtures = cwd('fixtures/tags');
+const fs = require('fs');
+const path = require('path');
+const assert = require('assert');
+const support = require('./support');
+const converter = require('..');
+const cwd = path.join.bind(path, __dirname);
+const fixtures = cwd('fixtures/tags');
 
 describe('tags', function() {
   describe('unknown tags', function() {
-    var units = [
+    const units = [
       {
         fixture: '{%foo%}',
         expected: '{{ foo }}'
@@ -42,24 +42,24 @@ describe('tags', function() {
       }
     ];
 
-    var hasOnly = support.hasOnly(units);
+    const hasOnly = support.hasOnly(units);
     units.forEach(function(unit) {
       if (hasOnly && !unit.only) return;
       it('should convert ' + unit.fixture, function() {
-        assert.equal(convert(unit.fixture), unit.expected, unit.fixture);
+        assert.equal(converter.convert(unit.fixture), unit.expected, unit.fixture);
       });
     });
   });
 
   describe('block tags', function() {
-    var units = [
+    const units = [
       {
         fixture: '{% unless settings.homepage_collection == blank or collections[settings.homepage_collection].empty? %}fooo{% endunless %}',
         expected: '{{#unless (or (is settings.homepage_collection blank) (get collections (toPath settings.homepage_collection \'empty\')))}}fooo{{/unless}}'
       },
       {
-        fixture: '{% raw %}{% capture %}{% endraw %}{% capture %}foo{% endcapture %}',
-        expected: '{{#raw}}{{#capture}}{{/capture}}{{#capture}}foo{{/capture}}'
+        fixture: '{% raw %}{% capture %}{% endcapture %}{% endraw %}{% capture %}foo{% endcapture %}',
+        expected: '{{{{raw}}}}{{#capture}}{{/capture}}{{{{/raw}}}}{{#capture}}foo{{/capture}}'
       },
       {
         fixture: '{% if collections[product_vendor_handle].handle == product_vendor_handle %}{% endif %}',
@@ -69,24 +69,28 @@ describe('tags', function() {
         fixture: '<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox" {% if page.title =="Home" %}checked{% endif %}>',
         expected: '<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox" {{#if (is page.title \'Home\')}}checked{{/if}}>'
       },
+      {
+        fixture: '**Objects** tell Liquid where to show content on a page. Objects and variable names are denoted by double curly braces: `{% raw %}{{{% endraw %}` and `{% raw %}}}{% endraw %}`.',
+        expected: '**Objects** tell Liquid where to show content on a page. Objects and variable names are denoted by double curly braces: `{{{{raw}}}}{{{% endraw %}` and `{% raw %}}}{{{{/raw}}}}`.'
+      }
     ];
 
-    var hasOnly = support.hasOnly(units);
+    const hasOnly = support.hasOnly(units);
     units.forEach(function(unit) {
       if (hasOnly && !unit.only) return;
       it('should convert ' + unit.fixture, function() {
-        assert.equal(convert(unit.fixture), unit.expected, unit.fixture);
+        assert.equal(converter.convert(unit.fixture), unit.expected, unit.fixture);
       });
     });
   });
 
   describe('liquid tags', function() {
-    fs.readdirSync(fixtures).forEach(function(name) {
+    fs.readdirSync(fixtures).forEach(name => {
       // if (!/layout/.test(name)) return;
       it(`should convert ${name} tags`, function() {
-        var expected = fs.readFileSync(cwd('expected/tags', name), 'utf8');
-        var fixture = fs.readFileSync(path.join(fixtures, name), 'utf8');
-        var actual = convert(fixture);
+        const expected = fs.readFileSync(cwd('expected/tags', name), 'utf8');
+        const fixture = fs.readFileSync(path.join(fixtures, name), 'utf8');
+        const actual = converter.convert(fixture);
         assert.equal(actual, expected);
       });
     });

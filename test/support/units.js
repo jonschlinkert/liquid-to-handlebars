@@ -22,5 +22,5 @@ function fixtures(pattern, dest, options) {
 fixtures('shopify-*/**/*.{*liquid*,json}', path.join(process.cwd(), 'temp.js'), {cwd: path.join(__dirname, '../fixtures')});
 
 function create(from, to) {
-  return `assert.equal(convert(fixture('${from}')), expected('${to}'));`;
+  return `assert.equal(converter.convert(fixture('${from}')), expected('${to}'));`;
 }

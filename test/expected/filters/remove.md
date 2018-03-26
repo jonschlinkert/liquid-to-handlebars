@@ -5,9 +5,9 @@ description: Liquid filter that removes all occurences of a given substring from
 Removes every occurrence of the specified substring from a string.
 <p class="code-label">Input</p>
 ```liquid
-{{#raw}}
+{{{{raw}}}}
 {{remove 'I strained to see the train through the rain' 'rain'}}
-{{/raw}}
+{{{{/raw}}}}
 ```
 <p class="code-label">Output</p>
 ```text

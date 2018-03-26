@@ -2,12 +2,12 @@
 title: size
 description: Liquid filter that returns the number of characters in a string or the number of items in an array.
 ---
-Returns the number of characters in a string or the number of items in an array. `size` can also be used with dot notation (for example, `{{#raw}}{{ my_string.size }}{{/raw}}`). This allows you to use `size` inside  tags such as conditionals.
+Returns the number of characters in a string or the number of items in an array. `size` can also be used with dot notation (for example, `{{{{raw}}}}{{ my_string.size }}{{{{/raw}}}}`). This allows you to use `size` inside  tags such as conditionals.
 <p class="code-label">Input</p>
 ```liquid
-{{#raw}}
+{{{{raw}}}}
 {{size 'Ground control to Major Tom.'}}
-{{/raw}}
+{{{{/raw}}}}
 ```
 <p class="code-label">Output</p>
 ```text
@@ -15,10 +15,10 @@ Returns the number of characters in a string or the number of items in an array.
 ```
 <p class="code-label">Input</p>
 ```liquid
-{{#raw}}
+{{{{raw}}}}
 {{assign 'my_array' (split 'apples, oranges, peaches, plums' ', ')}}
 {{size my_array}}
-{{/raw}}
+{{{{/raw}}}}
 ```
 <p class="code-label">Output</p>
 ```text
@@ -27,9 +27,9 @@ Returns the number of characters in a string or the number of items in an array.
 ```
 Using dot notation:
 ```liquid
-{{#raw}}
+{{{{raw}}}}
 {{#if (gt site.pages.size 10)}}
   This is a big website!
 {{/if}}
-{{/raw}}
+{{{{/raw}}}}
 ```

@@ -5,9 +5,9 @@ description: Liquid filter that gets the absolute value of a number.
 Returns the absolute value of a number.
 <p class="code-label">Input</p>
 ```liquid
-{{#raw}}
+{{{{raw}}}}
 {{abs -17}}
-{{/raw}}
+{{{{/raw}}}}
 ```
 <p class="code-label">Output</p>
 ```text
@@ -15,9 +15,9 @@ Returns the absolute value of a number.
 ```
 <p class="code-label">Input</p>
 ```liquid
-{{#raw}}
+{{{{raw}}}}
 {{abs 4}}
-{{/raw}}
+{{{{/raw}}}}
 ```
 <p class="code-label">Output</p>
 ```text
@@ -26,9 +26,9 @@ Returns the absolute value of a number.
 `abs` will also work on a string if the string only contains a number.
 <p class="code-label">Input</p>
 ```liquid
-{{#raw}}
+{{{{raw}}}}
 {{abs '-19.86'}}
-{{/raw}}
+{{{{/raw}}}}
 ```
 <p class="code-label">Output</p>
 ```text

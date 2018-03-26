@@ -93,7 +93,7 @@
             {{/if}}
             {{#if section.settings.stock_enable}}
               <li>
-                <span id="ProductStock-{{ section.id }}" class="product-single__stock {{#unless (and current_variant.inventory_management (lt current_variant.inventory_quantity 10) (or (gt current_variant.inventory_quantity 0)  current_variant.inventory_management) (lte current_variant.inventory_quantity 0) current_variant.incoming)}} hide{{/unless}}">
+                <span id="ProductStock-{{ section.id }}" class="product-single__stock {{#unless (and current_variant.inventory_management (lt current_variant.inventory_quantity 10) (or (gt current_variant.inventory_quantity 0) current_variant.inventory_management) (lte current_variant.inventory_quantity 0) current_variant.incoming)}} hide{{/unless}}">
                   {{#if current_variant.inventory_management}}
                     {{#if (and (lt current_variant.inventory_quantity 10) (gt current_variant.inventory_quantity 0))}}
                       {{assign 'qty' current_variant.inventory_quantity}}

@@ -151,7 +151,7 @@
                  </div><!-- .options -->
                  <div class="example">
                    Example [products are: hat, pez, pad]
-                  <code> &lt;table&gt;<br />{{% tablerow product in collection.products cols: 2 %}<br />
+                  <code> &lt;table&gt;<br />{{#tablerow (cols collection.products undefined) as |product|}}<br />
                        &lt;td&gt;<br />
                        {{ product.title }}<br />
                        &lt;/td&gt;<br />

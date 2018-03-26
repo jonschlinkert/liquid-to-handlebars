@@ -1,17 +1,16 @@
 #!/usr/bin/env node
 
-var fs = require('fs');
-var path = require('path');
-var ok = require('log-ok');
-var minimist = require('minimist');
-var through = require('through2');
-var vfs = require('vinyl-fs');
-var del = require('delete');
-var pkg = require('../package');
-var converter = require('..');
-console.time('done in');
-
-var opts = {
+const fs = require('fs');
+const path = require('path');
+const ok = require('log-ok');
+const del = require('delete');
+const vfs = require('vinyl-fs');
+const isBinary = require('file-is-binary');
+const minimist = require('minimist');
+const through = require('through2');
+const pkg = require('../package');
+const converter = require('..');
+const argv = minimist(process.argv.slice(2), {
   alias: {
     cwd: 'c',
     glob: 'g',
@@ -20,9 +19,9 @@ var opts = {
     replace: 'r',
     version: 'V'
   }
-};
+});
 
-var argv = minimist(process.argv.slice(2), opts);
+console.time('done in');
 if (argv.version) {
   console.log(pkg.name, pkg.version);
   process.exit();
@@ -33,52 +32,23 @@ if (argv.help) {
   process.exit();
 }
 
-var defaults = {cwd: process.cwd(), ignore: ['**/node_modules/**']};
-var options = Object.assign({}, defaults, argv);
-options.cwd = path.join(options.cwd, argv._[0]);
-var total = [];
-var files = [];
+const defaults = {
+  cwd: process.cwd(),
+  glob: '**/*.{html,md,markdown,liquid}',
+  ignore: ['**/node_modules/**']
+};
 
-var pattern = options.glob || '**/*.{html,md,markdown,liquid}';
-try {
-  var stat = fs.statSync(options.cwd);
-  if (stat.isFile()) {
-    pattern = options.cwd;
-    options.cwd = process.cwd();
-  }
-} catch (err) {}
+const options = Object.assign({}, defaults, argv);
+options.cwd = path.resolve(options.cwd);
+const total = [];
+const files = [];
 
-vfs.src(pattern, options)
+vfs.src(options.glob, options)
   .pipe(convert(options))
-  .on('error', (err) => {
-    console.error(err);
-    process.exit(1);
-  })
-  .pipe(through.obj(function(file, enc, next) {
-    var input = file.contents.toString();
-    input = input.replace(/```liquid/gmi, '```handlebars');
-
-    if (!options.replace) {
-      file.contents = new Buffer(input);
-      next(null, file);
-      return;
-    }
-
-    var segs = options.replace.split(',');
-    var re = new RegExp(segs[0], 'gim');
-    var to = segs[1];
-
-    var str = input.replace(re, function(m) {
-      if (m.charAt(0) === m.charAt(0).toUpperCase()) {
-        return to.charAt(0).toUpperCase() + to.slice(1);
-      }
-      return to;
-    });
-
-    file.contents = new Buffer(str);
-    next(null, file);
-  }))
-  .pipe(vfs.dest((file) => {
+  .on('error', err => handleError(err))
+  .pipe(replace(options))
+  .on('error', err => handleError(err))
+  .pipe(vfs.dest(file => {
     total.push(file);
     switch (file.extname) {
       case '.liquid':
@@ -95,10 +65,7 @@ vfs.src(pattern, options)
     }
     return file.base;
   }))
-  .on('error', (err) => {
-    console.error(err);
-    process.exit(1);
-  })
+  .on('error', err => handleError(err))
   .on('end', () => {
     console.timeEnd('done in');
     console.log('converted', total.length, 'files');
@@ -106,9 +73,43 @@ vfs.src(pattern, options)
     process.exit();
   });
 
+function handleError(err) {
+  console.error(err);
+  process.exit(1);
+}
+
 function convert(options) {
   return through.obj(function(file, enc, next) {
-    file.contents = new Buffer(converter(file.contents.toString(), options));
+    if (!file.isNull() && !isBinary(file)) {
+      file.contents = new Buffer(converter(file.contents.toString(), options));
+    }
+    next(null, file);
+  });
+}
+
+function replace(options) {
+  return through.obj(function(file, enc, next) {
+    const input = file.contents.toString();
+    input = input.replace(/```liquid/gim, '```handlebars');
+
+    if (!options.replace) {
+      file.contents = new Buffer(input);
+      next(null, file);
+      return;
+    }
+
+    const segs = options.replace.split(',');
+    const re = new RegExp(segs[0], 'gim');
+    const to = segs[1];
+
+    const str = input.replace(re, function(m) {
+      if (m[0] === m[0].toUpperCase()) {
+        return to[0].toUpperCase() + to.slice(1);
+      }
+      return to;
+    });
+
+    file.contents = new Buffer(str);
     next(null, file);
   });
 }

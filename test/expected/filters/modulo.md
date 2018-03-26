@@ -5,9 +5,9 @@ description: Liquid filter that returns the remainder from a division operation.
 Returns the remainder of a division operation.
 <p class="code-label">Input</p>
 ```liquid
-{{#raw}}
+{{{{raw}}}}
 {{modulo 3 2}}
-{{/raw}}
+{{{{/raw}}}}
 ```
 <p class="code-label">Output</p>
 ```text
@@ -15,9 +15,9 @@ Returns the remainder of a division operation.
 ```
 <p class="code-label">Input</p>
 ```liquid
-{{#raw}}
+{{{{raw}}}}
 {{modulo 24 7}}
-{{/raw}}
+{{{{/raw}}}}
 ```
 <p class="code-label">Output</p>
 ```text
@@ -25,9 +25,9 @@ Returns the remainder of a division operation.
 ```
 <p class="code-label">Input</p>
 ```liquid
-{{#raw}}
+{{{{raw}}}}
 {{modulo 183.357 12}}
-{{/raw}}
+{{{{/raw}}}}
 ```
 <p class="code-label">Output</p>
 ```text

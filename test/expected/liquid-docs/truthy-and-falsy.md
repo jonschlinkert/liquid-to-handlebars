@@ -10,21 +10,21 @@ In programming, anything that returns `true` in a conditional is called **truthy
 All values in Liquid are truthy except `nil` and `false`.
 In the example below, the string "Tobi" is not a boolean, but it is truthy in a conditional:
 ```liquid
-{{#raw}}
+{{{{raw}}}}
 {{assign 'tobi' 'Tobi'}}
 {{#if tobi}}
   This condition will always be true.
 {{/if}}
-{{/raw}}
+{{{{/raw}}}}
 ```
 [Strings]({{prepend '/basics/types/#string' site.baseurl}}), even when empty, are truthy. The example below will result in empty HTML tags if `settings.fp_heading` is empty:
 <p class="code-label">Input</p>
 ```liquid
-{{#raw}}
+{{{{raw}}}}
 {{#if settings.fp_heading}}
   <h1>{{ settings.fp_heading }}</h1>
 {{/if}}
-{{/raw}}
+{{{{/raw}}}}
 ```
 <p class="code-label">Output</p>
 ```html

@@ -57,7 +57,7 @@
   <div class="hero slideshow-{{ section.id }}" id="Hero">
     {{#if (gt section.blocks.size 0)}}
       {{#each section.blocks as |block|}}
-        {{#if (is block.settings.hero_slide  blank)}}
+        {{#if (is block.settings.hero_slide blank)}}
           <div class="placeholder-background hero__slide hero__slide--{{ block.id }}" {{ block.shopify_attributes }}>
             {{#capture 'current'}}{{cycle 1 2}}{{/capture}}
             {{placeholder_svg_tag (append 'lifestyle-' current) 'icon icon--placeholder'}}

@@ -1,11 +1,12 @@
 'use strict';
 
 require('mocha');
-var fs = require('fs');
-var path = require('path');
-var assert = require('assert');
-var convert = require('..');
-var cwd = path.resolve.bind(path, __dirname);
+const fs = require('fs');
+const path = require('path');
+const glob = require('glob');
+const assert = require('assert');
+const converter = require('..');
+const cwd = path.resolve.bind(path, __dirname);
 
 function read(fp) {
   return fs.readFileSync(fp, 'utf8');
@@ -17,7 +18,17 @@ function expected(name) {
   return read(cwd('expected', name));
 }
 
-describe.only('shopify themes', function() {
+describe('shopify themes', function() {
+  this.timeout(20000);
+
+  const files = glob.sync('shopify-*/**/*.{*liquid*,json}', { cwd: cwd('fixtures') });
+
+  files.forEach(file => {
+    const to = file.replace(/\.liquid$/, '.hbs');
+    const actual = converter.convert(fixture(file));
+    it('should convert ' + file, () => assert.equal(actual, expected(to)));
+  });
+
   const fixtures = [
     'shopify-debut/assets/gift-card.scss.liquid',
     'shopify-debut/assets/ico-select.svg.liquid',
@@ -232,7 +243,7 @@ describe.only('shopify themes', function() {
   fixtures.forEach(name => {
     it('should convert ' + name, function() {
       let exp = name.replace(/\.liquid$/, '.hbs');
-      assert.equal(convert(fixture(name)), expected(exp));
+      assert.equal(converter.convert(fixture(name)), expected(exp));
     });
   });
 });

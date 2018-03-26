@@ -5,9 +5,9 @@ description: Liquid filter that gets the floor of a number by rounding down to t
 Rounds a number down to the nearest whole number. Liquid tries to convert the input to a number before the filter is applied.
 <p class="code-label">Input</p>
 ```liquid
-{{#raw}}
+{{{{raw}}}}
 {{floor 1.2}}
-{{/raw}}
+{{{{/raw}}}}
 ```
 <p class="code-label">Output</p>
 ```text
@@ -15,9 +15,9 @@ Rounds a number down to the nearest whole number. Liquid tries to convert the in
 ```
 <p class="code-label">Input</p>
 ```liquid
-{{#raw}}
+{{{{raw}}}}
 {{floor 2.0}}
-{{/raw}}
+{{{{/raw}}}}
 ```
 <p class="code-label">Output</p>
 ```text
@@ -25,9 +25,9 @@ Rounds a number down to the nearest whole number. Liquid tries to convert the in
 ```
 <p class="code-label">Input</p>
 ```liquid
-{{#raw}}
+{{{{raw}}}}
 {{floor 183.357}}
-{{/raw}}
+{{{{/raw}}}}
 ```
 <p class="code-label">Output</p>
 ```text
@@ -36,9 +36,9 @@ Rounds a number down to the nearest whole number. Liquid tries to convert the in
 Here the input value is a string:
 <p class="code-label">Input</p>
 ```liquid
-{{#raw}}
+{{{{raw}}}}
 {{floor '3.5'}}
-{{/raw}}
+{{{{/raw}}}}
 ```
 <p class="code-label">Output</p>
 ```text

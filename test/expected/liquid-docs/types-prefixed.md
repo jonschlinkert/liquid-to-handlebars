@@ -12,43 +12,43 @@ You can initialize Liquid variables with the [assign]({{prepend '/tags/variable/
 ## String
 Declare a string by wrapping a variable's value in single or double quotes:
 ```liquid
-{{#raw}}
+{{{{raw}}}}
 {{assign 'my_string' 'Hello World!'}}
-{{/raw}}
+{{{{/raw}}}}
 ```
 ## Number
 Numbers include floats and integers:
 ```liquid
-{{#raw}}
+{{{{raw}}}}
 {{assign 'my_int' 25}}
 {{assign 'my_float' 39.756}}
-{{/raw}}
+{{{{/raw}}}}
 ```
 ## Boolean
 Booleans are either `true` or `false`. No quotations are necessary when declaring a boolean:
 ```liquid
-{{#raw}}
+{{{{raw}}}}
 {{assign 'foo' true}}
 {{assign 'bar' false}}
-{{/raw}}
+{{{{/raw}}}}
 ```
 ## Nil
 Nil is a special empty value that is returned when Liquid code has no results. It is **not** a string with the characters "nil".
 Nil is [treated as false]({{prepend '/basics/truthy-and-falsy' @site.baseurl}}) in the conditions of `if` blocks and other Liquid tags that check the truthfulness of a statement.
 In the following example, if the user does not exist (that is, `user` returns `nil`), Liquid will not print the greeting:
 ```liquid
-{{#raw}}
+{{{{raw}}}}
 {{#if user}}
   Hello {{ user.name }}!
 {{/if}}
-{{/raw}}
+{{{{/raw}}}}
 ```
 Tags or outputs that return `nil` will not print anything to the page.
 <p class="code-label">Input</p>
 ```liquid
-{{#raw}}
+{{{{raw}}}}
 The current user is {{ user.name }}
-{{/raw}}
+{{{{/raw}}}}
 ```
 <p class="code-label">Output</p>
 ```text
@@ -60,29 +60,29 @@ Arrays hold lists of variables of any type.
 To access all the items in an array, you can loop through each item in the array using an [iteration tag]({{prepend '/tags/iteration' @site.baseurl}}).
 <p class="code-label">Input</p>
 ```liquid
-{{#raw}}
+{{{{raw}}}}
 <!-- if site.users = "Tobi", "Laura", "Tetsuro", "Adam" -->
 {{#each @site.users as |user|}}
   {{ user }}
 {{/each}}
-{{/raw}}
+{{{{/raw}}}}
 ```
 <p class="code-label">Output</p>
 ```text
-{{#raw}}
+{{{{raw}}}}
 Tobi Laura Tetsuro Adam
-{{/raw}}
+{{{{/raw}}}}
 ```
 ### Accessing specific items in arrays
 You can use square bracket `[` `]` notation to access a specific item in an array. Array indexing starts at zero.
 <p class="code-label">Input</p>
 ```liquid
-{{#raw}}
+{{{{raw}}}}
 <!-- if site.users = "Tobi", "Laura", "Tetsuro", "Adam" -->
 {{get @site.users 0}}
 {{get @site.users 1}}
 {{get @site.users 3}}
-{{/raw}}
+{{{{/raw}}}}
 ```
 <p class="code-label">Output</p>
 ```text

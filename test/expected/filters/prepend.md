@@ -5,9 +5,9 @@ description: Liquid filter that prepends a string to the beginning of another st
 Adds the specified string to the beginning of another string.
 <p class="code-label">Input</p>
 ```liquid
-{{#raw}}
+{{{{raw}}}}
 {{prepend 'apples, oranges, and bananas' 'Some fruit: '}}
-{{/raw}}
+{{{{/raw}}}}
 ```
 <p class="code-label">Output</p>
 ```text
@@ -16,10 +16,10 @@ Adds the specified string to the beginning of another string.
 You can also `prepend` variables:
 <p class="code-label">Input</p>
 ```liquid
-{{#raw}}
+{{{{raw}}}}
 {{assign 'url' 'liquidmarkup.com'}}
 {{prepend '/index.html' url}}
-{{/raw}}
+{{{{/raw}}}}
 ```
 <p class="code-label">Output</p>
 ```text

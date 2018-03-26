@@ -1,19 +1,22 @@
 'use strict';
 
-var del = require('delete');
-var path = require('path');
-var gulp = require('gulp');
-var clone = require('gh-clone');
-var through = require('through2');
-var converter = require('./');
+const del = require('delete');
+const path = require('path');
+const gulp = require('gulp');
+const clone = require('gh-clone');
+const through = require('through2');
+const isBinary = require('file-is-binary');
+const converter = require('./');
 
-var expected = path.resolve.bind(path, __dirname, 'test/expected');
-var fixtures = path.resolve.bind(path, __dirname, 'test/fixtures');
-var liquid = path.resolve.bind(path, __dirname, 'vendor/liquid');
+const expected = path.resolve.bind(path, __dirname, 'test/expected');
+const fixtures = path.resolve.bind(path, __dirname, 'test/fixtures');
+const liquid = path.resolve.bind(path, __dirname, 'vendor/liquid');
 
 function convert(options) {
   return through.obj(function(file, enc, next) {
-    file.contents = new Buffer(converter(file.contents.toString(), options));
+    if (!file.isNull() && !isBinary(file)) {
+      file.contents = new Buffer(converter(file.contents.toString(), options));
+    }
     next(null, file);
   });
 }
@@ -39,10 +42,9 @@ gulp.task('copy', function(cb) {
     .pipe(gulp.dest(fixtures()));
 });
 
-gulp.task('delete', function(cb) {
-  del.sync(fixtures());
-  del.sync(expected());
-  cb();
+gulp.task('delete', async () => {
+  await del(fixtures());
+  await del(expected());
 });
 
 gulp.task('default', ['delete', 'copy', 'markdown', 'html']);

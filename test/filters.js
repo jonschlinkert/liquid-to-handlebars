@@ -1,16 +1,16 @@
 'use strict';
 
 require('mocha');
-var fs = require('fs');
-var path = require('path');
-var assert = require('assert');
-var support = require('./support');
-var convert = require('..');
-var cwd = path.join.bind(path, __dirname);
-var fixtures = cwd('fixtures/filters');
+const fs = require('fs');
+const path = require('path');
+const assert = require('assert');
+const support = require('./support');
+const converter = require('..');
+const cwd = path.join.bind(path, __dirname);
+const fixtures = cwd('fixtures/filters');
 
 describe('filters', function() {
-  var units = [
+  const units = [
     {
       fixture: '{{ item | img_url: \'small\' | img_tag: item.featured_image.alt }}',
       expected: '{{img_tag (img_url item \'small\') item.featured_image.alt}}'
@@ -402,20 +402,20 @@ describe('filters', function() {
     }
   ];
 
-  var hasOnly = support.hasOnly(units);
+  const hasOnly = support.hasOnly(units);
   units.forEach(function(unit) {
     if (hasOnly && !unit.only) return;
     it('should convert ' + unit.fixture, function() {
-      assert.equal(convert(unit.fixture), unit.expected, unit.fixture);
+      assert.equal(converter.convert(unit.fixture), unit.expected, unit.fixture);
     });
   });
 
   fs.readdirSync(fixtures).forEach(function(name) {
     // if (!/truncate/.test(name)) return;
     it(`should convert ${name} filters`, function() {
-      var expected = fs.readFileSync(cwd('expected/filters', name), 'utf8');
-      var fixture = fs.readFileSync(path.join(fixtures, name), 'utf8');
-      var actual = convert(fixture);
+      const expected = fs.readFileSync(cwd('expected/filters', name), 'utf8');
+      const fixture = fs.readFileSync(path.join(fixtures, name), 'utf8');
+      const actual = converter.convert(fixture);
       assert.equal(actual, expected, name);
     });
   });
