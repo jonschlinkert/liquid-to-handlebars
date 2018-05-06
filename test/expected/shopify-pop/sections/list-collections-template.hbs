@@ -63,7 +63,7 @@
     {{#if (is section.settings.layout 'grid')}}
       <div class="grid-uniform text-center collection-grid">
     {{/if}}
-    {{#each list_collections as |collection|}}
+    {{#each (reversed list_collections) as |collection|}}
       {{#unless (is collection.handle 'frontpage')}}
         {{#if (is section.settings.layout 'list')}}
           {{include 'collection-list-item'}}

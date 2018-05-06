@@ -24,7 +24,7 @@
     {{/if}}
       <div class="grid grid--no-gutters">
         {{#unless (is blog.articles_count 0)}}
-          {{#each (limit blog.articles undefined) as |article|}}
+          {{#each (limit blog.articles section.settings.post_limit) as |article|}}
             <div class="grid__item {{ width }}">
               <a href="{{ article.url }}" class="article-block">
                 {{#if article.image}}

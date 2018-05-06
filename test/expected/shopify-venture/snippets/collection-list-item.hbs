@@ -12,7 +12,7 @@
       </div>
     </a>
   </div>
-  {{#each (limit featured_collection.products undefined) as |product|}}
+  {{#each (limit featured_collection.products 4) as |product|}}
     {{#comment}}
       Hide the last product for a better mobile view
     {{/comment}}

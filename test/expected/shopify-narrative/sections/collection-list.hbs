@@ -11,7 +11,7 @@
 
     <div class="grid grid--uniform">
 
-      {{#each (limit section.blocks undefined) as |block|}}
+      {{#each (limit section.blocks section.blocks.size) as |block|}}
 
         {{#is section.settings.grid 1}}
             {{assign 'grid_item_width' 'one-whole'}}

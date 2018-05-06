@@ -12,7 +12,7 @@
   <meta property="og:title" content="{{escape (strip_html product.title)}}">
   <meta property="og:url" content="{{ canonical_url }}">
   <meta property="og:description" content="{{escape (strip_html product.description)}}">
-  {{#each (limit product.images 3) as |image|}}
+  {{#each (reversed (limit product.images 3)) as |image|}}
     <meta property="og:image" content="http:{{img_url image.src 'grande'}}">
     <meta property="og:image:secure_url" content="https:{{img_url image.src 'grande'}}">
   {{/each}}

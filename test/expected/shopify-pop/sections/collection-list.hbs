@@ -36,7 +36,7 @@
       {{/if}}
   {{/is}}
 
-  {{#each (limit section.blocks undefined) as |block|}}
+  {{#each (limit section.blocks section.blocks.size) as |block|}}
     {{assign 'featured' block.settings.collection}}
     <div class="grid-item {{ featured_collection_width }}" {{ block.shopify_attributes }}>
       {{include 'featured-collection'}}

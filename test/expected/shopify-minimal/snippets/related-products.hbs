@@ -19,7 +19,7 @@
   <div class="grid-uniform grid-link__container">
     {{assign 'current_product' product}}
     {{assign 'current_product_found' false}}
-    {{#each (limit collection.products undefined) as |product|}}
+    {{#each (limit collection.products number_of_products_to_fetch) as |product|}}
       {{#if (is product.handle current_product.handle)}}
         {{assign 'current_product_found' true}}
       {{else}}

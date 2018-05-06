@@ -72,7 +72,7 @@
     {{#unless (is blog.articles_count 0)}}
       <div class="card-list grid" data-desktop-columns="{{ desktopColumns }}" data-mobile-columns="{{ mobileColumns }}">
         <div class="card-list__column grid__item {{ width }}{{#if (is mobileColumns 2)}} small--one-half{{/if}}">
-          {{#each (limit blog.articles undefined) as |article|}}
+          {{#each (limit blog.articles section.settings.post_limit) as |article|}}
             {{include 'featured-article-card",' article: article}}
           {{/each}}
         </div>

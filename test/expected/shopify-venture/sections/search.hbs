@@ -25,7 +25,7 @@
           <ul class="list--inline tag-list small--text-center">
             <li class="tag-list__item">{{escape section.settings.quick_link_label}}</li>
             {{assign 'all_tags' (uniq (split all_tags ','))}}
-            {{#each (limit all_tags undefined) as |tag|}}
+            {{#each (limit all_tags 5) as |tag|}}
               <li class="tag-list__item"><a href="/search?q={{handleize tag}}">{{ tag }}</a></li>
             {{/each}}
           </ul>

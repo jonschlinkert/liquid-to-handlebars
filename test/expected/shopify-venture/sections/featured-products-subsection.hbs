@@ -4,7 +4,7 @@
     <hr>
     <h3 class="h4">{{t 'layout.sidebar.featured_products'}}</h3>
     <div class="grid grid--no-gutters grid--uniform">
-      {{#each (limit collection.products undefined) as |product|}}
+      {{#each (limit collection.products 4) as |product|}}
         <div class="grid__item medium-up--one-quarter small--one-half">
           {{include 'product-card",' product: product}}
         </div>

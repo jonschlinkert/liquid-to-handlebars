@@ -30,7 +30,7 @@
 
   {{#unless (is blog.articles_count 0)}}
     <div class="grid grid--uniform">
-      {{#each (limit blog.articles undefined) as |article|}}
+      {{#each (limit blog.articles section.settings.post_limit) as |article|}}
         <div class="grid__item {{ width }} slide-up-animation animated">
           <div class="featured-blog__post">
 

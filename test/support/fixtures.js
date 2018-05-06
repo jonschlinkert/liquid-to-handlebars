@@ -15,7 +15,7 @@ function fixtures(pattern, destBase, options) {
     const fp = path.resolve(opts.cwd, file);
 
     let dest = path.resolve(destBase, file);
-    console.log(dest)
+    console.log(dest);
     const str = fs.readFileSync(fp, 'utf8');
     dest = dest.replace(/\.liquid$/, '.hbs');
     write.sync(dest, converter.convert(str));
@@ -26,6 +26,6 @@ fixtures('liquid-*/*.md', 'test/expected', {
   cwd: path.join(__dirname, '../fixtures')
 });
 
-// fixtures('shopify-*/**/*.{*liquid*,json}', 'test/expected', {
-//   cwd: path.join(__dirname, '../fixtures')
-// });
+fixtures('shopify-*/**/*.{*liquid*,json}', 'test/expected', {
+  cwd: path.join(__dirname, '../fixtures')
+});

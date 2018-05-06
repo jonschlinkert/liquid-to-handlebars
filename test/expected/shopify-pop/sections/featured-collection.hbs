@@ -79,7 +79,7 @@
   {{/is}}
 
   <div class="grid-uniform product-grid">
-    {{#each (limit featured_collection.products undefined) as |product|}}
+    {{#each (limit featured_collection.products total_products) as |product|}}
       {{assign 'featured' product}}
       <div class="grid-item {{ grid_item_width }}" {{ block.shopify_attributes }}>
         {{include 'product-grid-item' product_size: product_size}}

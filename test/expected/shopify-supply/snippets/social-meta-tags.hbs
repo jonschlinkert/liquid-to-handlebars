@@ -10,12 +10,12 @@
   {{assign 'og_title' (escape (strip_html product.title))}}
   {{assign 'og_type' 'product'}}
   {{#capture 'og_image_tags'}}
-    {{#each (limit product.images undefined) as |image|}}
+    {{#each (limit product.images 3) as |image|}}
       <meta property="og:image" content="http:{{product_img_url image.src '1024x1024'}}">
     {{/each}}
   {{/capture}}
   {{#capture 'og_image_secure_url_tags'}}
-    {{#each (limit product.images undefined) as |image|}}
+    {{#each (limit product.images 3) as |image|}}
       <meta property="og:image:secure_url" content="https:{{product_img_url image.src '1024x1024'}}">
     {{/each}}
   {{/capture}}

@@ -11,7 +11,7 @@
 <h2 class="h1 text-center">{{ collection_title }}</h2>
 
 <div class="grid-uniform">
-  {{#each (limit collection.products undefined) as |product|}}
+  {{#each (limit collection.products 3) as |product|}}
     {{assign 'grid_item_width' 'medium--one-third large--one-third'}}
     {{assign 'featured' product}}
     <div class="grid-item {{ grid_item_width }}">

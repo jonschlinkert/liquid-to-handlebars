@@ -30,7 +30,7 @@
         </div>
       {{/each}}
     {{else}}
-      {{#each collections as |collection|}}
+      {{#each (reversed collections) as |collection|}}
         <div class="grid__item {{ grid_item_width }}">
           {{include 'collection-grid-item'}}
         </div>

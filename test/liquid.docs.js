@@ -44,6 +44,12 @@ describe('all liquid docs', function() {
       assert.equal(converter.convert('{{ page.foo }}', {prefix: '@'}), '{{{ @page.foo }}}');
     });
 
+    it('should prefix private variables in loops when specified', function() {
+      const fixture = '{% for item in array reversed %} {{ item }} {% endfor %}';
+      const expected = '{{#each (reversed array) as |item|}} {{ @item }} {{/each}}';
+      assert.equal(converter.convert(fixture, {prefix: '@'}), expected);
+    });
+
     it('should prefix variables with options.prefix', function() {
       const name = 'types-prefixed.md';
       const fixtures = cwd('fixtures/liquid-docs');
@@ -51,7 +57,7 @@ describe('all liquid docs', function() {
       const expected = fs.readFileSync(cwd('expected/liquid-docs', name), 'utf8');
       const fixture = fs.readFileSync(fp, 'utf8');
       const actual = converter.convert(fixture, { prefix: '@' });
-      assert.equal(actual, expected);
+      assert.equal(actual, expected, name);
     });
   });
 

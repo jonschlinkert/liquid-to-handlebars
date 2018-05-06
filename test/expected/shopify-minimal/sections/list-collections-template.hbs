@@ -38,7 +38,7 @@
         </div>
       {{/each}}
     {{else}}
-      {{#each list_collections as |collection|}}
+      {{#each (reversed list_collections) as |collection|}}
         {{assign 'featured' collection.handle}}
         <div class="grid__item {{ collection_item_width }} text-center">
           {{include 'collection-grid-item' collection_width: collection_width}}

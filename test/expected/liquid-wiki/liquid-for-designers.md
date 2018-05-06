@@ -433,7 +433,7 @@ Restricting elements:
 Reversing the loop:
 
 ```liquid
-{{#each collection as |item|}} {{ item }} {{/each}}
+{{#each (reversed collection) as |item|}} {{ item }} {{/each}}
 ```
 
 A for loop can take an optional `else` clause to display a block of text when there are no items in the collection:

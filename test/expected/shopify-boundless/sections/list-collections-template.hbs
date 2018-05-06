@@ -38,7 +38,7 @@
         {{/unless}}
       {{/each}}
     {{else}}
-      {{#each collections as |collection|}}
+      {{#each (reversed collections) as |collection|}}
         {{#unless (is collection.handle 'frontpage')}}
           {{include 'collection-grid-item'}}
         {{/unless}}

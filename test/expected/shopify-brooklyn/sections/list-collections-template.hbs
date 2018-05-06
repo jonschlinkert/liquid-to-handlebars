@@ -72,7 +72,7 @@
         {{/comment}}
         {{include 'onboarding-featured-collections'}}
       {{else}}
-        {{#each list_collections as |collection|}}
+        {{#each (reversed list_collections) as |collection|}}
           {{assign 'collection_handle' collection.handle}}
 
           {{#if (is collection_handle 'frontpage')}}

@@ -36,10 +36,9 @@ utils.helperUtils = function() {
 };
 
 utils.toBlockHelper = function(name) {
-  return `exports.${name} = function() {
-  var args = [].slice.call(arguments);
-  var opts = args.pop();
-  return opts.fn(this);
+  return `exports.${name} = function(...args) {
+  const options = args.pop();
+  return options.fn(this);
 };`;
 };
 

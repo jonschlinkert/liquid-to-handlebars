@@ -1,8 +1,6 @@
 const hbs = require('handlebars');
 
-hbs.registerHelper('raw', function(options) {
-  return options.fn();
-});
+hbs.registerHelper('raw', options => options.fn());
 
 const str = `{{{{raw}}}}{{ page.title }}{{{{/raw}}}}`;
 

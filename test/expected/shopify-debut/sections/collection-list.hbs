@@ -17,7 +17,7 @@
 
   <div class="collection-grid">
     <div class="grid grid--uniform">
-      {{#each (limit section.blocks undefined) as |block|}}
+      {{#each (limit section.blocks section.blocks.size) as |block|}}
         <div class="grid__item {{ grid_item_width }}" {{ block.shopify_attributes }}>
           {{assign 'collection' (get collections block.settings.collection)}}
           {{include 'collection-grid-item'}}

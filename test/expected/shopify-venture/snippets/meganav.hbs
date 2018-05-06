@@ -108,7 +108,7 @@
   {{/if}}
 
   {{#if display_products}}
-    {{#each (limit link.object.products undefined) as |product|}}
+    {{#each (limit link.object.products number_of_product_columns) as |product|}}
       <div class="grid__item {{ meganav_column_width }} meganav__product">
         {{include 'product-card",' product: product}}
       </div>

@@ -24,7 +24,7 @@
   {{assign 'product_limit' (times section.settings.grid section.settings.rows)}}
 
   <div class="grid grid--uniform grid--view-items">
-    {{#each (limit collection.products undefined) as |product|}}
+    {{#each (limit collection.products product_limit) as |product|}}
       <div class="grid__item grid__item--{{ section.id }} {{ grid_item_width }}">
         {{include 'product-card-grid",' max_height: max_height}}
       </div>

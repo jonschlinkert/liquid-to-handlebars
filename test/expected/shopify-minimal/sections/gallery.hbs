@@ -13,7 +13,7 @@
 {{#unless (is index 0)}}
 <div class="grid-uniform featured-images">
 
-  {{#each (limit section.blocks undefined) as |block|}}
+  {{#each (limit section.blocks section.blocks.size) as |block|}}
 
     {{#if (isnt block.settings.image blank)}}
       <div class="grid__item {{ featured_image_width }}" {{ block.shopify_attributes }}>

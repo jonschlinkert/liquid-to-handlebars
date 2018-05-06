@@ -47,7 +47,7 @@
       </div>
     {{else}}
       <div class="grid grid--no-gutters grid--uniform collection">
-        {{#each list_collections as |collection|}}
+        {{#each (reversed list_collections) as |collection|}}
           {{assign 'featured_collection' collection}}
           {{#unless (is collection.handle 'frontpage')}}
             {{#if (is section.settings.layout 'list')}}

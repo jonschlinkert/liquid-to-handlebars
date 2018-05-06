@@ -37,7 +37,7 @@
             </div>
           </a>
         </div>
-        {{#each (limit collection.products undefined) as |product|}}
+        {{#each (limit collection.products product_limit) as |product|}}
           <div class="grid__item small--one-half medium-up--one-fifth{{#if (is forloop.index 1)}} collection__card--first{{/if}} {{#if (and mobile_product_limit (gt forloop.index 3))}}small--hide{{else if (or (is rows 1) (is rows 3))}}{{#if (is forloop.index product_index_hide_on_mobile)}}small--hide{{/if}}{{/if}}">
             {{include 'product-card",' product: product, collection: collection}}
           </div>

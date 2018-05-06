@@ -112,7 +112,7 @@ Reverses the order of the loop.
 ```liquid
 {{{{raw}}}}
 <!-- if array = [1,2,3,4,5,6] -->
-{{#each array as |item|}}
+{{#each (reversed array) as |item|}}
   {{ item }}
 {{/each}}
 {{{{/raw}}}}

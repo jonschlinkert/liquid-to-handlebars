@@ -9,7 +9,7 @@
 {{else if (is template.name 'product')}}
   <meta property="og:type" content="product">
   <meta property="og:title" content="{{escape (strip_html product.title)}}">
-  {{#each (limit product.images 3) as |image|}}
+  {{#each (reversed (limit product.images 3)) as |image|}}
     <meta property="og:image" content="http:{{img_url image 'grande'}}">
     <meta property="og:image:secure_url" content="https:{{img_url image 'grande'}}">
   {{/each}}

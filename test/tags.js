@@ -72,6 +72,10 @@ describe('tags', function() {
       {
         fixture: '**Objects** tell Liquid where to show content on a page. Objects and variable names are denoted by double curly braces: `{% raw %}{{{% endraw %}` and `{% raw %}}}{% endraw %}`.',
         expected: '**Objects** tell Liquid where to show content on a page. Objects and variable names are denoted by double curly braces: `{{{{raw}}}}{{{% endraw %}` and `{% raw %}}}{{{{/raw}}}}`.'
+      },
+      {
+        fixture: '{% for item in array reversed %} {{ item }} {% endfor %}',
+        expected: '{{#each (reversed array) as |item|}} {{ item }} {{/each}}'
       }
     ];
 
@@ -91,7 +95,7 @@ describe('tags', function() {
         const expected = fs.readFileSync(cwd('expected/tags', name), 'utf8');
         const fixture = fs.readFileSync(path.join(fixtures, name), 'utf8');
         const actual = converter.convert(fixture);
-        assert.equal(actual, expected);
+        assert.equal(actual, expected, name);
       });
     });
   });

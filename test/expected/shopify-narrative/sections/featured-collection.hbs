@@ -29,7 +29,7 @@
     <div class="card-list grid" data-desktop-columns="{{ desktopColumns }}" data-mobile-columns="{{ mobileColumns }}">
       <div class="card-list__column{{#if (is totalProducts 1)}} card-list__column--center{{/if}} grid grid__item {{ gridClasses }}">
         {{#unless (is featuredCollection blank)}}
-          {{#each (limit featuredCollection.products undefined) as |product|}}
+          {{#each (limit featuredCollection.products limit) as |product|}}
             {{include 'product-card",' product: product}}
           {{/each}}
         {{else}}

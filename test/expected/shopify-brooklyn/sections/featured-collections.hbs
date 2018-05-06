@@ -25,7 +25,7 @@
     {{#comment}}
       Calculate number of collections to show, making sure Frontpage isn't one
     {{/comment}}
-    {{#each (limit section.blocks undefined) as |collection|}}
+    {{#each (limit section.blocks collection_limit) as |collection|}}
         {{assign 'collection_count' (plus collection_count 1)}}
     {{/each}}
 
@@ -39,7 +39,7 @@
     {{#comment}}
       Loop through the collections to display
     {{/comment}}
-    {{#each (limit section.blocks undefined) as |block|}}
+    {{#each (limit section.blocks collection_limit) as |block|}}
         {{assign 'collection' (get collections block.settings.collection)}}
         {{assign 'collection_index' (plus collection_index 1)}}
         {{assign 'collection_handle' collection.handle}}

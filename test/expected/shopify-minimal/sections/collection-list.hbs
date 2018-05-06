@@ -24,7 +24,7 @@
         {{assign 'collection_width' 235}}
     {{/is}}
 
-    {{#each (limit section.blocks undefined) as |block|}}
+    {{#each (limit section.blocks section.blocks.size) as |block|}}
       {{assign 'featured' block.settings.collection}}
       <div class="grid__item {{ collection_item_width }} text-center" {{ block.shopify_attributes }}>
         {{include 'collection-grid-item' collection_width: collection_width}}

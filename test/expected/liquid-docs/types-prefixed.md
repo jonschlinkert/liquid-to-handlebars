@@ -88,7 +88,7 @@ To access all the items in an array, you can loop through each item in the array
 {{{{raw}}}}
 <!-- if site.users = "Tobi", "Laura", "Tetsuro", "Adam" -->
 {{#each @site.users as |user|}}
-  {{ user }}
+  {{ @user }}
 {{/each}}
 {{{{/raw}}}}
 ```
