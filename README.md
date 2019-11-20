@@ -94,9 +94,9 @@ missing helper {{foo}}
 
 You can either create the `foo` helper from scratch, or use a helper library that already includes the helpers you need.
 
-Any of the following libraries may be used, but the [liquid-filters][] library might be most useful (during migration, at least).
+Any of the following libraries may be used, but the [liquid-filters](https://help.shopify.com/en/themes/liquid/filters) library might be most useful (during migration, at least).
 
-* [liquid-filters][] - includes a bunch of utility javascript functions that can be registered as handlebars helpers to provide parity with the built-in liquid filters
+* [liquid-filters](https://help.shopify.com/en/themes/liquid/filters) - includes a bunch of utility javascript functions that can be registered as handlebars helpers to provide parity with the built-in liquid filters
 * [template-helpers](https://github.com/jonschlinkert/template-helpers) - generic helpers that can be used with any template engine.
 * [handlebars-helpers](https://github.com/helpers/handlebars-helpers) - more than 150 handlebars helpers
 
